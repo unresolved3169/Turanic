@@ -1,11 +1,11 @@
 # Turanic
 Fast server software for Minecraft PE and W10 Edition - v1.1.x.
-Turanic based on SteadFast, GenisysPRO and MiNET.
+Turanic based on SteadFast2, GenisysPro and MiNET.
 
 # TODO List:
-- [] **CustomPotions**
+- [] **Custom Potions**
 - [] **Advanced Player Functions**
-- [] **CustomEnchants**
-- [] **Optimisation and Stability**
+- [] **Custom Enchants**
+- [] **Optimization and Stability**
 - [] **Fast**
 - [] **More Advanced & Open MainLogger**
