@@ -1,8 +1,13 @@
-sudo: false
+sudo: true
 
 language: php
 php:
  - 7.0
+
+addons:
+ apt:
+   packages:
+   - make
 
 before_script:
  - pecl install channel://pecl.php.net/weakref-0.3.3
