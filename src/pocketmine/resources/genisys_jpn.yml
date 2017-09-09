@@ -1,0 +1,138 @@
+#
+#   _____            _               _____           
+#  / ____|          (_)             |  __ \          
+# | |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
+# | | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
+# | |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
+#  \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
+#                          __/ |                    
+#                         |___/                     
+#
+#
+#
+#GenisysPro 詳細設定ファイル
+
+#ファイルのバージョン
+config:
+ version: 28
+
+level:
+ #有効にすると、天候要素が加わります（雨が降ると古い端末の動作が遅くなる場合があります）
+ weather: true
+ #天気が変わる時間の間隔
+ weather-random-duration-min: 6000
+ weather-random-duration-max: 12000
+ #落雷が発生する間隔（初期値は10秒、0秒にすると無効になります)
+ lightning-time: 200
+ #有効にすると落雷した場所が火災します
+ lightning-fire: false
+ #有効にすると炎が延焼します（木など）
+ fire-spread: false
+
+player:
+ #有効にすると満腹度要素が機能します
+ hunger: true
+ #有効にすると経験値要素が機能します
+ experience: true
+ #有効にするとプレイヤーが死亡してもインベントリ(プレイヤーの持っている、ブロックやアイテム)を維持します
+ keep-inventory: false
+ #有効にするとプレイヤーがゲームモードを変更したときにインベントリを消去します
+ auto-clear-inventory : true
+ #有効にするとプレイヤーが死亡しても経験値を維持します
+ keep-experience: false
+
+developer:
+  #有効にするとソースディレクトリからプラグインを読み込みます
+  #設定を変更しないことを推奨します
+  folder-plugin-loader: true
+  #有効にすると互換性のないAPIのプラグインを読み込みます
+  #設定を変更しないことを推奨します
+  load-incompatible-api: true
+
+nether:
+ #有効(true)にするとネザー(nether)ワールド(Level)が自動的に生成され、ポータルを用いて移動できます
+ allow-nether: true
+ #ネザーのワールド(Level)名の設定
+ level-name: "nether"
+
+ender:
+ #有効(true)にするとジ・エンド(ender)ワールド(Level)が自動的に生成され、ポータルを用いて移動できます
+ allow-ender: true
+ #ジ・エンドのワールド(Level)名の設定
+ level-name: "ender"
+
+server:
+ #有効にするとアイアンゴーレムのスポーンを許可します
+ allow-iron-golem: false
+ #有効にするとスノーゴーレムのスポーンを許可します
+ allow-snow-golem: false
+ #有効にするとserver.logを生成しません
+ disable-log: false
+ #プレイヤーが参加または退出したときにお知らせする方法
+ #0 = Message, 1 = Tip, 2 = Popup
+ player-msg-type: 0
+ login-msg: "§3@player が参加しました"
+ logout-msg: "§3@player が退出しました"
+ #有効にするとクリエイティブモードを制限します（インベントリからアイテムをドロップできず、チェストを開けることができません）
+ limited-creative: false
+ #有効にするとブロックを破壊したときにパーティクルを表示します
+ destroy-block-particle: true
+ #有効にするとスプラッシュポーションを許可します
+ allow-splash-potion: true
+ #有効にすると高度なコマンドセレクタを設定します
+ advanced-command-selector: false
+ #有効にするとResourcePackManagerを設定します
+ enable-resource: false
+ #この設定はスポンジブロックによる水の吸収機能を 有効 または 無効 の設定ができます。
+ absorb-water: false
+
+enchantment:
+ #有効にすると金床の使用を許可します
+ enable-anvil: true
+ #有効にするとエンチャントテーブルの使用を許可します
+ enable-enchanting-table: true
+ #有効にすると本棚を数えます（有効にするとサーバーの動作が遅くなる場合があります）
+ #無効にすると0~15の間でランダムに数えます
+ count-bookshelf: false
+
+redstone:
+ ###################################################
+ #####有効にするとレッドストーンの動作を許可します######
+ ###################################################
+ ###無効にするとレッドストーンシステムは動作しません###
+ ##################################################
+ enable: false
+ #有効にすると周波数パルスを設定します
+ frequency-pulse: false
+ #周波数パルスの間隔（初期値は1秒）
+ pulse-frequency: 1
+
+dserver:
+ #有効にすると全てのマルチサーバーの数を統一します
+ enable: false
+ #有効にするとクエリを自動的に更新します
+ query-auto-update: false
+ #有効にするとクエリを定期的に更新します
+ query-tick-update: true
+ #MOTDに表示するプレイヤーの最大人数
+ motd-max-players: 0
+ #クエリーに表示するプレイヤーの最大人数（初期値は0人）
+ query-max-players: 0
+ #有効にするとMOTDにプレイヤーの人数を表示します
+ motd-all-players: false
+ #有効にするとクエリーにプレイヤーの人数を表示します
+ query-all-players: false
+ #有効にするとMOTDにプレイヤーのオンライン人数を表示します
+ motd-players: false
+ #有効にするとクエリーににプレイヤーのオンライン人数を表示します
+ query-players: false
+ #更新する間隔（20で1秒）
+ time: 40
+ #失敗したときに再試行する間隔
+ retry-times: 3
+ #サーバーリスト（「;」で区切ることができます、例：1.example.com:19132;2.example.com:19133）
+ server-list: ""
+
+inventory:
+ #金床に問題がある場合は無効にするとチートの検証をせずにインベントリを処理します
+ allow-cheats: false
