@@ -9,11 +9,11 @@ before_script:
  - pecl install channel://pecl.php.net/weakref-0.3.3
  - echo | pecl install channel://pecl.php.net/yaml-2.0.0
  - cd ci
- - chmod +x travis.sh
- - chmod +x lint.sh
+ - chmod +x /ci/travis.sh
+ - chmod +x /ci/lint.sh
 
 script:
- - ./travis.sh
+ - ./ci/travis.sh
 
 notifications:
   email: false
