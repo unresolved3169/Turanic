@@ -13,8 +13,7 @@ before_script:
  - chmod +x lint.sh
 
 script:
- - ls
- - ./travish.sh
+ - ./travis.sh
 
 notifications:
   email: false
