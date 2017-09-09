@@ -12,6 +12,7 @@ before_script:
  - chmod +x ./ci/lint.sh
 
 script:
+ - ls
  - ./ci/travish.sh
 
 notifications:
