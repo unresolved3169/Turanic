@@ -2,22 +2,24 @@
 
 /*
  *
- *  _____            _               _____
- * / ____|          (_)             |  __ \
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/
- *                         __/ |
- *                        |___/
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
+ *
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author GenisysPro
- * @link https://github.com/GenisysPro/GenisysPro
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  *
 */
@@ -321,7 +323,7 @@ class Server{
 	 * @return string
 	 */
 	public function getName() : string{
-        return "GenisysPro";
+        return "Turanic";
 	}
 
 	/**
@@ -415,14 +417,14 @@ class Server{
 	 * @return string
 	 */
 	public function getiTXApiVersion(){
-		return \pocketmine\GENISYS_API_VERSION;
+		return \pocketmine\Turanic_API_VERSION;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getGeniApiVersion(){
-		return \pocketmine\GENISYS_API_VERSION;
+		return \pocketmine\Turanic_API_VERSION;
 	}
 
 	/**
@@ -1521,27 +1523,15 @@ class Server{
 	}
 
 	public function about(){
-	 $version = implode(",",ProtocolInfo::MINECRAFT_VERSION);
-		$string = "
-
-  _____            _               _____
- / ____|          (_)             |  __ \
-| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___
-| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \
-| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/
-                          __/ |
-                         |___/
-
-	Version: §6" . $this->getPocketMineVersion() . ' (' . $this->getShortGitCommit() . ')§f
-	Client Version: §b' . $version . '§f
-	PHP Version: §e' . PHP_VERSION . '§f
-	OS: §6' . PHP_OS .'§f
-	This core is maintained by §dGenisysPro§f (https://github.com/GenisysPro)
-	Discord Group chat: §ehttps://discord.gg/WrKzRNn §f
-	Chatroom on QQ: §a559301590 §f
-	Welcome to donate us on QQ: §c1912003473
-	';
+		$string = TextFormat::BOLD.TextFormat::AQUA."
+  _______                    _      
+ |__   __|                  (_)     
+    | |_   _ _ __ __ _ _ __  _  ___ 
+    | | | | | '__/ _` | '_ \| |/ __|
+    | | |_| | | | (_| | | | | | (__ 
+    |_|\__,_|_|  \__,_|_| |_|_|\___|
+                                    
+";
 
 		$this->getLogger()->info($string);
 	}
@@ -1716,17 +1706,17 @@ class Server{
 			}
 
 			$lang = $this->getProperty("settings.language", BaseLang::FALLBACK_LANGUAGE);
-			if(file_exists($this->filePath . "src/pocketmine/resources/genisys_$lang.yml")){
-				$content = file_get_contents($file = $this->filePath . "src/pocketmine/resources/genisys_$lang.yml");
+			if(file_exists($this->filePath . "src/pocketmine/resources/turanic_$lang.yml")){
+				$content = file_get_contents($file = $this->filePath . "src/pocketmine/resources/turanic_$lang.yml");
 			}else{
-				$content = file_get_contents($file = $this->filePath . "src/pocketmine/resources/genisys_eng.yml");
+				$content = file_get_contents($file = $this->filePath . "src/pocketmine/resources/turanic_eng.yml");
 			}
 
-			if(!file_exists($this->dataPath . "genisys.yml")){
-				@file_put_contents($this->dataPath . "genisys.yml", $content);
+			if(!file_exists($this->dataPath . "turanic.yml")){
+				@file_put_contents($this->dataPath . "turanic.yml", $content);
 			}
 			$internelConfig = new Config($file, Config::YAML, []);
-			$this->advancedConfig = new Config($this->dataPath . "genisys.yml", Config::YAML, []);
+			$this->advancedConfig = new Config($this->dataPath . "turanic.yml", Config::YAML, []);
 			$cfgVer = $this->getAdvancedProperty("config.version", 0, $internelConfig);
 			$advVer = $this->getAdvancedProperty("config.version", 0);
 
@@ -1990,7 +1980,7 @@ class Server{
 			]), $this->dserverConfig["timer"]);
 
 			if($cfgVer > $advVer){
-				$this->logger->notice("Your genisys.yml needs update");
+				$this->logger->notice("Your Turanic.yml needs update");
 				$this->logger->notice("Current Version: $advVer   Latest Version: $cfgVer");
 			}
 
@@ -2420,8 +2410,8 @@ class Server{
 
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
-		if(!file_exists($this->getPluginPath() . DIRECTORY_SEPARATOR . "GenisysPro"))
-			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "GenisysPro");
+		if(!file_exists($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic"))
+			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic");
 
 		$this->tickProcessor();
 		$this->forceShutdown();

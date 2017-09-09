@@ -22,8 +22,8 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author GenisysPro
- * @link https://github.com/GenisysPro/GenisysPro
+ * @author Turanic
+ * @link https://github.com/Turanic/Turanic
  *
  *
 */
@@ -277,7 +277,7 @@ class PluginManager {
 
 							if($compatible === false){
 								if($this->server->loadIncompatibleAPI === true){
-									$this->server->getLogger()->debug("插件{$name}的API与服务器不符,但GenisysPro仍然加载了它");
+									$this->server->getLogger()->debug("插件{$name}的API与服务器不符,但Turanic仍然加载了它");
 								}else{
 									$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
 									continue;

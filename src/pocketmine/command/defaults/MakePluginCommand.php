@@ -16,8 +16,8 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author GenisysPro
- * @link https://github.com/GenisysPro/GenisysPro
+ * @author Turanic
+ * @link https://github.com/Turanic/Turanic
  *
  *
 */
@@ -77,7 +77,7 @@ class MakePluginCommand extends VanillaCommand {
 			return true;
 		}
 
-		$pharPath = Server::getInstance()->getPluginPath() . DIRECTORY_SEPARATOR . "GenisysPro" . DIRECTORY_SEPARATOR . $description->getName() . "_v" . $description->getVersion() . "_" . date("Y-m-d") . ".phar";
+		$pharPath = Server::getInstance()->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic" . DIRECTORY_SEPARATOR . $description->getName() . "_v" . $description->getVersion() . "_" . date("Y-m-d") . ".phar";
 		if(file_exists($pharPath)){
 			$sender->sendMessage("Phar plugin already exists, overwriting...");
 			@unlink($pharPath);
@@ -97,7 +97,7 @@ class MakePluginCommand extends VanillaCommand {
 		if($description->getName() === "DevTools"){
 			$phar->setStub('<?php require("phar://". __FILE__ ."/src/DevTools/ConsoleScript.php"); __HALT_COMPILER();');
 		}else{
-			$phar->setStub('<?php echo "PocketMine-iTX plugin ' . $description->getName() . ' v' . $description->getVersion() . '\nThis file has been generated using GenisysPro at ' . date("r") . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
+			$phar->setStub('<?php echo "PocketMine-iTX plugin ' . $description->getName() . ' v' . $description->getVersion() . '\nThis file has been generated using Turanic at ' . date("r") . '\n----------------\n";if(extension_loaded("phar")){$phar = new \Phar(__FILE__);foreach($phar->getMetadata() as $key => $value){echo ucfirst($key).": ".(is_array($value) ? implode(", ", $value):$value)."\n";}} __HALT_COMPILER();');
 		}
 		$phar->setSignatureAlgorithm(\Phar::SHA1);
 		$reflection = new \ReflectionClass("pocketmine\\plugin\\PluginBase");
@@ -111,7 +111,7 @@ class MakePluginCommand extends VanillaCommand {
 				continue;
 			}
 			$phar->addFile($file, $path);
-			$sender->sendMessage("[GenisysPro] Adding $path");
+			$sender->sendMessage("[Turanic] Adding $path");
 		}
 
 		foreach($phar as $file => $finfo){

@@ -253,15 +253,6 @@ class MainLogger extends \AttachableThreadedLogger {
 	protected function send($message, $level, $prefix, $color){
 		$now = time();
 
-		$thread = \Thread::getCurrentThread();
-		if($thread === null){
-			$threadName = "Server thread";
-		}elseif($thread instanceof Thread or $thread instanceof Worker){
-			$threadName = $thread->getThreadName() . " thread";
-		}else{
-			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
-		}
-
 		if($this->shouldRecordMsg){
 			if((time() - $this->lastGet) >= 10) $this->shouldRecordMsg = false; // 10 secs timeout
 			else{
@@ -270,9 +261,7 @@ class MainLogger extends \AttachableThreadedLogger {
 			}
 		}
 
-		$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
-		//$message = TextFormat::toANSI(TextFormat::AQUA . "[GenisysPro]->[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[$prefix]:" . " " . $message . TextFormat::RESET);
-		//$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s") . "] ". TextFormat::RESET . $color ."<".$prefix . ">" . " " . $message . TextFormat::RESET);
+		$message = TextFormat::toANSI(TextFormat::GREEN . date("H:i:s", $now) . TextFormat::RESET . $color . " " . $prefix . " §8> " . $color . $message . TextFormat::RESET);
 		$cleanMessage = TextFormat::clean($message);
 
 		if(!Terminal::hasFormattingCodes()){

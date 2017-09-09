@@ -23,7 +23,7 @@
  * (at your option) any later version.
  *
  * @author Rex-Tech
- * @link https://github.com/Rex-Tech/GenisysPro
+ * @link https://github.com/Rex-Tech/Turanic
  *
  *
 */

@@ -2,22 +2,24 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
+ *
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author GenisysPro
- * @link https://github.com/GenisysPro/GenisysPro
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  *
 */
@@ -94,8 +96,8 @@ namespace pocketmine {
 		@define('pocketmine\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
-	if(version_compare("7.2", PHP_VERSION) > 0){
-		echo "[CRITICAL] You must use PHP >= 7.2" . PHP_EOL;
+	if(version_compare("7.0", PHP_VERSION) > 0){
+		echo "[CRITICAL] You must use PHP >= 7.0" . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
@@ -398,7 +400,7 @@ namespace pocketmine {
 	$errors = 0;
 
 	if(php_sapi_name() !== "cli"){
-		$logger->critical("You must run GenisysPro using the CLI.");
+		$logger->critical("You must run Turanic using the CLI.");
 		++$errors;
 	}
 
@@ -416,22 +418,22 @@ namespace pocketmine {
 		++$errors;
 	}
 
-	if(!extension_loaded("uopz")){
+	/*if(!extension_loaded("uopz")){
 		//$logger->notice("Couldn't find the uopz extension. Some functions may be limited");
-	}
+	}*/
 
 	if(extension_loaded("pocketmine")){
 		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
-			$logger->critical("You have the native GenisysPro extension, but your version is lower than 0.0.1.");
+			$logger->critical("You have the native Turanic extension, but your version is lower than 0.0.1.");
 			++$errors;
 		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
-			$logger->critical("You have the native GenisysPro extension, but your version is higher than 0.0.4.");
+			$logger->critical("You have the native Turanic extension, but your version is higher than 0.0.4.");
 			++$errors;
 		}
 	}
 
 	if(extension_loaded("xdebug")){
-		$logger->warning("You are running GenisysPro with Xdebug enabled. This has a major impact on performance.");
+		$logger->warning("You are running Turanic with Xdebug enabled. This has a major impact on performance.");
 	}
 
 	if(!extension_loaded("curl")){
@@ -456,21 +458,6 @@ namespace pocketmine {
 		exit(1); //Exit with error
 	}
 
-	if(file_exists(\pocketmine\PATH . ".git/HEAD")){ //Found Git information!
-		$ref = trim(file_get_contents(\pocketmine\PATH . ".git/HEAD"));
-		if(preg_match('/^[0-9a-f]{40}$/i', $ref)){
-			define('pocketmine\GIT_COMMIT', strtolower($ref));
-		}elseif(substr($ref, 0, 5) === "ref: "){
-			$refFile = \pocketmine\PATH . ".git/" . substr(trim(file_get_contents(\pocketmine\PATH . ".git/HEAD")), 5);
-			if(is_file($refFile)){
-				define('pocketmine\GIT_COMMIT', strtolower(trim(file_get_contents($refFile))));
-			}
-		}
-	}
-	if(!defined('pocketmine\GIT_COMMIT')){
-		define('pocketmine\GIT_COMMIT', "0000000000000000000000000000000000000000");
-	}
-
 	@define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Binary::BIG_ENDIAN : Binary::LITTLE_ENDIAN));
 	@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
 	@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
@@ -485,7 +472,7 @@ namespace pocketmine {
 	}
 
 	if(\Phar::running(true) === ""){
-		$logger->warning("Non-packaged GenisysPro installation detected, do not use on production.");
+		$logger->warning("Non-packaged Turanic installation detected, do not use on production.");
 	}
 
 	ThreadManager::init();
