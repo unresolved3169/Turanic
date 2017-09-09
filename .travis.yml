@@ -4,25 +4,15 @@ language: php
 php:
  - 7.0
 
-addons:
- apt:
-   packages:
-   - make
-
 before_script:
+ - pecl install channel://pecl.php.net/pthreads-3.1.6
  - pecl install channel://pecl.php.net/weakref-0.3.3
- - echo | pecl install channel://pecl.php.net/yaml-2.0.2
- - git clone https://github.com/krakjoe/pthreads.git --depth=1
- - cd pthreads
- - phpize
- - ./configure
- - make
- - make install
- - cd ..
- - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+ - echo | pecl install channel://pecl.php.net/yaml-2.0.0
+ - chmod +x ./ci/travis.sh
+ - chmod +x ./ci/lint.sh
 
 script:
- - ./ci/run.sh
+ - ./ci/travish.sh
 
 notifications:
   email: false
