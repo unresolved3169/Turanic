@@ -34,6 +34,7 @@ class InstallerLang {
 		"deu" => "Deutsch",
 		"fra" => "Français",
 		"ind" => "Bahasa Indonesia",
+        "tur" => "Türkçe",
 		"ukr" => "Україна"
 	];
 	private $texts = [];

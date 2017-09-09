@@ -49,6 +49,9 @@ class Installer {
 
 	private $defaultLang;
 
+	/** @var  InstallerLang $lang */
+	private $lang;
+
 	/**
 	 * Installer constructor.
 	 */

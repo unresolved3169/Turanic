@@ -1,0 +1,134 @@
+#
+#  _______                    _
+# |__   __|                  (_)
+#    | |_   _ _ __ __ _ _ __  _  ___
+#    | | | | | '__/ _` | '_ \| |/ __|
+#    | | |_| | | | (_| | | | | | (__
+#    |_|\__,_|_|  \__,_|_| |_|_|\___|
+#
+#
+#
+# Turanic yazılımının gelişmiş configi
+
+#Dosya sürümü
+config:
+ version: 28
+
+level:
+ #Aktif yaparsanız hava durumu aktifleşir (Eski cihazlarda laga sebep olabilir)
+ weather: true
+ #Rastgele kalma süreleri
+ weather-random-duration-min: 6000
+ weather-random-duration-max: 12000
+ #Rastgele yıldırım düşme ayarı standart 10 saniye = 200, 0 = deaktif
+ lightning-time: 200
+ #Yıldırım düşen yerde ateş olsun mu
+ lightning-fire: false
+ #Ateş yayılsın mı (ağaçlar, vb.)
+ fire-spread: false
+
+player:
+ #Açlığı ayarı
+ hunger: true
+ #XP ayarı
+ experience: true
+ #Eğer aktifse oyuncu öldükten sonra envanteri silinmez
+ keep-inventory: false
+ #Eğer aktifse oyun modunu değişince envanter siler
+ auto-clear-inventory : true
+ #Eğer aktifse öldükten sonra xp kaydeder
+ keep-experience: false
+
+developer:
+  #Bu ayar sunucunuzdaki .phar olmayan pluginleri yükler
+  #Önerilen 'false'
+  folder-plugin-loader: true
+  #Bu ayar api sürümü uyumlu olmayan pluginleri aktif eder
+  #Önerilen 'false'
+  load-incompatible-api: true
+
+nether:
+ #Eğer aktifse nether aktifleşir. Otomatik dünya oluşur
+ allow-nether: true
+ #Nether dünyasının ismi
+ level-name: "nether"
+
+ender:
+ allow-ender: true
+ level-name: "ender"
+
+server:
+ #Eğer aktifse iron goleme izin verir
+ allow-iron-golem: false
+ #Eğer aktifse snow goleme izin verir
+ allow-snow-golem: false
+ #Aktif ise 'server.log' dosyasını kaydetmez
+ disable-log: false
+ #Oyuna katıldığına seçim
+ #0 = Message, 1 = Tip, 2 = Popup
+ player-msg-type: 0
+ login-msg: "§3@player oyuna katıldı"
+ logout-msg: "§3@player oyundan ayrıldı"
+ #Eğer aktif ise creative sınırlı olur (Hotbardaki itemi atamazsınız, sandıkları açamazsınız)
+ limited-creative: false
+ #Eğer aktifse blok kırılınca particle çıkar
+ destroy-block-particle: true
+ #Eğer aktif ise potion fırlatabilirsiniz
+ allow-splash-potion: true
+ #Eğer aktif ise gelişmiş komut seçimi kullanırsınız
+ advanced-command-selector: false
+ #Eğer aktifse resource packler aktifdir
+ enable-resource: false
+ #Eğer aktifse sünger suyu çeker
+ absorb-water: false
+
+enchantment:
+ #Eğer aktifse örs aktifleşir
+ enable-anvil: true
+ #Eğer aktifse büyü masası aktifleşir
+ enable-enchanting-table: true
+ #Eğer aktifse kitaplıkları sayar (Laga sebep olur)
+ #Eğer aktif değilse karışık bir sayı belirler (0~15)
+ count-bookshelf: false
+
+redstone:
+ #########################################################
+ ####Eğer aktif edersen kızıltaş sistemleri aktif olur####
+ #########################################################
+ ####Eğer aktif değilse kızıltaş sistemleri çalışmaz######
+ #########################################################
+ enable: false
+ #Sinyal frekansları aktif eder
+ frequency-pulse: false
+ #Sinyal frekanslarını ayarlar. Standart = 1s
+ pulse-frequency: 1
+
+dserver:
+ #Tüm çoklu sunucuları birleştirir
+ enable: false
+ #Otomatik query günceller
+ query-auto-update: false
+ #Güncelleşme sorgusu periyodik olarak günceller
+ query-tick-update: true
+ #MOTD'da yazan maksimum oyuncu
+ motd-max-players: 0
+ #Query'deki maksimum oyuncu. 0=Standart
+ query-max-players: 0
+ #MOTD'da tüm oyuncuların sayısını gösterme
+ motd-all-players: false
+ #Query'deki maksimum oyuncu sayısını gösterir
+ query-all-players: false
+ #MOTD'da aktif oyuncu sayısını gösterir
+ motd-players: false
+ #Query'de aktif oyuncu sayısını gösterir
+ query-players: false
+ #Frekans güncelleme. 20=1saniye
+ time: 40
+ #Otomatik yenilenme saniyesi eğer sunucu hata verirse
+ retry-times: 3
+ #Sunucu listesi ';'，örnek 1.example.com:19132;2.example.com:19133
+ server-list: ""
+
+inventory:
+ #Eğer örste sıkıntı var ise aktif edin.
+ allow-cheats: false
