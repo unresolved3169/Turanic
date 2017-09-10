@@ -294,6 +294,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var int */
 	protected $lastEnderPearlUse = 0;
 
+	/** @var null|string */
+	protected $butonText = null;
+
 	/**
 	 * @param FishingHook $entity
 	 *
@@ -325,6 +328,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 		return false;
 	}
+
+    /**
+     * @param string $text
+     */
+    public function setButonText(string $text){
+	    $this->setDataProperty(self::DATA_INTERACTIVE_TAG, self::DATA_TYPE_STRING, $text);
+    }
 
 	/**
 	 * @return bool
