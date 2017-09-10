@@ -34,6 +34,7 @@ use pocketmine\block\Fire;
 use pocketmine\block\PressurePlate;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\entity\Animal;
 use pocketmine\entity\Arrow;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Boat;
@@ -165,10 +166,6 @@ use pocketmine\utils\UUID;
 
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
- * @property Server server
- * @property AxisAlignedBB boundingBox
- * @property uuid
- * @property rawUUID
  */
 class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer {
 
@@ -298,7 +295,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $lastEnderPearlUse = 0;
 
 	/** @var null|string */
-	protected $buttonText = null;
+	protected $butonText = null;
 
 	/**
 	 * @param FishingHook $entity
@@ -332,23 +329,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false;
 	}
 
-
-    /**
-     * @return int
-     */
-    public function getPing(){
-	    return $this->interface->getNetworkLatency($this);
-    }
-
     /**
      * @param string $text
      */
-    public function setButtonText(string $text){
+    public function setButonText(string $text){
 	    $this->setDataProperty(self::DATA_INTERACTIVE_TAG, self::DATA_TYPE_STRING, $text);
-    }
-
-    public function getButtonText(){
-        return $this->getDataProperty(self::DATA_INTERACTIVE_TAG);
     }
 
 	/**
@@ -1671,11 +1656,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-    /**
-     * @internal param $tickDiff
-     */
-	protected function checkNearEntities(){
-		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
+	/**
+	 * @param $tickDiff
+	 */
+	protected function checkNearEntities($tickDiff){
+		foreach($this->level->getNearbyEntities($this->boundingBox->grow(0.5, 0.5, 0.5), $this) as $entity){
 			$entity->scheduleUpdate();
 
 			if(!$entity->isAlive()){
@@ -1866,7 +1851,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 
 			if(!$this->isSpectator()){
-				$this->checkNearEntities();
+				$this->checkNearEntities($tickDiff);
 			}
 
 			$this->speed = ($to->subtract($from))->divide($tickDiff);
@@ -2384,13 +2369,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function handleDataPacket(DataPacket $packet){
 
 		if($this->connected === false){
-			return false;
+			return;
 		}
 
 		if($packet::NETWORK_ID === 0xfe){
 			/** @var BatchPacket $packet */
 			$this->server->getNetwork()->processBatch($packet, $this);
-			return true;
+			return;
 		}
 
 		$timings = Timings::getReceiveDataPacketTimings($packet);
@@ -2400,7 +2385,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
 		if($ev->isCancelled()){
 			$timings->stopTiming();
-			return true;
+			return;
 		}
 
 		switch($packet::NETWORK_ID){
@@ -3137,13 +3122,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}elseif($packet->action === InteractPacket::ACTION_LEAVE_VEHICLE){
 						$this->setLinked(0, $target);
 					}
-					return true;
+					return;
 				}
 
 				if($packet->action === InteractPacket::ACTION_RIGHT_CLICK){
-					/*if($target instanceof Animal and $this->getInventory()->getItemInHand()){
+					if($target instanceof Animal and $this->getInventory()->getItemInHand()){
 						//TODO: Feed
-					}*/
+					}
 					break;
 				}elseif($packet->action === InteractPacket::ACTION_MOUSEOVER){
 					break;
@@ -3443,12 +3428,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->server->getLogger()->debug("Mismatched desktop recipe received from player " . $this->getName() . ", expected " . $recipe->getResult() . ", got " . $packet->output[0]);
 					}
 					$recipe = null;
-                    $floatingInventory = clone $this->floatingInventory;
 					foreach($possibleRecipes as $r){
 						/* Check the ingredient list and see if it matches the ingredients we've put into the crafting grid
 						 * As soon as we find a recipe that we have all the ingredients for, take it and run with it. */
 
 						//Make a copy of the floating inventory that we can make changes to.
+						$floatingInventory = clone $this->floatingInventory;
 						$ingredients = $r->getIngredientList();
 
 						//Check we have all the necessary ingredients.
@@ -3488,7 +3473,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						for($x = 0; $x < 3 and $canCraft; ++$x){
 							for($y = 0; $y < 3; ++$y){
 								$item = $packet->input[$y * 3 + $x];
-								if(!$item instanceof Item) return false;
 								$ingredient = $recipe->getIngredient($x, $y);
 								if($item->getCount() > 0 and $item->getId() > 0){
 									if($ingredient == null){
@@ -3512,7 +3496,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						for($x = 0; $x < 3 and $canCraft; ++$x){
 							for($y = 0; $y < 3; ++$y){
 								$item = clone $packet->input[$y * 3 + $x];
-                                if(!$item instanceof Item) return false;
+
 								foreach($needed as $k => $n){
 									if($n->equals($item, !$n->hasAnyDamageValue(), $n->hasCompoundTag())){
 										$remove = min($n->getCount(), $item->getCount());
@@ -3740,7 +3724,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$timings->stopTiming();
-		return true;
 	}
 
 	/**
@@ -3915,11 +3898,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->sendTranslation($message->getText(), $message->getParameters());
 				return false;
 			}
+
 			$message = $message->getText();
 		}
-        //TODO: Remove this workaround (broken client MCPE 1.0.0)
+
+		//TODO: Remove this workaround (broken client MCPE 1.0.0)
 		$this->messageQueue[] = $this->server->getLanguage()->translateString($message);
-		return true;
+		/*
+		$pk = new TextPacket();
+		$pk->type = TextPacket::TYPE_RAW;
+		$pk->message = $this->server->getLanguage()->translateString($message);
+		$this->dataPacket($pk);
+		*/
 	}
 
 	/**
@@ -4574,7 +4564,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function removeWindow(Inventory $inventory){
 		$inventory->close($this);
 		if($this->windows->contains($inventory)){
-			$id = (int) $this->windows[$inventory];
+			$id = $this->windows[$inventory];
 			$this->windows->detach($this->windowIndex[$id]);
 			unset($this->windowIndex[$id]);
 		}
