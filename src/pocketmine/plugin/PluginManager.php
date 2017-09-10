@@ -252,7 +252,7 @@ class PluginManager {
 							foreach($description->getCompatibleGeniApis() as $version){
 								//Format: majorVersion.minorVersion.patch
 								$version = array_map("intval", explode(".", $version));
-								$apiVersion = array_map("intval", explode(".", $this->server->getTuranicApiVersion()));
+								$apiVersion = array_map("intval", explode(".", $this->server->getGeniApiVersion()));
 								//Completely different API version
 								if($version[0] > $apiVersion[0]){
 									continue;
@@ -506,16 +506,19 @@ class PluginManager {
 	 */
 	public function getPermissionSubscriptions($permission){
 		if(isset($this->permSubs[$permission])){
-            foreach($this->permSubs[$permission] as $k => $perm){
-                /** @var \WeakRef $perm */
-                if($perm->acquire()){
-                    $perm->release();
-                }else{
-                    unset($this->permSubs[$permission][$k]);
-                }
-            }
+			return $this->permSubs[$permission];
+			$subs = [];
+			foreach($this->permSubs[$permission] as $k => $perm){
+				/** @var \WeakRef $perm */
+				if($perm->acquire()){
+					$subs[] = $perm->get();
+					$perm->release();
+				}else{
+					unset($this->permSubs[$permission][$k]);
+				}
+			}
 
-            return $this->permSubs[$permission];
+			return $subs;
 		}
 
 		return [];
@@ -552,28 +555,30 @@ class PluginManager {
 	 */
 	public function getDefaultPermSubscriptions($op){
 		if($op === true){
-            foreach($this->defSubsOp as $k => $perm){
-                /** @var \WeakRef $perm */
-                if($perm->acquire()){
-                    $subs[] = $perm->get();
-                    $perm->release();
-                }else{
-                    unset($this->defSubsOp[$k]);
-                }
-            }
-            return $this->defSubsOp;
+			return $this->defSubsOp;
+			foreach($this->defSubsOp as $k => $perm){
+				/** @var \WeakRef $perm */
+				if($perm->acquire()){
+					$subs[] = $perm->get();
+					$perm->release();
+				}else{
+					unset($this->defSubsOp[$k]);
+				}
+			}
 		}else{
-            foreach($this->defSubs as $k => $perm){
-                /** @var \WeakRef $perm */
-                if($perm->acquire()){
-                    $subs[] = $perm->get();
-                    $perm->release();
-                }else{
-                    unset($this->defSubs[$k]);
-                }
-            }
-            return $this->defSubs;
+			return $this->defSubs;
+			foreach($this->defSubs as $k => $perm){
+				/** @var \WeakRef $perm */
+				if($perm->acquire()){
+					$subs[] = $perm->get();
+					$perm->release();
+				}else{
+					unset($this->defSubs[$k]);
+				}
+			}
 		}
+
+		return $subs;
 	}
 
 	/**
