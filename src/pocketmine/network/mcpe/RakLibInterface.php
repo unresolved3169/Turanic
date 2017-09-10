@@ -31,6 +31,7 @@ use pocketmine\Player;
 use pocketmine\Server;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
+use raklib\protocol\PING_DataPacket;
 use raklib\RakLib;
 use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
@@ -58,6 +59,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 	/** @var ServerHandler */
 	private $interface;
+
+	private $networkLatency = [];
 
 	/**
 	 * RakLibInterface constructor.
@@ -113,6 +116,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 			$player = $this->players[$identifier];
 			unset($this->identifiers[spl_object_hash($player)]);
 			unset($this->players[$identifier]);
+			unset($this->networkLatency[$identifier]);
 			unset($this->identifiersACK[$identifier]);
 			$player->close($player->getLeaveMessage(), $reason);
 		}
@@ -125,6 +129,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	public function close(Player $player, $reason = "unknown reason"){
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			unset($this->players[$this->identifiers[$h]]);
+			unset($this->networkLatency[$this->identifiers[$h]]);
 			unset($this->identifiersACK[$this->identifiers[$h]]);
 			$this->interface->closeSession($this->identifiers[$h], $reason);
 			unset($this->identifiers[$h]);
@@ -152,6 +157,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 		$player = new $class($this, $ev->getClientId(), $ev->getAddress(), $ev->getPort());
 		$this->players[$identifier] = $player;
+		$this->networkLatency[$identifier] = 0;
 		$this->identifiersACK[$identifier] = 0;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
 		$this->server->addPlayer($identifier, $player);
@@ -166,6 +172,14 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 		if(isset($this->players[$identifier])){
 			try{
 				if($packet->buffer !== ""){
+				    if($packet->buffer[0] == PING_DataPacket::$ID){
+                        $pingPacket = new PING_DataPacket();
+                        $pingPacket->buffer = $packet->buffer;
+                        $pingPacket->encode();
+                        $this->networkLatency[$identifier] = $pingPacket->pingID;
+                        return;
+                    }
+
 					$pk = $this->getPacket($packet->buffer);
 					if($pk !== null){
 						$pk->decode();
@@ -331,4 +345,12 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 		return $data;
 	}
+
+    /**
+     * @param Player $player
+     * @return int
+     */
+    public function getNetworkLatency(Player $player){
+        return $this->networkLatency[$this->identifiers[spl_object_hash($player)]];
+    }
 }

@@ -426,7 +426,7 @@ class Session{
 				$dataPacket->buffer = $packet->buffer;
 				$dataPacket->decode();
 
-				$pk = new PONG_DataPacket;
+				$pk = new PONG_DataPacket();
 				$pk->pingID = $dataPacket->pingID;
 				$pk->encode();
 
@@ -434,13 +434,33 @@ class Session{
 				$sendPacket->reliability = PacketReliability::UNRELIABLE;
 				$sendPacket->buffer = $pk->buffer;
 				$this->addToQueue($sendPacket);
-			}//TODO: add PING/PONG (0x00/0x03) automatic latency measure
-		}elseif($this->state === self::STATE_CONNECTED){
-			$this->sessionManager->streamEncapsulated($this, $packet);
 
-			//TODO: stream channels
-		}else{
-			//$this->sessionManager->getLogger()->notice("Received packet before connection: " . bin2hex($packet->buffer));
+				// Latency measurement
+				$pingPacket = new PING_DataPacket();
+				$pingPacket->pingID = round(microtime(true) * 1000);
+				$pingPacket->encode();
+
+				$sendPacket = new EncapsulatedPacket();
+				$sendPacket->reliability = 0;
+				$sendPacket->buffer = $pingPacket->buffer;
+				$this->addToQueue($sendPacket);
+			}
+		}elseif($id === PONG_DataPacket::$ID){
+            if ($this->state == self::STATE_CONNECTED) {
+                $dataPacket = new PONG_DataPacket();
+                $dataPacket->buffer = $packet->buffer;
+                $dataPacket->decode();
+
+                if ($this->state == self::STATE_CONNECTED) {
+                    $pingPacket = new PING_DataPacket();
+                    $pingPacket->pingID = (round(microtime(true) * 1000) - $dataPacket->pingID) / 10;
+                    $pingPacket->encode();
+                    $packet->buffer = $pingPacket->buffer;
+                    $this->sessionManager->streamEncapsulated($this, $packet);
+                }
+            }
+        }elseif($this->state === self::STATE_CONNECTED){
+			$this->sessionManager->streamEncapsulated($this, $packet);
 		}
 	}
 

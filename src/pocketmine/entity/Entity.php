@@ -519,7 +519,7 @@ abstract class Entity extends Location implements Metadatable {
 	 * @return mixed
 	 */
 	public function getScale(){
-		return $this->getDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT);
+		return $this->getDataProperty(self::DATA_SCALE);
 	}
 
 	/**
@@ -705,7 +705,6 @@ abstract class Entity extends Location implements Metadatable {
 	public function setOwningEntity(Entity $owner){
 		if($owner->closed){
 			throw new \InvalidArgumentException("Supplied owning entity is garbage and cannot be used");
-			return false;
 		}
 		
 		$this->setDataProperty(self::DATA_OWNER_EID, self::DATA_TYPE_LONG, $owner->getId());

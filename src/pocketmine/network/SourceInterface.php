@@ -68,4 +68,10 @@ interface SourceInterface {
 
 	public function emergencyShutdown();
 
+    /**
+     * @param Player $player
+     * @return int
+     */
+	public function getNetworkLatency(Player $player);
+
 }
