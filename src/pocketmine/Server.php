@@ -377,20 +377,6 @@ class Server{
 	}
 
 	/**
-		* @return string
-		*/
-	public function getGitCommit(){
-		return \pocketmine\GIT_COMMIT;
-	}
-
-	/**
-		* @return string
-		*/
-	public function getShortGitCommit(){
-		return substr(\pocketmine\GIT_COMMIT, 0, 7);
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getCodename(){
@@ -416,15 +402,8 @@ class Server{
 	/**
 	 * @return string
 	 */
-	public function getiTXApiVersion(){
-		return \pocketmine\Turanic_API_VERSION;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getGeniApiVersion(){
-		return \pocketmine\Turanic_API_VERSION;
+	public function getTuranicApiVersion(){
+		return \pocketmine\TURANIC_API_VERSION;
 	}
 
 	/**
