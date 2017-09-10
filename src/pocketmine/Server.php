@@ -372,6 +372,10 @@ class Server{
 		return \pocketmine\VERSION;
 	}
 
+	public function getGeniApiVersion(){
+
+    }
+
 	public function getFormattedVersion($prefix = ""){
 		return (\pocketmine\VERSION !== ""? $prefix . \pocketmine\VERSION : "");
 	}
