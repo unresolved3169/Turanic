@@ -352,7 +352,6 @@ class Chunk{
         if($index === -1){
             return -1;
         }
-        $height = $index << 4;
         for($y = $index; $y >= 0; --$y){
             $height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
             if($height !== -1){
@@ -922,7 +921,7 @@ class Chunk{
             $subChunks .= chr($y) . $subChunk->fastSerialize();
         }
         $stream->putByte($count);
-        $stream->put($subChunks);
+        $stream->put(pack("v*", ...$subChunks));
         $stream->put(pack("v*", ...$this->heightMap) .
             $this->biomeIds .
             chr(($this->lightPopulated ? 4 : 0) | ($this->terrainPopulated ? 2 : 0) | ($this->terrainGenerated ? 1 : 0)));
