@@ -530,9 +530,7 @@ class Session{
 	}
 
 	public function close(){
-		$data = "\x60\x00\x08\x00\x00\x00\x00\x00\x00\x00\x15";
-		$this->addEncapsulatedToQueue(EncapsulatedPacket::fromBinary($data)); //CLIENT_DISCONNECT packet 0x15
+		$this->addEncapsulatedToQueue(EncapsulatedPacket::fromBinary("\x60\x00\x08\x00\x00\x00\x00\x00\x00\x00\x15")); //CLIENT_DISCONNECT packet 0x15
 		$this->sessionManager = null;
-		$this->sendQueue();
 	}
 }
