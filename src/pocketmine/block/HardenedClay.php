@@ -23,14 +23,16 @@ namespace pocketmine\block;
 
 
 use pocketmine\item\Tool;
+use pocketmine\item\Item;
 
 class HardenedClay extends Solid {
 
 	protected $id = self::HARDENED_CLAY;
 
-	/**
-	 * HardenedClay constructor.
-	 */
+    /**
+     * HardenedClay constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
@@ -55,4 +57,17 @@ class HardenedClay extends Solid {
 	public function getHardness(){
 		return 1.25;
 	}
+
+    /**
+     * @param Item $item
+     * @return array
+     */
+    public function getDrops(Item $item): array{
+        if($item->isPickaxe() >= 1){
+            return [
+                [Item::HARDENED_CLAY, 0, 1],
+            ];
+        }
+        return [];
+    }
 }
