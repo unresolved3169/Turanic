@@ -11,8 +11,6 @@
  *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
- *
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -267,6 +265,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $autoJump = true;
     protected $allowFlight = false;
     protected $flying = false;
+    protected $muted = false;
 
     protected $allowMovementCheats = false;
     protected $allowInstaBreak = false;
@@ -513,6 +512,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public function getAllowFlight(): bool
     {
         return $this->allowFlight;
+    }
+
+    /**
+     * @param bool $value
+     */
+    public function setMuted(bool $value){
+        $this->muted = $value;
+        $this->sendSettings();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMuted() : bool{
+        return $this->muted;
     }
 
     /**
@@ -1640,6 +1654,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->noClip = $this->isSpectator();
         $pk->worldBuilder = !($this->isAdventure());
         $pk->isFlying = $this->flying;
+        $pk->muted = $this->muted;
         $pk->userPermission = ($this->isOp() ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
         $this->dataPacket($pk);
     }

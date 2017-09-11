@@ -2,22 +2,22 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  *
 */
@@ -203,6 +203,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::$list[self::END_STONE_BRICKS] = EndStoneBricks::class;
 			self::$list[self::END_ROD] = EndRod::class;
+			self::$list[self::END_GATEWAY] = EndGateway::class;
 
 			self::$list[self::PURPUR] = Purpur::class;
 			self::$list[self::PURPUR_STAIRS] = PurpurStairs::class;
@@ -232,7 +233,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::QUARTZ_STAIRS] = QuartzStairs::class;
 			self::$list[self::DOUBLE_WOOD_SLAB] = DoubleWoodSlab::class;
 			self::$list[self::WOOD_SLAB] = WoodSlab::class;
-			self::$list[self::STAINED_CLAY] = StainedClay::class;
+			self::$list[self::STAINED_TERRACOTTA] = StainedTerracotta::class;
 
 			self::$list[self::LEAVES2] = Leaves2::class;
 			self::$list[self::WOOD2] = Wood2::class;
@@ -244,7 +245,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::SEA_LANTERN] = SeaLantern::class;
 			self::$list[self::HAY_BALE] = HayBale::class;
 			self::$list[self::CARPET] = Carpet::class;
-			self::$list[self::HARDENED_CLAY] = HardenedClay::class;
+			self::$list[self::TERRACOTTA] = Terracotta::class;
 			self::$list[self::COAL_BLOCK] = Coal::class;
 
 			self::$list[self::PACKED_ICE] = PackedIce::class;
@@ -260,7 +261,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
 			self::$list[self::PODZOL] = Podzol::class;
 			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
-			self::$list[self::STONECUTTER] = Stonecutter::class;
+			//self::$list[self::STONECUTTER] = Stonecutter::class; removed
 			self::$list[self::GLOWING_OBSIDIAN] = GlowingObsidian::class;
 			self::$list[self::NETHER_REACTOR] = NetherReactor::class;
 			self::$list[self::CONCRETE] = Concrete::class;
@@ -359,6 +360,17 @@ class Block extends Position implements BlockIds, Metadatable{
 			}
 		}
 	}
+
+    /**
+     * @return bool
+     */
+    public function canHarvestWithHand() : bool{
+	    return true;
+    }
+
+    public function canBeClimbed() : bool{
+        return false;
+    }
 
 	/**
 	 * @param int      $id

@@ -2,22 +2,22 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  *
 */
@@ -243,7 +243,7 @@ interface BlockIds {
 	const WOODEN_SLAB = 158;
 	const WOOD_SLABS = 158;
 	const WOODEN_SLABS = 158;
-	const STAINED_CLAY = 159;
+	const STAINED_TERRACOTTA = 159;
 	const STAINED_HARDENED_CLAY = 159;
 	const STAINED_GLASS_PANE = 160;
 	const STAINED_GLASS_PANEL = 160;
@@ -262,7 +262,7 @@ interface BlockIds {
 	const SEA_LANTERN = 169;
 	const HAY_BALE = 170;
 	const CARPET = 171;
-	const HARDENED_CLAY = 172;
+	const TERRACOTTA = 172;
 	const COAL_BLOCK = 173;
 	const PACKED_ICE = 174;
 	const DOUBLE_PLANT = 175;
@@ -303,6 +303,7 @@ interface BlockIds {
 	const END_STONE_BRICKS = 206;
 	const FROSTED_ICE = 207;
 	const END_ROD = 208;
+	const END_GATEWAY = 209;
 
 	const SHULKER_BOX = 218;
 	const PURPLE_GLAZED_TERRACOTTA = 219;
@@ -329,7 +330,7 @@ interface BlockIds {
 
 	const PODZOL = 243;
 	const BEETROOT_BLOCK = 244;
-	const STONECUTTER = 245;
+	//const STONECUTTER = 245;
 	const GLOWING_OBSIDIAN = 246;
 	const NETHER_REACTOR = 247;
 	const UPDATE_BLOCK = 248;

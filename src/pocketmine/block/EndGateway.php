@@ -25,37 +25,43 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\utils\Color;
 
-class DoubleRedSandstoneSlab extends DoubleSlab {
+class EndGateway extends Transparent {
 
-	protected $id = Block::DOUBLE_RED_SANDSTONE_SLAB;
+    public function __construct($meta = 0){
+        $this->meta = $meta;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Double Red Sandstone Slab";
-	}
+    public function getName(){
+        return "End Gateway";
+    }
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return [
-				[Item::RED_SANDSTONE_SLAB, $this->meta, 2],
-			];
-		}else{
-			return [];
-		}
-	}
+    public function canPassThrough(){
+        return true;
+    }
 
-    /**
-     * @return bool
-     */
-    public function canHarvestWithHand(): bool{
+    public function isBreakable(Item $item){
         return false;
+    }
+
+    public function getHardness(){
+        return -1;
+    }
+
+    public function getResistance(){
+        return 18000000;
+    }
+
+    public function getLightLevel(){
+        return 15;
+    }
+
+    public function hasEntityCollision(){
+        return true;
+    }
+
+    public function getColor(){
+        return Color::getRGB(0, 0, 0);
     }
 }
