@@ -3255,13 +3255,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     } elseif ($packet->action === InteractPacket::ACTION_LEAVE_VEHICLE) {
                         $this->setLinked(0, $target);
                     }
-                    return;
+                    return true;
                 }
 
                 if ($packet->action === InteractPacket::ACTION_RIGHT_CLICK) {
-                    if ($target instanceof Animal and $this->getInventory()->getItemInHand()) {
+                    /*if ($target instanceof Animal and $this->getInventory()->getItemInHand()) {
                         //TODO: Feed
-                    }
+                    }*/
                     break;
                 } elseif ($packet->action === InteractPacket::ACTION_MOUSEOVER) {
                     break;
@@ -3670,6 +3670,40 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     }
 
                     $this->inventory->addItem($recipe->getResult());
+                    switch($recipe->getResult()->getId()){
+                        case Item::WORKBENCH:
+                            $this->awardAchievement("buildWorkBench");
+                            break;
+                        case Item::WOODEN_PICKAXE:
+                            $this->awardAchievement("buildPickaxe");
+                            break;
+                        case Item::FURNACE:
+                            $this->awardAchievement("buildFurnace");
+                            break;
+                        case Item::WOODEN_HOE:
+                            $this->awardAchievement("buildHoe");
+                            break;
+                        case Item::BREAD:
+                            $this->awardAchievement("makeBread");
+                            break;
+                        case Item::CAKE:
+                            //TODO: detect complex recipes like cake that leave remains
+                            $this->awardAchievement("bakeCake");
+                            $this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
+                            break;
+                        case Item::STONE_PICKAXE:
+                        case Item::GOLD_PICKAXE:
+                        case Item::IRON_PICKAXE:
+                        case Item::DIAMOND_PICKAXE:
+                            $this->awardAchievement("buildBetterPickaxe");
+                            break;
+                        case Item::WOODEN_SWORD:
+                            $this->awardAchievement("buildSword");
+                            break;
+                        case Item::DIAMOND:
+                            $this->awardAchievement("diamond");
+                            break;
+                    }
                 }
                 break;
             case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
