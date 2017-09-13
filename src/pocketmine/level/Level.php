@@ -957,7 +957,11 @@ class Level implements ChunkManager, Metadatable
     }
 
     protected function tickChunks($tick) {
-        // TODO
+     foreach($this->chunks as $chunk){
+     	 foreach($chunk->getEntities as $e){
+     	 	 $e->scheduleUpdate();
+     	 }
+     }
     }
 
     public function __debugInfo(): array {
