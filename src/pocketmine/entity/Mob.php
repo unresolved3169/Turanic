@@ -63,10 +63,10 @@ abstract class Mob extends Creature{
         return parent::onUpdate($tick);
     }
 
-    /*protected function updateMovement(){
-        $this->forceMovement();
-        $this->forceMotion();
-    }*/
+    protected function updateMovement(){
+     $this->forceMovement();
+     $this->forceMotion();
+    }
 
     private function checkBehavior(){
         foreach($this->behaviors as $index => $behavior){
