@@ -67,7 +67,7 @@ class Snowball extends Projectile {
 		$hasUpdate = parent::onUpdate($currentTick);
 
 		if($this->age > 1200 or $this->isCollided){
-		    $this->level->addParticle(new ItemBreakParticle($this->add(0, 1, 0), ItemItem::get(ItemItem::SNOWBALL)));
+		        $this->level->addParticle(new ItemBreakParticle($this->add(0, 1, 0), ItemItem::get(ItemItem::SNOWBALL)));
 			$this->kill();
 			$hasUpdate = true;
 		}
