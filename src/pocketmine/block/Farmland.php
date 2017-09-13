@@ -121,7 +121,7 @@ class Farmland extends Solid {
                                 continue;
                             }
                             $v = new Vector3($x, $y, $z);
-                            $blockid = $this->level->getBlockIdAt($v->getFloorX(), $v-->$this->getFloorY(), $v->getFloorZ());
+                            $blockid = $this->level->getBlockIdAt($v->getFloorX(), $v->$this->getFloorY(), $v->getFloorZ());
                             switch($blockid){
                                 case self::WATER:
                                 case self::STILL_WATER:
