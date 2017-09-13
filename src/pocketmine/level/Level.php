@@ -2,20 +2,21 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
 */
 
@@ -26,27 +27,7 @@
 namespace pocketmine\level;
 
 use pocketmine\block\Air;
-use pocketmine\block\Beetroot;
 use pocketmine\block\Block;
-use pocketmine\block\BrownMushroom;
-use pocketmine\block\Cactus;
-use pocketmine\block\Carrot;
-use pocketmine\block\CocoaBlock;
-use pocketmine\block\Farmland;
-use pocketmine\block\Grass;
-use pocketmine\block\Ice;
-use pocketmine\block\Leaves;
-use pocketmine\block\Leaves2;
-use pocketmine\block\MelonStem;
-use pocketmine\block\Mycelium;
-use pocketmine\block\NetherWart;
-use pocketmine\block\Potato;
-use pocketmine\block\PumpkinStem;
-use pocketmine\block\RedMushroom;
-use pocketmine\block\Sapling;
-use pocketmine\block\SnowLayer;
-use pocketmine\block\Sugarcane;
-use pocketmine\block\Wheat;
 use pocketmine\entity\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
@@ -103,6 +84,7 @@ use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -149,6 +131,7 @@ class Level implements ChunkManager, Metadatable
 
     private $motionToSend = [];
     private $moveToSend = [];
+    private $playerMovementQueue = [];
 
     /** @var Player[] */
     private $players = [];
@@ -238,7 +221,7 @@ class Level implements ChunkManager, Metadatable
     private $chunkTickList = [];
     private $chunksPerTick;
     private $clearChunksOnTick;
-    private $randomTickBlocks = [
+    /*private $randomTickBlocks = [
         Block::GRASS => Grass::class,
         Block::SAPLING => Sapling::class,
         Block::LEAVES => Leaves::class,
@@ -262,7 +245,7 @@ class Level implements ChunkManager, Metadatable
         Block::LEAVES2 => Leaves2::class,
 
         Block::BEETROOT_BLOCK => Beetroot::class,
-    ];
+    ];*/
 
     /** @var LevelTimings */
     public $timings;
@@ -806,7 +789,7 @@ class Level implements ChunkManager, Metadatable
         $this->timings->tileEntityTick->stopTiming();
 
         $this->timings->doTickTiles->startTiming();
-        if (($currentTick % 2) === 0) $this->tickChunks();
+        if (($currentTick % 2) === 0) $this->tickChunks($currentTick);
         $this->timings->doTickTiles->stopTiming();
 
         if (count($this->changedBlocks) > 0) {
@@ -839,6 +822,7 @@ class Level implements ChunkManager, Metadatable
 
         foreach ($this->moveToSend as $index => $entry) {
             Level::getXZ($index, $chunkX, $chunkZ);
+            $packs = [];
             foreach ($entry as $e) {
                 $pk = new MoveEntityPacket();
                 $pk->eid = $e[0];
@@ -848,31 +832,37 @@ class Level implements ChunkManager, Metadatable
                 $pk->yaw = $e[4];
                 $pk->headYaw = $e[5];
                 $pk->pitch = $e[6];
-                $this->addChunkPacket($chunkX, $chunkZ, $pk);
+                $packs[] = $pk;
             }
+            $this->server->batchPackets($this->getChunkPlayers($chunkX, $chunkZ), $packs);
         }
         $this->moveToSend = [];
 
         foreach ($this->motionToSend as $index => $entry) {
             Level::getXZ($index, $chunkX, $chunkZ);
+            $packs= [];
             foreach ($entry as $entity) {
                 $pk = new SetEntityMotionPacket();
                 $pk->eid = $entity[0];
                 $pk->motionX = $entity[1];
                 $pk->motionY = $entity[2];
                 $pk->motionZ = $entity[3];
-                $this->addChunkPacket($chunkX, $chunkZ, $pk);
+                $packs[] = $pk;
             }
+            $this->server->batchPackets($this->getChunkPlayers($chunkX, $chunkZ), $packs);
         }
         $this->motionToSend = [];
 
-        foreach ($this->chunkPackets as $index => $entries) {
+        if(count($this->playerMovementQueue) > 0){
+            $this->server->batchPackets($this->getPlayers(), $this->playerMovementQueue);
+        }
+
+        $this->playerMovementQueue = [];
+        foreach($this->chunkPackets as $index => $entries) {
             Level::getXZ($index, $chunkX, $chunkZ);
             $chunkPlayers = $this->getChunkPlayers($chunkX, $chunkZ);
             if (count($chunkPlayers) > 0) {
-                foreach ($entries as $pk) {
-                    $this->server->broadcastPacket($chunkPlayers, $pk);
-                }
+                $this->server->batchPackets($chunkPlayers, $entries);
             }
         }
 
@@ -922,61 +912,27 @@ class Level implements ChunkManager, Metadatable
      * @param Player[] $target
      * @param Block[] $blocks
      * @param int $flags
-     * @param bool $optimizeRebuilds
      */
-    public function sendBlocks(array $target, array $blocks, $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false) {
-        if ($optimizeRebuilds) {
-            $chunks = [];
-            foreach ($blocks as $b) {
-                if ($b === null) {
-                    continue;
-                }
-
-                $pk = new UpdateBlockPacket();
-                $first = false;
-                if (!isset($chunks[$index = Level::chunkHash($b->x >> 4, $b->z >> 4)])) {
-                    $chunks[$index] = true;
-                    $first = true;
-                }
-
-                $pk->x = $b->x;
-                $pk->z = $b->z;
-                $pk->y = $b->y;
-
-                if ($b instanceof Block) {
-                    $pk->blockId = $b->getId();
-                    $pk->blockData = $b->getDamage();
-                } else {
-                    $fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-                    $pk->blockId = $fullBlock >> 4;
-                    $pk->blockData = $fullBlock & 0xf;
-                }
-                $pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
-                $this->server->broadcastPacket($target, $pk);
+    public function sendBlocks(array $target, array $blocks, $flags = UpdateBlockPacket::FLAG_NONE) {
+        $packs = [];
+        foreach($blocks as $b){
+            if($b == null) continue;
+            $pk = new UpdateBlockPacket();
+            $pk->x = $b->x;
+            $pk->y = $b->y;
+            $pk->z = $b->z;
+            if($b instanceof Block){
+                $pk->blockId = $b->getId();
+                $pk->blockData = $b->getDamage();
+            }else{
+                $fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
+                $pk->blockId = $fullBlock >> 4;
+                $pk->blockData = $fullBlock & 0xf;
             }
-        } else {
-            foreach ($blocks as $b) {
-                if ($b === null) {
-                    continue;
-                }
-                $pk = new UpdateBlockPacket();
-
-                $pk->x = $b->x;
-                $pk->z = $b->z;
-                $pk->y = $b->y;
-
-                if ($b instanceof Block) {
-                    $pk->blockId = $b->getId();
-                    $pk->blockData = $b->getDamage();
-                } else {
-                    $fullBlock = $this->getFullBlock($b->x, $b->y, $b->z);
-                    $pk->blockId = $fullBlock >> 4;
-                    $pk->blockData = $fullBlock & 0xf;
-                }
-                $pk->flags = $flags;
-                $this->server->broadcastPacket($target, $pk);
-            }
+            $pk->flags = $flags;
+            $packs[] = $pk;
         }
+        $this->server->batchPackets($target, $packs);
     }
 
     public function clearCache(bool $full = false) {
@@ -1000,76 +956,8 @@ class Level implements ChunkManager, Metadatable
         unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
     }
 
-    private function tickChunks() {
-        if ($this->chunksPerTick <= 0 or count($this->loaders) === 0) {
-            $this->chunkTickList = [];
-            return;
-        }
-
-        $chunksPerLoader = min(200, max(1, (int)((($this->chunksPerTick - count($this->loaders)) / count($this->loaders)) + 0.5)));
-        $randRange = 3 + $chunksPerLoader / 30;
-        $randRange = (int)($randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange);
-
-        foreach ($this->loaders as $loader) {
-            $chunkX = $loader->getX() >> 4;
-            $chunkZ = $loader->getZ() >> 4;
-
-            $index = Level::chunkHash($chunkX, $chunkZ);
-            $existingLoaders = max(0, isset($this->chunkTickList[$index]) ? $this->chunkTickList[$index] : 0);
-            $this->chunkTickList[$index] = $existingLoaders + 1;
-            for ($chunk = 0; $chunk < $chunksPerLoader; ++$chunk) {
-                $dx = mt_rand(-$randRange, $randRange);
-                $dz = mt_rand(-$randRange, $randRange);
-                $hash = Level::chunkHash($dx + $chunkX, $dz + $chunkZ);
-                if (!isset($this->chunkTickList[$hash]) and isset($this->chunks[$hash])) {
-                    $this->chunkTickList[$hash] = -1;
-                }
-            }
-        }
-
-        foreach ($this->chunkTickList as $index => $loaders) {
-            Level::getXZ($index, $chunkX, $chunkZ);
-
-
-            if (!isset($this->chunks[$index]) or ($chunk = $this->getChunk($chunkX, $chunkZ, false)) === null) {
-                unset($this->chunkTickList[$index]);
-                continue;
-            } elseif ($loaders <= 0) {
-                unset($this->chunkTickList[$index]);
-            }
-
-            foreach ($chunk->getEntities() as $entity) {
-                $entity->scheduleUpdate();
-            }
-
-
-            foreach ($chunk->getSubChunks() as $Y => $subChunk) {
-                if (!$subChunk->isEmpty()) {
-                    $k = mt_rand(0, 0x7fffffff);
-                    for ($i = 0; $i < 3; ++$i, $k >>= 10) {
-                        $x = $k & 0x0f;
-                        $y = ($k >> 8) & 0x0f;
-                        $z = ($k >> 16) & 0x0f;
-
-                        $blockId = $subChunk->getBlockId($x, $y, $z);
-                        if (isset($this->randomTickBlocks[$blockId])) {
-                            $class = $this->randomTickBlocks[$blockId];
-                            /** @var Block $block */
-                            $block = new $class($subChunk->getBlockData($x, $y, $z));
-                            $block->x = $chunkX * 16 + $x;
-                            $block->y = ($Y << 4) + $y;
-                            $block->z = $chunkZ * 16 + $z;
-                            $block->level = $this;
-                            $block->onUpdate(self::BLOCK_UPDATE_RANDOM);
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($this->clearChunksOnTick) {
-            $this->chunkTickList = [];
-        }
+    protected function tickChunks($tick) {
+        // TODO
     }
 
     public function __debugInfo(): array {
@@ -3141,5 +3029,9 @@ class Level implements ChunkManager, Metadatable
             $this->moveToSend[$index] = [];
         }
         $this->moveToSend[$index][$entityId] = [$entityId, $x, $y, $z, $yaw, $headYaw === null ? $yaw : $headYaw, $pitch];
+    }
+    
+    public function addPlayerMovementToQueue(MovePlayerPacket $packet){
+        $this->playerMovementQueue[spl_object_hash($packet)] = $packet;
     }
 }

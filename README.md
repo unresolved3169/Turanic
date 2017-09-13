@@ -10,9 +10,6 @@ Turanic based on SteadFast2, GenisysPro and MiNET.
 - [] **Custom Potions**
 - [] **Advanced Player Functions**
 - [] **Custom Enchants**
-- [] **Optimization and Stability**
+- [x] **Optimization and Stability**
 - [] **Virtual Inventory**
-- [] **MobAI**
-- [] **Fast**
-
-# Testing
+- [x] **MobAI**

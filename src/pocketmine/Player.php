@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,7 +18,6 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
 */
 
 namespace pocketmine;
@@ -33,7 +31,6 @@ use pocketmine\block\Fire;
 use pocketmine\block\PressurePlate;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\entity\Animal;
 use pocketmine\entity\Arrow;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Boat;
@@ -131,6 +128,7 @@ use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -3036,7 +3034,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                                             $ev->getProjectile()->kill();
                                         } else {
                                             $ev->getProjectile()->spawnToAll();
-                                            $this->level->addSound(new LaunchSound($this), $this->getViewers());
+                                            $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW);
                                         }
                                     } else {
                                         $ev->getProjectile()->spawnToAll();
@@ -3804,6 +3802,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
         }
         $timings->stopTiming();
+        return true;
     }
 
     /**
@@ -4469,11 +4468,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->yaw = $yaw;
         $pk->mode = $mode;
 
-        if ($targets !== null) {
-            $this->server->broadcastPacket($targets, $pk);
-        } else {
-            $this->dataPacket($pk);
-        }
+        $this->level->addPlayerMovementToQueue($pk);
 
         $this->newPosition = null;
     }

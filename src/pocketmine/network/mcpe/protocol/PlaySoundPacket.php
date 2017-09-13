@@ -2,12 +2,12 @@
 
 /*
  *
- *    _______                                _
- *   |__   __|                              | |
- *      | | ___  ___ ___  ___ _ __ __ _  ___| |_
- *      | |/ _ \/ __/ __|/ _ \  __/ _` |/ __| __|
- *      | |  __/\__ \__ \  __/ | | (_| | (__| |_
- *      |_|\___||___/___/\___|_|  \__,_|\___|\__|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,10 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Tesseract Team
- * @link http://www.github.com/TesseractTeam/Tesseract
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 namespace pocketmine\network\mcpe\protocol;
 
@@ -33,32 +32,29 @@ class PlaySoundPacket extends DataPacket {
 	public $x;
 	public $y;
 	public $z;
-	public $volume;
-	public $float;
+	public $volume = 1.0;
+	public $pitch = 1.0;
 
 	/**
 	 *
 	 */
 	public function decode(){
-		$this->sound = $this->getString();
-		$this->getBlockPos($this->x, $this->y, $this->z);
-		$this->volume = $this->getFloat();
-		$this->float = $this->getFloat();
+
 	}
 
 	/**
 	 *
 	 */
 	public function encode(){
-		$this->reset();
-		$this->putString($this->sound);
-		$this->putBlockPos($this->x, $this->y, $this->z);
-		$this->putFloat($this->volume);
-		$this->putFloat($this->float);
+        $this->reset();
+        $this->putString($this->sound);
+        $this->putBlockCoords($this->x * 8, $this->y * 8, $this->z * 8);
+        $this->putLFloat($this->volume);
+        $this->putLFloat($this->pitch);
 	}
 
 	/**
-	 * @return PacketName|string
+	 * @return string
 	 */
 	public function getName(){
 		return "PlaySoundPacket";
