@@ -840,7 +840,7 @@ class Level implements ChunkManager, Metadatable
 
         foreach ($this->motionToSend as $index => $entry) {
             Level::getXZ($index, $chunkX, $chunkZ);
-            $packs= [];
+            $packs = [];
             foreach ($entry as $entity) {
                 $pk = new SetEntityMotionPacket();
                 $pk->eid = $entity[0];
@@ -956,12 +956,12 @@ class Level implements ChunkManager, Metadatable
         unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
     }
 
-    protected function tickChunks($tick) {
-     foreach($this->chunks as $chunk){
-     	 foreach($chunk->getEntities as $e){
-     	 	 $e->scheduleUpdate();
-     	 }
-     }
+    protected function tickChunks($tick){
+        foreach ($this->chunks as $chunk) {
+            foreach ($chunk->getEntities() as $e) {
+                $e->scheduleUpdate();
+            }
+        }
     }
 
     public function __debugInfo(): array {
