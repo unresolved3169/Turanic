@@ -46,9 +46,8 @@ class FloatingTextParticle extends Particle {
 	public function __construct(Vector3 $pos, $text, $title = "", $center = true){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		if($center){
-		    $textutils = new TextUtils();
-            $text = $textutils->center($text);
-            $title = $textutils->center($title);
+            $text = TextUtils::center($text);
+            $title = TextUtils::center($title);
         }
 		$this->text = $text;
 		$this->title = $title;
