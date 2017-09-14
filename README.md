@@ -1,3 +1,5 @@
+<img src="/assets/Turanic.png" width="400px">
+
 # Turanic
 Fast server software for Minecraft PE and W10 Edition - v1.1.x.
 Turanic based on SteadFast2, GenisysPro and MiNET.
