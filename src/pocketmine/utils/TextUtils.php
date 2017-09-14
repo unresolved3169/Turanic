@@ -29,7 +29,7 @@ class TextUtils{
         $max = max(array_map("strlen", $lines));
         foreach($lines as $key => $line){
             if(($sayi = strlen($line)) == $max) continue;
-            $kalan = floor(($max - $sayi) / 2);
+            $kalan = round(($max - $sayi) / 2);
             $bosluk = str_repeat(" ", $kalan);
             $lines[$key] = $bosluk.$line.$bosluk;
         }
