@@ -2434,5 +2434,9 @@ abstract class Entity extends Location implements Metadatable {
 	public function __toString(){
 		return (new \ReflectionClass($this))->getShortName() . "(" . $this->getId() . ")";
 	}
+	
+	public function resetLastDamageCause(){
+		$this->lastDamageCause = null;
+	}
 
 }

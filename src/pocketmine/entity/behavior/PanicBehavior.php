@@ -27,5 +27,10 @@ class PanicBehavior extends StrollBehavior{
     public function shouldStart() : bool{
         return $this->entity->getLastDamageCause() != null;
     }
+    
+    public function onEnd(){
+    	parent::onEnd();
+    	$this->entity->resetLastDamageCause();
+    }
 
 }

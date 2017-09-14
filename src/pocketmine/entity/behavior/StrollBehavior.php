@@ -88,7 +88,8 @@ class StrollBehavior extends Behavior{
 
 
         $entities = $level->getNearbyEntities($entity->getBoundingBox()->grow(1,1,1), $entity);
-        $entityCollide = count($entities) > 0;
+        // TODO
+        $entityCollide = false;//count($entities) > 0;
 
         if($entityCollide){
             $rot = rand(0,2) == 0 ? rand(45,180) : rand(-180,-45);

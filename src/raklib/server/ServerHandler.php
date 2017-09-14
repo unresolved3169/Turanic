@@ -56,7 +56,7 @@ class ServerHandler{
 		$this->server->pushMainToThreadPacket($buffer);
 	}
 
-	public function unblockAddress($address){
+	public function unblockAddress(string $address){
 		$buffer = chr(RakLib::PACKET_UNBLOCK_ADDRESS) . chr(strlen($address)) . $address;
 		$this->server->pushMainToThreadPacket($buffer);
 	}
@@ -65,11 +65,9 @@ class ServerHandler{
 		$buffer = chr(RakLib::PACKET_SHUTDOWN);
 		$this->server->pushMainToThreadPacket($buffer);
 		$this->server->shutdown();
-		$this->server->synchronized(function(){
-			if($this->server !== null){
-				$this->server->wait(20000);
-			}
-		});
+		$this->server->synchronized(function(RakLibServer $server){
+			$server->wait(20000);
+		}, $this->server);
 		$this->server->join();
 	}
 
