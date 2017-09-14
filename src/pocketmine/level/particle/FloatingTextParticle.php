@@ -26,6 +26,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
+use pocketmine\utils\TextUtils;
 use pocketmine\utils\UUID;
 
 class FloatingTextParticle extends Particle {
@@ -36,13 +37,19 @@ class FloatingTextParticle extends Particle {
 	protected $entityId;
 	protected $invisible = false;
 
-	/**
-	 * @param Vector3 $pos
-	 * @param int     $text
-	 * @param string  $title
-	 */
-	public function __construct(Vector3 $pos, $text, $title = ""){
+    /**
+     * @param Vector3 $pos
+     * @param int $text
+     * @param string $title
+     * @param bool $center
+     */
+	public function __construct(Vector3 $pos, $text, $title = "", $center = true){
 		parent::__construct($pos->x, $pos->y, $pos->z);
+		if($center){
+		    $textutils = new TextUtils();
+            $text = $textutils->center($text);
+            $title = $textutils->center($title);
+        }
 		$this->text = $text;
 		$this->title = $title;
 	}
