@@ -2724,7 +2724,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 //TODO: player abilities, check for other changes
                 $isCheater = ($this->allowFlight === false && ($packet->flags >> 9) & 0x01 === 1) || (!$this->isSpectator() && ($packet->flags >> 7) & 0x01 === 1);
                 if (($packet->isFlying and !$this->allowFlight and !$this->server->getAllowFlight()) or $isCheater) {
-                    $this->kick("Flying is not enabled on this server"); //TODO: Customizing the message
+                    $this->kick($this->server->getProperty("settings.fly-kick-message", "Flying is not enabled on this server"));
                     break;
                 } else {
                     $this->server->getPluginManager()->callEvent($ev = new PlayerToggleFlightEvent($this, $packet->isFlying));

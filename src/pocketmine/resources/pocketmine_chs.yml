@@ -11,6 +11,7 @@ settings:
  force-language: false
  #当服务器关闭时，下列提示信息将在玩家客户端上显示。
  shutdown-message: "服务器已关闭"
+ fly-kick-message: "飞行不是启用了在这个服务器"
  #允许通过 Query 查询插件列表
  query-plugins: true
  #当有插件使用已弃用的 API 方法时，在控制台显示信息
