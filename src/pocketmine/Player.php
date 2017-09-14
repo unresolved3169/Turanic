@@ -2423,9 +2423,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->spawnY = $spawnPosition->getFloorY();
         $pk->spawnZ = $spawnPosition->getFloorZ();
         $pk->hasAchievementsDisabled = 1;
-        $pk->dayCycleStopTime = -1; //TODO: implement this properly
+        $pk->dayCycleStopTime = -1;
         $pk->eduMode = 0;
-        $pk->rainLevel = 0; //TODO: implement these properly
+        $pk->rainLevel = 0;
         $pk->lightningLevel = 0;
         $pk->commandsEnabled = 1;
         $pk->levelId = "";
@@ -3258,7 +3258,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                 if ($packet->action === InteractPacket::ACTION_RIGHT_CLICK) {
                     /*if ($target instanceof Animal and $this->getInventory()->getItemInHand()) {
-                        //TODO: Feed
+                        // TODO : FEED
                     }*/
                     break;
                 } elseif ($packet->action === InteractPacket::ACTION_MOUSEOVER) {
@@ -3362,7 +3362,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
                 $this->craftingType = self::CRAFTING_SMALL;
 
-                $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false); //TODO: check if this should be true
+                if($this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION) != false) $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, false);
 
                 switch ($packet->event) {
                     case EntityEventPacket::USE_ITEM: //Eating
@@ -3685,9 +3685,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             $this->awardAchievement("makeBread");
                             break;
                         case Item::CAKE:
-                            //TODO: detect complex recipes like cake that leave remains
                             $this->awardAchievement("bakeCake");
-                            $this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
                             break;
                         case Item::STONE_PICKAXE:
                         case Item::GOLD_PICKAXE:
@@ -3772,9 +3770,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             case ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET:
                 if ($packet->gamemode !== $this->gamemode) {
-                    //Set this back to default. TODO: handle this properly
-                    $this->sendGamemode();
-                    $this->sendSettings();
+                    if(!$this->hasPermission("pocketmine.command.gamemode")){
+                        $setPlayerGameTypePacket = new SetPlayerGameTypePacket();
+                        $setPlayerGameTypePacket->gamemode = $this->gamemode & 0x01;
+                        $this->dataPacket($setPlayerGameTypePacket);
+                        return false;
+                    }
+                    $this->setGamemode($packet->gamemode);
                 }
                 break;
             case ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET:
