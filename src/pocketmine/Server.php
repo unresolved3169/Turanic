@@ -2117,6 +2117,16 @@ class Server{
 	 * @param bool                $forceSync
 	 */
 	public function batchPackets(array $players, array $packets, $forceSync = false){
+		
+		if(count($packets) > 50){
+			$c = array_chunk($packets, 50);
+			
+			foreach($c as $pk){
+				$this->batchPackets($players, $pk, $forceSync);
+			}
+			return;
+		}
+		
 		Timings::$playerNetworkTimer->startTiming();
 		$str = "";
 
