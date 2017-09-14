@@ -1,26 +1,28 @@
 <?php
 
-/**
+/*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link   https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 namespace pocketmine\inventory;
 
+use pocketmine\event\inventory\InventoryClickEvent;
 use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\Player;
 
@@ -103,7 +105,14 @@ class SimpleTransactionQueue implements TransactionQueue {
 		}
 
 		if(!$this->transactionQueue->isEmpty()){
-			$this->player->getServer()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+            $this->player->getServer()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+            foreach($this->transactionQueue as $transaction){
+                $env = $transaction->getInventory();
+                if($env instanceof ContainerInventory){
+                    $this->player->getServer()->getPluginManager()->callEvent($event = new InventoryClickEvent($env, $this->player));
+                    if($event->isCancelled()) $ev->setCancelled(true);
+                }
+            }
 		}else{
 			return;
 		}
