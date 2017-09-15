@@ -43,15 +43,6 @@ class Llama extends Animal {
 	public $height = 0;
 
 	public $dropExp = [1, 3];
-	
-	public function initEntity(){
-		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
-		$this->addBehavior(new StrollBehavior($this));
-		$this->addBehavior(new LookAtPlayerBehavior($this));
-		$this->addBehavior(new RandomLookaroundBehavior($this));
-		
-		parent::initEntity();
-	}
 
 	/**
 	 * @return string
@@ -61,6 +52,11 @@ class Llama extends Animal {
 	}
 
 	public function initEntity(){
+        $this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+        $this->addBehavior(new StrollBehavior($this));
+        $this->addBehavior(new LookAtPlayerBehavior($this));
+        $this->addBehavior(new RandomLookaroundBehavior($this));
+
 		$this->setMaxHealth(30);
 		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, rand(0, 3));
 		parent::initEntity();

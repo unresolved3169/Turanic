@@ -22,13 +22,12 @@
  *
 */
 
-/* TODO: 骑马 */
-
 namespace pocketmine\entity;
 
 use pocketmine\Player;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
+use pocketmine\item\Item as ItemItem;
 
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 

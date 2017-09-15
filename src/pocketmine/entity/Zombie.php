@@ -47,7 +47,8 @@ class Zombie extends Monster {
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		
+
+        $this->setMaxHealth(20);
 		parent::initEntity();
 	}
 
@@ -56,11 +57,6 @@ class Zombie extends Monster {
 	 */
 	public function getName() : string{
 		return "Zombie";
-	}
-
-	public function initEntity(){
-		$this->setMaxHealth(20);
-		parent::initEntity();
 	}
 
 	/**
