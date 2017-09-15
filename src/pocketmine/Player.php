@@ -1545,9 +1545,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public static function getClientFriendlyGamemode(int $gamemode): int
     {
         $gamemode &= 0x03;
-        if ($gamemode === Player::SPECTATOR) {
-            return Player::CREATIVE;
-        }
 
         return $gamemode;
     }
