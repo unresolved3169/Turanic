@@ -25,16 +25,22 @@ namespace pocketmine\utils;
 class TextUtils{
 
     public static function center(string $input){
-        $lines = explode("\n", $input);
+        $clear = TextFormat::clean($input);
+        $lines = explode("\n", $clear);
         $max = max(array_map("strlen", $lines));
+        $lines = explode("\n", $input);
         foreach($lines as $key => $line){
-            $sayi = strlen($line);
-            if($sayi == $max) continue;
-            $spacecounter = substr_count($line, ' ');
-            $remaining = round((($max + $spacecounter) - $sayi) / 2);
-            $space = str_repeat(" ", $remaining);
-            $lines[$key] = $space.$line;
+            $lines[$key] = str_pad($line, $max + self::renkSayisi($line), " ", STR_PAD_LEFT);
         }
         return implode("\n", $lines);
+    }
+
+    public static function renkSayisi($yazi){
+        $renkler = "abcdef0123456789lo";
+        $sayi = 0;
+        for($i=0; $i<strlen($renkler); $i++){
+            $sayi += substr_count($yazi, "§".$renkler{$i});
+        }
+        return $sayi;
     }
 }
