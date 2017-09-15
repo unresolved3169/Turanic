@@ -65,7 +65,6 @@ namespace {
 	}
 
 	function dummy(){
-
 	}
 }
 
@@ -471,9 +470,9 @@ namespace pocketmine {
 		}
 	}
 
-	if(\Phar::running(true) === ""){
+	/*if(\Phar::running(true) === ""){
 		$logger->warning("Non-packaged Turanic installation detected, do not use on production.");
-	}
+	}*/
 
 	ThreadManager::init();
 	new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);

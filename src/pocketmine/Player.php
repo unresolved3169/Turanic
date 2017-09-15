@@ -258,7 +258,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $inAirTicks = 0;
     protected $startAirTicks = 5;
 
-    //TODO: Abilities
     protected $autoJump = true;
     protected $allowFlight = false;
     protected $flying = false;
@@ -834,7 +833,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         if ($count > 0) {
-            //TODO: structure checking
             $pk = new AvailableCommandsPacket();
             $pk->commands = json_encode($data);
             $this->dataPacket($pk);

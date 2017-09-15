@@ -1499,15 +1499,16 @@ class Server{
 
 	public function about(){
 		$string = TextFormat::BOLD.TextFormat::AQUA."
-  _______                    _      
+  _______                    _
  |__   __|                  (_)     
     | |_   _ _ __ __ _ _ __  _  ___ 
     | | | | | '__/ _` | '_ \| |/ __|
     | | |_| | | | (_| | | | | | (__ 
     |_|\__,_|_|  \__,_|_| |_|_|\___|
-                                    
-";
-
+    
+    §7Github§8: §7https://github.com/GenisysPro§f
+    §5Discord§8: §7https://discord.gg/WrKzRNn§f
+    ";
 		$this->getLogger()->info($string);
 	}
 
@@ -2275,15 +2276,10 @@ class Server{
 
 	/**
 	 * Shutdowns the server correctly
-	 * @param bool   $restart
+     *
 	 * @param string $msg
 	 */
-	public function shutdown(bool $restart = false, string $msg = ""){
-		/*if($this->isRunning){
-			$killer = new ServerKiller(90);
-			$killer->start();
-			$killer->kill();
-		}*/
+	public function shutdown($restart = false, string $msg = ""){
 		$this->isRunning = false;
 		if($msg != ""){
 			$this->propertyCache["settings.shutdown-message"] = $msg;
@@ -2780,7 +2776,6 @@ class Server{
                 $online = $this->getDServerOnlinePlayers();
                 $name = $this->getNetwork()->getName().'['.$online.'/'.$max.']';
                 $this->getNetwork()->setName($name);
-                //TODO: 检测是否爆满,不同状态颜色
             }
             $this->getNetwork()->updateName();
         }
