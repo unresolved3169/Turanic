@@ -33,7 +33,7 @@ class Wither extends FlyingAnimal {
 
 	public $width = 0.72;
 	public $length = 6;
-	public $height = 2;
+	public $height = 0;
 
 	public $dropExp = 50;
 

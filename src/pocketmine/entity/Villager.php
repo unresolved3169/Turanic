@@ -41,7 +41,7 @@ class Villager extends Creature implements NPC, Ageable {
 
 	public $width = 0.6;
 	public $length = 0.6;
-	public $height = 1.8;
+	public $height = 0;
 
 	/**
 	 * @return string

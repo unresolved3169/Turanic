@@ -33,7 +33,7 @@ class Slime extends Living {
 
 	public $width = 0.3;
 	public $length = 0.9;
-	public $height = 5;
+	public $height = 0;
 
 	public $dropExp = [1, 4];
 

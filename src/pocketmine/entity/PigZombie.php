@@ -33,7 +33,7 @@ class PigZombie extends Monster {
 
 	public $width = 0.6;
 	public $length = 0.6;
-	public $height = 1.8;
+	public $height = 0;
 
 	public $drag = 0.2;
 	public $gravity = 0.3;
