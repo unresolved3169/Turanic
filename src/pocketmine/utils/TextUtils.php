@@ -30,10 +30,10 @@ class TextUtils{
         foreach($lines as $key => $line){
             $sayi = strlen($line);
             if($sayi == $max) continue;
-            $spacecounter = substr_count(implode($max), ' ');
+            $spacecounter = substr_count($line, ' ');
             $remaining = round((($max + $spacecounter) - $sayi) / 2);
             $space = str_repeat(" ", $remaining);
-            $lines[$key] = $space.$line.$space;
+            $lines[$key] = $space.$line;
         }
         return implode("\n", $lines);
     }
