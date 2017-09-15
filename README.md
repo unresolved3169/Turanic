@@ -1,6 +1,7 @@
-# Turanic
+<img src="https://i.imgur.com/jw0b3BH.png" border="0">
+
 Fast server software for Minecraft PE and W10 Edition - v1.1.x.
-Turanic based on SteadFast2, GenisysPro and MiNET.
+Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
 
 | Travis CI | Discord |
 | :---: | :---:|
