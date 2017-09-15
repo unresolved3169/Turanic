@@ -28,10 +28,12 @@ class TextUtils{
         $lines = explode("\n", $input);
         $max = max(array_map("strlen", $lines));
         foreach($lines as $key => $line){
-            if(($sayi = strlen($line)) == $max) continue;
-            $kalan = round(($max - $sayi) / 2);
-            $bosluk = str_repeat(" ", $kalan);
-            $lines[$key] = $bosluk.$line.$bosluk;
+            $sayi = strlen($line);
+            if($sayi == $max) continue;
+            $spacecounter = substr_count($line, ' ');
+            $remaining = round((($max + $spacecounter) - $sayi) / 2);
+            $space = str_repeat(" ", $remaining);
+            $lines[$key] = $space.$line;
         }
         return implode("\n", $lines);
     }
