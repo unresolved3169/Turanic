@@ -1506,8 +1506,8 @@ class Server{
     | | |_| | | | (_| | | | | | (__ 
     |_|\__,_|_|  \__,_|_| |_|_|\___|
     
-    §7Github§8: §7https://github.com/GenisysPro§f
-    §5Discord§8: §7https://discord.gg/WrKzRNn§f
+    §r§bGithub§8: §fhttps://github.com/TuranicTeam§f
+    §9Discord§8: §fhttps://discord.gg/DyPYdYT§f
     ";
 		$this->getLogger()->info($string);
 	}
