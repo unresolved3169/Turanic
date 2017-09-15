@@ -1863,7 +1863,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         $revert = false;
 
-        if (($distanceSquared / ($tickDiff ** 2)) > 100 and !$this->allowMovementCheats) {
+        if (($distanceSquared / ($tickDiff ** 2)) > 115 and !$this->allowMovementCheats) {
             $this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
             $revert = true;
         } else {
