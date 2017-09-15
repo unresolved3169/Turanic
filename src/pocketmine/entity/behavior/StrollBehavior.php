@@ -65,31 +65,36 @@ class StrollBehavior extends Behavior{
         $random = $this->entity->random;
 
         $entity = $this->entity;
-
-        $blockDown = $level->getBlock($entity->add(0,-1,0));
-
-        if($this->entity->motionY < 0 and $blockDown instanceof Air){
-            $this->timeLeft = 0;
-            return;
+        
+        $coord = $this->entity->asVector3()->add($direction->round());
+        $motion = $direction->multiply($speedFactor);
+        $moveVector = $entity->asVector3()->add($motion);
+        
+        $blockDown = $level->getBlock($moveVector->add(0,-1,0));
+        $blockDownDown = $level->getBlock($moveVector->add(0,-2,0));
+        
+        if(!$blockDown->isSolid() and !$blockDownDown->isSolid()){ // dont fall
+        	$this->timeLeft = 0;
+        	return;
+        }
+        
+        if($this->entity->motionY < 0 and !$blockDown->isSolid()){ // dont move when falling
+        	$this->timeLeft = 0;
+        	return;
         }
 
-        $motion = $direction->multiply($speedFactor);
-        $coord = $this->getDirectionCoord();
-
         $block = $level->getBlock($coord);
+        $blockIn = $level->getBlock($entity); // when entity in block
         $blockUp = $level->getBlock($coord->add(0,1,0));
 
-        if($block->isSolid()/*and !$blockUp->isSolid()*/){
-            $motion->y += 0.7;
+        if(($block->isSolid() and !$blockUp->isSolid()) or $blockIn->isSolid()){
+            $motion->y += 0.65;
         }elseif($block->isSolid() and $blockUp->isSolid()){
             $this->timeLeft = 0;
             return;
         }
 
-
-        $entities = $level->getNearbyEntities($entity->getBoundingBox()->grow(1,1,1), $entity);
-        // TODO
-        $entityCollide = false;//count($entities) > 0;
+        $entityCollide = false; // TODO
 
         if($entityCollide){
             $rot = rand(0,2) == 0 ? rand(45,180) : rand(-180,-45);
@@ -105,17 +110,6 @@ class StrollBehavior extends Behavior{
                 $this->entity->setMotion($motion);
             }
         }
-    }
-
-    public function getDirectionCoord(){
-        $d = $this->entity->getDirection();
-        $vec = $this->entity;
-        if($d == Mob::NORTH) $vec->add(0,0,-1);
-        if($d == Mob::SOUTH) $vec->add(0,0,1);
-        if($d == Mob::WEST) $vec->add(-1,0,0);
-        if($d == Mob::EAST) $vec->add(1,0,0);
-
-        return $vec;
     }
 
     public function onEnd(){
