@@ -22,7 +22,7 @@
 namespace pocketmine\entity;
 
 
-abstract class Animal extends Creature implements Ageable {
+abstract class Animal extends Mob implements Ageable {
 
 	/**
 	 * @return bool

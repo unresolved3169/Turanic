@@ -132,3 +132,8 @@ dserver:
 inventory:
  #Eğer örste sıkıntı var ise aktif edin.
  allow-cheats: false
+ 
+# Varlıklar için Hareketler
+# Bu özellik geliştirme aşamasındadır(doğru çalışmayabilir)
+mob-ai:
+ enable: false

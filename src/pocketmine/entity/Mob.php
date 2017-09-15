@@ -32,11 +32,13 @@ abstract class Mob extends Creature{
     /** @var Behavior | null */
     public $currentBehavior = null;
     public $random;
+    public $behaviorsEnabled = false;
 
     public function initEntity(){
         parent::initEntity();
 
         $this->random = new Random();
+        $this->behaviorsEnabled = (bool) $this->level->getServer()->getAdvancedProperty("mob-ai.enable", false);
     }
 
     public function getHorizDir(){
@@ -53,11 +55,13 @@ abstract class Mob extends Creature{
 
     public function onUpdate($tick){
         if($this->closed or !$this->isAlive()) return;
+        
+        if($this->behaviorsEnabled){
+         $this->currentBehavior = $this->checkBehavior();
 
-        $this->currentBehavior = $this->checkBehavior();
-
-        if($this->currentBehavior != null){
-            $this->currentBehavior->onTick();
+         if($this->currentBehavior != null){
+             $this->currentBehavior->onTick();
+         }
         }
 
         return parent::onUpdate($tick);
