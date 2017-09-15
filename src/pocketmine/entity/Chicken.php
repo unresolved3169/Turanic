@@ -25,6 +25,8 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
+
 class Chicken extends Animal {
 	const NETWORK_ID = 10;
 
@@ -33,6 +35,15 @@ class Chicken extends Animal {
 	public $height = 0;
 
 	public $dropExp = [1, 3];
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		
+		parent::initEntity();
+	}
 
 	/**
 	 * @return string

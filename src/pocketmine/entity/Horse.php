@@ -30,9 +30,20 @@ use pocketmine\Player;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 
-class Horse extends Living {
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
+
+class Horse extends Animal{
 
 	const NETWORK_ID = 23;
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.30, 2.0));
+		$this->addBehavior(new StrollBehavior($this, 0.30, 1.3));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		
+		parent::initEntity();
+	}
 
 	/**
 	 * @return string

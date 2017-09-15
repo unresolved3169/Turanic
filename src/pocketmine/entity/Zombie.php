@@ -28,17 +28,28 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
+
 class Zombie extends Monster {
 	const NETWORK_ID = 32;
 
 	public $width = 0.6;
 	public $length = 0.6;
-	public $height = 1.95;
+	public $height = 0;
 
 	public $dropExp = [5, 5];
 
 	public $drag = 0.2;
 	public $gravity = 0.3;
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		
+		parent::initEntity();
+	}
 
 	/**
 	 * @return string
