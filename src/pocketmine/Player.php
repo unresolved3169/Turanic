@@ -169,8 +169,7 @@ use pocketmine\utils\UUID;
  * @property null uuid
  * @property null rawUUID
  */
-class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer
-{
+class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
 
     const SURVIVAL = 0;
     const CREATIVE = 1;
@@ -3973,6 +3972,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->address = $address;
         $pk->port = $port;
         $this->dataPacket($pk);
+    }
+
+    /**
+     * Change Player Movement Speed without effects
+     *
+     * @param $amount
+     */
+    public function setMovementSpeed($amount){
+        if($this->spawned === true){
+            $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->setValue($amount, true);
+        }
     }
 
     /**
