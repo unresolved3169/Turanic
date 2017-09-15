@@ -2788,10 +2788,6 @@ class Server{
             $this->autoSaveTicker = 0;
             $this->doAutoSave();
         }
-        /*if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
-            $this->sendUsageTicker = 6000;
-            $this->sendUsage(SendUsageTask::TYPE_STATUS);
-        }*/
         if(($this->tickCounter % 100) === 0){
             foreach($this->levels as $level){
                 $level->clearCache();
@@ -2803,7 +2799,7 @@ class Server{
         if($this->dispatchSignals and $this->tickCounter % 5 === 0){
             pcntl_signal_dispatch();
         }
-        //$this->getMemoryManager()->check();
+        $this->getMemoryManager()->check();
         $now = microtime(true);
         array_shift($this->tickAverage);
         $tickDiff = $now - $tickTime;
