@@ -8,6 +8,7 @@ Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
 [![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) |
 
 # TODO List:
+
 - [ ] **Ultra Fast Chunk Load/Unload/Generate**
 - [ ] **Advanced Cache**
 - [ ] **More thread/worker**
