@@ -4475,7 +4475,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->yaw = $yaw;
         $pk->mode = $mode;
 
-        $this->level->addPlayerMovementToQueue($pk);
+        if($targets !== null){
+        	$this->server->broadcastPacket($targets, $pk);
+        }else{
+        	$this->dataPacket($pk);
+        }
 
         $this->newPosition = null;
     }

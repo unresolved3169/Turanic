@@ -2117,13 +2117,13 @@ class Server{
 	 * @param DataPacket[]|string $packets
 	 * @param bool                $forceSync
 	 */
-	public function batchPackets(array $players, array $packets, $forceSync = false){
+	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
 		
 		if(count($packets) > 50){
 			$c = array_chunk($packets, 50);
 			
 			foreach($c as $pk){
-				$this->batchPackets($players, $pk, $forceSync);
+				$this->batchPackets($players, $pk, $forceSync, $immediate);
 			}
 			return;
 		}
@@ -2149,17 +2149,17 @@ class Server{
 			}
 		}
 
-		if(!$forceSync and $this->networkCompressionAsync){
+		if(!$forceSync and $this->networkCompressionAsync and !$immediate){
 			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel);
 			$this->getScheduler()->scheduleAsyncTask($task);
 		}else{
-			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets);
+			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets, $immediate);
 		}
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
-	public function broadcastPacketsCallback($data, array $identifiers){
+	public function broadcastPacketsCallback($data, array $identifiers, bool $immediate = false){
 		$pk = new BatchPacket();
 		$pk->payload = $data;
 		$pk->encode();
@@ -2167,7 +2167,11 @@ class Server{
 
 		foreach($identifiers as $i){
 			if(isset($this->players[$i])){
-				$this->players[$i]->dataPacket($pk);
+				if($immediate){
+				 $this->players[$i]->directDataPacket($pk);
+				}else{
+					$this->players[$i]->dataPacket($pk);
+				}
 			}
 		}
 	}
