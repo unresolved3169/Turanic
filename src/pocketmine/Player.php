@@ -22,6 +22,7 @@
 
 namespace pocketmine;
 
+use pocketmine\entity\Rideable;
 use pocketmine\event\block\ItemFrameDropItemEvent;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -2518,6 +2519,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->level->addChunkPacket($packet->x >> 4, $packet->z >> 4, $packet);
                 break;
             case ProtocolInfo::PLAYER_INPUT_PACKET:
+                if($this->linkedEntity != null && $this->linkedEntity instanceof Rideable){
+                    if($packet->motionX == 0 and $packet->motionY == 1){
+                        if($this->linkedEntity instanceof Minecart){
+                            // TODO
+                        }else{
+                            // TODO : düz (straight)
+                        }
+                    }elseif($packet->motionX == 0 and $packet->motionY == -1){
+                        // TODO geri (back)
+                    }
+                }
                 break;
             case ProtocolInfo::LOGIN_PACKET:
                 if ($this->loggedIn) {
