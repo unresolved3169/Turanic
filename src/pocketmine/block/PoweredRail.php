@@ -31,6 +31,10 @@ class PoweredRail extends Rail {
 	/** @var Vector3 [] */
 	protected $connected = [];
 
+	public function isPowered(){
+	    return true; // TODO
+    }
+
 	/**
 	 * PoweredRail constructor.
 	 *
