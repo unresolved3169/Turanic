@@ -3040,7 +3040,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                                             $ev->getProjectile()->kill();
                                         } else {
                                             $ev->getProjectile()->spawnToAll();
-                                            $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW);
+                                            $this->level->broadcastLevelSoundEvent($this->add(0, 2, 0), LevelSoundEventPacket::SOUND_BOW);
                                         }
                                     } else {
                                         $ev->getProjectile()->spawnToAll();
@@ -3382,11 +3382,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             $this->server->getPluginManager()->callEvent($ev);
                             if (!$ev->isCancelled()) {
                                 $slot->onConsume($this);
-                                $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_EAT);
                             } else {
                                 $this->inventory->sendContents($this);
                             }
                         }
+                        $this->level->broadcastLevelSoundEvent($this->add(0, 2, 0), LevelSoundEventPacket::SOUND_BURP);
+                        break;
+                    case EntityEventPacket::FEED:
+                        $this->level->broadcastLevelSoundEvent($this->add(0, 2, 0), LevelSoundEventPacket::SOUND_EAT, 63);
                         break;
                 }
                 break;

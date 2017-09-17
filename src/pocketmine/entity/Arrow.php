@@ -28,6 +28,7 @@ use pocketmine\level\particle\MobSpellParticle;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Arrow extends Projectile {
@@ -41,7 +42,9 @@ class Arrow extends Projectile {
 	protected $drag = 0.01;
 
 	protected $damage = 2;
-
+	
+	protected $sound = true;
+	
 	protected $isCritical;
 	protected $potionId;
 
@@ -90,13 +93,17 @@ class Arrow extends Projectile {
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if(!$this->hadCollision and $this->isCritical){
+       if(!$this->hadCollision and $this->isCritical){
 			$this->level->addParticle(new CriticalParticle($this->add(
 				$this->width / 2 + mt_rand(-100, 100) / 500,
 				$this->height / 2 + mt_rand(-100, 100) / 500,
 				$this->width / 2 + mt_rand(-100, 100) / 500)));
 		}elseif($this->onGround){
 			$this->isCritical = false;
+			if($this->sound === true and $this->level !== null){ //Prevents error of $this->level returning null
+				$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW_HIT);
+				$this->sound = false;
+			}
 		}
 
 		if($this->potionId != 0){
