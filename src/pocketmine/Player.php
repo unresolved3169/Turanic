@@ -1,7 +1,5 @@
 <?php
 
-public function sendCommandData(){
-
 /*
  *
  *    _______                    _
