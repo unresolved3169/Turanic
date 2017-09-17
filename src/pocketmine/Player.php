@@ -2520,7 +2520,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             case ProtocolInfo::PLAYER_INPUT_PACKET:
                 if($this->linkedEntity != null && $this->linkedEntity instanceof Rideable){
-                    if($packet->motionX == 0 and $packet->motionY == 1){
+                   /* if($packet->motionX == 0 and $packet->motionY == 1){
                         if($this->linkedEntity instanceof Minecart){
                             // TODO
                         }else{
@@ -2528,7 +2528,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         }
                     }elseif($packet->motionX == 0 and $packet->motionY == -1){
                         // TODO geri (back)
-                    }
+                    }*/
                 }
                 break;
             case ProtocolInfo::LOGIN_PACKET:

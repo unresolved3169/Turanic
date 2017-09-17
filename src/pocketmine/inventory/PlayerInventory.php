@@ -250,7 +250,7 @@ class PlayerInventory extends BaseInventory {
 				$this->sendSlot($this->getHeldItemSlot(), $target);
 			}
 		}else{
-			$this->getHolder()->getLevel()->getServer()->broadcastPacket($target, $pk);
+			$this->getHolder()->getServer()->broadcastPacket($target, $pk);
 			if($this->getHeldItemSlot() !== -1 and in_array($this->getHolder(), $target)){
 				$this->sendSlot($this->getHeldItemSlot(), $this->getHolder());
 			}
