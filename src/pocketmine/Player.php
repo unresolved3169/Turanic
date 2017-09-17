@@ -3382,7 +3382,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             $this->server->getPluginManager()->callEvent($ev);
                             if (!$ev->isCancelled()) {
                                 $slot->onConsume($this);
-                                $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_EAT);
                             } else {
                                 $this->inventory->sendContents($this);
                             }
