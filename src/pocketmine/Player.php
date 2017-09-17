@@ -20,6 +20,8 @@
  *
 */
 
+namespace pocketmine;
+
 use pocketmine\event\block\ItemFrameDropItemEvent;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
