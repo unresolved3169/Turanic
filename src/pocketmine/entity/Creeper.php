@@ -34,7 +34,26 @@ class Creeper extends Monster {
 	const DATA_SWELL_OLD = 20;
 	const DATA_SWELL_DIRECTION = 21;
 
+	public $width = 0.6;
+	public $length = 0.6;
+	public $height = 0;
 	public $dropExp = [5, 5];
+	public $drag = 0.2;
+	public $gravity = 0.3;
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		
+                $this->setMaxHealth(20);
+		parent::initEntity();
+		if(!isset($this->namedtag->powered)){
+			$this->setPowered(false);
+		}
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
+	}
 
 	/**
 	 * @return string
