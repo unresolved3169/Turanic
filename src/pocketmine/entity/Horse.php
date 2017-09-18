@@ -34,13 +34,16 @@ use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAt
 class Horse extends Animal{
 
 	const NETWORK_ID = 23;
+	public $width = 0.3;
+	public $length = 0.9;
+	public $height = 0;
 	
 	public function initEntity(){
-		$this->addBehavior(new PanicBehavior($this, 0.30, 2.0));
-		$this->addBehavior(new StrollBehavior($this, 0.30, 1.3));
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		
+                $this->setMaxHealth(30);
 		parent::initEntity();
 	}
 
