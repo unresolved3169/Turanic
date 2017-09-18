@@ -61,16 +61,6 @@ class Creeper extends Monster {
 	public function getName() : string{
 		return "Creeper";
 	}
-
-	public function initEntity(){
-		parent::initEntity();
-
-		if(!isset($this->namedtag->powered)){
-			$this->setPowered(false);
-		}
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
-	}
-
 	/**
 	 * @param bool           $powered
 	 * @param Lightning|null $lightning
