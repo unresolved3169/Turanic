@@ -43,6 +43,8 @@ class Llama extends Animal {
 	public $height = 0;
 
 	public $dropExp = [1, 3];
+	public $drag = 0.2;
+	public $gravity = 0.3;
 
 	/**
 	 * @return string
