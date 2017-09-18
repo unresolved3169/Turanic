@@ -38,6 +38,7 @@ class EntityManager{
 	}
 	
 	public function despawnMobs(int $tick){
+		return; // deprecating livetexts plugin -_-
 		if($tick % 400 == 0){		
 			foreach($this->level->getEntities() as $e){
 				if($e instanceof Player) continue;
