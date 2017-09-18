@@ -34,8 +34,7 @@ class Creeper extends Monster {
 	const DATA_SWELL_OLD = 20;
 	const DATA_SWELL_DIRECTION = 21;
 
-	public $width = 0.6;
-	public $length = 0.6;
+	public $width = 0.72;
 	public $height = 0;
 	public $dropExp = [5, 5];
 	public $drag = 0.2;
