@@ -109,6 +109,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
+use pocketmine\workers\ServerPacketWorker;
 
 /**
  * The class that manages everything
@@ -314,6 +315,7 @@ class Server{
 	public $enderName = "ender";
 	public $enderLevel = null;
 	public $absorbWater = false;
+	public $packetWorker;
 
 	/**
 	 * @return string
@@ -2119,16 +2121,9 @@ class Server{
 	 */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
 		
-		if(count($packets) > 50){
-			$c = array_chunk($packets, 50);
-			
-			foreach($c as $pk){
-				$this->batchPackets($players, $pk, $forceSync, $immediate);
-			}
-			return;
-		}
-		
+				
 		Timings::$playerNetworkTimer->startTiming();
+		$packs = [];
 		$str = "";
 
 		foreach($packets as $p){
@@ -2136,9 +2131,9 @@ class Server{
 				if(!$p->isEncoded){
 					$p->encode();
 				}
-				$str .= Binary::writeUnsignedVarInt(strlen($p->buffer)) . $p->buffer;
+				$packs[] = $p->buffer;
 			}else{
-				$str .= Binary::writeUnsignedVarInt(strlen($p)) . $p;
+				$packs[] = $p;
 			}
 		}
 
@@ -2148,13 +2143,27 @@ class Server{
 				$targets[] = $this->identifiers[spl_object_hash($p)];
 			}
 		}
-
-		if(!$forceSync and $this->networkCompressionAsync and !$immediate){
-			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel);
-			$this->getScheduler()->scheduleAsyncTask($task);
-		}else{
-			$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets, $immediate);
+		
+		$data = [
+		"packets" => $packs,
+		"needACK" => false,
+		"immediate" => $immediate,
+		"targets" => $targets];
+		
+	/*	$batch = new BatchPacket;
+		$batch->payload = zlib_encode($str, ZLIB_ENCODING_DEFLATE, 7);
+		
+		foreach($players as $p){
+			if($immediate){
+				$p->directDataPacket($batch);
+			}else{
+				$p->dataPacket($batch);
+			}
 		}
+		
+		return;*/
+		
+		$this->packetWorker->pushMainToThreadPacket(serialize($data));
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}
@@ -2397,6 +2406,11 @@ class Server{
 
 		if(!file_exists($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic"))
 			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic");
+		
+		$this->packetWorker = new ServerPacketWorker($this->getLoader());
+		//$this->packetWorker->run();
+		
+		$this->getLogger()->info("§e> Server Packet Worker Starting...");
 
 		$this->tickProcessor();
 		$this->forceShutdown();
@@ -2523,11 +2537,7 @@ class Server{
 			$this->tick();
 			$next = $this->nextTick - 0.0001;
 			if($next > microtime(true)){
-				try{
-                    @time_sleep_until($next);
-                }catch (\Throwable $e){
-                    //Sometimes $next is less than the current time. High load?
-                }
+				@time_sleep_until($next);
 			}
 		}
 	}
@@ -2591,23 +2601,48 @@ class Server{
 	}
 
 	private function checkTickUpdates($currentTick, $tickTime){
-        if($this->alwaysTickPlayers){
-            foreach($this->players as $p){
-                $p->onUpdate($currentTick);
-            }
-        }
+		if($this->alwaysTickPlayers){
+			foreach($this->players as $p){
+				$p->onUpdate($currentTick);
+			}
+		}
 
 		//Do level ticks
-        foreach($this->getLevels() as $level){
-            try{
-                $level->doTick($currentTick);
-            }catch(\Exception $e){
-                $this->logger->critical("Could not tick level " . $level->getName() . ": " . $e->getMessage());
-                if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
-                    $this->logger->logException($e);
-                }
-            }
-        }
+		foreach($this->getLevels() as $level){
+			if($level->getTickRate() > $this->baseTickRate and --$level->tickRateCounter > 0){
+				continue;
+			}
+			try{
+				$levelTime = microtime(true);
+				$level->doTick($currentTick);
+				$tickMs = (microtime(true) - $levelTime) * 1000;
+				$level->tickRateTime = $tickMs;
+
+				if($this->autoTickRate){
+					if($tickMs < 50 and $level->getTickRate() > $this->baseTickRate){
+						$level->setTickRate($r = $level->getTickRate() - 1);
+						if($r > $this->baseTickRate){
+							$level->tickRateCounter = $level->getTickRate();
+						}
+						$this->getLogger()->debug("Raising level \"" . $level->getName() . "\" tick rate to " . $level->getTickRate() . " ticks");
+					}elseif($tickMs >= 50){
+						if($level->getTickRate() === $this->baseTickRate){
+							$level->setTickRate(max($this->baseTickRate + 1, min($this->autoTickRateLimit, floor($tickMs / 50))));
+							$this->getLogger()->debug("Level \"" . $level->getName() . "\" took " . round($tickMs, 2) . "ms, setting tick rate to " . $level->getTickRate() . " ticks");
+						}elseif(($tickMs / $level->getTickRate()) >= 50 and $level->getTickRate() < $this->autoTickRateLimit){
+							$level->setTickRate($level->getTickRate() + 1);
+							$this->getLogger()->debug("Level \"" . $level->getName() . "\" took " . round($tickMs, 2) . "ms, setting tick rate to " . $level->getTickRate() . " ticks");
+						}
+						$level->tickRateCounter = $level->getTickRate();
+					}
+				}
+			}catch(\Throwable $e){
+				$this->logger->critical($this->getLanguage()->translateString("pocketmine.level.tickError", [$level->getName(), $e->getMessage()]));
+				if(\pocketmine\DEBUG > 1 and $this->logger instanceof MainLogger){
+					$this->logger->logException($e);
+				}
+			}
+		}
 	}
 
 	public function doAutoSave(){
@@ -2750,70 +2785,125 @@ class Server{
 	/**
 	 * Tries to execute a server tick
 	 */
-    private function tick(){
-        $tickTime = microtime(true);
-        if($tickTime < $this->nextTick){ //Allow half a tick of diff
-            return false;
-        }
-        ++$this->tickCounter;
-        $this->checkConsole();
-        $this->network->processInterfaces();
-        if($this->rcon !== null){
-            $this->rcon->check();
-        }
-        $this->scheduler->mainThreadHeartbeat($this->tickCounter);
-        $this->checkTickUpdates($this->tickCounter, $tickTime);
-        foreach($this->players as $player){
-            $player->checkNetwork();
-        }
-        if(($this->tickCounter & 0b1111) === 0){
-            $this->titleTick();
-            $this->maxTick = 20;
-            $this->maxUse = 0;
-            if(($this->tickCounter & 0b111111111) === 0){
-                if(($this->dserverConfig["enable"] and $this->dserverConfig["queryTickUpdate"]) or !$this->dserverConfig["enable"]){
-                    $this->updateQuery();
-                }
-            }
-            if($this->dserverConfig["enable"] and $this->dserverConfig["motdPlayers"]){
-                $max = $this->getDServerMaxPlayers();
-                $online = $this->getDServerOnlinePlayers();
-                $name = $this->getNetwork()->getName().'['.$online.'/'.$max.']';
-                $this->getNetwork()->setName($name);
-            }
-            $this->getNetwork()->updateName();
-        }
-        if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
-            $this->autoSaveTicker = 0;
-            $this->doAutoSave();
-        }
-        /*if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
-            $this->sendUsageTicker = 6000;
-            $this->sendUsage(SendUsageTask::TYPE_STATUS);
-        }*/
-        if(($this->tickCounter % 100) === 0){
-            foreach($this->levels as $level){
-                $level->clearCache();
-            }
-            if($this->getTicksPerSecondAverage() < 1){
-                $this->logger->warning($this->getLanguage()->translateString("pocketmine.server.tickOverload"));
-            }
-        }
-        if($this->dispatchSignals and $this->tickCounter % 5 === 0){
-            pcntl_signal_dispatch();
-        }
-        //$this->getMemoryManager()->check();
-        $now = microtime(true);
-        array_shift($this->tickAverage);
-        $tickDiff = $now - $tickTime;
-        $this->tickAverage[] = ($tickDiff <= 0.05) ? 20 : 1 / $tickDiff;
-        array_shift($this->useAverage);
-        $this->useAverage[] = min(1, $tickDiff * 20);
-        if(($this->nextTick - $tickTime) < -1){
-            $this->nextTick = $tickTime;
-        }
-        $this->nextTick += 0.05;
-        return true;
-    }
+ private function tick(){
+		$tickTime = microtime(true);
+		if(($tickTime - $this->nextTick) < -0.025){ //Allow half a tick of diff
+			return false;
+		}
+
+		Timings::$serverTickTimer->startTiming();
+
+		++$this->tickCounter;
+
+		$this->checkConsole();
+
+		Timings::$connectionTimer->startTiming();
+		$this->network->processInterfaces();
+
+		if($this->rcon !== null){
+			$this->rcon->check();
+		}
+
+		Timings::$connectionTimer->stopTiming();
+
+		Timings::$schedulerTimer->startTiming();
+		$this->scheduler->mainThreadHeartbeat($this->tickCounter);
+		Timings::$schedulerTimer->stopTiming();
+
+		$this->checkTickUpdates($this->tickCounter, $tickTime);
+
+		foreach($this->players as $player){
+			$player->checkNetwork();
+		}
+		
+		while(strlen($str = $this->packetWorker->readThreadToMainPacket()) > 0){
+			$data = unserialize($str);
+			$batch = new BatchPacket;
+			$batch->payload = $data["payload"];
+			
+			$immediate = (bool) $data["immediate"];
+			
+			foreach($data["targets"] as $i){
+				if(isset($this->players[$i])){
+					if($immediate){
+						$this->players[$i]->directDataPacket($batch);
+					}else{
+						$this->players[$i]->dataPacket($batch);
+					}
+				}
+			}
+		}
+
+		if(($this->tickCounter & 0b1111) === 0){
+			$this->titleTick();
+			$this->maxTick = 20;
+			$this->maxUse = 0;
+
+			if(($this->tickCounter & 0b111111111) === 0){
+				if(($this->dserverConfig["enable"] and $this->dserverConfig["queryTickUpdate"]) or !$this->dserverConfig["enable"]){
+					$this->updateQuery();
+				}
+			}
+
+  if($this->dserverConfig["enable"] and $this->dserverConfig["motdPlayers"]){
+			 $max = $this->getDServerMaxPlayers();
+			 $online = $this->getDServerOnlinePlayers();
+			 $name = $this->getNetwork()->getName().'['.$online.'/'.$max.']';
+			 $this->getNetwork()->setName($name);
+			 //TODO: 检测是否爆满,不同状态颜色
+			}
+			$this->getNetwork()->updateName();
+		}
+
+		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
+			$this->autoSaveTicker = 0;
+			$this->doAutoSave();
+		}
+
+		if(($this->tickCounter % 100) === 0){
+			foreach($this->levels as $level){
+				$level->clearCache();
+			}
+
+			if($this->getTicksPerSecondAverage() < 1){
+				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.tickOverload"));
+			}
+		}
+
+		if($this->dispatchSignals and $this->tickCounter % 5 === 0){
+			pcntl_signal_dispatch();
+		}
+
+		$this->getMemoryManager()->check();
+
+		Timings::$serverTickTimer->stopTiming();
+
+		$now = microtime(true);
+		$tick = min(20, 1 / max(0.001, $now - $tickTime));
+		$use = min(1, ($now - $tickTime) / 0.05);
+
+		//TimingsHandler::tick($tick <= $this->profilingTickRate);
+
+		if($this->maxTick > $tick){
+			$this->maxTick = $tick;
+		}
+
+		if($this->maxUse < $use){
+			$this->maxUse = $use;
+		}
+
+		array_shift($this->tickAverage);
+		$this->tickAverage[] = $tick;
+		array_shift($this->useAverage);
+		$this->useAverage[] = $use;
+
+		if(($this->nextTick - $tickTime) < -1){
+			$this->nextTick = $tickTime;
+		}else{
+			$this->nextTick += 0.05;
+		}
+
+		return true;
+	}
 
 }
