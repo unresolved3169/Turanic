@@ -29,7 +29,6 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class Creeper extends Monster {
 	class Creeper extends Monster {
 	const NETWORK_ID = 33;
 	const DATA_SWELL = 19;
