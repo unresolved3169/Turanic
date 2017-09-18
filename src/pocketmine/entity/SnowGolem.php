@@ -21,8 +21,13 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
+
 
 class SnowGolem extends Animal {
 	const NETWORK_ID = 21;
@@ -32,7 +37,11 @@ class SnowGolem extends Animal {
 	public $height = 1.8;
 
 	public function initEntity(){
-		$this->setMaxHealth(4);
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		$this->setMaxHealth(20);
 		parent::initEntity();
 	}
 

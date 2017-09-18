@@ -22,20 +22,18 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Skeleton extends Monster implements ProjectileSource {
 	const NETWORK_ID = 34;
 
-	public $width = 0.6;
-	public $length = 0.6;
-	public $height = 0;
 	public $dropExp = [5, 5];
-	public $drag = 0.2;
-	public $gravity = 0.3;
 	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));

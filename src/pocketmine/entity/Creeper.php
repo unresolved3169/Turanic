@@ -30,17 +30,12 @@ use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Creeper extends Monster {
+	class Creeper extends Monster {
 	const NETWORK_ID = 33;
-
 	const DATA_SWELL = 19;
 	const DATA_SWELL_OLD = 20;
 	const DATA_SWELL_DIRECTION = 21;
-
-	public $width = 0.72;
-	public $height = 0;
 	public $dropExp = [5, 5];
-	public $drag = 0.2;
-	public $gravity = 0.3;
 	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));

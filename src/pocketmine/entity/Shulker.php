@@ -24,9 +24,11 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Shulker extends Monster {
 	const NETWORK_ID = 54;
@@ -46,6 +48,11 @@ class Shulker extends Monster {
 	}
 
 	public function initEntity(){
+		public function initEntity(){
+			$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+			$this->addBehavior(new StrollBehavior($this));
+			$this->addBehavior(new LookAtPlayerBehavior($this));
+			$this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setMaxHealth(30);
 		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, 10);
 		parent::initEntity();
