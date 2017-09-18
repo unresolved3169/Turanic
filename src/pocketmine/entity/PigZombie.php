@@ -34,12 +34,18 @@ class PigZombie extends Monster {
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 0;
-
+	public $dropExp = [5, 5];
 	public $drag = 0.2;
 	public $gravity = 0.3;
-
-	public $dropExp = [5, 5];
-
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+                $this->setMaxHealth(20);
+		parent::initEntity();
+	}
 	/**
 	 * @return string
 	 */
