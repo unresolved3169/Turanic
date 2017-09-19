@@ -3779,15 +3779,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->setViewDistance($packet->radius);
                 break;
             case ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET:
-                if ($packet->gamemode !== $this->gamemode) {
-                    if(!$this->hasPermission("pocketmine.command.gamemode")){
-                        $setPlayerGameTypePacket = new SetPlayerGameTypePacket();
-                        $setPlayerGameTypePacket->gamemode = $this->gamemode & 0x01;
-                        $this->dataPacket($setPlayerGameTypePacket);
-                        return false;
-                    }
-                    $this->setGamemode($packet->gamemode);
-                }
+                if($packet->gamemode !== $this->gamemode){
+                	 //Set this back to default. TODO: handle this properly
+                	 $this->sendGamemode();
+                	 $this->sendSettings();
+                	}
                 break;
             case ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET:
                 if ($this->spawned === false or !$this->isAlive()) {

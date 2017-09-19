@@ -212,6 +212,8 @@ class Level implements ChunkManager, Metadatable
     private $blockStates;
 
     public $sleepTicks = 0;
+    
+    public $entityManager;
 
     private $chunkTickRadius;
     private $chunkTickList = [];
@@ -353,6 +355,7 @@ class Level implements ChunkManager, Metadatable
         $this->blockStates = Block::$fullList;
         $this->levelId = static::$levelIdCounter++;
         $this->blockMetadata = new BlockMetadataStore($this);
+        $this->entityManager = new EntityManager($this);
         $this->server = $server;
         $this->autoSave = $server->getAutoSave();
 
@@ -759,20 +762,11 @@ class Level implements ChunkManager, Metadatable
             $block->onUpdate(self::BLOCK_UPDATE_SCHEDULED);
         }
         $this->timings->doTickPending->stopTiming();
-
-        $this->timings->entityTick->startTiming();
-        //Update entities that need update
-        Timings::$tickEntityTimer->startTiming();
-        foreach ($this->updateEntities as $id => $entity) {
-            if ($entity->closed or !$entity->onUpdate($currentTick)) {
-                unset($this->updateEntities[$id]);
-            }
+        
+        foreach($this->getEntities() as $e){
+        	$e->onUpdate($currentTick);
         }
-        Timings::$tickEntityTimer->stopTiming();
-        $this->timings->entityTick->stopTiming();
-
-        $this->timings->tileEntityTick->startTiming();
-        Timings::$tickTileEntityTimer->startTiming();
+       
         //Update tiles that need update
         if (count($this->updateTiles) > 0) {
             foreach ($this->updateTiles as $id => $tile) {
@@ -785,7 +779,7 @@ class Level implements ChunkManager, Metadatable
         $this->timings->tileEntityTick->stopTiming();
 
         $this->timings->doTickTiles->startTiming();
-        if (($currentTick % 2) === 0) $this->tickChunks($currentTick);
+        $this->tickChunks($currentTick);
         $this->timings->doTickTiles->stopTiming();
 
         if (count($this->changedBlocks) > 0) {
@@ -953,12 +947,9 @@ class Level implements ChunkManager, Metadatable
         unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
     }
 
-    protected function tickChunks($tick){
-        foreach ($this->chunks as $chunk) {
-            foreach ($chunk->getEntities() as $e) {
-                $e->scheduleUpdate();
-            }
-        }
+    private function tickChunks(int $tick) {
+    	$this->entityManager->despawnMobs($tick);
+     // TODO: Leaves, random tickable blocks
     }
 
     public function __debugInfo(): array {
@@ -3039,5 +3030,9 @@ class Level implements ChunkManager, Metadatable
     	$pk->pitch = $pitch;
     	
     	$this->addChunkPacket($chunkX,$chunkZ,$pk);
+    }
+    
+    public function getEntityManager() : EntityManager{
+    	return $this->entityManager;
     }
 }
