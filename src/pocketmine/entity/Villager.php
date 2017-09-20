@@ -1,4 +1,5 @@
 <?php
+
 /*
  *
  *  ____            _        _   __  __ _                  __  __ ____  
@@ -17,30 +18,33 @@
  * 
  *
 */
+
 namespace pocketmine\entity;
+
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
-use pocketmine\item\Item as ItemItem;
 
-class Villager extends Animal{
+class Villager extends Animal {
+	
+	const NETWORK_ID = 15;
+
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 0;
-	public $drag = 0.2;
-	public $gravity = 0.3;
-	
-	public function initEntity(){
+
+public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		$this->setMaxHealth(30);
+		
 		parent::initEntity();
 	}
+
 	/**
 	 * @return string
 	 */
@@ -64,6 +68,7 @@ class Villager extends Animal{
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
+
 		parent::spawnTo($player);
 	}
 }
