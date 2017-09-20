@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class Slime extends Living {
+class Slime extends Monster {
 	const NETWORK_ID = 37;
 
 	const DATA_SLIME_SIZE = 16;
@@ -76,28 +76,5 @@ class Slime extends Living {
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 		parent::spawnTo($player);
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
-		$drops = [ItemItem::get(ItemItem::SLIMEBALL, 0, 1)];
-		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity() instanceof Player){
-			if(\mt_rand(0, 199) < 5){
-				switch(\mt_rand(0, 2)){
-					case 0:
-						$drops[] = ItemItem::get(ItemItem::IRON_INGOT, 0, 1);
-						break;
-					case 1:
-						$drops[] = ItemItem::get(ItemItem::CARROT, 0, 1);
-						break;
-					case 2:
-						$drops[] = ItemItem::get(ItemItem::POTATO, 0, 1);
-						break;
-				}
-			}
-		}
-		return $drops;
 	}
 }
