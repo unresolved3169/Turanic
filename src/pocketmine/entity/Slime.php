@@ -22,11 +22,13 @@
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class Slime extends Living {
+class Slime extends Monster {
 	const NETWORK_ID = 37;
 
 	const DATA_SLIME_SIZE = 16;
@@ -36,12 +38,24 @@ class Slime extends Living {
 	public $height = 0;
 
 	public $dropExp = [1, 4];
+	
+	public $drag = 0.2;
+	public $gravity = 0.3;
 
 	/**
 	 * @return string
 	 */
 	public function getName() : string{
 		return "Slime";
+	}
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		$this->setMaxHealth(10);
+		parent::initEntity();
 	}
 
 	/**
@@ -62,28 +76,5 @@ class Slime extends Living {
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 		parent::spawnTo($player);
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
-		$drops = [ItemItem::get(ItemItem::SLIMEBALL, 0, 1)];
-		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity() instanceof Player){
-			if(\mt_rand(0, 199) < 5){
-				switch(\mt_rand(0, 2)){
-					case 0:
-						$drops[] = ItemItem::get(ItemItem::IRON_INGOT, 0, 1);
-						break;
-					case 1:
-						$drops[] = ItemItem::get(ItemItem::CARROT, 0, 1);
-						break;
-					case 2:
-						$drops[] = ItemItem::get(ItemItem::POTATO, 0, 1);
-						break;
-				}
-			}
-		}
-		return $drops;
 	}
 }

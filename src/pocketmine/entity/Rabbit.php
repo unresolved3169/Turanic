@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Rabbit extends Animal {
 	const NETWORK_ID = 18;
@@ -50,8 +51,15 @@ class Rabbit extends Animal {
 	public $length = 0.5;
 
 	public $dropExp = [1, 3];
+	
+	public $drag = 0.2;
+	public $gravity = 0.3;
 
 	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setMaxHealth(3);
 		parent::initEntity();
 	}
