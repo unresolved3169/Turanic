@@ -35,6 +35,8 @@ class SnowGolem extends Animal {
 	public $width = 0.3;
 	public $length = 0.9;
 	public $height = 1.8;
+	public $drag = 0.2;
+	public $gravity = 0.3;
 
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));

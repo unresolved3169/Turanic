@@ -34,6 +34,8 @@ class Skeleton extends Monster implements ProjectileSource {
 	const NETWORK_ID = 34;
 
 	public $dropExp = [5, 5];
+	public $drag = 0.2;
+	public $gravity = 0.3;
 	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));

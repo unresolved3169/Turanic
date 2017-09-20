@@ -39,6 +39,9 @@ class PolarBear extends Monster {
 	public $height = 0;
 
 	public $dropExp = [5, 5];
+	
+	public $drag = 0.2;
+	public $gravity = 0.3;
 
 
 	/**

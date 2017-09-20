@@ -38,6 +38,9 @@ class Slime extends Living {
 	public $height = 0;
 
 	public $dropExp = [1, 4];
+	
+	public $drag = 0.2;
+	public $gravity = 0.3;
 
 	/**
 	 * @return string
