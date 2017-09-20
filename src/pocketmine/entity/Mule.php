@@ -47,8 +47,7 @@ class Mule extends Animal {
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		$this->setMaxHealth(30);
-		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, 10);
+		$this->setMaxHealth(20);
 		parent::initEntity();
 	}
 
@@ -57,11 +56,6 @@ class Mule extends Animal {
 	 */
 	public function getName(){
 		return "Mule";
-	}
-
-	public function initEntity(){
-		$this->setMaxHealth(20);
-		parent::initEntity();
 	}
 
 	/**
