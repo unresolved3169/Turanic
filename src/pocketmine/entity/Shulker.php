@@ -48,7 +48,6 @@ class Shulker extends Monster {
 	}
 
 	public function initEntity(){
-		public function initEntity(){
 			$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
 			$this->addBehavior(new StrollBehavior($this));
 			$this->addBehavior(new LookAtPlayerBehavior($this));
