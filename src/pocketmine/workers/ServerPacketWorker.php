@@ -116,6 +116,5 @@ class ServerPacketWorker extends Worker {
 	
 	public function shutdown(){		
 		$this->shutdown = true;
-		var_dump("Server Packet thread shutdown!");
 	}
 }
