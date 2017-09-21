@@ -50,6 +50,7 @@ interface ProtocolInfo {
     const ADD_ENTITY_PACKET = 0x0d;
     const REMOVE_ENTITY_PACKET = 0x0e;
     const ADD_ITEM_ENTITY_PACKET = 0x0f;
+    const ADD_HANGING_ENTITY_PACKET = 0x10;
     const TAKE_ITEM_ENTITY_PACKET = 0x11;
     const MOVE_ENTITY_PACKET = 0x12;
     const MOVE_PLAYER_PACKET = 0x13;
