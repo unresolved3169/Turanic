@@ -52,8 +52,8 @@ abstract class DataPacket extends BinaryStream {
 	abstract public function decode();
 
 	public function reset(){
-		$this->buffer = chr($this::NETWORK_ID);
-		$this->offset = 0;
+		$this->buffer = chr($this::NETWORK_ID)."\x00\x00";
+		$this->offset = 2;
 	}
 
 	/**
@@ -192,7 +192,7 @@ abstract class DataPacket extends BinaryStream {
 	}
 
 	/**
-	 * @return PacketName|string
+	 * @return string
 	 */
 	public function getName(){
 		return "DataPacket";

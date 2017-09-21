@@ -409,7 +409,7 @@ class Item implements ItemIds, \JsonSerializable {
 			if(!isset($b[1])){
 				$meta = 0;
 			}else{
-				$meta = $b[1] & 0xFFFF;
+				$meta = $b[1] & 32767;
 			}
 
 			if(defined(Item::class . "::" . strtoupper($b[0]))){
@@ -1036,7 +1036,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @param int $meta
 	 */
 	public function setDamage(int $meta){
-		$this->meta = $meta !== -1 ? $meta & 0xFFFF : -1;
+        $this->meta = $meta !== null ? $meta & 32767 : null;
 	}
 
 	/**

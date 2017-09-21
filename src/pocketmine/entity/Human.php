@@ -27,6 +27,7 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\FloatingInventory;
 use pocketmine\inventory\EnderChestInventory;
+use pocketmine\inventory\HumanInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\SimpleTransactionQueue;
@@ -533,7 +534,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
 
 		$inventoryContents = ($this->namedtag->Inventory ?? null);
-		$this->inventory = new PlayerInventory($this, $inventoryContents);
+        if ($this instanceof Player){
+            $this->inventory = new PlayerInventory($this, $inventoryContents);
+            $this->addWindow($this->inventory, 0);
+        } else {
+            $this->inventory = new HumanInventory($this, $inventoryContents);
+        }
+
 		$this->enderChestInventory = new EnderChestInventory($this, ($this->namedtag->EnderChestInventory ?? null));
 
 		//Virtual inventory for desktop GUI crafting and anti-cheat transaction processing

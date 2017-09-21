@@ -497,4 +497,13 @@ class Binary {
 		}
 		throw new \InvalidArgumentException("Value too large to be encoded as a varint");
 	}
+
+    public static function writeSignedVarInt($v){
+        if ($v >= 0) {
+            $v = 2 * $v;
+        } else {
+            $v = 2 * abs($v) - 1;
+        }
+        return self::writeVarInt($v);
+    }
 }

@@ -22,7 +22,6 @@
 
 namespace pocketmine;
 
-use pocketmine\entity\Rideable;
 use pocketmine\event\block\ItemFrameDropItemEvent;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -84,7 +83,6 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
-use pocketmine\inventory\AnvilInventory;
 use pocketmine\inventory\BaseTransaction;
 use pocketmine\inventory\BigShapedRecipe;
 use pocketmine\inventory\BigShapelessRecipe;
@@ -846,8 +844,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param string $ip
      * @param int $port
      */
-    public function __construct(SourceInterface $interface, $clientID, $ip, $port)
-    {
+    public function __construct(SourceInterface $interface, $clientID, $ip, $port){
         $this->interface = $interface;
         $this->windows = new \SplObjectStorage();
         $this->perm = new PermissibleBase($this);
@@ -2490,6 +2487,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * Changes to this function won't be recorded on the version.
      *
      * @param DataPacket $packet
+     * @return bool
      */
     public function handleDataPacket(DataPacket $packet)
     {
@@ -2515,7 +2513,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         switch ($packet::NETWORK_ID) {
-            case ProtocolInfo::LEVEL_SOUND_EVENT_PACKET:
+            /*case ProtocolInfo::LEVEL_SOUND_EVENT_PACKET:
                 $this->level->addChunkPacket($packet->x >> 4, $packet->z >> 4, $packet);
                 break;
             case ProtocolInfo::PLAYER_INPUT_PACKET:
@@ -2528,9 +2526,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         }
                     }elseif($packet->motionX == 0 and $packet->motionY == -1){
                         // TODO geri (back)
-                    }*/
+                    }
                 }
-                break;
+                break;*/
             case ProtocolInfo::LOGIN_PACKET:
                 if ($this->loggedIn) {
                     break;
@@ -3345,6 +3343,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 
                 break;
+            case ProtocolInfo::INVENTORY_TRANSACTION_PACKET:
+                // TODO
+                break;
             case ProtocolInfo::ANIMATE_PACKET:
                 if ($this->spawned === false or !$this->isAlive()) {
                     break;
@@ -3497,220 +3498,103 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
             case ProtocolInfo::CRAFTING_EVENT_PACKET:
                 if (!$this->spawned || !$this->isAlive()) {
-                    return false;
+                    break;
+                } else if ($packet->windowId > 0 && !isset($this->windowIndex[$packet->windowId])) {
+                    $this->inventory->sendContents($this);
+                    $pk = new ContainerClosePacket();
+                    $pk->windowid = $packet->windowId;
+                    $this->dataPacket($pk);
+                    break;
                 }
+
                 $recipe = $this->server->getCraftingManager()->getRecipe($packet->id);
-                if ($this->craftingType == self::CRAFTING_ANVIL) {
-                    $inv = $this->windowIndex[$packet->windowId];
+                $result = $packet->output[0];
 
-                    if ($inv == null) {
-                        foreach ($this->windowIndex as $window) {
-                            if ($window instanceof AnvilInventory) {
-                                $inv = $window;
-                                break;
-                            }
-                        }
-
-                        if ($inv == null) { //If it'sf _still_ null, then the player doesn't have a valid anvil window, cannot proceed.
-                            $this->getServer()->getLogger()->debug("Couldn't find an anvil window for " . $this->getName() . ", exiting");
-                            $this->inventory->sendContents($this);
-                            return false;
-                        }
-                    }
-
-                    if ($recipe == null) {
-                        //Item renamed
-                        if (!$inv->onRename($this, $packet->output[0])) {
-                            $this->getServer()->getLogger()->debug($this->getName() . " failed to rename an item in an anvil");
-                            $this->inventory->sendContents($this);
-                            return false;
-                        }
-                    }
-                    //TODO: Anvil crafting recipes
-                    return true;
-                } else if (!isset($this->windowIndex[$packet->windowId])) {
+                if (!($result instanceof Item)) {
                     $this->inventory->sendContents($this);
-                    $containerClosePacket = new ContainerClosePacket();
-                    $containerClosePacket->windowid = $packet->windowId;
-                    $this->dataPacket($containerClosePacket);
-                    return false;
+                    break;
                 }
 
-                if ($recipe == null || $recipe instanceof BigShapelessRecipe || $recipe instanceof BigShapedRecipe && $this->craftingType == self::CRAFTING_SMALL) {
+                if (is_null($recipe) || !$result->equals($recipe->getResult(), true, false) ) { //hack for win10
+                    $newRecipe = $this->server->getCraftingManager()->getRecipeByHash($result->getId() . ":" . $result->getDamage());
+                    if (!is_null($newRecipe)) {
+                        $recipe = $newRecipe;
+                    }
+                }
+                if ($recipe === null || (($recipe instanceof BigShapelessRecipe || $recipe instanceof BigShapedRecipe) && $this->craftingType === self::CRAFTING_DEFAULT)) {
                     $this->inventory->sendContents($this);
-                    return false;
+                    break;
                 }
-
-                for ($i = 0; $i < count($packet->input); $i++) {
-                    /** @var Item $inputItem */
-                    $inputItem = $packet->input[$i];
-                    if ($inputItem->getDamage() == -1 || $inputItem->getDamage() == 0xffff) {
-                        $inputItem->setDamage(null);
-                    }
-
-                    if ($i < 9 && $inputItem->getId() > 0) {
-                        $inputItem->setCount(1);
-                    }
-                }
-
                 $canCraft = true;
 
-                if (count($packet->input) == 0) {
+                /** @var Item[] $ingredients */
+                $ingredients = [];
+                if ($recipe instanceof ShapedRecipe) {
+                    $ingredientMap = $recipe->getIngredientMap();
+                    foreach ($ingredientMap as $row) {
+                        $ingredients = array_merge($ingredients, $row);
+                    }
+                } else if ($recipe instanceof ShapelessRecipe) {
+                    $ingredients = $recipe->getIngredientList();
+                } else {
+                    $canCraft = false;
+                }
 
-                    $recipes = $this->getServer()->getCraftingManager()->getRecipesByResult($packet->output[0]);
-                    $recipe = null;
-                    $ingredientz = [];
+                if(!$canCraft || !$result->equals($recipe->getResult(), true, false)){
+                    $this->server->getLogger()->debug("Unmatched recipe ". $recipe->getId() ." from player ". $this->getName() .": expected " . $recipe->getResult() . ", got ". $result .", using: " . implode(", ", $ingredients));
+                    $this->inventory->sendContents($this);
+                    break;
+                }
 
-                    foreach ($recipes as $rec) {
-                        if ($rec instanceof ShapedRecipe) {
-                            $ingredients = $rec->getIngredientMap();
-                            foreach ($ingredients as $map) {
-                                /** @var Item $ingredient */
-                                foreach ($map as $ingredient) {
-                                    if ($ingredient != null && $ingredient->getId() != Item::AIR) {
-                                        $ingredientz[] = $ingredient;
-                                    }
-                                }
-                            }
-                        } else if ($rec instanceof ShapelessRecipe) {
-                            foreach ($rec->getIngredientList() as $ingredient) {
-                                if ($ingredient != null && $ingredient->getId() != Item::AIR) {
-                                    $ingredientz[] = $ingredient;
-                                }
-                            }
+                $used = array_fill(0, $this->inventory->getSize() + 4, 0);
+                $playerInventoryItems = $this->inventory->getContents();
+                foreach ($ingredients as $ingredient) {
+                    $slot = -1;
+                    foreach ($playerInventoryItems as $index => $i) {
+                        if ($ingredient->getId() !== Item::AIR && $ingredient->equals($i, (!is_null($ingredient->getDamage()) && $ingredient->getDamage() != 32767), false) && ($i->getCount() - $used[$index]) >= 1) {
+                            $slot = $index;
+                            $used[$index]++;
+                            break;
                         }
-
-                        $serialized = [];
-                        /** @var Item $ingredient */
-                        foreach ($ingredientz as $ingredient) {
-                            $hash = $ingredient->getId() . ":" . $ingredient->getDamage();
-                            if (isset($serialized[$hash])) {
-                                /** @var Item $r */
-                                $r = $serialized[$hash];
-                                if ($r != null) {
-                                    $r->count += $ingredient->getCount();
-                                    continue;
-                                }
-                            }
-                            $serialized[$hash] = $ingredient;
-                        }
-
-                        $craftItemEvent = new CraftItemEvent($this, $serialized, $rec);
-                        $this->getServer()->getPluginManager()->callEvent($craftItemEvent);
-
-                        if ($craftItemEvent->isCancelled()) {
-                            $this->inventory->sendContents($this);
-                            return false;
-                        }
-
-                        foreach ($serialized as $ingredient) {
-                            $this->inventory->removeItem($ingredient);
-                        }
-
-                        $this->inventory->addItem($rec->getResult());
+                    }
+                    if($ingredient->getId() !== Item::AIR and $slot === -1){
+                        $canCraft = false;
                         break;
                     }
+                }
+                if(!$canCraft){
+                    $this->server->getLogger()->debug("Unmatched recipe ". $recipe->getId() ." from player ". $this->getName() .": client does not have enough items, using: " . implode(", ", $ingredients));
+                    $this->inventory->sendContents($this);
+                    break;
+                }
+                $this->server->getPluginManager()->callEvent($ev = new CraftItemEvent($ingredients, $recipe, $this));
+                if($ev->isCancelled()){
+                    $this->inventory->sendContents($this);
+                    break;
+                }
 
-                    if ($recipe == null) {
-                        $this->server->getLogger()->debug("(1) Unmatched desktop recipe " . $packet->id . " from player " . $this->getName());
-                        $this->inventory->sendContents($this);
+                foreach($used as $slot => $count){
+                    if($count === 0){
+                        continue;
                     }
-                } else {
-                    $ingredientz = [];
+                    $item = $playerInventoryItems[$slot];
 
-                    if ($recipe instanceof ShapedRecipe) {
-                        $ingredients = $recipe->getIngredientMap();
-                        foreach ($ingredients as $map) {
-                            /** @var Item $ingredient */
-                            foreach ($map as $ingredient) {
-                                if ($ingredient != null && $ingredient->getId() != Item::AIR) {
-                                    $ingredientz[] = $ingredient;
-                                }
-                            }
-                        }
-                    } else if ($recipe instanceof ShapelessRecipe) {
-                        foreach ($recipe->getIngredientList() as $ingredient) {
-                            if ($ingredient != null && $ingredient->getId() != Item::AIR) {
-                                $ingredientz[] = $ingredient;
-                            }
-                        }
+                    if($item->getCount() > $count){
+                        $newItem = clone $item;
+                        $newItem->setCount($item->getCount() - $count);
+                    }else{
+                        $newItem = Item::get(Item::AIR, 0, 0);
                     }
-
-                    $serialized = [];
-
-                    /** @var Item $ingredient */
-                    foreach ($ingredientz as $ingredient) {
-                        $hash = $ingredient->getId() . ":" . $ingredient->getDamage();
-                        if (isset($serialized[$hash])) {
-                            /** @var Item $r */
-                            $r = $serialized[$hash];
-                            if ($r != null) {
-                                $r->count += $ingredient->getCount();
-                                continue;
-                            }
-                        }
-
-                        $serialized[$hash] = $ingredient;
-                    }
-
-                    foreach ($serialized as $ingredient) {
-                        if (!$this->inventory->contains($ingredient)) {
-                            $canCraft = false;
-                            break;
-                        }
-                    }
-
-                    if (!$canCraft) {
-                        $this->server->getLogger()->debug("(1) Unmatched recipe " . $packet->id . " from player " . $this->getName() . "  not anough ingredients");
-                        return false;
-                    }
-
-                    $craftItemEvent = new CraftItemEvent($this, $serialized, $recipe);
-                    $this->getServer()->getPluginManager()->callEvent($craftItemEvent);
-
-                    if ($craftItemEvent->isCancelled()) {
-                        $this->inventory->sendContents($this);
-                        return false;
-                    }
-
-                    foreach ($serialized as $ingredient) {
-                        $this->inventory->removeItem($ingredient);
-                    }
-
-                    $this->inventory->addItem($recipe->getResult());
-                    switch($recipe->getResult()->getId()){
-                        case Item::WORKBENCH:
-                            $this->awardAchievement("buildWorkBench");
-                            break;
-                        case Item::WOODEN_PICKAXE:
-                            $this->awardAchievement("buildPickaxe");
-                            break;
-                        case Item::FURNACE:
-                            $this->awardAchievement("buildFurnace");
-                            break;
-                        case Item::WOODEN_HOE:
-                            $this->awardAchievement("buildHoe");
-                            break;
-                        case Item::BREAD:
-                            $this->awardAchievement("makeBread");
-                            break;
-                        case Item::CAKE:
-                            $this->awardAchievement("bakeCake");
-                            break;
-                        case Item::STONE_PICKAXE:
-                        case Item::GOLD_PICKAXE:
-                        case Item::IRON_PICKAXE:
-                        case Item::DIAMOND_PICKAXE:
-                            $this->awardAchievement("buildBetterPickaxe");
-                            break;
-                        case Item::WOODEN_SWORD:
-                            $this->awardAchievement("buildSword");
-                            break;
-                        case Item::DIAMOND:
-                            $this->awardAchievement("diamond");
-                            break;
+                    $this->inventory->setItem($slot, $newItem);
+                }
+                $extraItem = $this->inventory->addItem($recipe->getResult());
+                if(count($extraItem) > 0){
+                    foreach($extraItem as $item){
+                        $this->level->dropItem($this, $item);
                     }
                 }
+                $this->inventory->sendContents($this);
+
                 break;
             case ProtocolInfo::CONTAINER_SET_SLOT_PACKET:
                 if ($this->spawned === false or !$this->isAlive()) {

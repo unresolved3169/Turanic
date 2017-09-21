@@ -475,4 +475,18 @@ class BinaryStream extends \stdClass {
 	public function feof(){
 		return !isset($this->buffer{$this->offset});
 	}
+
+    public function putSignedVarInt($v) {
+        $this->put(Binary::writeSignedVarInt($v));
+    }
+
+    public function getSignedVarInt() {
+        $result = $this->getVarInt();
+        if ($result % 2 == 0) {
+            $result = $result / 2;
+        } else {
+            $result = (-1) * ($result + 1) / 2;
+        }
+        return $result;
+    }
 }

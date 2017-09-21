@@ -45,7 +45,7 @@ class SimpleTransactionQueue implements TransactionQueue {
 	/** @var int */
 	protected $transactionCount = 0;
 
-	/**
+    /**
 	 * @param Player $player
 	 */
 	public function __construct(Player $player = null){
