@@ -38,6 +38,9 @@ class Pig extends Animal {
 
 	public $dropExp = [1, 3];
 	
+	public $drag = 0.2;
+	public $gravity = 0.3;
+	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
 		$this->addBehavior(new StrollBehavior($this));

@@ -22,19 +22,33 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\event\entity\CreeperPowerEvent;
-use pocketmine\nbt\tag\ByteTag;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class Creeper extends Monster {
+	class Creeper extends Monster {
 	const NETWORK_ID = 33;
-
 	const DATA_SWELL = 19;
 	const DATA_SWELL_OLD = 20;
 	const DATA_SWELL_DIRECTION = 21;
-
 	public $dropExp = [5, 5];
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		
+                $this->setMaxHealth(20);
+		parent::initEntity();
+		if(!isset($this->namedtag->powered)){
+			$this->setPowered(false);
+		}
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
+	}
 
 	/**
 	 * @return string
@@ -42,16 +56,6 @@ class Creeper extends Monster {
 	public function getName() : string{
 		return "Creeper";
 	}
-
-	public function initEntity(){
-		parent::initEntity();
-
-		if(!isset($this->namedtag->powered)){
-			$this->setPowered(false);
-		}
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
-	}
-
 	/**
 	 * @param bool           $powered
 	 * @param Lightning|null $lightning

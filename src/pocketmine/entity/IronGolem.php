@@ -24,6 +24,8 @@ namespace pocketmine\entity;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class IronGolem extends Animal {
 	const NETWORK_ID = 20;
@@ -32,7 +34,14 @@ class IronGolem extends Animal {
 	public $length = 0.9;
 	public $height = 2.8;
 
+	public $drag = 0.2;
+	public $gravity = 0.3;
+	
 	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setMaxHealth(100);
 		parent::initEntity();
 	}

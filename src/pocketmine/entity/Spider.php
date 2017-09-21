@@ -25,6 +25,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
+use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Spider extends Monster {
 	const NETWORK_ID = 35;
@@ -39,6 +40,14 @@ class Spider extends Monster {
 	 */
 	public function getName() : string{
 		return "Spider";
+	}
+	
+	public function initEntity(){
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new StrollBehavior($this));
+		$this->addBehavior(new LookAtPlayerBehavior($this));
+		$this->addBehavior(new RandomLookaroundBehavior($this));
+		parent::initEntity();
 	}
 
 	/**
