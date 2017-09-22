@@ -26,10 +26,11 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\utils\Binary;
+use pocketmine\utils\UUID;
 
 class LoginPacket extends DataPacket {
+
 	const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
 
 	const MOJANG_PUBKEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAE8ELkixyLcwlZryUQcu1TvPOmI2B7vX83ndnWRUaXm74wFfa5f/lwQNTfrLVHa2PmenpGI6JhIMUJaWZrjmMj90NoKNFSNBuKdm8rYiXsfaz3K36x/1U26HpG0ZxK/V1V";
@@ -37,142 +38,121 @@ class LoginPacket extends DataPacket {
 	const EDITION_POCKET = 0;
 
 
-	public $username;
-	public $protocol;
-	public $gameEdition;
-	public $clientUUID;
-	public $clientId;
-	public $identityPublicKey;
-	public $serverAddress;
+    public $username;
+    public $protocol;
+    public $clientId;
+    public $clientUUID;
+    public $serverAddress;
+    public $clientSecret;
+    public $slim = false;
+    public $skinId;
+    public $chainsDataLength;
+    public $chains;
+    public $playerDataLength;
+    public $playerData;
+    public $isValidProtocol = true;
+    public $inventoryType = -1;
+    public $deviceOS = -1;
+    public $deviceModel = "";
+    public $xuid = '';
+    public $languageCode = 'unknown';
+    public $clientVersion = 'unknown';
+    public $skinGeometryName = "";
+    public $skinGeometryData = "";
+    public $capeData = "";
 
-	public $skinId = null;
-	public $skin = null;
+    private function getFromString(&$body, $len) {
+        $res = substr($body, 0, $len);
+        $body = substr($body, $len);
+        return $res;
+    }
 
-	public $clientData = [];
-
-	public $deviceModel;
-	public $deviceOS;
-
-	/**
-	 *
-	 */
-	public function decode(){
-		$this->protocol = $this->getInt();
+    public function decode() {
         $tmpData = Binary::readInt(substr($this->buffer, 1, 4));
         if ($tmpData == 0) {
             $this->getShort();
         }
-		if(!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)){
-			$this->buffer = null;
-			return;
-		}
+        $this->protocol = $this->getInt();
+        if ($this->protocol < 120) {
+            $this->getByte();
+        }
+        $data = $this->getString();
 
-		$this->gameEdition = $this->getByte();
+        if (ord($data{0}) != 120 || (($decodedData = @zlib_decode($data)) === false)) {
+            $body = $data;
+        } else {
+            $body = $decodedData;
+        }
 
-		$this->setBuffer($this->getString(), 0);
+        $this->chainsDataLength = Binary::readLInt($this->getFromString($body, 4));
+        $this->chains = json_decode($this->getFromString($body, $this->chainsDataLength), true);
+        $this->playerDataLength = Binary::readLInt($this->getFromString($body, 4));
+        $this->playerData = $this->getFromString($body, $this->playerDataLength);
 
-		$time = time();
+        $this->chains['data'] = array();
+        $index = 0;
+        foreach ($this->chains['chain'] as $key => $jwt) {
+            $data = self::load($jwt);
+            if (isset($data['extraData'])) {
+                $dataIndex = $index;
+            }
+            $this->chains['data'][$index] = $data;
+            $index++;
+        }
+        if (!isset($dataIndex)) {
+            $this->isValidProtocol = false;
+            return;
+        }
 
-		$chainData = json_decode($this->get($this->getLInt()))->{"chain"};
-		// Start with the trusted one
-		$chainKey = self::MOJANG_PUBKEY;
-		while(!empty($chainData)){
-			foreach($chainData as $index => $chain){
-				list($verified, $webtoken) = $this->decodeToken($chain, $chainKey);
-				if(isset($webtoken["extraData"])){
-					if(isset($webtoken["extraData"]["displayName"])){
-						$this->username = $webtoken["extraData"]["displayName"];
-					}
-					if(isset($webtoken["extraData"]["identity"])){
-						$this->clientUUID = $webtoken["extraData"]["identity"];
-					}
-				}
-				if($verified){
-					$verified = isset($webtoken["nbf"]) && $webtoken["nbf"] <= $time && isset($webtoken["exp"]) && $webtoken["exp"] > $time;
-				}
-				if($verified and isset($webtoken["identityPublicKey"])){
-					// Looped key chain. #blamemojang
-					if($webtoken["identityPublicKey"] != self::MOJANG_PUBKEY) $chainKey = $webtoken["identityPublicKey"];
-					break;
-				}elseif($chainKey === null){
-					// We have already gave up
-					break;
-				}
-			}
-			if(!$verified && $chainKey !== null){
-				$chainKey = null;
-			}else{
-				unset($chainData[$index]);
-			}
-		}
+        $this->playerData = self::load($this->playerData);
+        $this->username = $this->chains['data'][$dataIndex]['extraData']['displayName'];
+        $this->clientId = $this->chains['data'][$dataIndex]['extraData']['identity'];
+        $this->clientUUID = UUID::fromString($this->chains['data'][$dataIndex]['extraData']['identity']);
+        $this->identityPublicKey = $this->chains['data'][$dataIndex]['identityPublicKey'];
+        if (isset($this->chains['data'][$dataIndex]['extraData']['XUID'])) {
+            $this->xuid = $this->chains['data'][$dataIndex]['extraData']['XUID'];
+        }
 
-		list($verified, $this->clientData) = $this->decodeToken($this->get($this->getLInt()), $chainKey);
+        $this->serverAddress = $this->playerData['ServerAddress'];
+        $this->skinId = $this->playerData['SkinId'];
+        $this->skin = base64_decode($this->playerData['SkinData']);
+        if (isset($this->playerData['SkinGeometryName'])) {
+            $this->skinGeometryName = $this->playerData['SkinGeometryName'];
+        }
+        if (isset($this->playerData['SkinGeometry'])) {
+            $this->skinGeometryData = base64_decode($this->playerData['SkinGeometry']);
+        }
+        $this->clientSecret = $this->playerData['ClientRandomId'];
+        if (isset($this->playerData['DeviceOS'])) {
+            $this->deviceOS = $this->playerData['DeviceOS'];
+        }
+        if (isset($this->playerData['DeviceModel'])) {
+            $this->deviceModel = $this->playerData['DeviceModel'];
+        }
+        if (isset($this->playerData['UIProfile'])) {
+            $this->inventoryType = $this->playerData['UIProfile'];
+        }
+        if (isset($this->playerData['LanguageCode'])) {
+            $this->languageCode = $this->playerData['LanguageCode'];
+        }
+        if (isset($this->playerData['GameVersion'])) {
+            $this->clientVersion = $this->playerData['GameVersion'];
+        }
+        if (isset($this->playerData['CapeData'])) {
+            $this->capeData = base64_decode($this->playerData['CapeData']);
+        }
+    }
 
-		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
-		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
-		$this->skinId = $this->clientData["SkinId"] ?? null;
+    public function encode(){
+    }
 
-		if(isset($this->clientData["SkinData"])){
-			$this->skin = base64_decode($this->clientData["SkinData"]);
-		}
-
-		if(isset($this->clientData["DeviceModel"])){
-			$this->deviceModel = $this->clientData["DeviceModel"];
-		}
-
-		if(isset($this->clientData["DeviceOS"])){
-			$this->deviceOS = $this->clientData["DeviceOS"];
-		}
-
-		if($verified){
-			$this->identityPublicKey = $chainKey;
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function encode(){
-
-	}
-
-	/**
-	 * @param $token
-	 * @param $key
-	 *
-	 * @return array
-	 */
-	public function decodeToken($token, $key){
-		$tokens = explode(".", $token);
-		list($headB64, $payloadB64, $sigB64) = $tokens;
-
-		if($key !== null and extension_loaded("openssl")){
-			$sig = base64_decode(strtr($sigB64, '-_', '+/'), true);
-			$rawLen = 48; // ES384
-			for($i = $rawLen; $i > 0 and $sig[$rawLen - $i] == chr(0); $i--){
-			}
-			$j = $i + (ord($sig[$rawLen - $i]) >= 128 ? 1 : 0);
-			for($k = $rawLen; $k > 0 and $sig[2 * $rawLen - $k] == chr(0); $k--){
-			}
-			$l = $k + (ord($sig[2 * $rawLen - $k]) >= 128 ? 1 : 0);
-			$len = 2 + $j + 2 + $l;
-			$derSig = chr(48);
-			if($len > 255){
-				throw new \RuntimeException("Invalid signature format");
-			}elseif($len >= 128){
-				$derSig .= chr(81);
-			}
-			$derSig .= chr($len) . chr(2) . chr($j);
-			$derSig .= str_repeat(chr(0), $j - $i) . substr($sig, $rawLen - $i, $i);
-			$derSig .= chr(2) . chr($l);
-			$derSig .= str_repeat(chr(0), $l - $k) . substr($sig, 2 * $rawLen - $k, $k);
-
-			$verified = openssl_verify($headB64 . "." . $payloadB64, $derSig, "-----BEGIN PUBLIC KEY-----\n" . wordwrap($key, 64, "\n", true) . "\n-----END PUBLIC KEY-----\n", OPENSSL_ALGO_SHA384) === 1;
-		}else{
-			$verified = false;
-		}
-
-		return [$verified, json_decode(base64_decode($payloadB64), true)];
-	}
+    public static function load($jwsTokenString) {
+        $parts = explode('.', $jwsTokenString);
+        if (isset($parts[1])) {
+            $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
+            return $payload;
+        }
+        return "";
+    }
 
 }
