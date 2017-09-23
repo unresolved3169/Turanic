@@ -83,8 +83,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	protected $totalXp = 0;
 	protected $xpSeed;
 	protected $xpCooldown = 0;
+    protected $skinName;
+    protected $skinGeometryName;
+    protected $skinGeometryData;
+    protected $capeData;
 
-	/**
+    /**
 	 * @return mixed
 	 */
 	public function getSkinData(){
@@ -112,14 +116,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		return $this->rawUUID;
 	}
 
-	/**
-	 * @param string $str
-	 * @param string $skinId
-	 */
-	public function setSkin($str, $skinId){
-		$this->skin = $str;
-		$this->skinId = $skinId;
-	}
+    public function setSkin($str, $skinName, $skinGeometryName = "", $skinGeometryData = "", $capeData = ""){
+        $this->skin = $str;
+        if (is_string($skinName)) {
+            $this->skinName = $skinName;
+        }
+        if (!empty($skinGeometryName)) {
+            $this->skinGeometryName = $skinGeometryName;
+        }
+        if (!empty($skinGeometryData)) {
+            $this->skinGeometryData = $skinGeometryData;
+        }
+        if (!empty($capeData)) {
+            $this->capeData = $capeData;
+        }
+    }
 
 	/**
 	 * @return float
