@@ -2483,7 +2483,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->server->getNetwork()->processBatch($packet, $this);
             return;
         }
-
+        
+        echo get_class($packet)."\n";
         switch($packet->pid()){
             case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
                 $isCheater = ($this->allowFlight === false && ($packet->flags >> 9) & 0x01 === 1) || (!$this->isSpectator() && ($packet->flags >> 7) & 0x01 === 1);
