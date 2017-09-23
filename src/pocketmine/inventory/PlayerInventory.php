@@ -237,7 +237,7 @@ class PlayerInventory extends HumanInventory {
      * @param integer $slotIndex
      * @return boolean
      */
-    public function clear($slotIndex) {
+    public function clear($slotIndex, $send = true) {
         if (isset($this->slots[$slotIndex])) {
             if ($this->isArmorSlot($slotIndex)) { //Armor change
                 $ev = new EntityArmorChangeEvent($this->holder, $this->slots[$slotIndex], clone $this->air, $slotIndex);
@@ -261,7 +261,7 @@ class PlayerInventory extends HumanInventory {
             } else {
                 unset($this->slots[$slotIndex]);
             }
-            $this->onSlotChange($slotIndex, $oldItem);
+            $this->onSlotChange($slotIndex, $oldItem, $send);
         }
         return true;
     }
