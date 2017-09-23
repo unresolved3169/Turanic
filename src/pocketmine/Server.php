@@ -2408,6 +2408,9 @@ class Server{
 			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic");
 		
 		$this->packetWorker = new ServerPacketWorker($this->getLoader());
+		//$this->packetWorker->run();
+		
+		$this->getLogger()->info("§e> Server Packet Worker Starting...");
 
 		$this->tickProcessor();
 		$this->forceShutdown();
