@@ -44,7 +44,7 @@ class Terracotta extends Solid {
 	 * @return string
 	 */
 	public function getName() : string{
-		return "Hardened Clay";
+		return "Terracotta";
 	}
 
 	/**
@@ -68,7 +68,7 @@ class Terracotta extends Solid {
     public function getDrops(Item $item): array{
         if($item->isPickaxe() >= 1){
             return [
-                [Item::HARDENED_CLAY, 0, 1],
+                [Item::TERRACOTTA, 0, 1],
             ];
         }
         return [];
