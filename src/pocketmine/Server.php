@@ -1500,18 +1500,24 @@ class Server{
 	}
 
 	public function about(){
-		$string = TextFormat::BOLD.TextFormat::AQUA."
-  _______                    _
- |__   __|                  (_)     
-    | |_   _ _ __ __ _ _ __  _  ___ 
-    | | | | | '__/ _` | '_ \| |/ __|
-    | | |_| | | | (_| | | | | | (__ 
-    |_|\__,_|_|  \__,_|_| |_|_|\___|
-    
-    §r§bGithub§8: §fhttps://github.com/TuranicTeam§f
-    §9Discord§8: §fhttps://discord.gg/DyPYdYT§f
-    ";
-		$this->getLogger()->info($string);
+		$StringStart = "
+  _____             _     _____                      _   
+ |  __ \           | |   / ____|                    | |  
+ | |  | | __ _ _ __| | _| (___  _   _ _ __  ___  ___| |_ 
+ | |  | |/ _` | '__| |/ /\___ \| | | | '_ \/ __|/ _ \ __|
+ | |__| | (_| | |  |   < ____) | |_| | | | \__ \  __/ |_ 
+ |_____/ \__,_|_|  |_|\_\_____/ \__,_|_| |_|___/\___|\__|
+                                                         
+	This core is maintained by WiliRodin And RousselCrft
+	@WiliRodin (Twitter)
+	@WiliRodin (Telegram)
+	fb.me/WiliRodin (Facebook)
+	@RousselCrft (Twitter)
+	fb.me/RousselCrft (Facebook)
+	youtu.be/c/RousselCrft (Youtube)
+	";
+
+		$this->getLogger()->info($StringStart);
 	}
 
 	public function loadAdvancedConfig(){
