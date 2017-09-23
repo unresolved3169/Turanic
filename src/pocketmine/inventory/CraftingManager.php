@@ -96,15 +96,6 @@ class CraftingManager {
 		$this->buildCraftingDataCache();
 	}
 
-    public function getRecipeByHash($hash) {
-        if (isset($this->recipeLookup[$hash])) {
-            foreach ($this->recipeLookup[$hash] as $recipe) {
-                return $recipe;
-            }
-        }
-        return null;
-    }
-
 	/**
 	 * Rebuilds the cached CraftingDataPacket.
 	 */

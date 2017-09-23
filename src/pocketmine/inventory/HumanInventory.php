@@ -262,7 +262,7 @@ class HumanInventory extends BaseInventory {
 	 * @param Item $before
 	 * @param bool $send
 	 */
-	public function onSlotChange($index, $before, $send = true){
+	public function onSlotChange($index, $before, $send){
 		if($send){
 			$holder = $this->getHolder();
 			if(!$holder instanceof Player or !$holder->spawned){

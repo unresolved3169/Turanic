@@ -38,10 +38,8 @@ class EnchantInventory extends TemporaryInventory {
 	private $levels = [];
 	/** @var EnchantmentEntry[] */
 	private $entries = null;
-	protected $holder = null;
-    protected $enchantingLevel;
 
-    /**
+	/**
 	 * EnchantInventory constructor.
 	 *
 	 * @param Position $pos

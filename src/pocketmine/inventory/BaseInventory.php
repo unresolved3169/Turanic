@@ -48,8 +48,6 @@ abstract class BaseInventory implements Inventory {
 	protected $viewers = [];
 	/** @var InventoryHolder */
 	protected $holder;
-    /** @var  Item */
-	protected $air;
 
 	/**
 	 * @param InventoryHolder $holder
@@ -77,7 +75,6 @@ abstract class BaseInventory implements Inventory {
 		$this->name = $this->type->getDefaultTitle();
 
 		$this->setContents($items);
-        $this->air = Item::get(Item::AIR, null, 0);
 	}
 
 	public function __destruct(){
