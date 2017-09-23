@@ -32,22 +32,22 @@ class StainedTerracotta extends Solid {
 
 	protected $id = self::STAINED_TERRACOTTA;
 
-	const CLAY_WHITE = 0;
-	const CLAY_ORANGE = 1;
-	const CLAY_MAGENTA = 2;
-	const CLAY_LIGHT_BLUE = 3;
-	const CLAY_YELLOW = 4;
-	const CLAY_LIME = 5;
-	const CLAY_PINK = 6;
-	const CLAY_GRAY = 7;
-	const CLAY_LIGHT_GRAY = 8;
-	const CLAY_CYAN = 9;
-	const CLAY_PURPLE = 10;
-	const CLAY_BLUE = 11;
-	const CLAY_BROWN = 12;
-	const CLAY_GREEN = 13;
-	const CLAY_RED = 14;
-	const CLAY_BLACK = 15;
+	const WHITE = 0;
+	const ORANGE = 1;
+	const MAGENTA = 2;
+	const LIGHT_BLUE = 3;
+	const YELLOW = 4;
+	const LIME = 5;
+	const PINK = 6;
+	const GRAY = 7;
+	const LIGHT_GRAY = 8;
+	const CYAN = 9;
+	const PURPLE = 10;
+	const BLUE = 11;
+	const BROWN = 12;
+	const GREEN = 13;
+	const RED = 14;
+	const BLACK = 15;
 
 	/**
 	 * StainedTerracotta constructor.
@@ -77,7 +77,7 @@ class StainedTerracotta extends Solid {
 	 */
 	public function getName() : string{
 		static $names = [
-			0 => "White Stained Clay",
+			0 => "White Stained Terracotta",
 			1 => "Orange Stained Clay",
 			2 => "Magenta Stained Clay",
 			3 => "Light Blue Stained Clay",
@@ -104,7 +104,7 @@ class StainedTerracotta extends Solid {
     public function getDrops(Item $item): array{
         if($item->isPickaxe() >= 1){
             return [
-                [Item::HARDENED_CLAY, 0, 1],
+                [Item::STAINED_TERRACOTTA, 0, 1],
             ];
         }
         return [];
