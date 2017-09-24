@@ -567,9 +567,9 @@ class PluginManager {
 				}
 			}
 		}else{
-			return $this->defSubs;
-            $subs[] = [];
-			foreach($this->defSubs as $k => $perm){
+		    return $this->defSubs;
+		    $subs[] = [];
+		    foreach($this->defSubs as $k => $perm){
 				/** @var \WeakRef $perm */
 				if($perm->acquire()){
 					$subs[] = $perm->get();
