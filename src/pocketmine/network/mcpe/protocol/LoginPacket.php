@@ -56,6 +56,11 @@ class LoginPacket extends DataPacket{
 	/** @var array decoded payload of the clientData JWT */
 	public $clientData = [];
 
+	/** @var string */
+	public $deviceModel;
+	/** @var int */
+	public $deviceOS;
+
 	public function decode(){
 		$tmpData = Binary::readInt(substr($this->buffer, 1, 4));
 		if ($tmpData == 0) {
@@ -103,6 +108,14 @@ class LoginPacket extends DataPacket{
 		if(isset($this->clientData["SkinData"])){
 			$this->skin = base64_decode($this->clientData["SkinData"]);
 		}
+
+		if(isset($this->clientData["DeviceModel"])) {
+            $this->deviceModel = $this->clientData["DeviceModel"];
+        }
+
+        if(isset($this->clientData["DeviceOS"])) {
+            $this->deviceOS = $this->clientData["DeviceOS"];
+        }
 		
 		file_put_contents(__DIR__ . "TEST_login_client.data", json_encode($this->clientData));
 	}
