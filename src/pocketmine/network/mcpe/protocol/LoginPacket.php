@@ -27,104 +27,104 @@ use pocketmine\utils\Utils;
 use pocketmine\utils\Binary;
 
 class LoginPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
+    const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
 
-	const EDITION_POCKET = 0;
+    const EDITION_POCKET = 0;
 
-	/** @var string */
-	public $username;
-	/** @var int */
-	public $protocol;
-	/** @var string */
-	public $clientUUID;
-	/** @var int */
-	public $clientId;
-	/** @var string */
-	public $identityPublicKey;
-	/** @var string */
-	public $serverAddress;
+    /** @var string */
+    public $username;
+    /** @var int */
+    public $protocol;
+    /** @var string */
+    public $clientUUID;
+    /** @var int */
+    public $clientId;
+    /** @var string */
+    public $identityPublicKey;
+    /** @var string */
+    public $serverAddress;
 
-	/** @var string */
-	public $skinId;
-	/** @var string */
-	public $skin = "";
+    /** @var string */
+    public $skinId;
+    /** @var string */
+    public $skin = "";
 
-	/** @var array (the "chain" index contains one or more JWTs) */
-	public $chainData = [];
-	/** @var string */
-	public $clientDataJwt;
-	/** @var array decoded payload of the clientData JWT */
-	public $clientData = [];
+    /** @var array (the "chain" index contains one or more JWTs) */
+    public $chainData = [];
+    /** @var string */
+    public $clientDataJwt;
+    /** @var array decoded payload of the clientData JWT */
+    public $clientData = [];
 
-	/** @var string */
-	public $deviceModel;
-	/** @var int */
-	public $deviceOS;
+    /** @var string */
+    public $deviceModel;
+    /** @var int */
+    public $deviceOS;
 
-	public function decode(){
-		$tmpData = Binary::readInt(substr($this->buffer, 1, 4));
-		if ($tmpData == 0) {
-			$this->getShort();
-		}
-		
-		$this->protocol = $this->getInt();
-		
-		var_dump($this->protocol);
+    public function decode(){
+        $tmpData = Binary::readInt(substr($this->buffer, 1, 4));
+        if ($tmpData == 0) {
+            $this->getShort();
+        }
 
-		/*if(!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)){
-			$this->buffer = null;
-			return; //Do not attempt to decode for non-accepted protocols
-		}*/
+        $this->protocol = $this->getInt();
 
-		$this->setBuffer($this->getString(), 0);
+        var_dump($this->protocol);
 
-		$this->chainData = json_decode($this->get($this->getLInt()), true);
-		foreach($this->chainData["chain"] as $chain){
-			$webtoken = Utils::decodeJWT($chain);
-			if(isset($webtoken["extraData"])){
-				if(isset($webtoken["extraData"]["displayName"])){
-					$this->username = $webtoken["extraData"]["displayName"];
-				}
-				if(isset($webtoken["extraData"]["identity"])){
-					$this->clientUUID = $webtoken["extraData"]["identity"];
-				}
-				if(isset($webtoken["identityPublicKey"])){
-					$this->identityPublicKey = $webtoken["identityPublicKey"];
-				}
-			}
-			
-			file_put_contents(__DIR__ . "TEST_login_webtoken.data", json_encode($webtoken));
-		}
-		
-		file_put_contents(__DIR__ . "TEST_login_chain.data", json_encode($this->chainData));
+        /*if(!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)){
+            $this->buffer = null;
+            return; //Do not attempt to decode for non-accepted protocols
+        }*/
 
-		$this->clientDataJwt = $this->get($this->getLInt());
-		$this->clientData = Utils::decodeJWT($this->clientDataJwt);
+        $this->setBuffer($this->getString(), 0);
 
-		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
-		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
-		$this->skinId = $this->clientData["SkinId"] ?? null;
+        $this->chainData = json_decode($this->get($this->getLInt()), true);
+        foreach ($this->chainData["chain"] as $chain) {
+            $webtoken = Utils::decodeJWT($chain);
+            if (isset($webtoken["extraData"])) {
+                if (isset($webtoken["extraData"]["displayName"])) {
+                    $this->username = $webtoken["extraData"]["displayName"];
+                }
+                if (isset($webtoken["extraData"]["identity"])) {
+                    $this->clientUUID = $webtoken["extraData"]["identity"];
+                }
+                if (isset($webtoken["identityPublicKey"])) {
+                    $this->identityPublicKey = $webtoken["identityPublicKey"];
+                }
+            }
 
-		if(isset($this->clientData["SkinData"])){
-			$this->skin = base64_decode($this->clientData["SkinData"]);
-		}
+            file_put_contents(__DIR__ . "TEST_login_webtoken.data", json_encode($webtoken));
+        }
 
-		if(isset($this->clientData["DeviceModel"])) {
+        file_put_contents(__DIR__ . "TEST_login_chain.data", json_encode($this->chainData));
+
+        $this->clientDataJwt = $this->get($this->getLInt());
+        $this->clientData = Utils::decodeJWT($this->clientDataJwt);
+
+        $this->clientId = $this->clientData["ClientRandomId"] ?? null;
+        $this->serverAddress = $this->clientData["ServerAddress"] ?? null;
+        $this->skinId = $this->clientData["SkinId"] ?? null;
+
+        if (isset($this->clientData["SkinData"])) {
+            $this->skin = base64_decode($this->clientData["SkinData"]);
+        }
+
+        if (isset($this->clientData["DeviceModel"])) {
             $this->deviceModel = $this->clientData["DeviceModel"];
         }
 
-        if(isset($this->clientData["DeviceOS"])) {
+        if (isset($this->clientData["DeviceOS"])) {
             $this->deviceOS = $this->clientData["DeviceOS"];
         }
-		
-		file_put_contents(__DIR__ . "TEST_login_client.data", json_encode($this->clientData));
-	}
 
-	public function encode(){
-		//TODO
-	}
-	
-	public function getName(){
-		return "LoginPacket";
-	}
+        file_put_contents(__DIR__ . "TEST_login_client.data", json_encode($this->clientData));
+    }
+
+    public function encode(){
+        //TODO
+    }
+
+    public function getName(){
+        return "LoginPacket";
+    }
 }
