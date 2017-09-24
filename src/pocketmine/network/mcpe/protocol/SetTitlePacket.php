@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,59 +15,58 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
+
+declare(strict_types=1);
+
 
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-class SetTitlePacket extends DataPacket {
 
+use pocketmine\network\mcpe\NetworkSession;
+
+class SetTitlePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
 
-	const TYPE_CLEAR = 0;
-	const TYPE_RESET = 1;
-	const TYPE_TITLE = 2;
-	const TYPE_SUB_TITLE = 3;
-	const TYPE_ACTION_BAR = 4;
-	const TYPE_TIMES = 5;
+	const TYPE_CLEAR_TITLE = 0;
+	const TYPE_RESET_TITLE = 1;
+	const TYPE_SET_TITLE = 2;
+	const TYPE_SET_SUBTITLE = 3;
+	const TYPE_SET_ACTIONBAR_MESSAGE = 4;
+	const TYPE_SET_ANIMATION_TIMES = 5;
 
+	/** @var int */
 	public $type;
-	public $title;
-	public $fadeInDuration;
-	public $duration;
-	public $fadeOutDuration;
+	/** @var string */
+	public $text = "";
+	/** @var int */
+	public $fadeInTime = 0;
+	/** @var int */
+	public $stayTime = 0;
+	/** @var int */
+	public $fadeOutTime = 0;
 
-	/**
-	 *
-	 */
-	public function decode(){
+	protected function decodePayload(){
 		$this->type = $this->getVarInt();
-		$this->title = $this->getString();
-		$this->fadeInDuration = $this->getVarInt();
-		$this->duration = $this->getVarInt();
-		$this->fadeOutDuration = $this->getVarInt();
+		$this->text = $this->getString();
+		$this->fadeInTime = $this->getVarInt();
+		$this->stayTime = $this->getVarInt();
+		$this->fadeOutTime = $this->getVarInt();
 	}
 
-	/**
-	 *
-	 */
-	public function encode(){
-		$this->reset();
+	protected function encodePayload(){
 		$this->putVarInt($this->type);
-		$this->putString($this->title);
-		$this->putVarInt($this->fadeInDuration);
-		$this->putVarInt($this->duration);
-		$this->putVarInt($this->fadeOutDuration);
+		$this->putString($this->text);
+		$this->putVarInt($this->fadeInTime);
+		$this->putVarInt($this->stayTime);
+		$this->putVarInt($this->fadeOutTime);
 	}
 
-	/**
-	 * @return PacketName|string
-	 */
-	public function getName(){
-		return "SetTitlePacket";
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleSetTitle($this);
 	}
-
 }

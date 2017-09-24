@@ -278,7 +278,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 * @return int|null
 	 */
 	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
-		if(isset($this->identifiers[$h = spl_object_hash($player)])){
+		/*if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			$identifier = $this->identifiers[$h];
 			if(!$packet->isEncoded){
 				$packet->encode();
@@ -314,7 +314,26 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 			}
 		}
 
-		return null;
+		return null;*/
+        if(isset($this->identifiers[$h = spl_object_hash($player)])){
+            $packet->encode();
+            if(!($packet instanceof BatchPacket) && strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
+                $this->server->batchPackets([$player], [$packet], true);
+                return null;
+            }
+            $identifier = $this->identifiers[$h];
+            $pk = new EncapsulatedPacket();
+            $pk->buffer = $packet->buffer;
+            $pk->reliability = 3;
+            if($needACK === true){
+                $pk->identifierACK = $this->identifiersACK[$identifier]++;
+            }
+            if ($immediate) {
+                $pk->reliability = 0;
+            }
+            $this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+        }
+        return null;
 	}
 
 	/**

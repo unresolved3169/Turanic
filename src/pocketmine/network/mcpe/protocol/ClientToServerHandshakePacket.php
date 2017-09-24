@@ -19,33 +19,31 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
 
-class ClientToServerHandshakePacket extends DataPacket {
+use pocketmine\network\mcpe\NetworkSession;
+
+class ClientToServerHandshakePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CLIENT_TO_SERVER_HANDSHAKE_PACKET;
 
-	/**
-	 * @return bool
-	 */
 	public function canBeSentBeforeLogin() : bool{
 		return true;
 	}
 
-	/**
-	 *
-	 */
-	public function decode(){
+	protected function decodePayload(){
 		//No payload
 	}
 
-	/**
-	 *
-	 */
-	public function encode(){
-		$this->reset();
+	protected function encodePayload(){
 		//No payload
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleClientToServerHandshake($this);
 	}
 }

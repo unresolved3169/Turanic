@@ -28,7 +28,6 @@ namespace pocketmine\network;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
-use pocketmine\network\mcpe\protocol\AddItemPacket;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -44,25 +43,21 @@ use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
-use pocketmine\network\mcpe\protocol\CommandStepPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\CameraPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
-use pocketmine\network\mcpe\protocol\DropItemPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
+use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\InventoryActionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -78,9 +73,7 @@ use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
-use pocketmine\network\mcpe\protocol\RemoveBlockPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
-use pocketmine\network\mcpe\protocol\ReplaceItemInSlotPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
@@ -110,7 +103,6 @@ use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
-use pocketmine\network\mcpe\protocol\UseItemPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\BinaryStream;
@@ -265,44 +257,45 @@ class Network {
 	 * @param Player      $p
 	 */
 	public function processBatch(BatchPacket $packet, Player $p){
-		try{
-			if(strlen($packet->payload) === 0){
-				//prevent zlib_decode errors for incorrectly-decoded packets
-				throw new \InvalidArgumentException("BatchPacket payload is empty or packet decode error");
-			}
+        $str = @\zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
+        if ($str === false) {
+            return;
+        }
+        try{
+            $stream = new BinaryStream($str);
+            $length = strlen($str);
+            while ($stream->getOffset() < $length) {
+                $buf = $stream->getString();
+                if(strlen($buf) === 0){
+                    throw new \InvalidStateException("Empty or invalid BatchPacket received");
+                }
 
-			$str = zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
-			$len = strlen($str);
+                if (($pk = $this->getPacket(ord($buf{0}))) !== null) {
+                    if ($pk::NETWORK_ID === 0xfe) {
+                        throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
+                    }
+                    $pk->setBuffer($buf, 1);
+                    try {
+                        $pk->decode();
+                    }catch(\Exception $e){
 
-			if($len === 0){
-				throw new \InvalidStateException("Decoded BatchPacket payload is empty");
-			}
-
-			$stream = new BinaryStream($str);
-
-			while($stream->offset < $len){
-				$buf = $stream->getString();
-				if(($pk = $this->getPacket(ord($buf{0}))) !== null){
-					if($pk::NETWORK_ID === 0xfe){
-						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
-					}
-
-					$pk->setBuffer($buf, 1);
-
-					$pk->decode();
-					assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread in " . get_class($pk));
-					$p->handleDataPacket($pk);
-				}
-			}
-		}catch(\Throwable $e){
-			if(\pocketmine\DEBUG > 1){
-				$logger = $this->server->getLogger();
-				if($logger instanceof MainLogger){
-					$logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
-					$logger->logException($e);
-				}
-			}
-		}
+                        return;
+                    }
+                    $p->handleDataPacket($pk);
+                    if ($pk->getOffset() <= 0) {
+                        return;
+                    }
+                }
+            }
+        }catch(\Exception $e){
+            if(\pocketmine\DEBUG > 1){
+                $logger = $this->server->getLogger();
+                if($logger instanceof MainLogger){
+                    $logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
+                    $logger->logException($e);
+                }
+            }
+        }
 	}
 
 	/**
@@ -395,6 +388,7 @@ class Network {
 		$this->registerPacket(ProtocolInfo::MOVE_PLAYER_PACKET, MovePlayerPacket::class);
 		$this->registerPacket(ProtocolInfo::ENTITY_FALL_PACKET, EntityFallPacket::class);
 		$this->registerPacket(ProtocolInfo::PLAYER_ACTION_PACKET, PlayerActionPacket::class);
+		$this->registerPacket(ProtocolInfo::PLAYER_HOTBAR_PACKET, PlayerHotbarPacket::class);
 		$this->registerPacket(ProtocolInfo::PLAYER_INPUT_PACKET, PlayerInputPacket::class);
 		$this->registerPacket(ProtocolInfo::PLAYER_LIST_PACKET, PlayerListPacket::class);
 		$this->registerPacket(ProtocolInfo::PLAY_STATUS_PACKET, PlayStatusPacket::class);

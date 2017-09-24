@@ -135,13 +135,12 @@ abstract class FlyingAnimal extends Creature implements Ageable {
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
 	}
 
-	/**
-	 * @param float             $damage
-	 * @param EntityDamageEvent $source
-	 *
-	 * @return bool|void
-	 */
-	public function attack($damage, EntityDamageEvent $source){
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool|void
+     * @internal param float $damage
+     */
+	public function attack(EntityDamageEvent $source){
 		if($source->isCancelled()){
 			return;
 		}
@@ -149,7 +148,7 @@ abstract class FlyingAnimal extends Creature implements Ageable {
 			$source->setCancelled();
 			return;
 		}
-		parent::attack($damage, $source);
+		parent::attack($source);
 	}
 
 }

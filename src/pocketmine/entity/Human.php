@@ -27,7 +27,6 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\FloatingInventory;
 use pocketmine\inventory\EnderChestInventory;
-use pocketmine\inventory\HumanInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\SimpleTransactionQueue;
@@ -84,6 +83,17 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	protected $xpSeed;
 	protected $xpCooldown = 0;
 
+    protected $baseOffset = 1.62;
+
+    public function jump(){
+        parent::jump();
+        if($this->isSprinting()){
+            $this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+        }else{
+            $this->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
+        }
+    }
+
 	/**
 	 * @return mixed
 	 */
@@ -116,7 +126,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	 * @param string $str
 	 * @param string $skinId
 	 */
-	public function setSkin($str, $skinId){
+	public function setSkin(string $str, string $skinId){
 		$this->skin = $str;
 		$this->skinId = $skinId;
 	}
@@ -534,12 +544,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
 
 		$inventoryContents = ($this->namedtag->Inventory ?? null);
-        if ($this instanceof Player){
-            $this->inventory = new PlayerInventory($this, $inventoryContents);
-            $this->addWindow($this->inventory, 0);
-        } else {
-            $this->inventory = new HumanInventory($this, $inventoryContents);
-        }
+        $this->inventory = new PlayerInventory($this, $inventoryContents);
 
 		$this->enderChestInventory = new EnderChestInventory($this, ($this->namedtag->EnderChestInventory ?? null));
 
@@ -670,7 +675,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 						$can = true;
 					}
 					if($can){
-						$this->attack(1, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
+						$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
 					}
 				}
 			}
@@ -825,4 +830,24 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 			parent::close();
 		}
 	}
+
+    /**
+     * Wrapper around {@link Entity#getDataFlag} for player-specific data flag reading.
+     *
+     * @param int $flagId
+     * @return bool
+     */
+    public function getPlayerFlag(int $flagId) : bool{
+        return $this->getDataFlag(self::DATA_PLAYER_FLAGS, $flagId);
+    }
+
+    /**
+     * Wrapper around {@link Entity#setDataFlag} for player-specific data flag setting.
+     *
+     * @param int  $flagId
+     * @param bool $value
+     */
+    public function setPlayerFlag(int $flagId, bool $value = true){
+        $this->setDataFlag(self::DATA_PLAYER_FLAGS, $flagId, $value, self::DATA_TYPE_BYTE);
+    }
 }

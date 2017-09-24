@@ -50,6 +50,11 @@ memory:
  #Only if memory.continuous-trigger is enabled. Specifies the rate in memory.check-rate steps (default 30 seconds)
  continuous-trigger-rate: 30
 
+ #Settings controlling memory dump handling.
+ memory-dump:
+  #Dump memory from async workers as well as the main thread. If you have issues with segfaults when dumping memory, disable this setting.
+  dump-async-worker: true
+
  garbage-collection:
   #Period in ticks to fire the garbage collector manually (default 30 minutes), set to 0 to disable
   #This only affect the main thread. Other threads should fire their own collections

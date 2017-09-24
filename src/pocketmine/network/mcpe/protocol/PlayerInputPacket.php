@@ -19,42 +19,43 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
 
-class PlayerInputPacket extends DataPacket {
+use pocketmine\network\mcpe\NetworkSession;
 
+class PlayerInputPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAYER_INPUT_PACKET;
 
+	/** @var float */
 	public $motionX;
+	/** @var float */
 	public $motionY;
+	/** @var bool */
 	public $unknownBool1;
+	/** @var bool */
 	public $unknownBool2;
 
-	/**
-	 *
-	 */
-	public function decode(){
+	protected function decodePayload(){
 		$this->motionX = $this->getLFloat();
 		$this->motionY = $this->getLFloat();
 		$this->unknownBool1 = $this->getBool();
 		$this->unknownBool2 = $this->getBool();
 	}
 
-	/**
-	 *
-	 */
-	public function encode(){
-
+	protected function encodePayload(){
+		$this->putLFloat($this->motionX);
+		$this->putLFloat($this->motionY);
+		$this->putBool($this->unknownBool1);
+		$this->putBool($this->unknownBool2);
 	}
 
-	/**
-	 * @return PacketName|string
-	 */
-	public function getName(){
-		return "PlayerInputPacket";
+	public function handle(NetworkSession $session) : bool{
+		return $session->handlePlayerInput($this);
 	}
 
 }

@@ -40,7 +40,7 @@ class ShapedRecipe implements Recipe {
 	/** @var Vector2[][] */
 	private $shapeItems = [];
 
-	/**
+    /**
 	 * @param Item $result
 	 * @param int  $height
 	 * @param int  $width

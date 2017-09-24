@@ -232,7 +232,7 @@ class PluginManager {
 										continue;
 									}
 
-									$pluginNumbers = array_map("intval", explode(".", $pluginApi[0]));
+									$pluginNumbers = array_map("intval", array_pad(explode(".", $pluginApi[0]), 3, "0"));
 									$serverNumbers = array_map("intval", explode(".", $serverApi[0]));
 
 									if($pluginNumbers[0] !== $serverNumbers[0]){ //Completely different API version
@@ -277,7 +277,7 @@ class PluginManager {
 
 							if($compatible === false){
 								if($this->server->loadIncompatibleAPI === true){
-									$this->server->getLogger()->debug("Plugin {$name} API does not match the server,but Turanic still loaded it.");
+									$this->server->getLogger()->debug("插件{$name}的API与服务器不符,但Turanic仍然加载了它");
 								}else{
 									$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
 									continue;
@@ -285,7 +285,7 @@ class PluginManager {
 							}
 
 							if($compatiblegeniapi === false){
-								$this->server->getLogger()->error("Could not load plugin {$description->getName()}: Incompatible GeniAPI version");
+								$this->server->getLogger()->error("Could not load plugin '{$description->getName()}': Incompatible GeniAPI version");
 								continue;
 							}
 
@@ -556,7 +556,6 @@ class PluginManager {
 	public function getDefaultPermSubscriptions($op){
 		if($op === true){
 			return $this->defSubsOp;
-			$subs[] = [];
 			foreach($this->defSubsOp as $k => $perm){
 				/** @var \WeakRef $perm */
 				if($perm->acquire()){
@@ -567,9 +566,8 @@ class PluginManager {
 				}
 			}
 		}else{
-		    return $this->defSubs;
-		    $subs[] = [];
-		    foreach($this->defSubs as $k => $perm){
+			return $this->defSubs;
+			foreach($this->defSubs as $k => $perm){
 				/** @var \WeakRef $perm */
 				if($perm->acquire()){
 					$subs[] = $perm->get();
@@ -838,4 +836,5 @@ class PluginManager {
 	public function setUseTimings($use){
 		self::$useTimings = (bool) $use;
 	}
+
 }

@@ -2,23 +2,21 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
- *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
 */
 
@@ -28,6 +26,7 @@
 
 namespace pocketmine\item;
 
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\block\Block;
@@ -1259,12 +1258,46 @@ class Item implements ItemIds, \JsonSerializable {
 		return false;
 	}
 
+    /**
+     * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
+     * @param Item $other
+     *
+     * @return bool
+     */
+    final public function equalsExact(Item $other) : bool{
+        return $this->equals($other, true, true) and $this->count === $other->count;
+    }
+
 	/**
 	 * @return string
 	 */
 	final public function __toString() : string{
 		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
 	}
+
+    /**
+     * Called when a player uses the item on air, for example throwing a projectile.
+     * Returns whether the item was changed, for example count decrease or durability change.
+     *
+     * @param Player  $player
+     * @param Vector3 $directionVector
+     *
+     * @return bool
+     */
+    public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+        return false;
+    }
+
+    /**
+     * Called when a player is using this item and releases it. Used to handle bow shoot actions.
+     * Returns whether the item was changed, for example count decrease or durability change.
+     *
+     * @param Player $player
+     * @return bool
+     */
+    public function onReleaseUsing(Player $player) : bool{
+        return false;
+    }
 
 	/**
 	 * @return array

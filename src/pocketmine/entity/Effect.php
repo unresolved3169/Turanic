@@ -288,13 +288,13 @@ class Effect {
 			case Effect::POISON:
 				if($entity->getHealth() > 1){
 					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
-					$entity->attack($ev->getFinalDamage(), $ev);
+					$entity->attack($ev);
 				}
 				break;
 
 			case Effect::WITHER:
 				$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
-				$entity->attack($ev->getFinalDamage(), $ev);
+				$entity->attack($ev);
 				break;
 
 			case Effect::REGENERATION:
@@ -322,10 +322,10 @@ class Effect {
 				$level = $this->amplifier + 1;
 				if(($entity->getHealth() - 6 * $level) >= 0){
 					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 6 * $level);
-					$entity->attack($ev->getFinalDamage(), $ev);
+					$entity->attack($ev);
 				}else{
 					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, $entity->getHealth());
-					$entity->attack($ev->getFinalDamage(), $ev);
+					$entity->attack($ev);
 				}
 				break;
 			case Effect::SATURATION:

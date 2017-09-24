@@ -90,7 +90,7 @@ class Attribute {
 	 * @return null|Attribute
 	 */
 	public static function getAttribute($id){
-		return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
+        return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
 	}
 
 	/**
@@ -99,7 +99,7 @@ class Attribute {
 	 * @return null|Attribute
 	 */
 	public static function getAttributeByName($name){
-		foreach(self::$attributes as $a){
+        foreach(self::$attributes as $a){
 			if($a->getName() === $name){
 				return clone $a;
 			}
@@ -200,6 +200,10 @@ class Attribute {
 		}
 		return $this;
 	}
+
+    public function resetToDefault(){
+        $this->setValue($this->getDefaultValue());
+    }
 
 	/**
 	 * @return float

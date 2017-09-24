@@ -71,6 +71,12 @@ class BinaryStream extends \stdClass {
 		return $this->buffer;
 	}
 
+    public function getRemaining() : string{
+        $str = substr($this->buffer, $this->offset);
+        $this->offset = strlen($this->buffer);
+        return $str;
+    }
+
 	/**
 	 * @param $len
 	 *
@@ -140,6 +146,18 @@ class BinaryStream extends \stdClass {
 		$this->buffer .= Binary::writeInt($v);
 	}
 
+    public function getLShort() : int{
+        return Binary::readLShort($this->get(2));
+    }
+
+    public function getSignedLShort() : int{
+        return Binary::readSignedLShort($this->get(2));
+    }
+
+    public function putLShort(int $v){
+        $this->buffer .= Binary::writeLShort($v);
+    }
+
 	/**
 	 * @return int|string
 	 */
@@ -196,36 +214,15 @@ class BinaryStream extends \stdClass {
 		$this->buffer .= Binary::writeShort($v);
 	}
 
-	/**
-	 * @param int $accuracy
-	 *
-	 * @return float
-	 */
-	public function getFloat(int $accuracy = -1){
-		return Binary::readFloat($this->get(4), $accuracy);
-	}
+    public function getFloat() : float{
+        return Binary::readFloat($this->get(4));
+    }
 
 	/**
 	 * @param $v
 	 */
 	public function putFloat($v){
 		$this->buffer .= Binary::writeFloat($v);
-	}
-
-	/**
-	 * @param bool $signed
-	 *
-	 * @return int
-	 */
-	public function getLShort($signed = true){
-		return $signed ? Binary::readSignedLShort($this->get(2)) : Binary::readLShort($this->get(2));
-	}
-
-	/**
-	 * @param $v
-	 */
-	public function putLShort($v){
-		$this->buffer .= Binary::writeLShort($v);
 	}
 
 	/**
@@ -377,14 +374,13 @@ class BinaryStream extends \stdClass {
 		$this->put($v);
 	}
 
-	//TODO: varint64
-
-	/**
-	 * Reads an unsigned varint32 from the stream.
-	 */
-	public function getUnsignedVarInt(){
-		return Binary::readUnsignedVarInt($this);
-	}
+    /**
+     * Reads a 32-bit variable-length unsigned integer from the buffer and returns it.
+     * @return int
+     */
+    public function getUnsignedVarInt() : int{
+        return Binary::readUnsignedVarInt($this->buffer, $this->offset);
+    }
 
 	/**
 	 * Writes an unsigned varint32 to the stream.
@@ -395,12 +391,13 @@ class BinaryStream extends \stdClass {
 		$this->put(Binary::writeUnsignedVarInt($v));
 	}
 
-	/**
-	 * Reads a signed varint32 from the stream.
-	 */
-	public function getVarInt(){
-		return Binary::readVarInt($this);
-	}
+    /**
+     * Reads a 32-bit zigzag-encoded variable-length integer from the buffer and returns it.
+     * @return int
+     */
+    public function getVarInt() : int{
+        return Binary::readVarInt($this->buffer, $this->offset);
+    }
 
 	/**
 	 * Writes a signed varint32 to the stream.
@@ -463,7 +460,7 @@ class BinaryStream extends \stdClass {
 	 * @param $y
 	 * @param $z
 	 */
-	public function putVector3f($x, $y, $z){
+	public function putVector3f(float $x, float $y, float $z){
 		$this->putLFloat($x);
 		$this->putLFloat($y);
 		$this->putLFloat($z);
@@ -488,5 +485,21 @@ class BinaryStream extends \stdClass {
             $result = (-1) * ($result + 1) / 2;
         }
         return $result;
+    }
+
+    /**
+     * Reads a 64-bit zigzag-encoded variable-length integer from the buffer and returns it.
+     * @return int
+     */
+    public function getVarLong() : int{
+        return Binary::readVarLong($this->buffer, $this->offset);
+    }
+
+    /**
+     * Writes a 64-bit zigzag-encoded variable-length integer to the end of the buffer.
+     * @param int
+     */
+    public function putVarLong(int $v){
+        $this->buffer .= Binary::writeVarLong($v);
     }
 }

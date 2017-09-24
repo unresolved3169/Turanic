@@ -8,31 +8,24 @@
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
  * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
  *
  *
 */
+
+declare(strict_types=1);
 
 
 namespace pocketmine\network\mcpe\protocol\types;
 
 
-interface InventoryNetworkIds {
+interface WindowTypes{
 
 	const INVENTORY = -1;
 	const CONTAINER = 0;
@@ -52,4 +45,5 @@ interface InventoryNetworkIds {
 	const STRUCTURE_EDITOR = 14;
 	const TRADING = 15;
 	const COMMAND_BLOCK = 16;
+
 }

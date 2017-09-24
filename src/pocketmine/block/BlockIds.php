@@ -305,6 +305,7 @@ interface BlockIds {
 	const END_ROD = 208;
 	const END_GATEWAY = 209;
 
+	const BONE_BLOCK = 216;
 	const SHULKER_BOX = 218;
 	const PURPLE_GLAZED_TERRACOTTA = 219;
 	const WHITE_GLAZED_TERRACOTTA = 220;

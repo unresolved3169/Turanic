@@ -46,12 +46,6 @@ abstract class Tile extends Position {
 	const SIGN = "Sign";
 	const SKULL = "Skull";
 	const ITEM_FRAME = "ItemFrame";
-	const DISPENSER = "Dispenser";
-	const DROPPER = "Dropper";
-	const CAULDRON = "Cauldron";
-	const HOPPER = "Hopper";
-	const BEACON = "Beacon";
-	const ENDER_CHEST = "EnderChest";
 	const BED = "Bed";
 	const DAY_LIGHT_DETECTOR = "DLDetector";
 	const VIRTUAL_HOLDER = "VirtualHolder";
@@ -80,7 +74,6 @@ abstract class Tile extends Position {
 	public $tickTimer;
 
 	public static function init(){
-		self::registerTile(Beacon::class);
 		self::registerTile(Bed::class);
 		self::registerTile(BrewingStand::class);
 		self::registerTile(Cauldron::class);
@@ -89,10 +82,8 @@ abstract class Tile extends Position {
 		self::registerTile(DLDetector::class);
 		self::registerTile(Dropper::class);
 		self::registerTile(EnchantTable::class);
-		self::registerTile(EnderChest::class);
 		self::registerTile(FlowerPot::class);
 		self::registerTile(Furnace::class);
-		self::registerTile(Hopper::class);
 		self::registerTile(ItemFrame::class);
 		self::registerTile(MobSpawner::class);
 		self::registerTile(Sign::class);
@@ -226,4 +217,14 @@ abstract class Tile extends Position {
 		return $this->name;
 	}
 
+    public function getCleanedNBT(){
+        $this->saveNBT();
+        $tag = clone $this->namedtag;
+        unset($tag->x, $tag->y, $tag->z, $tag->id);
+        if($tag->getCount() > 0){
+            return $tag;
+        }else{
+            return null;
+        }
+    }
 }

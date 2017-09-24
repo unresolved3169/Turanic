@@ -82,14 +82,13 @@ class Boat extends Vehicle {
 		parent::spawnTo($player);
 	}
 
-	/**
-	 * @param float             $damage
-	 * @param EntityDamageEvent $source
-	 *
-	 * @return bool|void
-	 */
-	public function attack($damage, EntityDamageEvent $source){
-		parent::attack($damage, $source);
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool|void
+     * @internal param float $damage
+     */
+	public function attack(EntityDamageEvent $source){
+		parent::attack($source);
 
 		if(!$source->isCancelled()){
 			$pk = new EntityEventPacket();

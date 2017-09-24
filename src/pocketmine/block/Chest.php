@@ -104,12 +104,12 @@ class Chest extends Transparent {
 	 * @return bool
 	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$faces = [
-			0 => 2,
-			1 => 5,
-			2 => 3,
-			3 => 4,
-		];
+        $faces = [
+            0 => 4,
+            1 => 2,
+            2 => 5,
+            3 => 3
+        ];
 
 		$chest = null;
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];

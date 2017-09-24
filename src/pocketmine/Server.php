@@ -74,7 +74,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\CompressBatchedTask;
+use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\Network;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
@@ -192,6 +192,9 @@ class Server{
 
 	/** @var ConsoleCommandSender */
 	private $consoleSender;
+
+	/** @var Player[] */
+	private $loggedInPlayers = [];
 
 	/** @var int */
 	private $maxPlayers;
@@ -385,8 +388,7 @@ class Server{
 	 * @return string
 	 */
 	public function getVersion(){
-		$version = implode(",",ProtocolInfo::MINECRAFT_VERSION);
-		return $version;
+		return ProtocolInfo::MINECRAFT_VERSION_NETWORK;
 	}
 
 	/**
@@ -520,8 +522,8 @@ class Server{
 	 *
 	 * @return string
 	 */
-	public static function getGamemodeString($mode){
-		switch((int) $mode){
+	public static function getGamemodeString(int $mode) : string {
+		switch($mode){
 			case Player::SURVIVAL:
 				return "%gameMode.survival";
 			case Player::CREATIVE:
@@ -763,6 +765,13 @@ class Server{
 	public function getCommandMap(){
 		return $this->commandMap;
 	}
+
+    /**
+     * @return Player[]
+     */
+    public function getLoggedInPlayers() : array{
+        return $this->loggedInPlayers;
+    }
 
 	/**
 	 * @return Player[]
@@ -1206,18 +1215,9 @@ class Server{
 		}
 		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getLevelByName($name) instanceof Level)){
-
 			if(LevelProviderManager::getProvider($path) === null){
 				return false;
 			}
-			/*if(file_exists($path)){
-				$level = new LevelImport($path);
-				if($level->import() === false){ //Try importing a world
-					return false;
-				}
-			}else{
-				return false;
-			}*/
 		}
 
 		return true;
@@ -1644,6 +1644,16 @@ class Server{
 
 			$this->about();
 
+            $this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
+
+            define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+
+            ini_set('assert.exception', '1');
+
+            if($this->logger instanceof MainLogger){
+                $this->logger->setLogDebug(\pocketmine\DEBUG > 1);
+            }
+
 			$this->logger->info("Loading properties and configuration...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
@@ -1666,7 +1676,6 @@ class Server{
 			if(file_exists($this->dataPath . "lang.txt")){
 				unlink($this->dataPath . "lang.txt");
 			}
-			$this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
 			$nowLang = $this->getProperty("settings.language", "eng");
 
 			//Crashes unsupported builds without the correct configuration
@@ -1797,18 +1806,6 @@ class Server{
 
 			if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
 				$this->setConfigInt("difficulty", 3);
-			}
-
-			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
-
-			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
-				$this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
-			}
-
-			ini_set('assert.exception', (bool) $this->getProperty("debug.assertions.throw-exception", 0));
-
-			if($this->logger instanceof MainLogger){
-				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
 			}
 
 			if(\pocketmine\DEBUG >= 0){
@@ -2112,13 +2109,14 @@ class Server{
 		}
 	}
 
-	/**
-	 * Broadcasts a list of packets in a batch to a list of players
-	 *
-	 * @param Player[]            $players
-	 * @param DataPacket[]|string $packets
-	 * @param bool                $forceSync
-	 */
+    /**
+     * Broadcasts a list of packets in a batch to a list of players
+     *
+     * @param Player[] $players
+     * @param DataPacket[]|string $packets
+     * @param bool $forceSync
+     * @param bool $immediate
+     */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
 		
 				
@@ -2408,9 +2406,6 @@ class Server{
 			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic");
 		
 		$this->packetWorker = new ServerPacketWorker($this->getLoader());
-		//$this->packetWorker->run();
-		
-		$this->getLogger()->info("§e> Server Packet Worker Starting...");
 
 		$this->tickProcessor();
 		$this->forceShutdown();
@@ -2546,10 +2541,17 @@ class Server{
 		if($this->sendUsageTicker > 0){
 			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
 		}
-
-		$this->sendFullPlayerListData($player);
-		$player->dataPacket($this->craftingManager->getCraftingDataPacket());
+        $this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
+
+    public function onPlayerCompleteLoginSequence(Player $player){
+        $this->sendFullPlayerListData($player);
+        $player->dataPacket($this->craftingManager->getCraftingDataPacket());
+    }
+
+    public function onPlayerLogout(Player $player){
+        unset($this->loggedInPlayers[$player->getRawUniqueId()]);
+    }
 
 	public function addPlayer($identifier, Player $player){
 		$this->players[$identifier] = $player;
@@ -2563,42 +2565,51 @@ class Server{
 	}
 
 	public function removeOnlinePlayer(Player $player){
-		if(isset($this->playerList[$player->getRawUniqueId()])){
-			unset($this->playerList[$player->getRawUniqueId()]);
-
-			$pk = new PlayerListPacket();
-			$pk->type = PlayerListPacket::TYPE_REMOVE;
-			$pk->entries[] = [$player->getUniqueId()];
-			$this->broadcastPacket($this->playerList, $pk);
-		}
+        if(isset($this->playerList[$player->getRawUniqueId()])){
+            unset($this->playerList[$player->getRawUniqueId()]);
+            $this->removePlayerListData($player->getUniqueId());
+        }
 	}
 
-	public function updatePlayerListData(UUID $uuid, $entityId, $name, $skinId, $skinData, array $players = null){
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_ADD;
-		$pk->entries[] = [$uuid, $entityId, $name, $skinId, $skinData];
-		$this->broadcastPacket($players === null ? $this->playerList : $players, $pk);
-	}
+    /**
+     * @param UUID          $uuid
+     * @param int           $entityId
+     * @param string        $name
+     * @param string        $skinId
+     * @param string        $skinData
+     * @param Player[]|null $players
+     */
+    public function updatePlayerListData(UUID $uuid, int $entityId, string $name, string $skinId, string $skinData, array $players = null){
+        $pk = new PlayerListPacket();
+        $pk->type = PlayerListPacket::TYPE_ADD;
 
-	public function removePlayerListData(UUID $uuid, array $players = null){
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_REMOVE;
-		$pk->entries[] = [$uuid];
-		$this->broadcastPacket($players === null ? $this->playerList : $players, $pk);
-	}
+        $pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skinId, $skinData);
+        $this->broadcastPacket($players ?? $this->playerList, $pk);
+    }
 
-	public function sendFullPlayerListData(Player $p){
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_ADD;
-		foreach($this->playerList as $player){
-			if($p === $player){
-				continue; //fixes duplicates
-			}
-			$pk->entries[] = [$player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData()];
-		}
+    /**
+     * @param UUID          $uuid
+     * @param Player[]|null $players
+     */
+    public function removePlayerListData(UUID $uuid, array $players = null){
+        $pk = new PlayerListPacket();
+        $pk->type = PlayerListPacket::TYPE_REMOVE;
+        $pk->entries[] = PlayerListEntry::createRemovalEntry($uuid);
+        $this->broadcastPacket($players ?? $this->playerList, $pk);
+    }
 
-		$p->dataPacket($pk);
-	}
+    /**
+     * @param Player $p
+     */
+    public function sendFullPlayerListData(Player $p){
+        $pk = new PlayerListPacket();
+        $pk->type = PlayerListPacket::TYPE_ADD;
+        foreach($this->playerList as $player){
+            $pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData());
+        }
+
+        $p->dataPacket($pk);
+    }
 
 	private function checkTickUpdates($currentTick, $tickTime){
 		if($this->alwaysTickPlayers){
@@ -2785,7 +2796,7 @@ class Server{
 	/**
 	 * Tries to execute a server tick
 	 */
- private function tick(){
+    private function tick(){
 		$tickTime = microtime(true);
 		if(($tickTime - $this->nextTick) < -0.025){ //Allow half a tick of diff
 			return false;

@@ -28,14 +28,13 @@ class Painting extends Hanging {
 		}else $this->close();
 	}
 
-	/**
-	 * @param float             $damage
-	 * @param EntityDamageEvent $source
-	 *
-	 * @return bool
-	 */
-	public function attack($damage, EntityDamageEvent $source){
-		parent::attack($damage, $source);
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool
+     * @internal param float $damage
+     */
+	public function attack(EntityDamageEvent $source){
+		parent::attack($source);
 		if($source->isCancelled()) return false;
 		$this->level->addParticle(new DestroyBlockParticle($this->add(0.5), Block::get(Block::LADDER)));
 		$this->kill();

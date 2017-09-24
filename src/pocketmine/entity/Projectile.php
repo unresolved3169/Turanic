@@ -60,15 +60,14 @@ abstract class Projectile extends Entity {
 		parent::__construct($level, $nbt);
 	}
 
-	/**
-	 * @param float             $damage
-	 * @param EntityDamageEvent $source
-	 *
-	 * @return bool|void
-	 */
-	public function attack($damage, EntityDamageEvent $source){
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool|void
+     * @internal param float $damage
+     */
+	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
-			parent::attack($damage, $source);
+			parent::attack($source);
 		}
 	}
 
@@ -175,7 +174,7 @@ abstract class Projectile extends Entity {
 						$ev = new EntityDamageByChildEntityEvent($this->shootingEntity, $this, $movingObjectPosition->entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 					}
 
-					if($movingObjectPosition->entityHit->attack($ev->getFinalDamage(), $ev) === true){
+					if($movingObjectPosition->entityHit->attack($ev) === true){
 						if($this instanceof Arrow and $this->getPotionId() != 0){
 						    /** @var Effect $effect */
                             foreach(Potion::getEffectsById($this->getPotionId() - 1) as $effect){

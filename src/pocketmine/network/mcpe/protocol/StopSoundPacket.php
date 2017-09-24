@@ -19,31 +19,35 @@
  *
 */
 
+declare(strict_types=1);
+
+
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-class StopSoundPacket extends DataPacket {
+
+use pocketmine\network\mcpe\NetworkSession;
+
+class StopSoundPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::STOP_SOUND_PACKET;
 
-	public $sound;
+	/** @var string */
+	public $soundName;
+	/** @var bool */
 	public $stopAll;
 
-	/**
-	 *
-	 */
-	public function decode(){
-		$this->sound = $this->getString();
+	protected function decodePayload(){
+		$this->soundName = $this->getString();
 		$this->stopAll = $this->getBool();
 	}
 
-	/**
-	 *
-	 */
-	public function encode(){
-		$this->reset();
-		$this->putString($this->sound);
+	protected function encodePayload(){
+		$this->putString($this->soundName);
 		$this->putBool($this->stopAll);
 	}
 
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleStopSound($this);
+	}
 }

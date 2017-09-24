@@ -25,8 +25,9 @@ use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\ContainerSetContentPacket;
-use pocketmine\network\mcpe\protocol\ContainerSetSlotPacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
+use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -565,52 +566,52 @@ abstract class BaseInventory implements Inventory {
 	}
 
 
-	/**
-	 * @param Player|Player[] $target
-	 */
-	public function sendContents($target){
-		if($target instanceof Player){
-			$target = [$target];
-		}
+    /**
+     * @param Player|Player[] $target
+     */
+    public function sendContents($target) {
+        if($target instanceof Player){
+            $target = [$target];
+        }
 
-		$pk = new ContainerSetContentPacket();
-		$pk->slots = [];
-		for($i = 0; $i < $this->getSize(); ++$i){
-			$pk->slots[$i] = $this->getItem($i);
-		}
+        $pk = new InventoryContentPacket();
 
-		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === -1 or $player->spawned !== true){
-				$this->close($player);
-				continue;
-			}
-			$pk->windowid = $id;
-			$pk->targetEid = $player->getId();
-			$player->dataPacket($pk);
-		}
-	}
+        //Using getSize() here allows PlayerInventory to report that it's 4 slots smaller than it actually is (armor hack)
+        for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
+            $pk->items[$i] = $this->getItem($i);
+        }
+
+        foreach($target as $player){
+            if(($id = $player->getWindowId($this)) === ContainerIds::NONE or $player->spawned !== true){
+                $this->close($player);
+                continue;
+            }
+            $pk->windowId = $id;
+            $player->dataPacket($pk);
+        }
+    }
 
 	/**
 	 * @param int             $index
 	 * @param Player|Player[] $target
 	 */
 	public function sendSlot($index, $target){
-		if($target instanceof Player){
-			$target = [$target];
-		}
+        if($target instanceof Player){
+            $target = [$target];
+        }
 
-		$pk = new ContainerSetSlotPacket();
-		$pk->slot = $index;
-		$pk->item = clone $this->getItem($index);
+        $pk = new InventorySlotPacket();
+        $pk->inventorySlot = $index;
+        $pk->item = $this->getItem($index);
 
-		foreach($target as $player){
-			if(($id = $player->getWindowId($this)) === -1){
-				$this->close($player);
-				continue;
-			}
-			$pk->windowid = $id;
-			$player->dataPacket($pk);
-		}
+        foreach($target as $player){
+            if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
+                $this->close($player);
+                continue;
+            }
+            $pk->windowId = $id;
+            $player->dataPacket($pk);
+        }
 	}
 
 	/**

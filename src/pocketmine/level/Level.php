@@ -2993,19 +2993,19 @@ class Level implements ChunkManager, Metadatable
         return $batch;
     }
 
-    public function setMetadata($metadataKey, MetadataValue $metadataValue) {
+    public function setMetadata(string $metadataKey, MetadataValue $metadataValue) {
         $this->server->getLevelMetadata()->setMetadata($this, $metadataKey, $metadataValue);
     }
 
-    public function getMetadata($metadataKey) {
+    public function getMetadata(string $metadataKey) {
         return $this->server->getLevelMetadata()->getMetadata($this, $metadataKey);
     }
 
-    public function hasMetadata($metadataKey) {
+    public function hasMetadata(string $metadataKey): bool {
         return $this->server->getLevelMetadata()->hasMetadata($this, $metadataKey);
     }
 
-    public function removeMetadata($metadataKey, Plugin $plugin) {
+    public function removeMetadata(string $metadataKey, Plugin $plugin) {
         $this->server->getLevelMetadata()->removeMetadata($this, $metadataKey, $plugin);
     }
 

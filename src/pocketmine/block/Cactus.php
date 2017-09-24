@@ -86,7 +86,7 @@ class Cactus extends Transparent {
 	 */
 	public function onEntityCollide(Entity $entity){
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
-		if($entity->attack($ev->getFinalDamage(), $ev) === true){
+		if($entity->attack($ev) === true){
 			$ev->useArmors();
 		}
 	}

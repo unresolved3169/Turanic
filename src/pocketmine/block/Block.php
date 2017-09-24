@@ -78,6 +78,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$transparent = new \SplFixedArray(256);
             self::$diffusesSkyLight = new \SplFixedArray(256);
 			self::$list[self::AIR] = Air::class;
+			self::$list[self::BONE_BLOCK] = BoneBlock::class;
 			self::$list[self::STONE] = Stone::class;
 			self::$list[self::GRASS] = Grass::class;
 			self::$list[self::DIRT] = Dirt::class;
@@ -892,13 +893,13 @@ class Block extends Position implements BlockIds, Metadatable{
 		return MovingObjectPosition::fromBlock($this->x, $this->y, $this->z, $f, $vector->add($this->x, $this->y, $this->z));
 	}
 
-	public function setMetadata($metadataKey, MetadataValue $metadataValue){
+	public function setMetadata(string $metadataKey, MetadataValue $metadataValue){
 		if($this->getLevel() instanceof Level){
 			$this->getLevel()->getBlockMetadata()->setMetadata($this, $metadataKey, $metadataValue);
 		}
 	}
 
-	public function getMetadata($metadataKey){
+	public function getMetadata(string $metadataKey){
 		if($this->getLevel() instanceof Level){
 			return $this->getLevel()->getBlockMetadata()->getMetadata($this, $metadataKey);
 		}
@@ -906,13 +907,13 @@ class Block extends Position implements BlockIds, Metadatable{
 		return null;
 	}
 
-	public function hasMetadata($metadataKey){
+	public function hasMetadata(string $metadataKey) : bool{
 		if($this->getLevel() instanceof Level){
 			$this->getLevel()->getBlockMetadata()->hasMetadata($this, $metadataKey);
 		}
 	}
 
-	public function removeMetadata($metadataKey, Plugin $plugin){
+	public function removeMetadata(string $metadataKey, Plugin $plugin){
 		if($this->getLevel() instanceof Level){
 			$this->getLevel()->getBlockMetadata()->removeMetadata($this, $metadataKey, $plugin);
 		}

@@ -60,15 +60,14 @@ class PrimedTNT extends Entity implements Explosive {
 	}
 
 
-	/**
-	 * @param float             $damage
-	 * @param EntityDamageEvent $source
-	 *
-	 * @return bool|void
-	 */
-	public function attack($damage, EntityDamageEvent $source){
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool|void
+     * @internal param float $damage
+     */
+	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
-			parent::attack($damage, $source);
+			parent::attack($source);
 		}
 	}
 

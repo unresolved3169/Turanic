@@ -47,6 +47,7 @@ use raklib\protocol\UNCONNECTED_PONG;
 use raklib\RakLib;
 
 class SessionManager{
+    /** @var \SplFixedArray<Packet|null>  */
 	protected $packetPool = [];
 
 	/** @var RakLibServer */
@@ -72,7 +73,7 @@ class SessionManager{
 	protected $block = [];
 	protected $ipSec = [];
 
-	public $portChecking = true;
+	public $portChecking = false;
 
 	public function __construct(RakLibServer $server, UDPServerSocket $socket){
 		$this->server = $server;

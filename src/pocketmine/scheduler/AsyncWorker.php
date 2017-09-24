@@ -27,6 +27,8 @@ class AsyncWorker extends Worker {
 
 	private $logger;
 	private $id;
+	/** @var int */
+	private $memoryLimit;
 
 	/**
 	 * AsyncWorker constructor.
@@ -34,15 +36,23 @@ class AsyncWorker extends Worker {
 	 * @param \ThreadedLogger $logger
 	 * @param                 $id
 	 */
-	public function __construct(\ThreadedLogger $logger, $id){
+	public function __construct(\ThreadedLogger $logger, $id, $memoryLimit){
 		$this->logger = $logger;
 		$this->id = $id;
+		$this->memoryLimit = $memoryLimit;
 	}
 
 	public function run(){
 		$this->registerClassLoader();
 		gc_enable();
-		ini_set("memory_limit", -1);
+
+        if($this->memoryLimit > 0){
+            ini_set('memory_limit', $this->memoryLimit . 'M');
+            $this->logger->debug("Set memory limit to " . $this->memoryLimit . " MB");
+        }else{
+            ini_set('memory_limit', '-1');
+            $this->logger->debug("No memory limit set");
+        }
 
 		global $store;
 		$store = [];
@@ -61,4 +71,8 @@ class AsyncWorker extends Worker {
 	public function getThreadName(){
 		return "Asynchronous Worker #" . $this->id;
 	}
+
+    public function getAsyncWorkerId() : int{
+        return $this->id;
+    }
 }

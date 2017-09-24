@@ -19,36 +19,38 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
 
-class EntityFallPacket extends DataPacket {
+use pocketmine\network\mcpe\NetworkSession;
 
+class EntityFallPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
 
+	/** @var int */
 	public $entityRuntimeId;
+	/** @var float */
 	public $fallDistance;
+	/** @var bool */
 	public $bool1;
 
-	/**
-	 *
-	 */
-	public function decode(){
-		$this->entityRuntimeId = $this->getEntityId();
+	protected function decodePayload(){
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->fallDistance = $this->getLFloat();
 		$this->bool1 = $this->getBool();
 	}
 
-	/**
-	 *
-	 */
-	public function encode(){
-		$this->reset();
-		$this->putEntityId($this->entityRuntimeId);
+	protected function encodePayload(){
+		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putLFloat($this->fallDistance);
 		$this->putBool($this->bool1);
 	}
 
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleEntityFall($this);
+	}
 }

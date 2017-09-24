@@ -1,41 +1,35 @@
 <?php
+
 /*
  *
- *  _____            _               _____
- * / ____|          (_)             |  __ \
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/
- *                         __/ |
- *                        |___/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
- *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
 */
 
-/**
- * Minecraft: PE multiplayer protocol implementation
- */
-
 namespace pocketmine\network\mcpe\protocol;
 
-interface ProtocolInfo{
+interface ProtocolInfo {
+	/**
+	 * Actual Minecraft: PE protocol version
+	 */
 
-    /**
-     * Actual Minecraft: PE protocol version
-     */
-    const CURRENT_PROTOCOL = 137;
-    const ACCEPTED_PROTOCOLS = [137];
-    const MINECRAFT_VERSION = ["v1.2.0.81"];
-    const MINECRAFT_VERSION_NETWORK = "1.2.0.81";
+	const CURRENT_PROTOCOL = 137;
+	const ACCEPTED_PROTOCOLS = [137];
+	const MINECRAFT_VERSION_NETWORK = "1.2.0";
 
     const LOGIN_PACKET = 0x01;
     const PLAY_STATUS_PACKET = 0x02;

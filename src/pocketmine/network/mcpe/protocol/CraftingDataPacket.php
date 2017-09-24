@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,9 +15,11 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
+
+declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
@@ -30,34 +32,31 @@ use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\utils\BinaryStream;
 
-class CraftingDataPacket extends DataPacket {
-
+class CraftingDataPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::CRAFTING_DATA_PACKET;
 
 	const ENTRY_SHAPELESS = 0;
 	const ENTRY_SHAPED = 1;
 	const ENTRY_FURNACE = 2;
 	const ENTRY_FURNACE_DATA = 3;
-	const ENTRY_MULTI = 4;
+	const ENTRY_MULTI = 4; //TODO
+	const ENTRY_SHULKER_BOX = 5; //TODO
 
 	/** @var object[] */
 	public $entries = [];
+	/** @var bool */
 	public $cleanRecipes = false;
 
-	/**
-	 * @return $this
-	 */
+	public $decodedEntries = [];
+
 	public function clean(){
 		$this->entries = [];
-
+		$this->decodedEntries = [];
 		return parent::clean();
 	}
 
-	/**
-	 *
-	 */
-	public function decode(){
-		$entries = [];
+	protected function decodePayload(){
+		$this->decodedEntries = [];
 		$recipeCount = $this->getUnsignedVarInt();
 		for($i = 0; $i < $recipeCount; ++$i){
 			$entry = [];
@@ -65,6 +64,7 @@ class CraftingDataPacket extends DataPacket {
 
 			switch($recipeType){
 				case self::ENTRY_SHAPELESS:
+				case self::ENTRY_SHULKER_BOX:
 					$ingredientCount = $this->getUnsignedVarInt();
 					/** @var Item */
 					$entry["input"] = [];
@@ -108,17 +108,11 @@ class CraftingDataPacket extends DataPacket {
 				default:
 					throw new \UnexpectedValueException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
 			}
-			$entries[] = $entry;
+			$this->decodedEntries[] = $entry;
 		}
 		$this->getBool(); //cleanRecipes
 	}
 
-	/**
-	 * @param              $entry
-	 * @param BinaryStream $stream
-	 *
-	 * @return int
-	 */
 	private static function writeEntry($entry, BinaryStream $stream){
 		if($entry instanceof ShapelessRecipe){
 			return self::writeShapelessRecipe($entry, $stream);
@@ -127,62 +121,36 @@ class CraftingDataPacket extends DataPacket {
 		}elseif($entry instanceof FurnaceRecipe){
 			return self::writeFurnaceRecipe($entry, $stream);
 		}
-
 		//TODO: add MultiRecipe
 
 		return -1;
 	}
 
-	/**
-	 * @param ShapelessRecipe $recipe
-	 * @param BinaryStream    $stream
-	 *
-	 * @return int
-	 */
 	private static function writeShapelessRecipe(ShapelessRecipe $recipe, BinaryStream $stream){
-		$stream->putUnsignedVarInt($recipe->getIngredientCount());
-		foreach($recipe->getIngredientList() as $item){
-			$stream->putSlot($item);
-		}
-
-		$stream->putUnsignedVarInt(1);
-		$stream->putSlot($recipe->getResult());
-
-		$stream->putUUID($recipe->getId());
-
-		return CraftingDataPacket::ENTRY_SHAPELESS;
+        $stream->putUnsignedVarInt($recipe->getIngredientCount());
+        foreach($recipe->getIngredientList() as $item){
+            $stream->putSlot($item);
+        }
+        $stream->putUnsignedVarInt(1);
+        $stream->putSlot($recipe->getResult());
+        $stream->putUUID($recipe->getId());
+        return CraftingDataPacket::ENTRY_SHAPELESS;
 	}
 
-	/**
-	 * @param ShapedRecipe $recipe
-	 * @param BinaryStream $stream
-	 *
-	 * @return int
-	 */
 	private static function writeShapedRecipe(ShapedRecipe $recipe, BinaryStream $stream){
-		$stream->putVarInt($recipe->getWidth());
-		$stream->putVarInt($recipe->getHeight());
-
-		for($z = 0; $z < $recipe->getHeight(); ++$z){
-			for($x = 0; $x < $recipe->getWidth(); ++$x){
-				$stream->putSlot($recipe->getIngredient($x, $z));
-			}
-		}
-
-		$stream->putUnsignedVarInt(1);
-		$stream->putSlot($recipe->getResult());
-
-		$stream->putUUID($recipe->getId());
-
-		return CraftingDataPacket::ENTRY_SHAPED;
+        $stream->putVarInt($recipe->getWidth());
+        $stream->putVarInt($recipe->getHeight());
+        for($z = 0; $z < $recipe->getHeight(); ++$z){
+            for($x = 0; $x < $recipe->getWidth(); ++$x){
+                $stream->putSlot($recipe->getIngredient($x, $z));
+            }
+        }
+        $stream->putUnsignedVarInt(1);
+        $stream->putSlot($recipe->getResult());
+        $stream->putUUID($recipe->getId());
+        return CraftingDataPacket::ENTRY_SHAPED;
 	}
 
-	/**
-	 * @param FurnaceRecipe $recipe
-	 * @param BinaryStream  $stream
-	 *
-	 * @return int
-	 */
 	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, BinaryStream $stream){
 		if(!$recipe->getInput()->hasAnyDamageValue()){ //Data recipe
 			$stream->putVarInt($recipe->getInput()->getId());
@@ -198,32 +166,19 @@ class CraftingDataPacket extends DataPacket {
 		}
 	}
 
-	/**
-	 * @param ShapelessRecipe $recipe
-	 */
 	public function addShapelessRecipe(ShapelessRecipe $recipe){
 		$this->entries[] = $recipe;
 	}
 
-	/**
-	 * @param ShapedRecipe $recipe
-	 */
 	public function addShapedRecipe(ShapedRecipe $recipe){
 		$this->entries[] = $recipe;
 	}
 
-	/**
-	 * @param FurnaceRecipe $recipe
-	 */
 	public function addFurnaceRecipe(FurnaceRecipe $recipe){
 		$this->entries[] = $recipe;
 	}
 
-	/**
-	 *
-	 */
-	public function encode(){
-		$this->reset();
+	protected function encodePayload(){
 		$this->putUnsignedVarInt(count($this->entries));
 
 		$writer = new BinaryStream();
@@ -240,13 +195,6 @@ class CraftingDataPacket extends DataPacket {
 		}
 
 		$this->putBool($this->cleanRecipes);
-	}
-
-	/**
-	 * @return PacketName|string
-	 */
-	public function getName(){
-		return "CraftingDataPacket";
 	}
 
 }

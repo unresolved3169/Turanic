@@ -44,8 +44,9 @@ abstract class Living extends Entity implements Damageable {
 	protected $attackTime = 0;
 
 	protected $invisible = false;
+    protected $jumpVelocity = 0.42;
 
-	protected function initEntity(){
+    protected function initEntity(){
 		parent::initEntity();
 
 		if(isset($this->namedtag->HealF)){
@@ -81,6 +82,20 @@ abstract class Living extends Entity implements Damageable {
 		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
 	}
 
+    public function jump(){
+        if($this->onGround){
+            $this->motionY = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
+        }
+    }
+
+    /**
+     * Returns the initial upwards velocity of a jumping entity in blocks/tick, including additional velocity due to effects.
+     * @return float
+     */
+    public function getJumpVelocity() : float{
+        return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? ($this->getEffect(Effect::JUMP)->getAmplifier() / 10) : 0);
+    }
+
 	/**
 	 * @return mixed
 	 */
@@ -110,13 +125,11 @@ abstract class Living extends Entity implements Damageable {
 		$this->attackTime = 0;
 	}
 
-	/**
-	 * @param float             $damage
-	 * @param EntityDamageEvent $source
-	 *
-	 * @return bool|void
-	 */
-	public function attack($damage, EntityDamageEvent $source){
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool|void
+     */
+	public function attack(EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
 			if($lastCause !== null and $lastCause->getDamage() >= $damage){
@@ -124,7 +137,7 @@ abstract class Living extends Entity implements Damageable {
 			}
 		}
 
-		parent::attack($damage, $source);
+		parent::attack($source);
 
 		if($source->isCancelled()){
 			return;
@@ -214,7 +227,7 @@ abstract class Living extends Entity implements Damageable {
 			if($this->isInsideOfSolid()){
 				$hasUpdate = true;
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
-				$this->attack($ev->getFinalDamage(), $ev);
+				$this->attack($ev);
 			}
 			$maxAir = 400 + $EnchantL * 300;
 			$this->setDataProperty(self::DATA_MAX_AIR, self::DATA_TYPE_SHORT, $maxAir);

@@ -99,9 +99,9 @@ class BanList {
 	 */
 	public function addBan($target, $reason = null, $expires = null, $source = null){
 		$entry = new BanEntry($target);
-		$entry->setSource($source != null ? $source : $entry->getSource());
+		$entry->setSource($source ?? $entry->getSource());
 		$entry->setExpires($expires);
-		$entry->setReason($reason != null ? $reason : $entry->getReason());
+		$entry->setReason($reason ?? $entry->getReason());
 
 		$this->list[$entry->getName()] = $entry;
 		$this->save();
