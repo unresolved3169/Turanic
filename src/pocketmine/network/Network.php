@@ -211,7 +211,8 @@ class Network {
 	 * @param SourceInterface $interface
 	 */
 	public function unregisterInterface(SourceInterface $interface){
-		unset($this->interfaces[$hash = spl_object_hash($interface)], $this->advancedInterfaces[$hash]);
+		unset($this->interfaces[$hash = spl_object_hash($interface)],
+			$this->advancedInterfaces[$hash]);
 	}
 
 	/**

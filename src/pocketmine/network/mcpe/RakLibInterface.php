@@ -51,7 +51,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	private $players = [];
 
 	/** @var string[] */
-	private $identifiers = [];
+	private $identifiers;
 
 	/** @var int[] */
 	private $identifiersACK = [];
@@ -65,7 +65,9 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 * @param Server $server
 	 */
 	public function __construct(Server $server){
+
 		$this->server = $server;
+		$this->identifiers = [];
 
 		$this->rakLib = new RakLibServer($this->server->getLogger(), $this->server->getLoader(), $this->server->getPort(), $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp());
 		$this->interface = new ServerHandler($this->rakLib, $this);
@@ -162,7 +164,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 */
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
-            $address = $this->players[$identifier]->getAddress();
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
@@ -178,7 +179,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 					$logger->debug("Exception in packet " . get_class($pk) . " 0x" . bin2hex($packet->buffer));
 				}
 				$logger->logException($e);
-				$this->interface->blockAddress($address, 5);
 			}
 		}
 	}
@@ -228,6 +228,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 * @param string $name
 	 */
 	public function setName($name){
+
 		if($this->server->isDServerEnabled()){
 			if($this->server->dserverConfig["motdMaxPlayers"] > 0) $pc = $this->server->dserverConfig["motdMaxPlayers"];
 			elseif($this->server->dserverConfig["motdAllPlayers"]) $pc = $this->server->getDServerMaxPlayers();
@@ -241,18 +242,13 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 			$poc = $info->getPlayerCount();
 		}
 
-		$this->interface->sendOption("name", implode(";",
-            [
-                "MCPE",
-                rtrim(addcslashes($name, ";"), '\\'),
-                ProtocolInfo::CURRENT_PROTOCOL,
-				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
-				$poc,
-				$pc,
-	            $this->rakLib->getServerId(),
-				$this->server->getName(),
-				Server::getGamemodeString($this->server->getGamemode())
-            ]));
+		$this->interface->sendOption("name",
+			"MCPE;" . rtrim(addcslashes($name, ";"), '\\') . ";" .
+			ProtocolInfo::CURRENT_PROTOCOL . ";" .
+			ProtocolInfo::MINECRAFT_VERSION_NETWORK . ";" .
+			$poc . ";" .
+			$pc
+		);
 	}
 
 	/**
@@ -282,7 +278,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 * @return int|null
 	 */
 	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
-		if(isset($this->identifiers[$h = spl_object_hash($player)])){
+		/*if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			$identifier = $this->identifiers[$h];
 			if(!$packet->isEncoded){
 				$packet->encode();
@@ -292,16 +288,19 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 			if($packet instanceof BatchPacket){
 				if($needACK){
 					$pk = new EncapsulatedPacket();
-                    $pk->identifierACK = $this->identifiersACK[$identifier]++;
 					$pk->buffer = $packet->buffer;
-					$pk->reliability = $immediate ? PacketReliability::RELIABLE : PacketReliability::RELIABLE_ORDERED;
+					$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 					$pk->orderChannel = 0;
+
+					if($needACK === true){
+						$pk->identifierACK = $this->identifiersACK[$identifier]++;
+					}
 				}else{
 					if(!isset($packet->__encapsulatedPacket)){
 						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
 						$packet->__encapsulatedPacket->identifierACK = null;
 						$packet->__encapsulatedPacket->buffer = $packet->buffer; // #blameshoghi
-						$packet->__encapsulatedPacket->reliability = $immediate ? PacketReliability::RELIABLE : PacketReliability::RELIABLE_ORDERED;
+						$packet->__encapsulatedPacket->reliability = PacketReliability::RELIABLE_ORDERED;
 						$packet->__encapsulatedPacket->orderChannel = 0;
 					}
 					$pk = $packet->__encapsulatedPacket;
@@ -315,7 +314,26 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 			}
 		}
 
-		return null;
+		return null;*/
+        if(isset($this->identifiers[$h = spl_object_hash($player)])){
+            $packet->encode();
+            if(!($packet instanceof BatchPacket) && strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
+                $this->server->batchPackets([$player], [$packet], true);
+                return null;
+            }
+            $identifier = $this->identifiers[$h];
+            $pk = new EncapsulatedPacket();
+            $pk->buffer = $packet->buffer;
+            $pk->reliability = 3;
+            if($needACK === true){
+                $pk->identifierACK = $this->identifiersACK[$identifier]++;
+            }
+            if ($immediate) {
+                $pk->reliability = 0;
+            }
+            $this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
+        }
+        return null;
 	}
 
 	/**
@@ -332,8 +350,4 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 		return $data;
 	}
-
-    public function start(){
-        $this->rakLib->start();
-    }
 }

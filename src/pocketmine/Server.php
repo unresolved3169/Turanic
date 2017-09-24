@@ -74,7 +74,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\Network;
 use pocketmine\network\mcpe\protocol\BatchPacket;
@@ -319,7 +318,6 @@ class Server{
 	public $enderName = "ender";
 	public $enderLevel = null;
 	public $absorbWater = false;
-	/** @var  ServerPacketWorker */
 	public $packetWorker;
 
 	/**
@@ -1646,6 +1644,16 @@ class Server{
 
 			$this->about();
 
+            $this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
+
+            define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+
+            ini_set('assert.exception', '1');
+
+            if($this->logger instanceof MainLogger){
+                $this->logger->setLogDebug(\pocketmine\DEBUG > 1);
+            }
+
 			$this->logger->info("Loading properties and configuration...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
@@ -1668,10 +1676,9 @@ class Server{
 			if(file_exists($this->dataPath . "lang.txt")){
 				unlink($this->dataPath . "lang.txt");
 			}
-            $this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
-            $nowLang = $this->getProperty("settings.language", "eng");
+			$nowLang = $this->getProperty("settings.language", "eng");
 
-            //Crashes unsupported builds without the correct configuration
+			//Crashes unsupported builds without the correct configuration
 			if(strpos(\pocketmine\VERSION, "unsupported") !== false and getenv("CI") === false){
 				if($this->getProperty("settings.enable-testing", false) !== true){
 					throw new ServerException("This build is not intended for production use. You may set 'settings.enable-testing: true' under pocketmine.yml to allow use of non-production builds. Do so at your own risk and ONLY if you know what you are doing.");
@@ -1801,18 +1808,6 @@ class Server{
 				$this->setConfigInt("difficulty", 3);
 			}
 
-            define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
-
-			if(((int) ini_get('zend.assertions')) > 0 and ((bool) $this->getProperty("debug.assertions.warn-if-enabled", true)) !== false){
-			    $this->logger->warning("Debugging assertions are enabled, this may impact on performance. To disable them, set `zend.assertions = -1` in php.ini.");
-		    }
-
-	        ini_set('assert.exception', '1');
-
-            if($this->logger instanceof MainLogger){
-                                $this->logger->setLogDebug(\pocketmine\DEBUG > 1);
-            }
-
 			if(\pocketmine\DEBUG >= 0){
 				@cli_set_process_title($this->getName() . " " . $this->getPocketMineVersion());
 			}
@@ -1890,11 +1885,6 @@ class Server{
 			foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 				if($this->loadLevel($name) === false){
 					$seed = $this->getProperty("worlds.$name.seed", time());
-                    if(is_string($seed) and !is_numeric($seed)){
-                        $seed = Utils::javaStringHash($seed);
-						}elseif(!is_int($seed)) {
-                        $seed = (int)$seed;
-                    }
 					$options = explode(":", $this->getProperty("worlds.$name.generator", Generator::getGenerator("default")));
 					$generator = Generator::getGenerator(array_shift($options));
 					if(count($options) > 0){
@@ -2128,38 +2118,53 @@ class Server{
      * @param bool $immediate
      */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
-        Timings::$playerNetworkTimer->startTiming();
+		
+				
+		Timings::$playerNetworkTimer->startTiming();
+		$packs = [];
+		$str = "";
 
-        $targets = [];
-        foreach ($players as $p) {
-            if ($p->isConnected()) {
-                $targets[] = $this->identifiers[spl_object_hash($p)];
-            }
-        }
-        if (count($targets) > 0) {
-            $pk = new BatchPacket();
+		foreach($packets as $p){
+			if($p instanceof DataPacket){
+				if(!$p->isEncoded){
+					$p->encode();
+				}
+				$packs[] = $p->buffer;
+			}else{
+				$packs[] = $p;
+			}
+		}
 
-            foreach ($packets as $p) {
-                $pk->addPacket($p);
-            }
+		$targets = [];
+		foreach($players as $p){
+			if($p->isConnected()){
+				$targets[] = $this->identifiers[spl_object_hash($p)];
+			}
+		}
+		
+		$data = [
+		"packets" => $packs,
+		"needACK" => false,
+		"immediate" => $immediate,
+		"targets" => $targets];
+		
+	/*	$batch = new BatchPacket;
+		$batch->payload = zlib_encode($str, ZLIB_ENCODING_DEFLATE, 7);
+		
+		foreach($players as $p){
+			if($immediate){
+				$p->directDataPacket($batch);
+			}else{
+				$p->dataPacket($batch);
+			}
+		}
+		
+		return;*/
+		
+		$this->packetWorker->pushMainToThreadPacket(serialize($data));
 
-            if (Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD) {
-                $pk->setCompressionLevel($this->networkCompressionLevel);
-            } else {
-                $pk->setCompressionLevel(0); //Do not compress packets under the threshold
-                $forceSync = true;
-            }
-
-            if (!$forceSync and !$immediate and $this->networkCompressionAsync) {
-                $task = new CompressBatchedTask($pk, $targets);
-                $this->getScheduler()->scheduleAsyncTask($task);
-            } else {
-                $this->broadcastPacketsCallback($pk, $targets, $immediate);
-            }
-        }
-
-        Timings::$playerNetworkTimer->stopTiming();
-    }
+		Timings::$playerNetworkTimer->stopTiming();
+	}
 
 	public function broadcastPacketsCallback($data, array $identifiers, bool $immediate = false){
 		$pk = new BatchPacket();
@@ -2280,12 +2285,12 @@ class Server{
 		TimingsHandler::reload();
 	}
 
-    /**
-     * Shutdowns the server correctly
+	/**
+	 * Shutdowns the server correctly
      *
-     * @param string $msg
-     */
-	public function shutdown(string $msg = ""){
+	 * @param string $msg
+	 */
+	public function shutdown($restart = false, string $msg = ""){
 		$this->isRunning = false;
 		if($msg != ""){
 			$this->propertyCache["settings.shutdown-message"] = $msg;
@@ -2607,15 +2612,11 @@ class Server{
     }
 
 	private function checkTickUpdates($currentTick, $tickTime){
-		if($this->alwaysTickPlayers) {
-            foreach ($this->players as $p) {
-                if (!$p->loggedIn and ($tickTime - $p->creationTime) >= 10) {
-                    $p->close("", "Login timeout");
-                } elseif ($this->alwaysTickPlayers and $p->isOnline()) {
-                    $p->onUpdate($currentTick);
-                }
-            }
-        }
+		if($this->alwaysTickPlayers){
+			foreach($this->players as $p){
+				$p->onUpdate($currentTick);
+			}
+		}
 
 		//Do level ticks
 		foreach($this->getLevels() as $level){

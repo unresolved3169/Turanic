@@ -3912,7 +3912,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      *
      * @param bool $async
      */
-    public function save(bool $async = false){
+    public function save(bool $async = false)
+    {
         if ($this->closed) {
             throw new \InvalidStateException("Tried to save closed player");
         }

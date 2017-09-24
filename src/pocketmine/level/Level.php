@@ -351,7 +351,7 @@ class Level implements ChunkManager, Metadatable
      *
      * @throws \Throwable
      */
-    public function __construct(Server $server, string $name, string $path, $provider) {
+    public function __construct(Server $server, string $name, string $path, string $provider) {
         $this->blockStates = Block::$fullList;
         $this->levelId = static::$levelIdCounter++;
         $this->blockMetadata = new BlockMetadataStore($this);
@@ -423,7 +423,7 @@ class Level implements ChunkManager, Metadatable
         return $this->tickRateTime;
     }
 
-    public function setTickRate($tickRate) {
+    public function setTickRate(int $tickRate) {
         $this->tickRate = $tickRate;
     }
 

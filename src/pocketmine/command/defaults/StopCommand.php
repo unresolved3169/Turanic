@@ -64,7 +64,7 @@ class StopCommand extends VanillaCommand {
 		}
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.stop.start"));
 		$msg = implode(" ", $args);
-		$sender->getServer()->shutdown($msg);
+		$sender->getServer()->shutdown($restart, $msg);
 
 		return true;
 	}

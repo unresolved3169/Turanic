@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\utils\Binary;
-
 class BatchPacket extends DataPacket{
 	const NETWORK_ID = 0xfe;
 
@@ -35,56 +33,28 @@ class BatchPacket extends DataPacket{
 	/** @var int */
 	protected $compressionLevel = 7;
 
-    public function canBeBatched() : bool{
-        return false;
+	public function canBeBatched() : bool{
+		return false;
+	}
+
+	public function canBeSentBeforeLogin() : bool{
+		return true;
+	}
+
+    public function decode() {
+        $this->payload = $this->get(true);
     }
 
-    public function canBeSentBeforeLogin() : bool{
-        return true;
+    public function encode() {
+        $this->buffer = $this->payload;
     }
 
-    protected function decodeHeader(){
-        $pid = $this->getByte();
-        assert($pid === static::NETWORK_ID);
-    }
+	public function getCompressionLevel() : int{
+		return $this->compressionLevel;
+	}
 
-    protected function decodePayload(){
-        $data = $this->getRemaining();
-        try{
-            $this->payload = zlib_decode($data, 1024 * 1024 * 64); //Max 64MB
-        }catch(\ErrorException $e){ //zlib decode error
-            $this->payload = "";
-        }
-    }
-
-    protected function encodeHeader(){
-        $this->putByte(static::NETWORK_ID);
-    }
-
-    protected function encodePayload(){
-        $this->put(zlib_encode($this->payload, ZLIB_ENCODING_DEFLATE, 7));
-    }
-
-    /**
-     * @param DataPacket $packet
-     */
-    public function addPacket(DataPacket $packet){
-        if(!$packet->canBeBatched()){
-            throw new \InvalidArgumentException(get_class($packet) . " cannot be put inside a BatchPacket");
-        }
-        if(!$packet->isEncoded){
-            $packet->encode();
-        }
-
-        $this->payload .= Binary::writeUnsignedVarInt(strlen($packet->buffer)) . $packet->buffer;
-    }
-
-    public function getCompressionLevel() : int{
-        return $this->compressionLevel;
-    }
-
-    public function setCompressionLevel(int $level){
-        $this->compressionLevel = $level;
-    }
+	public function setCompressionLevel(int $level){
+		$this->compressionLevel = $level;
+	}
 
 }
