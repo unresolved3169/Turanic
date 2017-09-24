@@ -29,98 +29,97 @@ namespace pocketmine\network\query;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 
-class QueryHandler {
-	private $server, $lastToken, $token, $longData, $shortData, $timeout;
+class QueryHandler{
+    private $server, $lastToken, $token, $longData, $shortData, $timeout;
 
-	const HANDSHAKE = 9;
-	const STATISTICS = 0;
+    const HANDSHAKE = 9;
+    const STATISTICS = 0;
 
-	/**
-	 * QueryHandler constructor.
-	 */
-	public function __construct(){
-		$this->server = Server::getInstance();
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.start"));
-		$addr = ($ip = $this->server->getIp()) != "" ? $ip : "0.0.0.0";
-		$port = $this->server->getPort();
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.info", [$port]));
-		/*
-		The Query protocol is built on top of the existing Minecraft PE UDP network stack.
-		Because the 0xFE packet does not exist in the MCPE protocol,
-		we can identify	Query packets and remove them from the packet queue.
-		
-		Then, the Query class handles itself sending the packets in raw form, because
-		packets can conflict with the MCPE ones.
-		*/
+    /**
+     * QueryHandler constructor.
+     */
+    public function __construct(){
+        $this->server = Server::getInstance();
+        $this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.start"));
+        $addr = ($ip = $this->server->getIp()) != "" ? $ip : "0.0.0.0";
+        $port = $this->server->getPort();
+        $this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.info", [$port]));
+        /*
+        The Query protocol is built on top of the existing Minecraft PE UDP network stack.
+        Because the 0xFE packet does not exist in the MCPE protocol,
+        we can identify	Query packets and remove them from the packet queue.
 
-		$this->regenerateToken();
-		$this->lastToken = $this->token;
-		$this->regenerateInfo();
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
-	}
+        Then, the Query class handles itself sending the packets in raw form, because
+        packets can conflict with the MCPE ones.
+        */
 
-	public function regenerateInfo(){
-		$ev = $this->server->getQueryInformation();
-		$this->longData = $ev->getLongQuery();
-		$this->shortData = $ev->getShortQuery();
-		$this->timeout = microtime(true) + $ev->getTimeout();
-	}
+        $this->regenerateToken();
+        $this->lastToken = $this->token;
+        $this->regenerateInfo();
+        $this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
+    }
 
-	public function regenerateToken(){
-		$this->lastToken = $this->token;
-		$this->token = random_bytes(16);
-	}
+    public function regenerateInfo(){
+        $ev = $this->server->getQueryInformation();
+        $this->longData = $ev->getLongQuery();
+        $this->shortData = $ev->getShortQuery();
+        $this->timeout = microtime(true) + $ev->getTimeout();
+    }
 
-	/**
-	 * @param $token
-	 * @param $salt
-	 *
-	 * @return int
-	 */
-	public static function getTokenString($token, $salt){
-		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
-	}
+    public function regenerateToken(){
+        $this->lastToken = $this->token;
+        $this->token = random_bytes(16);
+    }
 
-	/**
-	 * @param $address
-	 * @param $port
-	 * @param $packet
-	 */
-	public function handle($address, $port, $packet){
-		$offset = 2;
-		$packetType = ord($packet{$offset++});
-		$sessionID = Binary::readInt(substr($packet, $offset, 4));
-		$offset += 4;
-		$payload = substr($packet, $offset);
+    /**
+     * @param $token
+     * @param $salt
+     *
+     * @return int
+     */
+    public static function getTokenString($token, $salt){
+        return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
+    }
 
-		switch($packetType){
-			case self::HANDSHAKE: //Handshake
-				$reply = chr(self::HANDSHAKE);
-				$reply .= Binary::writeInt($sessionID);
-				$reply .= self::getTokenString($this->token, $address) . "\x00";
+    /**
+     * @param $address
+     * @param $port
+     * @param $packet
+     */
+    public function handle($address, $port, $packet){
+        $offset = 2;
+        $packetType = ord($packet{$offset++});
+        $sessionID = Binary::readInt(substr($packet, $offset, 4));
+        $offset += 4;
+        $payload = substr($packet, $offset);
 
-				$this->server->getNetwork()->sendPacket($address, $port, $reply);
-				break;
-			case self::STATISTICS: //Stat
-				$token = Binary::readInt(substr($payload, 0, 4));
-				if($token !== self::getTokenString($this->token, $address) and $token !== self::getTokenString($this->lastToken, $address)){
-					break;
-				}
-				$reply = chr(self::STATISTICS);
-				$reply .= Binary::writeInt($sessionID);
+        switch ($packetType) {
+            case self::HANDSHAKE: //Handshake
+                $reply = chr(self::HANDSHAKE);
+                $reply .= Binary::writeInt($sessionID);
+                $reply .= self::getTokenString($this->token, $address) . "\x00";
 
-				if($this->timeout < microtime(true)){
-					$this->regenerateInfo();
-				}
+                $this->server->getNetwork()->sendPacket($address, $port, $reply);
+                break;
+            case self::STATISTICS: //Stat
+                $token = Binary::readInt(substr($payload, 0, 4));
+                if ($token !== self::getTokenString($this->token, $address) and $token !== self::getTokenString($this->lastToken, $address)) {
+                    break;
+                }
+                $reply = chr(self::STATISTICS);
+                $reply .= Binary::writeInt($sessionID);
 
-				if(strlen($payload) === 8){
-					$reply .= $this->longData;
-				}else{
-					$reply .= $this->shortData;
-				}
-				$this->server->getNetwork()->sendPacket($address, $port, $reply);
-				break;
-		}
-	}
+                if ($this->timeout < microtime(true)) {
+                    $this->regenerateInfo();
+                }
 
+                if (strlen($payload) === 8) {
+                    $reply .= $this->longData;
+                } else {
+                    $reply .= $this->shortData;
+                }
+                $this->server->getNetwork()->sendPacket($address, $port, $reply);
+                break;
+        }
+    }
 }
