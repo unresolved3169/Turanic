@@ -43,6 +43,8 @@ class LoginPacket extends DataPacket{
 	public $identityPublicKey;
 	/** @var string */
 	public $serverAddress;
+  public $deviceOS = -1;
+    public $deviceModel = "";
 
 	/** @var string */
 	public $skinId;
@@ -103,6 +105,12 @@ class LoginPacket extends DataPacket{
 		if(isset($this->clientData["SkinData"])){
 			$this->skin = base64_decode($this->clientData["SkinData"]);
 		}
+   if (isset($this->playerData['DeviceOS'])) {
+            $this->deviceOS = $this->playerData['DeviceOS'];
+        }
+        if (isset($this->playerData['DeviceModel'])) {
+            $this->deviceModel = $this->playerData['DeviceModel'];
+        }
 		
 		file_put_contents(__DIR__ . "TEST_login_client.data", json_encode($this->clientData));
 	}
