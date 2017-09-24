@@ -2011,7 +2011,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @return bool
      */
     public function onUpdate($currentTick){
-        if (!$this->loggedIn) {
+        if (!$this->loggedIn or !$this->spawned) {
             return false;
         }
 
