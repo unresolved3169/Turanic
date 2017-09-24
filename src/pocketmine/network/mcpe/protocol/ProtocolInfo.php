@@ -20,20 +20,22 @@
  *
  *
 */
+
 /**
  * Minecraft: PE multiplayer protocol implementation
  */
 
 namespace pocketmine\network\mcpe\protocol;
-interface ProtocolInfo {
-	/**
-	 * Actual Minecraft: PE protocol version
-	 */
 
-	const CURRENT_PROTOCOL = 137;
-	const ACCEPTED_PROTOCOLS = [137];
-	const MINECRAFT_VERSION = ["v1.2.0.81"];
-	const MINECRAFT_VERSION_NETWORK = "1.2.0.81";
+interface ProtocolInfo{
+
+    /**
+     * Actual Minecraft: PE protocol version
+     */
+    const CURRENT_PROTOCOL = 137;
+    const ACCEPTED_PROTOCOLS = [137];
+    const MINECRAFT_VERSION = ["v1.2.0.81"];
+    const MINECRAFT_VERSION_NETWORK = "1.2.0.81";
 
     const LOGIN_PACKET = 0x01;
     const PLAY_STATUS_PACKET = 0x02;
