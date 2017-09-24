@@ -1,6 +1,6 @@
 <img src="https://i.imgur.com/jw0b3BH.png" border="0">
 
-Fast server software for Minecraft PE and W10 Edition - v1.1.x.
+Fast server software for Minecraft PE and W10 Edition - v1.2.x.
 Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
 
 | Travis CI | Discord |
@@ -18,7 +18,7 @@ Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
 - [ ] **Advanced Cache**
 - [ ] **More thread/worker**
 - [ ] **Custom Particle/Sound**
-- [ ] **Command Parameters** 
+- [ ] **Command Parameters**
 - [ ] **Basic ChunkLoader System**
 - [ ] **New Chunk Region System**
 - [ ] **Fast Nbt writer/reader**
