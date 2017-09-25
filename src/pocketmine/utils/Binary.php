@@ -581,4 +581,8 @@ class Binary {
 
         throw new \InvalidArgumentException("Value too large to be encoded as a VarLong");
     }
+
+    public static function readRoundedLFloat(string $str, int $accuracy) : float{
+        return round(self::readLFloat($str), $accuracy);
+    }
 }

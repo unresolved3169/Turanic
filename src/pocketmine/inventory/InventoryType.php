@@ -44,7 +44,7 @@ class InventoryType {
 	const FURNACE = 3;
 	const CRAFTING = 4;
 	const WORKBENCH = 5;
-	//const STONECUTTER = 6;
+	const CURSOR = 6;
 	const BREWING_STAND = 7;
 	const ANVIL = 8;
 	const ENCHANT_TABLE = 9;
@@ -82,8 +82,9 @@ class InventoryType {
 			static::CHEST => new InventoryType(27, "Chest", WindowTypes::CONTAINER),
 			static::DOUBLE_CHEST => new InventoryType(27 + 27, "Double Chest", WindowTypes::CONTAINER),
 			static::PLAYER => new InventoryType(36 + 4, "Player", WindowTypes::INVENTORY), //36 CONTAINER, 4 ARMOR
-			static::CRAFTING => new InventoryType(5, "Crafting", WindowTypes::INVENTORY), //yes, the use of INVENTORY is intended! 4 CRAFTING slots, 1 RESULT
-			static::WORKBENCH => new InventoryType(10, "Crafting", WindowTypes::WORKBENCH), //9 CRAFTING slots, 1 RESULT
+			static::CURSOR => new InventoryType(1, "PlayerCursor", WindowTypes::INVENTORY), //yes, the use of INVENTORY is intended! 4 CRAFTING slots, 1 RESULT
+			static::CRAFTING => new InventoryType(4, "Crafting", WindowTypes::INVENTORY), //yes, the use of INVENTORY is intended! 4 CRAFTING slots, 1 RESULT
+			static::WORKBENCH => new InventoryType(9, "Crafting", WindowTypes::WORKBENCH), //9 CRAFTING slots, 1 RESULT
 			static::FURNACE => new InventoryType(3, "Furnace", WindowTypes::FURNACE), //2 INPUT, 1 OUTPUT
 			static::ENCHANT_TABLE => new InventoryType(2, "Enchant", WindowTypes::ENCHANTMENT), //1 INPUT/OUTPUT, 1 LAPIS
 			static::BREWING_STAND => new InventoryType(4, "Brewing", WindowTypes::BREWING_STAND), //1 INPUT, 3 POTION

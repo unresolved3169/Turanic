@@ -23,9 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\Player;
+
 class BigCraftingGrid extends CraftingGrid{
 
-	public function getDefaultSize() : int{
-		return 9;
-	}
+    protected $type;
+    protected $size;
+    protected $title;
+
+    public function __construct(Player $holder){
+        parent::__construct($holder);
+        $this->type = InventoryType::get(InventoryType::WORKBENCH);
+        $this->size = $this->type->getDefaultSize();
+        $this->title = $this->type->getDefaultTitle();
+    }
 }

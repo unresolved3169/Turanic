@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -501,5 +501,25 @@ class BinaryStream extends \stdClass {
      */
     public function putVarLong(int $v){
         $this->buffer .= Binary::writeVarLong($v);
+    }
+
+    /**
+     * Reads a 64-bit variable-length integer from the buffer and returns it.
+     * @return int
+     */
+    public function getUnsignedVarLong() : int{
+        return Binary::readUnsignedVarLong($this->buffer, $this->offset);
+    }
+
+    /**
+     * Writes a 64-bit variable-length integer to the end of the buffer.
+     * @param int $v
+     */
+    public function putUnsignedVarLong(int $v){
+        $this->buffer .= Binary::writeUnsignedVarLong($v);
+    }
+
+    public function getRoundedLFloat(int $accuracy) : float{
+        return Binary::readRoundedLFloat($this->get(4), $accuracy);
     }
 }

@@ -112,12 +112,12 @@ abstract class Living extends Entity implements Damageable {
 		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
-	/**
-	 * @param float                   $amount
-	 * @param EntityRegainHealthEvent $source
-	 */
-	public function heal($amount, EntityRegainHealthEvent $source){
-		parent::heal($amount, $source);
+    /**
+     * @param EntityRegainHealthEvent $source
+     * @internal param float $amount
+     */
+	public function heal(EntityRegainHealthEvent $source){
+		parent::heal($source);
 		if($source->isCancelled()){
 			return;
 		}
@@ -217,7 +217,7 @@ abstract class Living extends Entity implements Damageable {
 	 *
 	 * @return bool
 	 */
-	public function entityBaseTick($tickDiff = 1, $EnchantL = 0){
+	public function entityBaseTick(int $tickDiff = 1, $EnchantL = 0){
 		Timings::$timerLivingEntityBaseTick->startTiming();
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BREATHING, !$this->isInsideOfWater());
 
@@ -241,7 +241,7 @@ abstract class Living extends Entity implements Damageable {
 						$airTicks = 0;
 
 						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_DROWNING, 2);
-						$this->attack($ev->getFinalDamage(), $ev);
+						$this->attack($ev);
 					}
 					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, min($airTicks, $maxAir));
 				}
@@ -253,7 +253,7 @@ abstract class Living extends Entity implements Damageable {
 						$airTicks = 0;
 
 						$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
-						$this->attack($ev->getFinalDamage(), $ev);
+						$this->attack($ev);
 					}
 					$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $airTicks);
 				}else{

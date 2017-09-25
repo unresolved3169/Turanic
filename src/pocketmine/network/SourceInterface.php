@@ -52,12 +52,12 @@ interface SourceInterface {
 	 * @param string $reason
 	 *
 	 */
-	public function close(Player $player, $reason = "unknown reason");
+	public function close(Player $player, string $reason = "unknown reason");
 
 	/**
 	 * @param string $name
 	 */
-	public function setName($name);
+	public function setName(string $name);
 
 	/**
 	 * @return bool
@@ -66,6 +66,8 @@ interface SourceInterface {
 
 	public function shutdown();
 
-	public function emergencyShutdown();
+    public function start();
+
+    public function emergencyShutdown();
 
 }

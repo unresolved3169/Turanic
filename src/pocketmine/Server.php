@@ -318,6 +318,7 @@ class Server{
 	public $enderName = "ender";
 	public $enderLevel = null;
 	public $absorbWater = false;
+	/** @var  ServerPacketWorker */
 	public $packetWorker;
 
 	/**
@@ -2118,8 +2119,6 @@ class Server{
      * @param bool $immediate
      */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
-		
-				
 		Timings::$playerNetworkTimer->startTiming();
 		$packs = [];
 		$str = "";

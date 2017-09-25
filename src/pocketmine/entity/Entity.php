@@ -899,8 +899,8 @@ abstract class Entity extends Location implements Metadatable {
 			$this->namedtag->id = new StringTag("id", $this->getSaveId());
 			if($this->getNameTag() !== ""){
 				$this->namedtag->CustomName = new StringTag("CustomName", $this->getNameTag());
-				$this->namedtag->CustomNameVisible = new StringTag("CustomNameVisible", $this->isNameTagVisible());
-				$this->namedtag->CustomNameAlwaysVisible = new StringTag("CustomNameAlwaysVisible", $this->isNameTagAlwaysVisible());
+				$this->namedtag->CustomNameVisible = new ByteTag("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$this->namedtag->CustomNameAlwaysVisible = new ByteTag("CustomNameAlwaysVisible", $this->isNameTagAlwaysVisible() ? 1 : 0);
 			}else{
 				unset($this->namedtag->CustomName);
 				unset($this->namedtag->CustomNameVisible);
@@ -1031,7 +1031,7 @@ abstract class Entity extends Location implements Metadatable {
 		}
 
 		$pk = new SetEntityDataPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->metadata = $data === null ? $this->dataProperties : $data;
 
 		foreach($player as $p){
@@ -1095,12 +1095,10 @@ abstract class Entity extends Location implements Metadatable {
 		return true;
 	}
 
-	/**
-	 * @param float                   $amount
-	 * @param EntityRegainHealthEvent $source
-	 *
-	 */
-	public function heal($amount, EntityRegainHealthEvent $source){
+    /**
+     * @param EntityRegainHealthEvent $source
+     */
+	public function heal(EntityRegainHealthEvent $source){
 		$this->server->getPluginManager()->callEvent($source);
 		if($source->isCancelled()){
 			return;
@@ -1292,7 +1290,7 @@ abstract class Entity extends Location implements Metadatable {
 	 *
 	 * @return bool
 	 */
-	public function entityBaseTick($tickDiff = 1){
+	public function entityBaseTick(int $tickDiff = 1){
 
 		Timings::$timerEntityBaseTick->startTiming();
 		//TODO: check vehicles

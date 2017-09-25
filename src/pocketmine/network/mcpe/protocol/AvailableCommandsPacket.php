@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class AvailableCommandsPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
 

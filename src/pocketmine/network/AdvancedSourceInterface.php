@@ -45,6 +45,6 @@ interface AdvancedSourceInterface extends SourceInterface {
 	 * @param int    $port
 	 * @param string $payload
 	 */
-	public function sendRawPacket($address, $port, $payload);
+	public function sendRawPacket(string $address, int $port, string $payload);
 
 }

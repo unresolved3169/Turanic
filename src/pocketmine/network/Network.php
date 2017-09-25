@@ -26,7 +26,6 @@
 namespace pocketmine\network;
 
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
@@ -199,8 +198,9 @@ class Network {
 	 * @param SourceInterface $interface
 	 */
 	public function registerInterface(SourceInterface $interface){
-		$this->interfaces[$hash = spl_object_hash($interface)] = $interface;
-		if($interface instanceof AdvancedSourceInterface){
+        $interface->start();
+        $this->interfaces[$hash = spl_object_hash($interface)] = $interface;
+        if($interface instanceof AdvancedSourceInterface){
 			$this->advancedInterfaces[$hash] = $interface;
 			$interface->setNetwork($this);
 		}

@@ -300,7 +300,7 @@ class Effect {
 			case Effect::REGENERATION:
 				if($entity->getHealth() < $entity->getMaxHealth()){
 					$ev = new EntityRegainHealthEvent($entity, 1, EntityRegainHealthEvent::CAUSE_MAGIC);
-					$entity->heal($ev->getAmount(), $ev);
+					$entity->heal($ev);
 				}
 				break;
 			case Effect::HUNGER:
@@ -312,10 +312,10 @@ class Effect {
 				$level = $this->amplifier + 1;
 				if(($entity->getHealth() + 4 * $level) <= $entity->getMaxHealth()){
 					$ev = new EntityRegainHealthEvent($entity, 4 * $level, EntityRegainHealthEvent::CAUSE_MAGIC);
-					$entity->heal($ev->getAmount(), $ev);
+					$entity->heal($ev);
 				}else{
 					$ev = new EntityRegainHealthEvent($entity, $entity->getMaxHealth() - $entity->getHealth(), EntityRegainHealthEvent::CAUSE_MAGIC);
-					$entity->heal($ev->getAmount(), $ev);
+					$entity->heal($ev);
 				}
 				break;
 			case Effect::HARMING:
