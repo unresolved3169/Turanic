@@ -2987,7 +2987,7 @@ class Level implements ChunkManager, Metadatable
         $pk->encode();
 
         $batch = new BatchPacket();
-        $batch->payload = zlib_encode(Binary::writeUnsignedVarInt(strlen($pk->getBuffer())) . $pk->getBuffer(), ZLIB_ENCODING_DEFLATE, Server::getInstance()->networkCompressionLevel);
+        $batch->payload = Binary::writeUnsignedVarInt(strlen($pk->getBuffer())) . $pk->getBuffer();
         $batch->encode();
         $batch->isEncoded = true;
         return $batch;

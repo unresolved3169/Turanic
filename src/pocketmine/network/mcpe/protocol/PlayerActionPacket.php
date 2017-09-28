@@ -50,6 +50,7 @@ class PlayerActionPacket extends DataPacket{
 	const ACTION_STOP_GLIDE = 16;
 	const ACTION_BUILD_DENIED = 17;
 	const ACTION_CONTINUE_BREAK = 18;
+	const ACTION_CHANGE_SKIN = 19;
 
 	const ACTION_SET_ENCHANTMENT_SEED = 20;
 

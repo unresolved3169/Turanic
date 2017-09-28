@@ -2120,19 +2120,6 @@ class Server{
      */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
 		Timings::$playerNetworkTimer->startTiming();
-		$packs = [];
-		$str = "";
-
-		foreach($packets as $p){
-			if($p instanceof DataPacket){
-				if(!$p->isEncoded){
-					$p->encode();
-				}
-				$packs[] = $p->buffer;
-			}else{
-				$packs[] = $p;
-			}
-		}
 
 		$targets = [];
 		foreach($players as $p){
@@ -2140,27 +2127,29 @@ class Server{
 				$targets[] = $this->identifiers[spl_object_hash($p)];
 			}
 		}
-		
-		$data = [
-		"packets" => $packs,
-		"needACK" => false,
-		"immediate" => $immediate,
-		"targets" => $targets];
-		
-	/*	$batch = new BatchPacket;
-		$batch->payload = zlib_encode($str, ZLIB_ENCODING_DEFLATE, 7);
-		
-		foreach($players as $p){
-			if($immediate){
-				$p->directDataPacket($batch);
-			}else{
-				$p->dataPacket($batch);
+
+		if(count($targets) > 0){
+			$pays = [];
+			foreach($packets as $pk){
+				if($pk instanceof DataPacket){
+					if(!$pk->isEncoded){
+						$pk->encode();
+					}
+					$pays[] = $pk->buffer;
+				}else{
+					$pays[] = $pk;
+				}
 			}
+			
+			$card = [
+			"compressionLevel" => $this->networkCompressionLevel,
+			"targets" => $targets,
+			"needACK" => false, // TODO
+			"immediate" => $immediate,
+			"packets" => $pays];
+			
+			$this->packetWorker->pushMainToThreadPacket(serialize($card));
 		}
-		
-		return;*/
-		
-		$this->packetWorker->pushMainToThreadPacket(serialize($data));
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}
@@ -2830,6 +2819,8 @@ class Server{
 			$data = unserialize($str);
 			$batch = new BatchPacket;
 			$batch->payload = $data["payload"];
+			$batch->buffer = chr(0xfe) . $data["payload"];
+			$batch->isEncoded = true;
 			
 			$immediate = (bool) $data["immediate"];
 			

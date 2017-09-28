@@ -27,7 +27,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
@@ -67,7 +66,7 @@ abstract class DataPacket extends BinaryStream{
 	}
 
 	protected function decodeHeader(){
-		$pid = $this->getUnsignedVarInt();
+		$pid = $this->getByte();
 		assert($pid === static::NETWORK_ID);
 
 		$this->extraByte1 = $this->getByte();
@@ -85,12 +84,13 @@ abstract class DataPacket extends BinaryStream{
 	public function encode(){
 		$this->reset();
 		$this->encodeHeader();
+		$this->checkFields();
 		$this->encodePayload();
 		$this->isEncoded = true;
 	}
 
 	protected function encodeHeader(){
-		$this->putUnsignedVarInt(static::NETWORK_ID);
+		$this->putByte(static::NETWORK_ID);
 
 		$this->putByte($this->extraByte1);
 		$this->putByte($this->extraByte2);
@@ -215,7 +215,7 @@ abstract class DataPacket extends BinaryStream{
 					break;
 				case Entity::DATA_TYPE_SLOT:
 					//TODO: change this implementation (use objects)
-					$this->putSlot(Item::get($d[1][0], $d[1][2], $d[1][1])); //ID, damage, count
+					$this->putSlot(ItemFactory::get($d[1][0], $d[1][2], $d[1][1])); //ID, damage, count
 					break;
 				case Entity::DATA_TYPE_POS:
 					//TODO: change this implementation (use objects)
@@ -507,5 +507,26 @@ abstract class DataPacket extends BinaryStream{
 		$this->putByte($link[2]);
 		$this->putByte($link[3]);
 
+	}
+	
+	/**
+	 * For old fields
+	 */
+	public function checkFields(){
+		if(isset($this->x) or isset($this->motionX)){
+			if(isset($this->position)){
+			 $this->position = new Vector3($this->x, $this->y, $this->z);
+			}elseif(isset($this->motion)){
+				$this->motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
+			}
+		}
+		
+		if(isset($this->eid)){
+			$this->entityRuntimeId = $this->eid;
+		}
+		
+		if(isset($this->entityId)){
+			$this->entityRuntimeId = $this->entityId;
+		}
 	}
 }

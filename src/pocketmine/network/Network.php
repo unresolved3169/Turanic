@@ -257,35 +257,17 @@ class Network {
 	 * @param Player      $p
 	 */
 	public function processBatch(BatchPacket $packet, Player $p){
-        $str = @\zlib_decode($packet->payload, 1024 * 1024 * 64); //Max 64MB
-        if ($str === false) {
-            return;
-        }
         try{
-            $stream = new BinaryStream($str);
-            $length = strlen($str);
-            while ($stream->getOffset() < $length) {
-                $buf = $stream->getString();
-                if(strlen($buf) === 0){
-                    throw new \InvalidStateException("Empty or invalid BatchPacket received");
-                }
-
-                if (($pk = $this->getPacket(ord($buf{0}))) !== null) {
-                    if ($pk::NETWORK_ID === 0xfe) {
-                        throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
-                    }
-                    $pk->setBuffer($buf, 1);
-                    try {
-                        $pk->decode();
-                    }catch(\Exception $e){
-
-                        return;
-                    }
-                    $p->handleDataPacket($pk);
-                    if ($pk->getOffset() <= 0) {
-                        return;
-                    }
-                }
+            $packet->decode();
+            
+            foreach($packet->getPackets() as $buf){
+            	 if(($pk = $this->getPacket(ord($buf{0}))) != null){
+            	 	 $pk->setBuffer($buf, 0);
+            	 	 
+            	 	 $pk->decode();
+            	 	 
+            	 	 $p->handleDataPacket($pk);
+            	 }
             }
         }catch(\Exception $e){
             if(\pocketmine\DEBUG > 1){
