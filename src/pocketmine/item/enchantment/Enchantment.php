@@ -263,45 +263,45 @@ class Enchantment {
 	public static function getEnchantWeight(int $enchantmentId){
 		switch($enchantmentId){
 			case self::TYPE_ARMOR_PROTECTION:
-				return 10;
+				return 100;
 			case self::TYPE_ARMOR_FIRE_PROTECTION:
-				return 5;
+				return 50;
 			case self::TYPE_ARMOR_FALL_PROTECTION:
-				return 2;
+				return 20;
 			case self::TYPE_ARMOR_EXPLOSION_PROTECTION:
-				return 5;
+				return 50;
 			case self::TYPE_WATER_BREATHING:
-				return 2;
+				return 20;
 			case self::TYPE_WATER_AFFINITY:
-				return 2;
+				return 20;
 			case self::TYPE_WEAPON_SHARPNESS:
-				return 10;
+				return 100;
 			case self::TYPE_WEAPON_SMITE:
-				return 5;
+				return 50;
 			case self::TYPE_WEAPON_ARTHROPODS:
-				return 5;
+				return 50;
 			case self::TYPE_WEAPON_KNOCKBACK:
-				return 5;
+				return 50;
 			case self::TYPE_WEAPON_FIRE_ASPECT:
-				return 2;
+				return 20;
 			case self::TYPE_WEAPON_LOOTING:
-				return 2;
+				return 20;
 			case self::TYPE_MINING_EFFICIENCY:
-				return 10;
+				return 100;
 			case self::TYPE_MINING_SILK_TOUCH:
-				return 1;
-			case self::TYPE_MINING_DURABILITY:
-				return 5;
-			case self::TYPE_MINING_FORTUNE:
-				return 2;
-			case self::TYPE_BOW_POWER:
 				return 10;
+			case self::TYPE_MINING_DURABILITY:
+				return 50;
+			case self::TYPE_MINING_FORTUNE:
+				return 20;
+			case self::TYPE_BOW_POWER:
+				return 100;
 			case self::TYPE_BOW_KNOCKBACK:
-				return 2;
+				return 20;
 			case self::TYPE_BOW_FLAME:
-				return 2;
+				return 20;
 			case self::TYPE_BOW_INFINITY:
-				return 1;
+				return 10;
 		}
 		return 0;
 	}
