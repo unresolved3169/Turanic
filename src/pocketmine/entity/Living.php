@@ -132,7 +132,7 @@ abstract class Living extends Entity implements Damageable {
 	public function attack(EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
-			if($lastCause !== null and $lastCause->getDamage() >= $damage){
+			if($lastCause !== null and $lastCause->getDamage() >= $source->getDamage()){
 				$source->setCancelled();
 			}
 		}
@@ -155,7 +155,7 @@ abstract class Living extends Entity implements Damageable {
 
 			$deltaX = $this->x - $e->x;
 			$deltaZ = $this->z - $e->z;
-			$this->knockBack($e, $damage, $deltaX, $deltaZ, $source->getKnockBack());
+			$this->knockBack($e, $source->getDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 			if($e instanceof Husk){
 				$this->addEffect(Effect::getEffect(Effect::HUNGER)->setDuration(7 * 20 * $this->server->getDifficulty()));
 			}
