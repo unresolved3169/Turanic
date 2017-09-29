@@ -1175,12 +1175,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         if ($this->getHealth() <= 0) {
-            $pk = new RespawnPacket();
-            $pos = $this->getSpawn();
-            $pk->x = $pos->x;
-            $pk->y = $pos->y;
-            $pk->z = $pos->z;
-            $this->dataPacket($pk);
+            $this->sendRespawnPacket($pos);
         }
 
         $this->inventory->sendContents($this);
@@ -2290,11 +2285,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             TextFormat::AQUA . $this->username . TextFormat::WHITE,
             $this->ip,
             $this->port,
+            $this->randomClientId,
             $this->id,
-            $this->level->getName(),
             round($this->x, 4),
             round($this->y, 4),
-            round($this->z, 4)
+            round($this->z, 4),
+            $this->level->getName()
         ]));
 
         if($this->isOp()){
@@ -3988,11 +3984,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         $this->setHealth(0);
 
-        $pk = new RespawnPacket();
-        $pk->x = $pos->x;
-        $pk->y = $pos->y;
-        $pk->z = $pos->z;
-        $this->dataPacket($pk);
+        $this->sendRespawnPacket($pos);
     }
 
     /**

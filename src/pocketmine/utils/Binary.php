@@ -585,4 +585,11 @@ class Binary {
     public static function readRoundedLFloat(string $str, int $accuracy) : float{
         return round(self::readLFloat($str), $accuracy);
     }
+
+    public static function signInt(int $value) : int{
+        return $value << 32 >> 32;
+    }
+    public static function unsignInt(int $value) : int{
+        return $value & 0xffffffff;
+    }
 }

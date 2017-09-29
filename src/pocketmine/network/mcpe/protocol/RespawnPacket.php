@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 
 class RespawnPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
@@ -41,10 +39,6 @@ class RespawnPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putVector3Obj($this->position);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleRespawn($this);
 	}
 
 }
