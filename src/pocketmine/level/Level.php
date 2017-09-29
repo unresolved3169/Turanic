@@ -563,7 +563,7 @@ class Level implements ChunkManager, Metadatable
         $pk = new LevelEventPacket();
         $pk->evid = $evid;
         $pk->data = $data;
-        list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+        $pk->position = $pos;
         $this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
     }
 
@@ -572,7 +572,7 @@ class Level implements ChunkManager, Metadatable
         $pk->sound = $soundId;
         $pk->pitch = $pitch;
         $pk->extraData = $extraData;
-        list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+        $pk->position = $pos;
         $this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
     }
 
@@ -2298,7 +2298,7 @@ class Level implements ChunkManager, Metadatable
     public function sendLighting(int $x, int $y, int $z, Player $p) {
         $pk = new AddEntityPacket();
         $pk->type = Lightning::NETWORK_ID;
-        $pk->entityRuntimeId = mt_rand(10000000, 100000000);
+        $pk->eid = mt_rand(10000000, 100000000);
         $pk->x = $x;
         $pk->y = $y;
         $pk->z = $z;
@@ -2987,6 +2987,7 @@ class Level implements ChunkManager, Metadatable
 
         $batch = new BatchPacket();
         $batch->payload = Binary::writeUnsignedVarInt(strlen($pk->getBuffer())) . $pk->getBuffer();
+        $batch->setCompressionLevel(7);
         $batch->encode();
         $batch->isEncoded = true;
         return $batch;
@@ -3019,9 +3020,7 @@ class Level implements ChunkManager, Metadatable
     public function addEntityMovement(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z, float $yaw, float $pitch, $headYaw = null) {
     	$pk = new MoveEntityPacket;
     	$pk->entityRuntimeId = $entityId;
-    	$pk->x = $x;
-    	$pk->y = $y;
-    	$pk->z = $z;
+    	$pk->position = new Vector3($x,$y,$z);
     	$pk->yaw = $yaw;
     	$pk->headYaw = ($headYaw === null ? $yaw : $headYaw);
     	$pk->pitch = $pitch;

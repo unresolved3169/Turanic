@@ -513,13 +513,13 @@ abstract class DataPacket extends BinaryStream{
 	 * For old fields
 	 */
 	public function checkFields(){
-		if(isset($this->x) or isset($this->motionX)){
+		/*if(isset($this->x) or isset($this->motionX)){
 			if(isset($this->position)){
 			 $this->position = new Vector3($this->x, $this->y, $this->z);
 			}elseif(isset($this->motion)){
 				$this->motion = new Vector3($this->motionX, $this->motionY, $this->motionZ);
 			}
-		}
+		}*/
 		
 		if(isset($this->eid)){
 			$this->entityRuntimeId = $this->eid;
