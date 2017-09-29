@@ -1053,7 +1053,7 @@ abstract class Entity extends Location implements Metadatable {
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			if($send){
 				$pk = new RemoveEntityPacket();
-				$pk->entityRuntimeId = $this->id;
+				$pk->entityUniqueId = $this->id;
 				$player->dataPacket($pk);
 			}
 			unset($this->hasSpawned[$player->getLoaderId()]);

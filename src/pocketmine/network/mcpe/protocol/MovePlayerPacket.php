@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 
 class MovePlayerPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
@@ -87,10 +85,6 @@ class MovePlayerPacket extends DataPacket{
 			$this->putLInt($this->int1);
 			$this->putLInt($this->int2);
 		}
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleMovePlayer($this);
 	}
 
 }

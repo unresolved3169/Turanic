@@ -105,7 +105,7 @@ class FloatingTextParticle extends Particle {
 			$this->entityId = Entity::$entityCount++;
 		}else{
 			$pk0 = new RemoveEntityPacket();
-			$pk0->eid = $this->entityId;
+			$pk0->entityUniqueId = $this->entityId;
 
 			$p[] = $pk0;
 		}

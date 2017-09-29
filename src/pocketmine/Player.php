@@ -38,7 +38,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\entity\Arrow;
 use pocketmine\entity\Attribute;
-use pocketmine\entity\Boat;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\FishingHook;
@@ -2335,6 +2334,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @return bool
      */
     public function handleDataPacket(DataPacket $packet){
+        var_dump(get_class($packet));
         if ($this->connected === false) {
             return false;
         }
@@ -2469,43 +2469,24 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
 
             case ProtocolInfo::MOVE_PLAYER_PACKET:
-                if ($this->linkedEntity instanceof Entity) {
-                    $entity = $this->linkedEntity;
-                    if ($entity instanceof Boat) {
-                        $entity->setPosition($this->temporalVector->setComponents($packet->x, $packet->y - 0.3, $packet->z));
+                /** @var MovePlayerPacket $packet */
+                $newPos = $packet->position->subtract(0, $this->baseOffset, 0);
+                if($this->teleportPosition != null and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+                    $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+                }elseif((!$this->isAlive() or $this->spawned !== true) and $newPos->distanceSquared($this) > 0.01){
+                    $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+                }else{
+                    // Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+                    if($this->teleportPosition != null){
+                        $this->teleportPosition = null;
                     }
-                    /*if($entity instanceof Minecart){
-						$entity->isFreeMoving = true;
-						$entity->motionX = -sin($packet->yaw / 180 * M_PI);
-						$entity->motionZ = cos($packet->yaw / 180 * M_PI);
-					}*/
-                }
-
-                $newPos = $packet->position->subtract(0,$this->getEyeHeight(),0);
-
-                if ($newPos->distanceSquared($this) == 0 and ($packet->yaw % 360) === $this->yaw and ($packet->pitch % 360) === $this->pitch) { //player hasn't moved, just client spamming packets
-                    break;
-                }
-
-                $revert = false;
-                if (!$this->isAlive() or $this->spawned !== true) {
-                    $revert = true;
-                    $this->forceMovement = new Vector3($this->x, $this->y, $this->z);
-                }
-
-                if ($this->teleportPosition !== null or ($this->forceMovement instanceof Vector3 and ($newPos->distanceSquared($this->forceMovement) > 0.1 or $revert))) {
-                    $this->sendPosition($this->forceMovement, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET, null, $packet->onGround);
-                } else {
                     $packet->yaw %= 360;
                     $packet->pitch %= 360;
-
-                    if ($packet->yaw < 0) {
+                    if($packet->yaw < 0){
                         $packet->yaw += 360;
                     }
-
                     $this->setRotation($packet->yaw, $packet->pitch);
                     $this->newPosition = $newPos;
-                    $this->forceMovement = null;
                 }
 
                 break;
@@ -2680,15 +2661,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         }
                         break 2;
                     case PlayerActionPacket::ACTION_START_GLIDE:
-                    case PlayerActionPacket::ACTION_STOP_GLIDE:
-                    $value = $packet->action == PlayerActionPacket::ACTION_START_GLIDE;
-                    $ev = new PlayerToggleGlideEvent($this, $value);
-                        $this->server->getPluginManager()->callEvent($ev);
-                        if ($ev->isCancelled()) {
-                            $this->sendData($this);
-                        } else {
-                            $this->setGliding($value);
-                        }
+                    case PlayerActionPacket::ACTION_STOP_GLIDE: // TODO
                         break 2;
                     case PlayerActionPacket::ACTION_CONTINUE_BREAK:
                         $block = $this->level->getBlock($pos);
@@ -4035,17 +4008,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         return true;
     }
 
-    /**
-     * @param Vector3 $pos
-     * @param null $yaw
-     * @param null $pitch
-     * @param int $mode
-     * @param array|null $targets
-     */
-    public function sendPosition(Vector3 $pos, $yaw = null, $pitch = null, $mode = MovePlayerPacket::MODE_NORMAL, array $targets = null, bool $onGround = true){
-        $yaw = $yaw === null ? $this->yaw : $yaw;
-        $pitch = $pitch === null ? $this->pitch : $pitch;
-
+    public function sendPosition(Vector3 $pos, float $yaw = null, float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, array $targets = null){
+        $yaw = $yaw ?? $this->yaw;
+        $pitch = $pitch ?? $this->pitch;
         $pk = new MovePlayerPacket();
         $pk->entityRuntimeId = $this->getId();
         $pk->position = $this->getOffsetPosition($pos);
@@ -4053,19 +4018,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->pitch = $pitch;
         $pk->yaw = $yaw;
         $pk->mode = $mode;
-        $pk->onGround = $onGround;
 
         if($targets !== null){
-        	$this->server->broadcastPacket($targets, $pk);
+            $this->server->broadcastPacket($targets, $pk);
         }else{
-        	$this->dataPacket($pk);
+            $this->dataPacket($pk);
         }
-
         $this->newPosition = null;
     }
 
-    protected function checkChunks()
-    {
+    protected function checkChunks(){
         if ($this->chunk === null or ($this->chunk->getX() !== ($this->x >> 4) or $this->chunk->getZ() !== ($this->z >> 4))) {
             if ($this->chunk !== null) {
                 $this->chunk->removeEntity($this);

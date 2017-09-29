@@ -120,6 +120,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         $this->skinId = $skinId;
     }
 
+    public function jump(){
+        parent::jump();
+        if($this->isSprinting()){
+            $this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+        }else{
+            $this->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
+        }
+    }
+
     /**
      * @return float
      */

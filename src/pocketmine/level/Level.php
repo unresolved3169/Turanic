@@ -1633,22 +1633,13 @@ class Level implements ChunkManager, Metadatable
         return true;
     }
 
-    /**
-     * Uses a item on a position and face, placing it or activating the block
-     *
-     * @param Vector3 $vector
-     * @param Item $item
-     * @param int $face
-     * @param float $fx default 0.0
-     * @param float $fy default 0.0
-     * @param float $fz default 0.0
-     * @param Player $player default null
-     *
-     * @return bool
-     */
-    public function useItemOn(Vector3 $vector, Item &$item, int $face, float $fx = 0.0, float $fy = 0.0, float $fz = 0.0, Player $player = null): bool {
+    public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $facepos = null, Player $player = null): bool {
         $target = $this->getBlock($vector);
         $block = $target->getSide($face);
+
+        if($facepos == null){
+            $facepos = new Vector3(0.0, 0.0, 0.0);
+        }
 
         if ($block->y >= $this->provider->getWorldHeight() or $block->y < 0) {
             //TODO: build height limit messages for custom world heights and mcregion cap
@@ -1661,13 +1652,10 @@ class Level implements ChunkManager, Metadatable
 
         if ($player !== null) {
             $ev = new PlayerInteractEvent($player, $item, $target, $face, $target->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-            if (!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1) {
-                $t = new Vector2($target->x, $target->z);
-                $s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
-                if (count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance) { //set it to cancelled so plugins can bypass this
-                    $ev->setCancelled();
-                }
+            if($this->checkSpawnProtection($player, $target)){
+                $ev->setCancelled();
             }
+
             if ($player->isSpectator()) {
                 $ev->setCancelled();
             }
@@ -1675,15 +1663,11 @@ class Level implements ChunkManager, Metadatable
             if (!$ev->isCancelled()) {
                 $target->onUpdate(self::BLOCK_UPDATE_TOUCH);
                 if (!$player->isSneaking()) {
-                    if ($target->canBeActivated() === true and $target->onActivate($item, $player) === true) {
-                        if ($item->getCount() <= 0) {
-                            $item = Item::get(Item::AIR, 0, 0);
-                        } elseif ($item->isTool() and $item->getDamage() >= $item->getMaxDurability()) {
-                            $item = Item::get(Item::AIR, 0, 0);
-                        }
+                    if(!$player->isSneaking() and $target->canBeActivated() === true and $target->onActivate($item, $player) === true){
                         return true;
                     }
-                    if ($item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)) {
+
+                    if ($item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $facepos->x, $facepos->y, $facepos->z)) {
                         if ($item->getCount() <= 0) {
                             $item = Item::get(Item::AIR, 0, 0);
                             return true;
@@ -1693,17 +1677,6 @@ class Level implements ChunkManager, Metadatable
                         }
                     }
                 }
-                /*if(!$player->isSneaking() and $target->canBeActivated() === true and $target->onActivate($item, $player) === true){
-					return true;
-				}
-
-				if(!$player->isSneaking() and $item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
-					if($item->getCount() <= 0){
-						$item = Item::get(Item::AIR, 0, 0);
-
-						return true;
-					}
-				}*/
             } else {
                 return false;
             }
@@ -1784,11 +1757,11 @@ class Level implements ChunkManager, Metadatable
             if ($ev->isCancelled()) {
                 return false;
             }
-			
+
 			$this->addSound(new BlockPlaceSound($hand));
         }
 
-        if ($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false) {
+        if ($hand->place($item, $block, $target, $face, $facepos->x, $facepos->y, $facepos->z, $player) === false) {
             return false;
         }
         $item->setCount($item->getCount() - 1);
@@ -1798,6 +1771,26 @@ class Level implements ChunkManager, Metadatable
         }
 
         return true;
+    }
+
+    /**
+     * Checks if the level spawn protection radius will prevent the player from using items or building at the specified
+     * Vector3 position.
+     *
+     * @param Player  $player
+     * @param Vector3 $vector
+     *
+     * @return bool false if spawn protection cancelled the action, true if not.
+     */
+    protected function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
+        if(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
+            $t = new Vector2($vector->x, $vector->z);
+            $s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
+            if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
