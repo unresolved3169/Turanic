@@ -341,7 +341,7 @@ class SubChunk {
 	 */
 	public function networkSerialize() : string{
 		// storage version, ids, data, skylight, blocklight
-		return "\x00" . $this->ids . $this->data . $this->skyLight . $this->blockLight;
+		return "\x00" . $this->ids . $this->data;
 	}
 
 	/**

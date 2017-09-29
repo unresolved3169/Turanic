@@ -115,10 +115,8 @@ class FloatingTextParticle extends Particle {
 			$pk = new AddPlayerPacket();
 			$pk->uuid = UUID::fromRandom();
 			$pk->username = $this->title;
-			$pk->eid = $this->entityId;
-			$pk->x = $this->x;
-			$pk->y = $this->y - 0.50;
-			$pk->z = $this->z;
+			$pk->entityRuntimeId = $this->entityId;
+			$pk->position = $this->subtract(0,0.50,0);
 			$pk->item = Item::get(Item::AIR);
 			$flags = (
 				(1 << Entity::DATA_FLAG_CAN_SHOW_NAMETAG) |
