@@ -84,7 +84,6 @@ use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
-use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -2299,7 +2298,7 @@ class Level implements ChunkManager, Metadatable
     public function sendLighting(int $x, int $y, int $z, Player $p) {
         $pk = new AddEntityPacket();
         $pk->type = Lightning::NETWORK_ID;
-        $pk->eid = mt_rand(10000000, 100000000);
+        $pk->entityRuntimeId = mt_rand(10000000, 100000000);
         $pk->x = $x;
         $pk->y = $y;
         $pk->z = $z;
@@ -3011,17 +3010,15 @@ class Level implements ChunkManager, Metadatable
 
     public function addEntityMotion(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z) {
     	$pk = new SetEntityMotionPacket;
-    	$pk->eid = $entityId;
-    	$pk->motionX = $x;
-    	$pk->motionY = $y;
-    	$pk->motionZ = $z;
+    	$pk->entityRuntimeId = $entityId;
+    	$pk->motion = new Vector3($x, $y, $z);
     	
     	$this->addChunkPacket($chunkX,$chunkZ,$pk);
     }
 
     public function addEntityMovement(int $chunkX, int $chunkZ, int $entityId, float $x, float $y, float $z, float $yaw, float $pitch, $headYaw = null) {
     	$pk = new MoveEntityPacket;
-    	$pk->eid = $entityId;
+    	$pk->entityRuntimeId = $entityId;
     	$pk->x = $x;
     	$pk->y = $y;
     	$pk->z = $z;

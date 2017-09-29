@@ -196,7 +196,7 @@ class Potion extends Item {
 	 */
 	public function onConsume(Entity $human){
 		$pk = new EntityEventPacket();
-		$pk->eid = $human->getId();
+		$pk->entityRuntimeId = $human->getId();
 		$pk->event = EntityEventPacket::USE_ITEM;
 		if($human instanceof Player){
 			$human->dataPacket($pk);

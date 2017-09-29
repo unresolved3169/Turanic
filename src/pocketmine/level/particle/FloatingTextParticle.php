@@ -115,7 +115,7 @@ class FloatingTextParticle extends Particle {
 			$pk = new AddPlayerPacket();
 			$pk->uuid = UUID::fromRandom();
 			$pk->username = $this->title;
-			$pk->eid = $this->entityId;
+			$pk->entityRuntimeId = $this->entityId;
 			$pk->x = $this->x;
 			$pk->y = $this->y - 0.50;
 			$pk->z = $this->z;

@@ -362,7 +362,7 @@ class Effect {
 	public function add(Entity $entity, $modify = false, Effect $oldEffect = null){
 		if($entity instanceof Player){
 			$pk = new MobEffectPacket();
-			$pk->eid = $entity->getId();
+			$pk->entityRuntimeId = $entity->getId();
 			$pk->effectId = $this->getId();
 			$pk->amplifier = $this->getAmplifier();
 			$pk->particles = $this->isVisible();
@@ -408,7 +408,7 @@ class Effect {
 	public function remove(Entity $entity){
 		if($entity instanceof Player){
 			$pk = new MobEffectPacket();
-			$pk->eid = $entity->getId();
+			$pk->entityRuntimeId = $entity->getId();
 			$pk->eventId = MobEffectPacket::EVENT_REMOVE;
 			$pk->effectId = $this->getId();
 

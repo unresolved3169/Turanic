@@ -62,7 +62,7 @@ class Vex extends Monster {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->type = Vex::NETWORK_ID;
 		$pk->x = $this->x;
 		$pk->y = $this->y;

@@ -330,9 +330,9 @@ abstract class Entity extends Location implements Metadatable {
 	public $lastY = null;
 	public $lastZ = null;
 
-	public $motionX;
-	public $motionY;
-	public $motionZ;
+	public $motionX = 0;
+	public $motionY = 0;
+	public $motionZ = 0;
 	/** @var Vector3 */
 	public $temporalVector;
 	public $lastMotionX;
@@ -1010,7 +1010,7 @@ abstract class Entity extends Location implements Metadatable {
 	public function sendPotionEffects(Player $player){
 		foreach($this->effects as $effect){
 			$pk = new MobEffectPacket();
-			$pk->eid = $this->id;
+			$pk->entityRuntimeId = $this->id;
 			$pk->effectId = $effect->getId();
 			$pk->amplifier = $effect->getAmplifier();
 			$pk->particles = $effect->isVisible();
@@ -1053,7 +1053,7 @@ abstract class Entity extends Location implements Metadatable {
 		if(isset($this->hasSpawned[$player->getLoaderId()])){
 			if($send){
 				$pk = new RemoveEntityPacket();
-				$pk->eid = $this->id;
+				$pk->entityRuntimeId = $this->id;
 				$player->dataPacket($pk);
 			}
 			unset($this->hasSpawned[$player->getLoaderId()]);

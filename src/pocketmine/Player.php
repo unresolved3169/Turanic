@@ -29,7 +29,6 @@ use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
@@ -129,7 +128,6 @@ use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
-use pocketmine\network\mcpe\protocol\SetTimePacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
@@ -313,7 +311,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         if ($entity->isAlive()) {
             $this->setFishingHook($entity);
             $pk = new EntityEventPacket();
-            $pk->eid = $this->getFishingHook()->getId();
+            $pk->entityRuntimeId = $this->getFishingHook()->getId();
             $pk->event = EntityEventPacket::FISH_HOOK_POSITION;
             $this->server->broadcastPacket($this->level->getPlayers(), $pk);
             return true;
@@ -328,7 +326,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     {
         if ($this->fishingHook instanceof FishingHook) {
             $pk = new EntityEventPacket();
-            $pk->eid = $this->fishingHook->getId();
+            $pk->entityRuntimeId = $this->fishingHook->getId();
             $pk->event = EntityEventPacket::FISH_HOOK_TEASE;
             $this->server->broadcastPacket($this->level->getPlayers(), $pk);
             $this->setFishingHook();
@@ -1448,7 +1446,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->level->sleepTicks = 0;
 
             $pk = new AnimatePacket();
-            $pk->eid = $this->id;
+            $pk->entityRuntimeId = $this->id;
             $pk->action = PlayerAnimationEvent::WAKE_UP;
             $this->dataPacket($pk);
         }
@@ -2341,7 +2339,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @return bool
      */
     public function handleDataPacket(DataPacket $packet){
-
+        var_dump("1. ".get_class($packet));
         if ($this->connected === false) {
             return false;
         }
@@ -2440,7 +2438,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             $pk = new ResourcePackDataInfoPacket();
                             $pk->packId = $pack->getPackId();
                             $pk->maxChunkSize = 1048576; //1MB
-                            $pk->chunkCount = $pack->getPackSize() / $pk->maxChunkSize;
+                            $pk->chunkCount = (int) ceil($pack->getPackSize() / $pk->maxChunkSize);
                             $pk->compressedPackSize = $pack->getPackSize();
                             $pk->sha256 = $pack->getSha256();
                             $this->dataPacket($pk);
@@ -4035,7 +4033,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return false;
         } elseif ($this->getLastDamageCause() === $source and $this->spawned) {
             $pk = new EntityEventPacket();
-            $pk->eid = $this->id;
+            $pk->entityRuntimeId = $this->id;
             $pk->event = EntityEventPacket::HURT_ANIMATION;
             $this->dataPacket($pk);
 
@@ -4058,7 +4056,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pitch = $pitch === null ? $this->pitch : $pitch;
 
         $pk = new MovePlayerPacket();
-        $pk->eid = $this->getId();
+        $pk->entityRuntimeId = $this->getId();
         $pk->position = $this->getOffsetPosition($pos);
         $pk->bodyYaw = $yaw;
         $pk->pitch = $pitch;

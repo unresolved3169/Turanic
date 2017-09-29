@@ -44,14 +44,10 @@ class Stray extends Skeleton {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->type = Stray::NETWORK_ID;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+        $pk->position = $this->getPosition();
+        $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;
@@ -60,7 +56,7 @@ class Stray extends Skeleton {
 		Entity::spawnTo($player);
 
 		$pk = new MobEquipmentPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->item = new ItemItem(ItemItem::BOW);
 		$pk->slot = 0;
 		$pk->selectedSlot = 0;

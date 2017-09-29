@@ -69,7 +69,7 @@ class Horse extends Animal{
 		416, 417, 418, 419 only
 		*/
 		$pk = new MobArmorEquipmentPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->slots = [
 			ItemItem::get(0, 0),
 			ItemItem::get($id, 0),
@@ -86,14 +86,10 @@ class Horse extends Animal{
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->eid = $this->getId();
+        $pk->entityRuntimeId = $this->getId();
 		$pk->type = self::NETWORK_ID;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+        $pk->position = $this->getPosition();
+        $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;

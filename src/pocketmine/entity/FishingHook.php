@@ -127,7 +127,7 @@ class FishingHook extends Projectile {
 	public function fishBites(){
 		if($this->shootingEntity instanceof Player){
 			$pk = new EntityEventPacket();
-			$pk->eid = $this->shootingEntity->getId();//$this or $this->shootingEntity
+			$pk->entityRuntimeId = $this->shootingEntity->getId();//$this or $this->shootingEntity
 			$pk->event = EntityEventPacket::FISH_HOOK_HOOK;
 			$this->server->broadcastPacket($this->shootingEntity->hasSpawned, $pk);
 		}
@@ -136,7 +136,7 @@ class FishingHook extends Projectile {
 	public function attractFish(){
 		if($this->shootingEntity instanceof Player){
 			$pk = new EntityEventPacket();
-			$pk->eid = $this->shootingEntity->getId();//$this or $this->shootingEntity
+			$pk->entityRuntimeId = $this->shootingEntity->getId();//$this or $this->shootingEntity
 			$pk->event = EntityEventPacket::FISH_HOOK_BUBBLE;
 			$this->server->broadcastPacket($this->shootingEntity->hasSpawned, $pk);
 		}
@@ -177,14 +177,10 @@ class FishingHook extends Projectile {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->eid = $this->getId();
+		$pk->entityRuntimeId = $this->getId();
 		$pk->type = FishingHook::NETWORK_ID;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+        $pk->position = $this->getPosition();
+        $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;

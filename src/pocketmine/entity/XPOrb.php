@@ -164,13 +164,9 @@ class XPOrb extends Entity {
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_NO_AI, true);
 		$pk = new AddEntityPacket();
 		$pk->type = XPOrb::NETWORK_ID;
-		$pk->eid = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+		$pk->entityRuntimeId = $this->getId();
+        $pk->position = $this->getPosition();
+        $pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 

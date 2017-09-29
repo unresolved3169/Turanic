@@ -21,9 +21,6 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
@@ -62,13 +59,9 @@ class ZombieVillager extends Zombie {
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->type = ZombieVillager::NETWORK_ID;
-		$pk->eid = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
+		$pk->entityRuntimeId = $this->getId();
+        $pk->position = $this->getPosition();
+        $pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 

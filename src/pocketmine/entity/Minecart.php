@@ -495,14 +495,10 @@ class Minecart extends Vehicle {
      */
     public function spawnTo(Player $player){
         $pk = new AddEntityPacket();
-        $pk->eid = $this->getId();
+        $pk->entityRuntimeId = $this->getId();
         $pk->type = Minecart::NETWORK_ID;
-        $pk->x = $this->x;
-        $pk->y = $this->y + $this->getEyeHeight() - 1.2;
-        $pk->z = $this->z;
-        $pk->speedX = 0;
-        $pk->speedY = 0;
-        $pk->speedZ = 0;
+        $pk->position = $this->getPosition()->add(0,$this->getEyeHeight() - 1.2, 0);
+        $pk->motion = $this->getMotion();
         $pk->yaw = 0;
         $pk->pitch = 0;
         $pk->metadata = $this->dataProperties;
@@ -516,7 +512,7 @@ class Minecart extends Vehicle {
 
         if(!$source->isCancelled()){
             $pk = new EntityEventPacket();
-            $pk->eid = $this->id;
+            $pk->entityRuntimeId = $this->id;
             $pk->event = EntityEventPacket::HURT_ANIMATION;
             foreach($this->getLevel()->getPlayers() as $player){
                 $player->dataPacket($pk);
