@@ -24,6 +24,8 @@ namespace pocketmine;
 
 use pocketmine\customUI\CustomUI;
 use pocketmine\event\block\ItemFrameDropItemEvent;
+use pocketmine\event\inventory\InventoryPickupArrowEvent;
+use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
@@ -109,6 +111,7 @@ use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
@@ -1628,6 +1631,58 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
     }
 
+    protected function checkNearEntities(int $tickDiff){
+        foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
+            $entity->scheduleUpdate();
+            if(!$entity->isAlive()){
+                continue;
+            }
+            if($entity instanceof Arrow and $entity->hadCollision){
+                $item = Item::get(Item::ARROW, 0, 1);
+                if($this->isSurvival() and !$this->inventory->canAddItem($item)){
+                    continue;
+                }
+                $this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($this->inventory, $entity));
+                if($ev->isCancelled()){
+                    continue;
+                }
+                $pk = new TakeItemEntityPacket();
+                $pk->eid = $this->id;
+                $pk->target = $entity->getId();
+                $this->server->broadcastPacket($entity->getViewers(), $pk);
+                $this->inventory->addItem(clone $item);
+                $entity->kill();
+            }elseif($entity instanceof DroppedItem){
+                if($entity->getPickupDelay() <= 0){
+                    $item = $entity->getItem();
+                    if($item instanceof Item){
+                        if($this->isSurvival() and !$this->inventory->canAddItem($item)){
+                            continue;
+                        }
+                        $this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $entity));
+                        if($ev->isCancelled()){
+                            continue;
+                        }
+                        switch($item->getId()){
+                            case Item::WOOD:
+                                $this->awardAchievement("mineWood");
+                                break;
+                            case Item::DIAMOND:
+                                $this->awardAchievement("diamond");
+                                break;
+                        }
+                        $pk = new TakeItemEntityPacket();
+                        $pk->eid = $this->id;
+                        $pk->target = $entity->getId();
+                        $this->server->broadcastPacket($entity->getViewers(), $pk);
+                        $this->inventory->addItem(clone $item);
+                        $entity->kill();
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * @param $tickDiff
      */
@@ -1735,6 +1790,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         }
                     }
                 }
+            }
+
+            if(!$this->isSpectator()){
+                $this->checkNearEntities($tickDiff);
             }
 
             $this->speed = $to->subtract($from)->divide($tickDiff);
@@ -2277,17 +2336,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * Changes to this function won't be recorded on the version.
      *
      * @param DataPacket $packet
-     * @return bool
      */
     public function handleDataPacket(DataPacket $packet){
         if ($this->connected === false) {
-            return false;
+            return;
         }
 
         if ($packet::NETWORK_ID === 0xfe) {
             /** @var BatchPacket $packet */
             $this->server->getNetwork()->processBatch($packet, $this);
-            return true;
+            return;
         }
 
         $timings = Timings::getReceiveDataPacketTimings($packet);
@@ -2297,7 +2355,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
         if ($ev->isCancelled()) {
             $timings->stopTiming();
-            return false;
+            return;
         }
 
         switch ($packet::NETWORK_ID) {
@@ -2308,12 +2366,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         	       $cmd = $packet->command;
         	       if($packet->type == $packet::TYPE_PLAYER){
         	       	 if($cmd{0} != '/'){
-        	       	 	 return;
+        	       	 	 break;
         	       	 }
         	       	 $line = substr($cmd, 1);
         	       	 $this->server->getPluginManager()->callEvent($event = new PlayerCommandPreprocessEvent($this, $line));
         	       	 if($event->isCancelled()){
-        	       	 	 return;
+        	       	 	 break;
         	       	 }
         	       	 
         	       	 $this->server->dispatchCommand($this, $line);

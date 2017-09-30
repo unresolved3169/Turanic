@@ -1859,27 +1859,21 @@ class Level implements ChunkManager, Metadatable
      *
      * @return Entity[]
      */
-    public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null): array {
+    public function getNearbyEntities(AxisAlignedBB $bb, Entity $entity = null) : array{
         $nearby = [];
-
         $minX = Math::floorFloat(($bb->minX - 2) / 16);
         $maxX = Math::ceilFloat(($bb->maxX + 2) / 16);
         $minZ = Math::floorFloat(($bb->minZ - 2) / 16);
         $maxZ = Math::ceilFloat(($bb->maxZ + 2) / 16);
-
-        for ($x = $minX; $x <= $maxX; ++$x) {
-            for ($z = $minZ; $z <= $maxZ; ++$z) {
-                foreach ($this->getChunkEntities($x, $z) as $ent) {
-                    if ($ent instanceof Player and $ent->isSpectator()) {
-                        continue;
-                    }
-                    if ($ent !== $entity and $ent->boundingBox->intersectsWith($bb)) {
+        for($x = $minX; $x <= $maxX; ++$x){
+            for($z = $minZ; $z <= $maxZ; ++$z){
+                foreach($this->getChunkEntities($x, $z) as $ent){
+                    if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
                         $nearby[] = $ent;
                     }
                 }
             }
         }
-
         return $nearby;
     }
 
