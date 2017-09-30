@@ -3,12 +3,12 @@
 /*
  *
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -121,13 +121,13 @@ class PressurePlate extends RedstoneSource {
 	}*/
 
 	/**
-	 * @param Item  $item
-	 * @param Block $block
-	 * @param Block $target
-	 * @param int   $face
-	 * @param float $fx
-	 * @param float $fy
-	 * @param float $fz
+	 * @param Item        $item
+	 * @param Block       $block
+	 * @param Block       $target
+	 * @param int         $face
+	 * @param float       $fx
+	 * @param float       $fy
+	 * @param float       $fz
 	 * @param Player|null $player
 	 *
 	 * @return bool|void
@@ -166,7 +166,7 @@ class PressurePlate extends RedstoneSource {
 		return 2.5;
 	}
 
- public function canHarvestWithHand(): bool{
-  return false;
- }
+    public function canHarvestWithHand(): bool{
+        return false;
+    }
 }

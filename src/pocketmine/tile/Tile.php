@@ -2,12 +2,12 @@
 
 /*
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -98,10 +98,10 @@ abstract class Tile extends Position {
 	}
 
 	/**
-	 * @param string   $type
-	 * @param Level $level
+	 * @param string      $type
+	 * @param Level       $level
 	 * @param CompoundTag $nbt
-	 * @param array $args
+	 * @param array       $args
 	 *
 	 * @return Tile
 	 */
@@ -142,11 +142,11 @@ abstract class Tile extends Position {
 	/**
 	 * Tile constructor.
 	 *
-	 * @param Level $level
+	 * @param Level       $level
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-	 parent::__construct($level, $nbt);
+	    parent::__construct($level, $nbt);
 		$this->timings = Timings::getTileEntityTimings($this);
 
 		$this->namedtag = $nbt;
@@ -224,14 +224,14 @@ abstract class Tile extends Position {
 		return $this->name;
 	}
 
- public function getCleanedNBT(){
-  $this->saveNBT();
-  $tag = clone $this->namedtag;
-  unset($tag->x, $tag->y, $tag->z, $tag->id);
-  if($tag->getCount() > 0){
-   return $tag;
-  }else{
-   return null;
-  }
- }
+    public function getCleanedNBT(){
+        $this->saveNBT();
+        $tag = clone $this->namedtag;
+        unset($tag->x, $tag->y, $tag->z, $tag->id);
+        if($tag->getCount() > 0){
+            return $tag;
+        }else{
+            return null;
+        }
+    }
 }

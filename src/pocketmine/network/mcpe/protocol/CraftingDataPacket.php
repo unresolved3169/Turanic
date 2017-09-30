@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -127,28 +127,28 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	private static function writeShapelessRecipe(ShapelessRecipe $recipe, BinaryStream $stream){
-  $stream->putUnsignedVarInt($recipe->getIngredientCount());
-  foreach($recipe->getIngredientList() as $item){
-   $stream->putSlot($item);
-  }
-  $stream->putUnsignedVarInt(1);
-  $stream->putSlot($recipe->getResult());
-  $stream->putUUID($recipe->getId());
-  return CraftingDataPacket::ENTRY_SHAPELESS;
+        $stream->putUnsignedVarInt($recipe->getIngredientCount());
+        foreach($recipe->getIngredientList() as $item){
+            $stream->putSlot($item);
+        }
+        $stream->putUnsignedVarInt(1);
+        $stream->putSlot($recipe->getResult());
+        $stream->putUUID($recipe->getId());
+        return CraftingDataPacket::ENTRY_SHAPELESS;
 	}
 
 	private static function writeShapedRecipe(ShapedRecipe $recipe, BinaryStream $stream){
-  $stream->putVarInt($recipe->getWidth());
-  $stream->putVarInt($recipe->getHeight());
-  for($z = 0; $z < $recipe->getHeight(); ++$z){
-   for($x = 0; $x < $recipe->getWidth(); ++$x){
- $stream->putSlot($recipe->getIngredient($x, $z));
-   }
-  }
-  $stream->putUnsignedVarInt(1);
-  $stream->putSlot($recipe->getResult());
-  $stream->putUUID($recipe->getId());
-  return CraftingDataPacket::ENTRY_SHAPED;
+        $stream->putVarInt($recipe->getWidth());
+        $stream->putVarInt($recipe->getHeight());
+        for($z = 0; $z < $recipe->getHeight(); ++$z){
+            for($x = 0; $x < $recipe->getWidth(); ++$x){
+                $stream->putSlot($recipe->getIngredient($x, $z));
+            }
+        }
+        $stream->putUnsignedVarInt(1);
+        $stream->putSlot($recipe->getResult());
+        $stream->putUUID($recipe->getId());
+        return CraftingDataPacket::ENTRY_SHAPED;
 	}
 
 	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, BinaryStream $stream){

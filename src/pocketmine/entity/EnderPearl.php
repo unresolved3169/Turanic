@@ -2,12 +2,12 @@
 
 /*
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ class EnderPearl extends Projectile {
 	/**
 	 * EnderPearl constructor.
 	 *
-	 * @param Level $level
+	 * @param Level       $level
 	 * @param CompoundTag $nbt
 	 * @param Entity|null $shootingEntity
 	 */
@@ -57,9 +57,9 @@ class EnderPearl extends Projectile {
 		if(!$this->hasTeleportedShooter){
 			$this->hasTeleportedShooter = true;
 			if($this->shootingEntity instanceof Player and $this->y > 0){
- $this->shootingEntity->teleport($this->getPosition());
- $this->getLevel()->addSound(new EndermanTeleportSound($this->getPosition()), array($this->shootingEntity));
-   }
+                $this->shootingEntity->teleport($this->getPosition());
+                $this->getLevel()->addSound(new EndermanTeleportSound($this->getPosition()), array($this->shootingEntity));
+            }
 
 			$this->kill();
 		}
@@ -96,8 +96,8 @@ class EnderPearl extends Projectile {
 		$pk = new AddEntityPacket();
 		$pk->type = EnderPearl::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
-  $pk->position = $this->getPosition();
-  $pk->motion = $this->getMotion();
+        $pk->position = $this->getPosition();
+        $pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 		parent::spawnTo($player);

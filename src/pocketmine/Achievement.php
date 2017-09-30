@@ -3,12 +3,12 @@
 /*
  *
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  *
@@ -112,7 +112,7 @@ abstract class Achievement {
 
 	/**
 	 * @param Player $player
-	 * @param  $achievementId
+	 * @param        $achievementId
 	 *
 	 * @return bool
 	 */
@@ -132,8 +132,8 @@ abstract class Achievement {
 	}
 
 	/**
-	 * @param $achievementId
-	 * @param $achievementName
+	 * @param       $achievementId
+	 * @param       $achievementName
 	 * @param array $requires
 	 *
 	 * @return bool

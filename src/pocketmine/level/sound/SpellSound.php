@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __ __  _____
+ *  _____   _____   __   _   _   _____  __    __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,9 +33,9 @@ class SpellSound extends Sound {
 	 * SpellSound constructor.
 	 *
 	 * @param Vector3 $pos
-	 * @param int  $r
-	 * @param int  $g
-	 * @param int  $b
+	 * @param int     $r
+	 * @param int     $g
+	 * @param int     $b
 	 */
 	public function __construct(Vector3 $pos, $r = 0, $g = 0, $b = 0){
 		/*parent::__construct($pos->x, $pos->y, $pos->z);

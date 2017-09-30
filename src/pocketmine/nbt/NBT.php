@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_| 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -152,7 +152,7 @@ class NBT {
 	/**
 	 * @param CompoundTag $tag1
 	 * @param CompoundTag $tag2
-	 * @param bool  $override
+	 * @param bool        $override
 	 *
 	 * @return CompoundTag
 	 */
@@ -170,7 +170,7 @@ class NBT {
 	}
 
 	/**
-	 * @param  $data
+	 * @param     $data
 	 * @param int $offset
 	 *
 	 * @return null|CompoundTag
@@ -193,7 +193,7 @@ class NBT {
 	}
 
 	/**
-	 * @param  $str
+	 * @param     $str
 	 * @param int $offset
 	 *
 	 * @return array
@@ -260,7 +260,7 @@ class NBT {
 	}
 
 	/**
-	 * @param  $str
+	 * @param     $str
 	 * @param int $offset
 	 *
 	 * @return array
@@ -322,8 +322,8 @@ class NBT {
 	}
 
 	/**
-	 * @param   $data
-	 * @param   $offset
+	 * @param      $data
+	 * @param      $offset
 	 * @param null $type
 	 *
 	 * @return array|int|string
@@ -495,7 +495,7 @@ class NBT {
 	}
 
 	/**
-	 * @param   $buffer
+	 * @param      $buffer
 	 * @param bool $doMultiple
 	 * @param bool $network
 	 */
@@ -513,7 +513,7 @@ class NBT {
 	}
 
 	/**
-	 * @param  $buffer
+	 * @param     $buffer
 	 * @param int $compression
 	 */
 	public function readCompressed($buffer, $compression = ZLIB_ENCODING_GZIP){
@@ -521,7 +521,7 @@ class NBT {
 	}
 
 	/**
-	 * @param  $buffer
+	 * @param     $buffer
 	 * @param int $compression
 	 */
 	public function readNetworkCompressed($buffer, $compression = ZLIB_ENCODING_GZIP){
@@ -698,7 +698,7 @@ class NBT {
 	}
 
 	/**
-	 * @param   $v
+	 * @param      $v
 	 * @param bool $network
 	 */
 	public function putInt($v, bool $network = false){
@@ -762,7 +762,7 @@ class NBT {
 	}
 
 	/**
-	 * @param   $v
+	 * @param      $v
 	 * @param bool $network
 	 */
 	public function putString($v, bool $network = false){
@@ -816,8 +816,8 @@ class NBT {
 	}
 
 	/**
-	 * @param Tag   $tag
-	 * @param array $data
+	 * @param Tag      $tag
+	 * @param array    $data
 	 * @param callable $guesser
 	 */
 	private static function fromArray(Tag $tag, array $data, callable $guesser){
@@ -845,7 +845,7 @@ class NBT {
 	}
 
 	/**
-	 * @param array   $data
+	 * @param array         $data
 	 * @param callable|null $guesser
 	 */
 	public function setArray(array $data, callable $guesser = null){

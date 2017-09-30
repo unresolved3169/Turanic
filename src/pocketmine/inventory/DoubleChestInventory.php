@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -69,31 +69,31 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder {
 		return $index < $this->left->getSize() ? $this->left->getItem($index) : $this->right->getItem($index - $this->right->getSize());
 	}
 
- /**
-  * @param int $index
-  * @param Item $item
-  *
-  * @param bool $send
-  * @return bool
-  */
+    /**
+     * @param int $index
+     * @param Item $item
+     *
+     * @param bool $send
+     * @return bool
+     */
 	public function setItem($index, Item $item, $send = true){
 		return $index < $this->left->getSize() ? $this->left->setItem($index, $item) : $this->right->setItem($index - $this->right->getSize(), $item);
 	}
 
- /**
-  * @param int $index
-  *
-  * @param bool $send
-  * @return bool
-  */
+    /**
+     * @param int $index
+     *
+     * @param bool $send
+     * @return bool
+     */
 	public function clear($index, $send = true){
 		return $index < $this->left->getSize() ? $this->left->clear($index) : $this->right->clear($index - $this->right->getSize());
 	}
 
- /**
-  * @param bool $withAir
-  * @return array
-  */
+    /**
+     * @param bool $withAir
+     * @return array
+     */
 	public function getContents($withAir = false){
 		$contents = [];
 		for($i = 0; $i < $this->getSize(); ++$i){
@@ -103,10 +103,10 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder {
 		return $contents;
 	}
 
- /**
-  * @param Item[] $items
-  * @param bool $send
-  */
+    /**
+     * @param Item[] $items
+     * @param bool $send
+     */
 	public function setContents(array $items, $send = true){
 		if(count($items) > $this->size){
 			$items = array_slice($items, 0, $this->size, true);

@@ -3,12 +3,12 @@
 /*
  *
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -49,10 +49,10 @@ class NetherBrickFence extends Transparent {
 	}
 
 	public function getResistance(){
-  return 10;
- }
+        return 10;
+    }
 
- /**
+    /**
 	 * @return int
 	 */
 	public function getToolType(){
@@ -92,10 +92,10 @@ class NetherBrickFence extends Transparent {
 	}
 
 	public function canHarvestWithHand(): bool{
-  return false;
+        return false;
 	}
 
 	public function getColor(){
-	 return new Color(112, 2, 0);
- }
+	    return new Color(112, 2, 0);
+    }
 }

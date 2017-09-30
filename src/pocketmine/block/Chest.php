@@ -3,12 +3,12 @@
 /*
  *
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -92,24 +92,24 @@ class Chest extends Transparent {
 	}
 
 	/**
-	 * @param Item  $item
-	 * @param Block $block
-	 * @param Block $target
-	 * @param int   $face
-	 * @param float $fx
-	 * @param float $fy
-	 * @param float $fz
+	 * @param Item        $item
+	 * @param Block       $block
+	 * @param Block       $target
+	 * @param int         $face
+	 * @param float       $fx
+	 * @param float       $fy
+	 * @param float       $fz
 	 * @param Player|null $player
 	 *
 	 * @return bool
 	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-  $faces = [
-   0 => 4,
-   1 => 2,
-   2 => 5,
-   3 => 3
-  ];
+        $faces = [
+            0 => 4,
+            1 => 2,
+            2 => 5,
+            3 => 3
+        ];
 
 		$chest = null;
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
@@ -176,7 +176,7 @@ class Chest extends Transparent {
 	}
 
 	/**
-	 * @param Item  $item
+	 * @param Item        $item
 	 * @param Player|null $player
 	 *
 	 * @return bool

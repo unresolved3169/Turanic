@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __ __  _____
+ *  _____   _____   __   _   _   _____  __    __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -88,8 +88,8 @@ abstract class FlyingAnimal extends Creature implements Ageable {
 				/*
 
 				if($expectedPos->distanceSquared($this) > 0){
-				 $this->flyDirection = $this->generateRandomDirection();
-				 $this->flySpeed = mt_rand(50, 100) / 500;
+				    $this->flyDirection = $this->generateRandomDirection();
+				    $this->flySpeed = mt_rand(50, 100) / 500;
 				}
 
 				$friction = 1 - $this->drag;
@@ -97,7 +97,7 @@ abstract class FlyingAnimal extends Creature implements Ageable {
 				$this->motionX *= $friction;
 				$this->motionY *= 1 - $this->drag;
 				$this->motionZ *= $friction;
- */
+    */
 				$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
 				$this->yaw = (-atan2($this->motionX, $this->motionZ) * 180 / M_PI);
 				$this->pitch = (-atan2($f, $this->motionY) * 180 / M_PI);
@@ -135,11 +135,11 @@ abstract class FlyingAnimal extends Creature implements Ageable {
 		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
 	}
 
- /**
-  * @param EntityDamageEvent $source
-  * @return bool|void
-  * @internal param float $damage
-  */
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool|void
+     * @internal param float $damage
+     */
 	public function attack(EntityDamageEvent $source){
 		if($source->isCancelled()){
 			return;

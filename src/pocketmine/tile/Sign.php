@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,115 +31,115 @@ use pocketmine\utils\TextFormat;
 
 class Sign extends Spawnable {
 
- /** @var string[] */
- protected $text = ["", "", "", ""];
+    /** @var string[] */
+    protected $text = ["", "", "", ""];
 
- public function __construct(Level $level, CompoundTag $nbt){
-  if(isset($nbt->Text)){ //MCPE 1.2 save format
-   $this->text = explode("\n", $nbt->Text->getValue());
-   unset($nbt->Text);
-  }
+    public function __construct(Level $level, CompoundTag $nbt){
+        if(isset($nbt->Text)){ //MCPE 1.2 save format
+            $this->text = explode("\n", $nbt->Text->getValue());
+            unset($nbt->Text);
+        }
 
-  parent::__construct($level, $nbt);
- }
+        parent::__construct($level, $nbt);
+    }
 
- public function saveNBT(){
-  parent::saveNBT();
-  $this->namedtag->Text = new StringTag("Text", implode("\n", $this->text));
+    public function saveNBT(){
+        parent::saveNBT();
+        $this->namedtag->Text = new StringTag("Text", implode("\n", $this->text));
 
-  unset($this->namedtag->Creator);
- }
+        unset($this->namedtag->Creator);
+    }
 
- /**
-  * Changes contents of the specific lines to the string provided.
-  * Leaves contents of the specifc lines as is if null is provided.
-  *
-  * @param null|string $line1
-  * @param null|string $line2
-  * @param null|string $line3
-  * @param null|string $line4
-  */
- public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
-  if($line1 !== null){
-   $this->text[0] = $line1;
-  }
-  if($line2 !== null){
-   $this->text[1] = $line2;
-  }
-  if($line3 !== null){
-   $this->text[2] = $line3;
-  }
-  if($line4 !== null){
-   $this->text[3] = $line4;
-  }
+    /**
+     * Changes contents of the specific lines to the string provided.
+     * Leaves contents of the specifc lines as is if null is provided.
+     *
+     * @param null|string $line1
+     * @param null|string $line2
+     * @param null|string $line3
+     * @param null|string $line4
+     */
+    public function setText($line1 = "", $line2 = "", $line3 = "", $line4 = ""){
+        if($line1 !== null){
+            $this->text[0] = $line1;
+        }
+        if($line2 !== null){
+            $this->text[1] = $line2;
+        }
+        if($line3 !== null){
+            $this->text[2] = $line3;
+        }
+        if($line4 !== null){
+            $this->text[3] = $line4;
+        }
 
-  $this->onChanged();
- }
+        $this->onChanged();
+    }
 
- /**
-  * @param int $index 0-3
-  * @param string $line
-  * @param bool   $update
-  */
- public function setLine(int $index, string $line, bool $update = true){
-  if($index < 0 or $index > 3){
-   throw new \InvalidArgumentException("Index must be in the range 0-3!");
-  }
+    /**
+     * @param int    $index 0-3
+     * @param string $line
+     * @param bool   $update
+     */
+    public function setLine(int $index, string $line, bool $update = true){
+        if($index < 0 or $index > 3){
+            throw new \InvalidArgumentException("Index must be in the range 0-3!");
+        }
 
-  $this->text[$index] = $line;
-  if($update){
-   $this->onChanged();
-  }
- }
+        $this->text[$index] = $line;
+        if($update){
+            $this->onChanged();
+        }
+    }
 
- /**
-  * @param int $index 0-3
-  *
-  * @return string
-  */
- public function getLine(int $index) : string{
-  if($index < 0 or $index > 3){
-   throw new \InvalidArgumentException("Index must be in the range 0-3!");
-  }
-  return $this->text[$index];
- }
+    /**
+     * @param int $index 0-3
+     *
+     * @return string
+     */
+    public function getLine(int $index) : string{
+        if($index < 0 or $index > 3){
+            throw new \InvalidArgumentException("Index must be in the range 0-3!");
+        }
+        return $this->text[$index];
+    }
 
- /**
-  * @return string[]
-  */
- public function getText() : array{
-  return $this->text;
- }
+    /**
+     * @return string[]
+     */
+    public function getText() : array{
+        return $this->text;
+    }
 
- public function addAdditionalSpawnData(CompoundTag $nbt){
-  $nbt->Text = new StringTag("Text", implode("\n", $this->text));
-  return $nbt;
- }
+    public function addAdditionalSpawnData(CompoundTag $nbt){
+        $nbt->Text = new StringTag("Text", implode("\n", $this->text));
+        return $nbt;
+    }
 
- public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-  if($nbt["id"] !== Tile::SIGN){
-   return false;
-  }
-  
-  $lines = array_pad(explode("\n", $nbt->Text->getValue()), 4, "");
+    public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
+        if($nbt["id"] !== Tile::SIGN){
+            return false;
+        }
+        
+        $lines = array_pad(explode("\n", $nbt->Text->getValue()), 4, "");
 
-  $removeFormat = $player->getRemoveFormat();
+        $removeFormat = $player->getRemoveFormat();
 
-  $ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat){ return TextFormat::clean($line, $removeFormat); }, $lines));
+        $ev = new SignChangeEvent($this->getBlock(), $player, array_map(function(string $line) use ($removeFormat){ return TextFormat::clean($line, $removeFormat); }, $lines));
 
-  if(!isset($this->namedtag->Creator) or $this->namedtag->Creator->getValue() !== $player->getRawUniqueId()){
-   $ev->setCancelled();
-  }
+        if(!isset($this->namedtag->Creator) or $this->namedtag->Creator->getValue() !== $player->getRawUniqueId()){
+            $ev->setCancelled();
+        }
 
-  $this->level->getServer()->getPluginManager()->callEvent($ev);
+        $this->level->getServer()->getPluginManager()->callEvent($ev);
 
-  if(!$ev->isCancelled()){
-   $this->setText(...$ev->getLines());
-   return true;
-  }else{
-   return false;
-  }
- }
+        if(!$ev->isCancelled()){
+            $this->setText(...$ev->getLines());
+            return true;
+        }else{
+            return false;
+        }
+    }
 
 	/**
 	 * @return CompoundTag

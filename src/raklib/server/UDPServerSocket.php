@@ -45,7 +45,7 @@ class UDPServerSocket{
 	/**
 	 * @param string &$buffer
 	 * @param string &$source
-	 * @param int &$port
+	 * @param int    &$port
 	 *
 	 * @return int
 	 */
@@ -56,7 +56,7 @@ class UDPServerSocket{
 	/**
 	 * @param string $buffer
 	 * @param string $dest
-	 * @param int $port
+	 * @param int    $port
 	 *
 	 * @return int
 	 */

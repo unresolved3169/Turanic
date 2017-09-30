@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -38,7 +38,7 @@ class SimpleChunkManager implements ChunkManager {
 	/**
 	 * SimpleChunkManager constructor.
 	 *
-	 * @param  $seed
+	 * @param     $seed
 	 * @param int $waterHeight
 	 */
 	public function __construct($seed, $waterHeight = 0){
@@ -203,14 +203,14 @@ class SimpleChunkManager implements ChunkManager {
 	}
 
 	/**
-	 * @param  $x
-	 * @param  $y
-	 * @param  $z
-	 * @param  $currentLight
+	 * @param           $x
+	 * @param           $y
+	 * @param           $z
+	 * @param           $currentLight
 	 * @param \SplQueue $queue
 	 * @param \SplQueue $spreadQueue
-	 * @param array  $visited
-	 * @param array  $spreadVisited
+	 * @param array     $visited
+	 * @param array     $spreadVisited
 	 */
 	private function computeRemoveBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited){
 		$current = $this->getBlockLightAt($x, $y, $z);
@@ -233,12 +233,12 @@ class SimpleChunkManager implements ChunkManager {
 	}
 
 	/**
-	 * @param  $x
-	 * @param  $y
-	 * @param  $z
-	 * @param  $currentLight
+	 * @param           $x
+	 * @param           $y
+	 * @param           $z
+	 * @param           $currentLight
 	 * @param \SplQueue $queue
-	 * @param array  $visited
+	 * @param array     $visited
 	 */
 	private function computeSpreadBlockLight($x, $y, $z, $currentLight, \SplQueue $queue, array &$visited){
 		$current = $this->getBlockLightAt($x, $y, $z);

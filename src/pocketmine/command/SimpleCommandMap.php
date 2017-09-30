@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -198,8 +198,8 @@ class SimpleCommandMap implements CommandMap {
 	/**
 	 * @param string  $fallbackPrefix
 	 * @param Command $command
-	 * @param null $label
-	 * @param bool $overrideConfig
+	 * @param null    $label
+	 * @param bool    $overrideConfig
 	 *
 	 * @return bool
 	 */
@@ -236,9 +236,9 @@ class SimpleCommandMap implements CommandMap {
 
 	/**
 	 * @param Command $command
-	 * @param   $isAlias
-	 * @param   $fallbackPrefix
-	 * @param   $label
+	 * @param         $isAlias
+	 * @param         $fallbackPrefix
+	 * @param         $label
 	 *
 	 * @return bool
 	 */
@@ -263,10 +263,10 @@ class SimpleCommandMap implements CommandMap {
 
 	/**
 	 * @param CommandSender $sender
-	 * @param Command $command
-	 * @param   $label
-	 * @param array   $args
-	 * @param int  $offset
+	 * @param Command       $command
+	 * @param               $label
+	 * @param array         $args
+	 * @param int           $offset
 	 */
 	private function dispatchAdvanced(CommandSender $sender, Command $command, $label, array $args, $offset = 0){
 		if(isset($args[$offset])){
@@ -306,7 +306,7 @@ class SimpleCommandMap implements CommandMap {
 
 	/**
 	 * @param CommandSender $sender
-	 * @param string  $commandLine
+	 * @param string        $commandLine
 	 *
 	 * @return bool
 	 */

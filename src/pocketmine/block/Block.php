@@ -3,12 +3,12 @@
 /*
  *
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -58,8 +58,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $hardness = null;
 	/** @var \SplFixedArray */
 	public static $transparent = null;
- /** @var \SplFixedArray */
- public static $diffusesSkyLight = null;
+    /** @var \SplFixedArray */
+    public static $diffusesSkyLight = null;
 
 	protected $id;
 	protected $meta = 0;
@@ -76,7 +76,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$solid = new \SplFixedArray(256);
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
-   self::$diffusesSkyLight = new \SplFixedArray(256);
+            self::$diffusesSkyLight = new \SplFixedArray(256);
 			self::$list[self::AIR] = Air::class;
 			self::$list[self::BONE_BLOCK] = BoneBlock::class;
 			self::$list[self::STONE] = Stone::class;
@@ -362,20 +362,20 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 	}
 
- /**
-  * @return bool
-  */
- public function canHarvestWithHand() : bool{
-	 return true;
- }
+    /**
+     * @return bool
+     */
+    public function canHarvestWithHand() : bool{
+	    return true;
+    }
 
- public function canBeClimbed() : bool{
-  return false;
- }
+    public function canBeClimbed() : bool{
+        return false;
+    }
 
 	/**
-	 * @param int   $id
-	 * @param int   $meta
+	 * @param int      $id
+	 * @param int      $meta
 	 * @param Position $pos
 	 *
 	 * @return Block
@@ -421,7 +421,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param Item   $item
 	 * @param Block  $block
 	 * @param Block  $target
-	 * @param int $face
+	 * @param int    $face
 	 * @param float  $fx
 	 * @param float  $fy
 	 * @param float  $fz

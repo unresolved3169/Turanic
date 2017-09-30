@@ -2,20 +2,20 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
- *  _____   _   _____  
- * / ____| (_) |  __ \ 
+ *  _____            _               _____           
+ * / ____|          (_)             |  __ \          
  *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
  *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
  *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
  * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *    __/ |  
- *   |___/   
+ *                         __/ |                    
+ *                        |___/                     
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -101,7 +101,7 @@ class PluginManager {
 	public static $useTimings = false;
 
 	/**
-	 * @param Server  $server
+	 * @param Server           $server
 	 * @param SimpleCommandMap $commandMap
 	 */
 	public function __construct(Server $server, SimpleCommandMap $commandMap){
@@ -147,7 +147,7 @@ class PluginManager {
 	}
 
 	/**
-	 * @param string   $path
+	 * @param string         $path
 	 * @param PluginLoader[] $loaders
 	 *
 	 * @return Plugin
@@ -224,7 +224,7 @@ class PluginManager {
 							//Check multiple dependencies
 							foreach($description->getCompatibleApis() as $version){
 								//Format: majorVersion.minorVersion.patch (3.0.0)
-								// or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
+								//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
 								if($version !== $this->server->getApiVersion()){
 									$pluginApi = array_pad(explode("-", $version), 2, ""); //0 = version, 1 = suffix (optional)
 									$serverApi = array_pad(explode("-", $this->server->getApiVersion()), 2, "");
@@ -477,7 +477,7 @@ class PluginManager {
 	}
 
 	/**
-	 * @param string   $permission
+	 * @param string      $permission
 	 * @param Permissible $permissible
 	 */
 	public function subscribeToPermission($permission, Permissible $permissible){
@@ -488,7 +488,7 @@ class PluginManager {
 	}
 
 	/**
-	 * @param string   $permission
+	 * @param string      $permission
 	 * @param Permissible $permissible
 	 */
 	public function unsubscribeFromPermission($permission, Permissible $permissible){
@@ -526,7 +526,7 @@ class PluginManager {
 	}
 
 	/**
-	 * @param bool  $op
+	 * @param bool        $op
 	 * @param Permissible $permissible
 	 */
 	public function subscribeToDefaultPerms($op, Permissible $permissible){
@@ -538,7 +538,7 @@ class PluginManager {
 	}
 
 	/**
-	 * @param bool  $op
+	 * @param bool        $op
 	 * @param Permissible $permissible
 	 */
 	public function unsubscribeFromDefaultPerms($op, Permissible $permissible){
@@ -808,12 +808,12 @@ class PluginManager {
 	}
 
 	/**
-	 * @param string  $event Class name that extends Event
-	 * @param Listener   $listener
-	 * @param int  $priority
+	 * @param string        $event Class name that extends Event
+	 * @param Listener      $listener
+	 * @param int           $priority
 	 * @param EventExecutor $executor
-	 * @param Plugin  $plugin
-	 * @param bool $ignoreCancelled
+	 * @param Plugin        $plugin
+	 * @param bool          $ignoreCancelled
 	 *
 	 * @throws PluginException
 	 */

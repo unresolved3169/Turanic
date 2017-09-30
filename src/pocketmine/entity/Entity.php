@@ -2,12 +2,12 @@
 
 /*
  *
- * _______  _
- *   |__   __|   (_)
- *   | |_   _ _ __ __ _ _ __  _  ___
- *   | | | | | '__/ _` | '_ \| |/ __|
- *   | | |_| | | | (_| | | | | | (__
- *   |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -221,10 +221,10 @@ abstract class Entity extends Location implements Metadatable {
 	/** @var Entity[] */
 	private static $knownEntities = [];
 	private static $shortNames = [];
- protected $baseOffset = 0.0;
+    protected $baseOffset = 0.0;
 
- /** @var bool */
- protected $constructed = false;
+    /** @var bool */
+    protected $constructed = false;
 
 	public static function init(){
 		Entity::registerEntity(Arrow::class);
@@ -416,11 +416,11 @@ abstract class Entity extends Location implements Metadatable {
 	/**
 	 * Entity constructor.
 	 *
-	 * @param Level $level
+	 * @param Level       $level
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-	 $this->constructed = true;
+	    $this->constructed = true;
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->isPlayer = $this instanceof Player;
@@ -703,14 +703,14 @@ abstract class Entity extends Location implements Metadatable {
 		return null;
 	}
 
- /**
-  * Sets the owner of the entity.
-  *
-  * @param Entity $owner
-  *
-  * @return bool
-  * @throws \InvalidArgumentException if the supplied entity is not valid
-  */
+    /**
+     * Sets the owner of the entity.
+     *
+     * @param Entity $owner
+     *
+     * @return bool
+     * @throws \InvalidArgumentException if the supplied entity is not valid
+     */
 	public function setOwningEntity(Entity $owner){
 		if($owner->closed){
 			throw new \InvalidArgumentException("Supplied owning entity is garbage and cannot be used");
@@ -845,9 +845,9 @@ abstract class Entity extends Location implements Metadatable {
 
 	/**
 	 * @param int|string  $type
-	 * @param Level $level
+	 * @param Level       $level
 	 * @param CompoundTag $nbt
-	 * @param $args
+	 * @param             $args
 	 *
 	 * @return Entity|Projectile
 	 */
@@ -862,7 +862,7 @@ abstract class Entity extends Location implements Metadatable {
 	}
 
 	/**
-	 * @param   $className
+	 * @param      $className
 	 * @param bool $force
 	 *
 	 * @return bool
@@ -1023,7 +1023,7 @@ abstract class Entity extends Location implements Metadatable {
 
 	/**
 	 * @param Player[]|Player $player
-	 * @param array  $data Properly formatted entity data, defaults to everything
+	 * @param array           $data Properly formatted entity data, defaults to everything
 	 */
 	public function sendData($player, array $data = null){
 		if(!is_array($player)){
@@ -1060,10 +1060,10 @@ abstract class Entity extends Location implements Metadatable {
 		}
 	}
 
- /**
-  * @param EntityDamageEvent $source
-  * @return bool
-  */
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool
+     */
 	public function attack(EntityDamageEvent $source){
 		if($this->hasEffect(Effect::FIRE_RESISTANCE)
 			and ($source->getCause() === EntityDamageEvent::CAUSE_FIRE
@@ -1095,9 +1095,9 @@ abstract class Entity extends Location implements Metadatable {
 		return true;
 	}
 
- /**
-  * @param EntityRegainHealthEvent $source
-  */
+    /**
+     * @param EntityRegainHealthEvent $source
+     */
 	public function heal(EntityRegainHealthEvent $source){
 		$this->server->getPluginManager()->callEvent($source);
 		if($source->isCancelled()){
@@ -1370,54 +1370,54 @@ abstract class Entity extends Location implements Metadatable {
 		return $hasUpdate;
 	}
 
- protected function updateMovement(){
-  $diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
-  $diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
+    protected function updateMovement(){
+        $diffPosition = ($this->x - $this->lastX) ** 2 + ($this->y - $this->lastY) ** 2 + ($this->z - $this->lastZ) ** 2;
+        $diffRotation = ($this->yaw - $this->lastYaw) ** 2 + ($this->pitch - $this->lastPitch) ** 2;
 
-  $diffMotion = ($this->motionX - $this->lastMotionX) ** 2 + ($this->motionY - $this->lastMotionY) ** 2 + ($this->motionZ - $this->lastMotionZ) ** 2;
+        $diffMotion = ($this->motionX - $this->lastMotionX) ** 2 + ($this->motionY - $this->lastMotionY) ** 2 + ($this->motionZ - $this->lastMotionZ) ** 2;
 
-  if($diffPosition > 0.0001 or $diffRotation > 1.0){
-   $this->lastX = $this->x;
-   $this->lastY = $this->y;
-   $this->lastZ = $this->z;
+        if($diffPosition > 0.0001 or $diffRotation > 1.0){
+            $this->lastX = $this->x;
+            $this->lastY = $this->y;
+            $this->lastZ = $this->z;
 
-   $this->lastYaw = $this->yaw;
-   $this->lastPitch = $this->pitch;
+            $this->lastYaw = $this->yaw;
+            $this->lastPitch = $this->pitch;
 
-   $this->broadcastMovement();
-  }
+            $this->broadcastMovement();
+        }
 
-  if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
-   $this->lastMotionX = $this->motionX;
-   $this->lastMotionY = $this->motionY;
-   $this->lastMotionZ = $this->motionZ;
+        if($diffMotion > 0.0025 or ($diffMotion > 0.0001 and $this->getMotion()->lengthSquared() <= 0.0001)){ //0.05 ** 2
+            $this->lastMotionX = $this->motionX;
+            $this->lastMotionY = $this->motionY;
+            $this->lastMotionZ = $this->motionZ;
 
-   $this->broadcastMotion();
-  }
- }
+            $this->broadcastMotion();
+        }
+    }
 
- public function getOffsetPosition(Vector3 $vector3) : Vector3{
-  return new Vector3($vector3->x, $vector3->y + $this->baseOffset, $vector3->z);
- }
+    public function getOffsetPosition(Vector3 $vector3) : Vector3{
+        return new Vector3($vector3->x, $vector3->y + $this->baseOffset, $vector3->z);
+    }
 
- protected function broadcastMovement(){
-  $pk = new MoveEntityPacket();
-  $pk->entityRuntimeId = $this->id;
-  $pk->position = $this->getOffsetPosition($this);
-  $pk->yaw = $this->yaw;
-  $pk->pitch = $this->pitch;
-  $pk->headYaw = $this->yaw; //TODO
+    protected function broadcastMovement(){
+        $pk = new MoveEntityPacket();
+        $pk->entityRuntimeId = $this->id;
+        $pk->position = $this->getOffsetPosition($this);
+        $pk->yaw = $this->yaw;
+        $pk->pitch = $this->pitch;
+        $pk->headYaw = $this->yaw; //TODO
 
-  $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
- }
+        $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+    }
 
- protected function broadcastMotion(){
-  $pk = new SetEntityMotionPacket();
-  $pk->entityRuntimeId = $this->id;
-  $pk->motion = $this->getMotion();
+    protected function broadcastMotion(){
+        $pk = new SetEntityMotionPacket();
+        $pk->entityRuntimeId = $this->id;
+        $pk->motion = $this->getMotion();
 
-  $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
- }
+        $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+    }
 
 	/**
 	 * @return Vector3
@@ -1548,10 +1548,10 @@ abstract class Entity extends Location implements Metadatable {
 		$this->fallDistance = 0;
 	}
 
- /**
-  * @param $distanceThisTick
-  * @param $onGround
-  */
+    /**
+     * @param $distanceThisTick
+     * @param $onGround
+     */
 	protected function updateFallState($distanceThisTick, $onGround){
 		if($onGround === true){
 			if($this->fallDistance > 0){
@@ -1762,9 +1762,9 @@ abstract class Entity extends Location implements Metadatable {
 			if(!$this->level->getBlock(new Vector3($this->x, $this->y - 1, $this->z))->isTransparent())
 				$this->onGround = true;
 			/*
-   if(count($this->level->getCollisionBlocks($bb)) > 0){
-    $this->onGround = true;
-   }*/
+                        if(count($this->level->getCollisionBlocks($bb)) > 0){
+                            $this->onGround = true;
+                        }*/
 		}
 		$this->isCollided = $this->onGround;
 		$this->updateFallState($dy, $this->onGround);
@@ -1776,8 +1776,8 @@ abstract class Entity extends Location implements Metadatable {
 	}
 
 	public function getStepHeight(){
-	 return 0;
- }
+	    return 0;
+    }
 
 	/**
 	 * @param $dx
@@ -1802,101 +1802,101 @@ abstract class Entity extends Location implements Metadatable {
 
 			Timings::$entityMoveTimer->startTiming();
 
-   $this->ySize *= 0.4;
+            $this->ySize *= 0.4;
 
-   $movX = $dx;
-   $movY = $dy;
-   $movZ = $dz;
+            $movX = $dx;
+            $movY = $dy;
+            $movZ = $dz;
 
-   $axisalignedbb = clone $this->boundingBox;
+            $axisalignedbb = clone $this->boundingBox;
 
-   $list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
+            $list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
-   foreach ($list as $bb) {
- $dy = $bb->calculateYOffset($this->boundingBox, $dy);
-   }
+            foreach ($list as $bb) {
+                $dy = $bb->calculateYOffset($this->boundingBox, $dy);
+            }
 
-   $this->boundingBox->offset(0, $dy, 0);
+            $this->boundingBox->offset(0, $dy, 0);
 
-   $fallingFlag = ($this->onGround || ($dy != $movY && $movY < 0));
+            $fallingFlag = ($this->onGround || ($dy != $movY && $movY < 0));
 
-   foreach ($list as $bb) {
- $dx = $bb->calculateXOffset($this->boundingBox, $dx);
-   }
+            foreach ($list as $bb) {
+                $dx = $bb->calculateXOffset($this->boundingBox, $dx);
+            }
 
-   $this->boundingBox->offset($dx, 0, 0);
+            $this->boundingBox->offset($dx, 0, 0);
 
-   foreach ($list as $bb) {
- $dz = $bb->calculateZOffset($this->boundingBox, $dz);
-   }
+            foreach ($list as $bb) {
+                $dz = $bb->calculateZOffset($this->boundingBox, $dz);
+            }
 
-   $this->boundingBox->offset(0, 0, $dz);
+            $this->boundingBox->offset(0, 0, $dz);
 
-   if ($this->getStepHeight() > 0 && $fallingFlag && $this->ySize < 0.05 && ($movX != $dx || $movZ != $dz)) {
- $cx = $dx;
- $cy = $dy;
- $cz = $dz;
- $dx = $movX;
- $dy = $this->getStepHeight();
- $dz = $movZ;
+            if ($this->getStepHeight() > 0 && $fallingFlag && $this->ySize < 0.05 && ($movX != $dx || $movZ != $dz)) {
+                $cx = $dx;
+                $cy = $dy;
+                $cz = $dz;
+                $dx = $movX;
+                $dy = $this->getStepHeight();
+                $dz = $movZ;
 
- $axisalignedbb1 = clone $this->boundingBox;
+                $axisalignedbb1 = clone $this->boundingBox;
 
- $this->boundingBox->setBB($axisalignedbb);
+                $this->boundingBox->setBB($axisalignedbb);
 
- $list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
+                $list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
 
- foreach ($list as $bb) {
-  $dy = $bb->calculateYOffset($this->boundingBox, $dy);
- }
+                foreach ($list as $bb) {
+                    $dy = $bb->calculateYOffset($this->boundingBox, $dy);
+                }
 
- $this->boundingBox->offset(0, $dy, 0);
+                $this->boundingBox->offset(0, $dy, 0);
 
- foreach ($list as $bb) {
-  $dx = $bb->calculateXOffset($this->boundingBox, $dx);
- }
+                foreach ($list as $bb) {
+                    $dx = $bb->calculateXOffset($this->boundingBox, $dx);
+                }
 
- $this->boundingBox->offset($dx, 0, 0);
+                $this->boundingBox->offset($dx, 0, 0);
 
- foreach ($list as $bb) {
-  $dz = $bb->calculateZOffset($this->boundingBox, $dz);
- }
+                foreach ($list as $bb) {
+                    $dz = $bb->calculateZOffset($this->boundingBox, $dz);
+                }
 
- $this->boundingBox->offset(0, 0, $dz);
+                $this->boundingBox->offset(0, 0, $dz);
 
- $this->boundingBox->offset(0, 0, $dz);
+                $this->boundingBox->offset(0, 0, $dz);
 
- if (($cx * $cx + $cz * $cz) >= ($dx * $dx + $dz * $dz)) {
-  $dx = $cx;
-  $dy = $cy;
-  $dz = $cz;
-  $this->boundingBox->setBB($axisalignedbb1);
- } else {
-  $this->ySize += 0.5;
- }
+                if (($cx * $cx + $cz * $cz) >= ($dx * $dx + $dz * $dz)) {
+                    $dx = $cx;
+                    $dy = $cy;
+                    $dz = $cz;
+                    $this->boundingBox->setBB($axisalignedbb1);
+                } else {
+                    $this->ySize += 0.5;
+                }
 
-   }
+            }
 
-   $this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-   $this->y = $this->boundingBox->minY - $this->ySize;
-   $this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+            $this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+            $this->y = $this->boundingBox->minY - $this->ySize;
+            $this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
-   $this->checkChunks();
+            $this->checkChunks();
 
-   $this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
-   $this->updateFallState($dy, $this->onGround);
+            $this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
+            $this->updateFallState($dy, $this->onGround);
 
-   if ($movX != $dx) {
- $this->motionX = 0;
-   }
+            if ($movX != $dx) {
+                $this->motionX = 0;
+            }
 
-   if ($movY != $dy) {
- $this->motionY = 0;
-   }
+            if ($movY != $dy) {
+                $this->motionY = 0;
+            }
 
-   if ($movZ != $dz) {
- $this->motionZ = 0;
-   }
+            if ($movZ != $dz) {
+                $this->motionZ = 0;
+            }
 
 			Timings::$entityMoveTimer->stopTiming();
 
@@ -1967,8 +1967,8 @@ abstract class Entity extends Location implements Metadatable {
 
 	/**
 	 * @param Vector3 $pos
-	 * @param   $yaw
-	 * @param   $pitch
+	 * @param         $yaw
+	 * @param         $pitch
 	 *
 	 * @return bool
 	 */
@@ -2115,8 +2115,8 @@ abstract class Entity extends Location implements Metadatable {
 
 	/**
 	 * @param Vector3|Position|Location $pos
-	 * @param float   $yaw
-	 * @param float   $pitch
+	 * @param float                     $yaw
+	 * @param float                     $pitch
 	 *
 	 * @return bool
 	 */
@@ -2248,7 +2248,7 @@ abstract class Entity extends Location implements Metadatable {
 	}
 
 	/**
-	 * @param int $type
+	 * @param int    $type
 	 * @param Entity $entity
 	 *
 	 * @return bool
@@ -2359,8 +2359,8 @@ abstract class Entity extends Location implements Metadatable {
 	}
 
 	/**
-	 * @param   $propertyId
-	 * @param   $id
+	 * @param      $propertyId
+	 * @param      $id
 	 * @param bool $value
 	 * @param int  $type
 	 */
@@ -2387,7 +2387,7 @@ abstract class Entity extends Location implements Metadatable {
 	}
 
 	/**
-	 * @param string  $metadataKey
+	 * @param string        $metadataKey
 	 * @param MetadataValue $metadataValue
 	 */
 	public function setMetadata(string $metadataKey, MetadataValue $metadataValue){

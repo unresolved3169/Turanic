@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __ __  _____
+ *  _____   _____   __   _   _   _____  __    __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ class PlayerPickupExpOrbEvent extends PlayerEvent implements Cancellable {
 	 * PlayerPickupExpOrbEvent constructor.
 	 *
 	 * @param Player $p
-	 * @param int $amount
+	 * @param int    $amount
 	 */
 	public function __construct(Player $p, int $amount = 0){
 		$this->player = $p;

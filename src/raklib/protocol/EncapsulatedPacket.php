@@ -40,7 +40,7 @@ class EncapsulatedPacket{
 	/**
 	 * @param string $binary
 	 * @param bool   $internal
-	 * @param int &$offset
+	 * @param int    &$offset
 	 *
 	 * @return EncapsulatedPacket
 	 */

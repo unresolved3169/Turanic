@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __ __  _____
+ *  _____   _____   __   _   _   _____  __    __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,10 +40,10 @@ class ItemFrameDropItemEvent extends BlockEvent implements Cancellable {
 	/**
 	 * ItemFrameDropItemEvent constructor.
 	 *
-	 * @param Player $player
-	 * @param Block  $block
+	 * @param Player    $player
+	 * @param Block     $block
 	 * @param ItemFrame $itemFrame
-	 * @param Item   $item
+	 * @param Item      $item
 	 */
 	public function __construct(Player $player, Block $block, ItemFrame $itemFrame, Item $item){
 		$this->player = $player;

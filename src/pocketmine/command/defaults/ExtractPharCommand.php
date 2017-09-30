@@ -23,8 +23,8 @@ class ExtractPharCommand extends VanillaCommand {
 
 	/**
 	 * @param CommandSender $sender
-	 * @param string  $commandLabel
-	 * @param array   $args
+	 * @param string        $commandLabel
+	 * @param array         $args
 	 *
 	 * @return bool
 	 */

@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -85,7 +85,7 @@ class ServerScheduler {
 	 * Submits an asynchronous task to a specific Worker in the Pool
 	 *
 	 * @param AsyncTask $task
-	 * @param int $worker
+	 * @param int       $worker
 	 *
 	 * @return void
 	 */
@@ -186,8 +186,8 @@ class ServerScheduler {
 
 	/**
 	 * @param Task $task
-	 * @param   $delay
-	 * @param   $period
+	 * @param      $delay
+	 * @param      $period
 	 *
 	 * @return null|TaskHandler
 	 *

@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_| 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -178,8 +178,8 @@ abstract class Noise {
 	abstract public function getNoise3D($x, $y, $z);
 
 	/**
-	 * @param   $x
-	 * @param   $z
+	 * @param      $x
+	 * @param      $z
 	 * @param bool $normalized
 	 *
 	 * @return int
@@ -208,9 +208,9 @@ abstract class Noise {
 	}
 
 	/**
-	 * @param   $x
-	 * @param   $y
-	 * @param   $z
+	 * @param      $x
+	 * @param      $y
+	 * @param      $z
 	 * @param bool $normalized
 	 *
 	 * @return int

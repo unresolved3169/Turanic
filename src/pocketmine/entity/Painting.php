@@ -28,11 +28,11 @@ class Painting extends Hanging {
 		}else $this->close();
 	}
 
- /**
-  * @param EntityDamageEvent $source
-  * @return bool
-  * @internal param float $damage
-  */
+    /**
+     * @param EntityDamageEvent $source
+     * @return bool
+     * @internal param float $damage
+     */
 	public function attack(EntityDamageEvent $source){
 		parent::attack($source);
 		if($source->isCancelled()) return false;

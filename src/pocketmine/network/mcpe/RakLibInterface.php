@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -133,8 +133,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	}
 
 	public function start(){
-	 $this->rakLib->start();
- }
+	    $this->rakLib->start();
+    }
 
 	public function shutdown(){
 		$this->interface->shutdown();
@@ -145,9 +145,9 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	}
 
 	/**
-	 * @param string  $identifier
-	 * @param string  $address
-	 * @param int  $port
+	 * @param string     $identifier
+	 * @param string     $address
+	 * @param int        $port
 	 * @param int|string $clientID
 	 */
 	public function openSession($identifier, $address, $port, $clientID){
@@ -163,13 +163,13 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	}
 
 	/**
-	 * @param string $identifier
+	 * @param string             $identifier
 	 * @param EncapsulatedPacket $packet
-	 * @param int $flags
+	 * @param int                $flags
 	 */
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
-   $address = $this->players[$identifier]->getAddress();
+            $address = $this->players[$identifier]->getAddress();
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
@@ -180,17 +180,17 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 					}
 				}
 			}catch(\Throwable $e){
- $logger = $this->server->getLogger();
- $logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
- $logger->logException($e);
- $this->interface->blockAddress($address, 5);
+                $logger = $this->server->getLogger();
+                $logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+                $logger->logException($e);
+                $this->interface->blockAddress($address, 5);
 			}
 		}
 	}
 
 	/**
 	 * @param string $address
-	 * @param int $timeout
+	 * @param int    $timeout
 	 */
 	public function blockAddress($address, $timeout = 300){
 		$this->interface->blockAddress($address, $timeout);
@@ -205,7 +205,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 	/**
 	 * @param string $address
-	 * @param int $port
+	 * @param int    $port
 	 * @param string $payload
 	 */
 	public function handleRaw($address, $port, $payload){
@@ -214,7 +214,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 	/**
 	 * @param string $address
-	 * @param int $port
+	 * @param int    $port
 	 * @param string $payload
 	 */
 	public function sendRawPacket(string $address, int $port, string $payload){
@@ -223,28 +223,28 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 	/**
 	 * @param string $identifier
-	 * @param int $identifierACK
+	 * @param int    $identifierACK
 	 */
 	public function notifyACK($identifier, $identifierACK){
 
 	}
 
- public function setName(string $name){
-  $info = $this->server->getQueryInformation();
-  $this->interface->sendOption("name", implode(";",
- [
-  "MCPE",
-  rtrim(addcslashes($name, ";"), '\\'),
-  ProtocolInfo::CURRENT_PROTOCOL,
-  ProtocolInfo::MINECRAFT_VERSION_NETWORK,
-  $info->getPlayerCount(),
-  $info->getMaxPlayerCount(),
-  $this->rakLib->getServerId(),
-  $this->server->getName(),
-  Server::getGamemodeString($this->server->getGamemode())
- ]) . ";"
-  );
- }
+    public function setName(string $name){
+        $info = $this->server->getQueryInformation();
+        $this->interface->sendOption("name", implode(";",
+                [
+                    "MCPE",
+                    rtrim(addcslashes($name, ";"), '\\'),
+                    ProtocolInfo::CURRENT_PROTOCOL,
+                    ProtocolInfo::MINECRAFT_VERSION_NETWORK,
+                    $info->getPlayerCount(),
+                    $info->getMaxPlayerCount(),
+                    $this->rakLib->getServerId(),
+                    $this->server->getName(),
+                    Server::getGamemodeString($this->server->getGamemode())
+                ]) . ";"
+        );
+    }
 
 	/**
 	 * @param $name
@@ -265,10 +265,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	}
 
 	/**
-	 * @param Player  $player
+	 * @param Player     $player
 	 * @param DataPacket $packet
-	 * @param bool $needACK
-	 * @param bool $immediate
+	 * @param bool       $needACK
+	 * @param bool       $immediate
 	 *
 	 * @return int|null
 	 */

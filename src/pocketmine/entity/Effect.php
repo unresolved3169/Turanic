@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -55,7 +55,7 @@ class Effect {
 	const HEALTH_BOOST = 21;
 	const ABSORPTION = 22;
 	const SATURATION = 23;
- const LEVITATION = 24;
+    const LEVITATION = 24;
 
 	const MAX_DURATION = 2147483648;
 
@@ -92,7 +92,7 @@ class Effect {
 		self::$effects[Effect::ABSORPTION] = new Effect(Effect::ABSORPTION, "%potion.absorption", 36, 107, 251);
 		self::$effects[Effect::SATURATION] = new Effect(Effect::SATURATION, "%potion.saturation", 255, 0, 255);
 
-  self::$effects[Effect::LEVITATION] = new Effect(Effect::LEVITATION, "%potion.levitation", 206, 255, 255);
+        self::$effects[Effect::LEVITATION] = new Effect(Effect::LEVITATION, "%potion.levitation", 206, 255, 255);
 	}
 
 	/**
@@ -139,11 +139,11 @@ class Effect {
 	/**
 	 * Effect constructor.
 	 *
-	 * @param   $id
-	 * @param   $name
-	 * @param   $r
-	 * @param   $g
-	 * @param   $b
+	 * @param      $id
+	 * @param      $name
+	 * @param      $r
+	 * @param      $g
+	 * @param      $b
 	 * @param bool $isBad
 	 */
 	public function __construct($id, $name, $r, $g, $b, $isBad = false){
@@ -355,8 +355,8 @@ class Effect {
 	}
 
 	/**
-	 * @param Entity   $entity
-	 * @param bool  $modify
+	 * @param Entity      $entity
+	 * @param bool        $modify
 	 * @param Effect|null $oldEffect
 	 */
 	public function add(Entity $entity, $modify = false, Effect $oldEffect = null){

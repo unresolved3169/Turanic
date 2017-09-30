@@ -163,7 +163,7 @@ class Binary{
 	/**
 	 * Reads a 16-bit signed/unsigned little-endian number
 	 *
-	 * @param   $str
+	 * @param      $str
 	 * @param bool $signed
 	 *
 	 * @return int

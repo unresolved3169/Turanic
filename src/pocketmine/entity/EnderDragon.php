@@ -2,12 +2,12 @@
 
 /*
  *
- * _______  _
- *   |__   __|   | |
- *   | | ___  ___ ___  ___ _ __ __ _  ___| |_
- *   | |/ _ \/ __/ __|/ _ \  __/ _` |/ __| __|
- *   | |  __/\__ \__ \  __/ | | (_| | (__| |_
- *   |_|\___||___/___/\___|_|  \__,_|\___|\__|
+ *    _______                                _
+ *   |__   __|                              | |
+ *      | | ___  ___ ___  ___ _ __ __ _  ___| |_
+ *      | |/ _ \/ __/ __|/ _ \  __/ _` |/ __| __|
+ *      | |  __/\__ \__ \  __/ | | (_| | (__| |_
+ *      |_|\___||___/___/\___|_|  \__,_|\___|\__|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -51,8 +51,8 @@ class EnderDragon extends Monster {
 		$pk = new AddEntityPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->type = self::NETWORK_ID;
-  $pk->position = $this->getPosition();
-  $pk->motion = $this->getMotion();
+        $pk->position = $this->getPosition();
+        $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;

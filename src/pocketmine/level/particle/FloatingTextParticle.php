@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -37,18 +37,18 @@ class FloatingTextParticle extends Particle {
 	protected $entityId;
 	protected $invisible = false;
 
- /**
-  * @param Vector3 $pos
-  * @param int $text
-  * @param string $title
-  * @param bool $center
-  */
+    /**
+     * @param Vector3 $pos
+     * @param int $text
+     * @param string $title
+     * @param bool $center
+     */
 	public function __construct(Vector3 $pos, $text, $title = "", $center = true){
 		parent::__construct($pos->x, $pos->y, $pos->z);
 		if($center){
-   $text = TextUtils::center($text);
-   $title = TextUtils::center($title);
-  }
+            $text = TextUtils::center($text);
+            $title = TextUtils::center($title);
+        }
 		$this->text = $text;
 		$this->title = $title;
 	}

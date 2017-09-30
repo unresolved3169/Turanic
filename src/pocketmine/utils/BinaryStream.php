@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -36,7 +36,7 @@ class BinaryStream extends \stdClass {
 	 * BinaryStream constructor.
 	 *
 	 * @param string $buffer
-	 * @param int $offset
+	 * @param int    $offset
 	 */
 	public function __construct($buffer = "", $offset = 0){
 		$this->buffer = $buffer;
@@ -71,11 +71,11 @@ class BinaryStream extends \stdClass {
 		return $this->buffer;
 	}
 
- public function getRemaining() : string{
-  $str = substr($this->buffer, $this->offset);
-  $this->offset = strlen($this->buffer);
-  return $str;
- }
+    public function getRemaining() : string{
+        $str = substr($this->buffer, $this->offset);
+        $this->offset = strlen($this->buffer);
+        return $str;
+    }
 
 	/**
 	 * @param $len
@@ -146,17 +146,17 @@ class BinaryStream extends \stdClass {
 		$this->buffer .= Binary::writeInt($v);
 	}
 
- public function getLShort() : int{
-  return Binary::readLShort($this->get(2));
- }
+    public function getLShort() : int{
+        return Binary::readLShort($this->get(2));
+    }
 
- public function getSignedLShort() : int{
-  return Binary::readSignedLShort($this->get(2));
- }
+    public function getSignedLShort() : int{
+        return Binary::readSignedLShort($this->get(2));
+    }
 
- public function putLShort(int $v){
-  $this->buffer .= Binary::writeLShort($v);
- }
+    public function putLShort(int $v){
+        $this->buffer .= Binary::writeLShort($v);
+    }
 
 	/**
 	 * @return int|string
@@ -214,9 +214,9 @@ class BinaryStream extends \stdClass {
 		$this->buffer .= Binary::writeShort($v);
 	}
 
- public function getFloat() : float{
-  return Binary::readFloat($this->get(4));
- }
+    public function getFloat() : float{
+        return Binary::readFloat($this->get(4));
+    }
 
 	/**
 	 * @param $v
@@ -374,13 +374,13 @@ class BinaryStream extends \stdClass {
 		$this->put($v);
 	}
 
- /**
-  * Reads a 32-bit variable-length unsigned integer from the buffer and returns it.
-  * @return int
-  */
- public function getUnsignedVarInt() : int{
-  return Binary::readUnsignedVarInt($this->buffer, $this->offset);
- }
+    /**
+     * Reads a 32-bit variable-length unsigned integer from the buffer and returns it.
+     * @return int
+     */
+    public function getUnsignedVarInt() : int{
+        return Binary::readUnsignedVarInt($this->buffer, $this->offset);
+    }
 
 	/**
 	 * Writes an unsigned varint32 to the stream.
@@ -391,13 +391,13 @@ class BinaryStream extends \stdClass {
 		$this->put(Binary::writeUnsignedVarInt($v));
 	}
 
- /**
-  * Reads a 32-bit zigzag-encoded variable-length integer from the buffer and returns it.
-  * @return int
-  */
- public function getVarInt() : int{
-  return Binary::readVarInt($this->buffer, $this->offset);
- }
+    /**
+     * Reads a 32-bit zigzag-encoded variable-length integer from the buffer and returns it.
+     * @return int
+     */
+    public function getVarInt() : int{
+        return Binary::readVarInt($this->buffer, $this->offset);
+    }
 
 	/**
 	 * Writes a signed varint32 to the stream.
@@ -473,53 +473,53 @@ class BinaryStream extends \stdClass {
 		return !isset($this->buffer{$this->offset});
 	}
 
- public function putSignedVarInt($v) {
-  $this->put(Binary::writeSignedVarInt($v));
- }
+    public function putSignedVarInt($v) {
+        $this->put(Binary::writeSignedVarInt($v));
+    }
 
- public function getSignedVarInt() {
-  $result = $this->getVarInt();
-  if ($result % 2 == 0) {
-   $result = $result / 2;
-  } else {
-   $result = (-1) * ($result + 1) / 2;
-  }
-  return $result;
- }
+    public function getSignedVarInt() {
+        $result = $this->getVarInt();
+        if ($result % 2 == 0) {
+            $result = $result / 2;
+        } else {
+            $result = (-1) * ($result + 1) / 2;
+        }
+        return $result;
+    }
 
- /**
-  * Reads a 64-bit zigzag-encoded variable-length integer from the buffer and returns it.
-  * @return int
-  */
- public function getVarLong() : int{
-  return Binary::readVarLong($this->buffer, $this->offset);
- }
+    /**
+     * Reads a 64-bit zigzag-encoded variable-length integer from the buffer and returns it.
+     * @return int
+     */
+    public function getVarLong() : int{
+        return Binary::readVarLong($this->buffer, $this->offset);
+    }
 
- /**
-  * Writes a 64-bit zigzag-encoded variable-length integer to the end of the buffer.
-  * @param int
-  */
- public function putVarLong(int $v){
-  $this->buffer .= Binary::writeVarLong($v);
- }
+    /**
+     * Writes a 64-bit zigzag-encoded variable-length integer to the end of the buffer.
+     * @param int
+     */
+    public function putVarLong(int $v){
+        $this->buffer .= Binary::writeVarLong($v);
+    }
 
- /**
-  * Reads a 64-bit variable-length integer from the buffer and returns it.
-  * @return int
-  */
- public function getUnsignedVarLong() : int{
-  return Binary::readUnsignedVarLong($this->buffer, $this->offset);
- }
+    /**
+     * Reads a 64-bit variable-length integer from the buffer and returns it.
+     * @return int
+     */
+    public function getUnsignedVarLong() : int{
+        return Binary::readUnsignedVarLong($this->buffer, $this->offset);
+    }
 
- /**
-  * Writes a 64-bit variable-length integer to the end of the buffer.
-  * @param int $v
-  */
- public function putUnsignedVarLong(int $v){
-  $this->buffer .= Binary::writeUnsignedVarLong($v);
- }
+    /**
+     * Writes a 64-bit variable-length integer to the end of the buffer.
+     * @param int $v
+     */
+    public function putUnsignedVarLong(int $v){
+        $this->buffer .= Binary::writeUnsignedVarLong($v);
+    }
 
- public function getRoundedLFloat(int $accuracy) : float{
-  return Binary::readRoundedLFloat($this->get(4), $accuracy);
- }
+    public function getRoundedLFloat(int $accuracy) : float{
+        return Binary::readRoundedLFloat($this->get(4), $accuracy);
+    }
 }

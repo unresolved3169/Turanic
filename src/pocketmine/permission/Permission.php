@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____   _  _   __  __ _   __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -93,9 +93,9 @@ class Permission {
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
 	 *
-	 * @param string $name
-	 * @param string $description
-	 * @param string $defaultValue
+	 * @param string       $name
+	 * @param string       $description
+	 * @param string       $defaultValue
 	 * @param Permission[] $children
 	 */
 	public function __construct($name, $description = null, $defaultValue = null, array $children = []){
@@ -172,7 +172,7 @@ class Permission {
 
 	/**
 	 * @param string|Permission $name
-	 * @param    $value
+	 * @param                   $value
 	 *
 	 * @return Permission|null Permission if $name is a string, void if it's a Permission
 	 */
@@ -196,7 +196,7 @@ class Permission {
 
 	/**
 	 * @param array $data
-	 * @param $default
+	 * @param       $default
 	 *
 	 * @return Permission[]
 	 */
