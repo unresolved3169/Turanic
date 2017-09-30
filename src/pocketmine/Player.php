@@ -281,7 +281,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /** @var  PlayerCursorInventory */
     protected $cursorInventory;
     public $namedtag;
-    protected $server;
+    public $server;
     public $boundingBox;
     protected $uuid;
     protected $rawUUID;
