@@ -22,6 +22,7 @@
 
 namespace pocketmine;
 
+use pocketmine\customUI\CustomUI;
 use pocketmine\event\block\ItemFrameDropItemEvent;
 use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingGrid;
@@ -133,6 +134,8 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -282,6 +285,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public $boundingBox;
     protected $uuid;
     protected $rawUUID;
+    protected $modalWindowId = 0;
+    protected $modalWindows = [];
 
     public function isValidUserName(string $name) : bool{
         $lname = strtolower($name);
@@ -2341,6 +2346,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         switch ($packet::NETWORK_ID) {
+        	   case ProtocolInfo::MODAL_FORM_RESPONSE_PACKET:
+        	       $this->checkModal($packet->formId, json_decode($packet->formData, true));
+        	       break;
         	   case ProtocolInfo::COMMAND_REQUEST_PACKET:
         	       $cmd = $packet->command;
         	       if($packet->type == $packet::TYPE_PLAYER){
@@ -4378,5 +4386,33 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         parent::addEffect($effect);
+    }
+    
+    public function sendModalWindow(CustomUI $window){
+    	$pk = new ModalFormRequestPacket;
+    	$pk->formId = $id = $this->modalWindowId++;
+    	$pk->formData = json_encode($window->jsonSerialize());
+    	$this->dataPacket($pk);
+    	$this->modalWindows[$id] = $window;
+    }
+    
+    protected function checkModal($id, $data){
+    	if(isset($this->modalWindows[$id])){
+    		if($data == null){
+    			$this->modalWindows[$id]->close($this);
+    		}else{
+    			$this->modalWindows[$id]->handle($data, $this);
+    		}
+    		
+    		unset($this->modalWindows[$id]);
+    	}
+    }
+    
+    public function sendServerSettings(CustomUI $window){
+    	$pk = new ServerSettingsResponsePacket;
+    	$pk->formId = $id = $this->modalWindowId++;
+    	$pk->formData = json_encode($window->jsonSerialize());
+    	$this->dataPacket($pk);
+    	$this->modalWindows[$id] = $window;
     }
 }
