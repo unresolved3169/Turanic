@@ -647,7 +647,7 @@ class Server{
 	 * @return string
 	 */
 	public function getMotd(){
-		return $this->getConfigString("motd", "Minecraft: PE Server");
+		return $this->getConfigString("motd", "Turanic Server");
 	}
 
 	/**
@@ -1711,7 +1711,7 @@ class Server{
 			$this->loadAdvancedConfig();
 
 			$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
-				"motd" => "Minecraft: PE Server",
+				"motd" => "Turanic Server",
 				"server-port" => 19132,
 				"white-list" => false,
 				"announce-player-achievements" => true,
