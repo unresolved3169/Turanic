@@ -150,7 +150,7 @@ class Sign extends Spawnable {
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z),
-			new StringTag("Text", implode("\n", $this->text));
+			new StringTag("Text", implode("\n", $this->text))
 		]);
 	}
 
