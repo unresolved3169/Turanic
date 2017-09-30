@@ -2153,6 +2153,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return;
         }
 
+        if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)) {
+            $this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+        }
+
         foreach($this->server->getLoggedInPlayers() as $p){
             if($p !== $this and $p->iusername === $this->iusername){
                 if($p->kick("logged in from another location") === false){
