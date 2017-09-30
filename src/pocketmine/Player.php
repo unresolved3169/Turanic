@@ -132,6 +132,7 @@ use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -817,22 +818,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function sendCommandData(){
-        /*$data = new \stdClass();
-        $count = 0;
-        foreach ($this->server->getCommandMap()->getCommands() as $command) {
-            if ($this->hasPermission($command->getPermission()) or $command->getPermission() == null) {
-                if (($cmdData = $command->generateCustomCommandData($this)) !== null) {
-                    ++$count;
-                    $data->{$command->getName()}->versions[0] = $cmdData;
-                }
-            }
-        }
-
-        if ($count > 0) {
-            $pk = new AvailableCommandsPacket();
-            $pk->commandData = (array) $data;
-            $this->dataPacket($pk);
-        }*/
+    	$pk = new AvailableCommandsPacket;
+    	$pk->commands = $this->server->getCommandMap()->getAvailableCommands($this);
+    	$this->dataPacket($pk);
     }
 
     /**
@@ -2353,6 +2341,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         switch ($packet::NETWORK_ID) {
+        	   case ProtocolInfo::COMMAND_REQUEST_PACKET:
+        	       $cmd = $packet->command;
+        	       if($packet->type == $packet::TYPE_PLAYER){
+        	       	 if($cmd{0} != '/'){
+        	       	 	 return;
+        	       	 }
+        	       	 $line = substr($cmd, 1);
+        	       	 $this->server->getPluginManager()->callEvent($event = new PlayerCommandPreprocessEvent($this, $line));
+        	       	 if($event->isCancelled()){
+        	       	 	 return;
+        	       	 }
+        	       	 
+        	       	 $this->server->dispatchCommand($this, $line);
+        	       }
+        	       break;
             case ProtocolInfo::CLIENT_TO_SERVER_HANDSHAKE_PACKET:
         	       $pk = new ServerToClientHandshakePacket;
         	       $pk->jwt = ""; // TODO

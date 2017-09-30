@@ -29,21 +29,26 @@ use pocketmine\network\mcpe\NetworkSession;
 
 class CommandRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::COMMAND_REQUEST_PACKET;
+	
+	const TYPE_PLAYER = 0;
+	const TYPE_COMMAND_BLOCK = 1;
+	const TYPE_MINECART_COMMAND_BLOCK = 2;
+	const TYPE_DEV_CONSOLE = 3;
 
 	/** @var string */
 	public $command;
+	/** @var int */
+	public $type;
+	
+	/** @var string */
+	public $requestId;
+	/** @var int */
+	public $playerId;
 
 	protected function decodePayload(){
 		$this->command = $this->getString();
-		//TODO: everything else
-	}
-
-	protected function encodePayload(){
-		$this->putString($this->command);
-		//TODO
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleCommandRequest($this);
+		$this->type = $this->getUnsignedVarInt();
+		$this->requestId = $this->getString();
+		$this->playerId = $this->getEntityRuntimeId();
 	}
 }

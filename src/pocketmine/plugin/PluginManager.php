@@ -41,6 +41,7 @@ use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
 use pocketmine\permission\Permissible;
 use pocketmine\permission\Permission;
+use pocketmine\command\overload\{CommandOverload, CommandEnum, CommandParameter};
 use pocketmine\Server;
 
 /**
@@ -639,6 +640,33 @@ class PluginManager {
 
 				if(isset($data["usage"])){
 					$newCmd->setUsage($data["usage"]);
+				}
+				
+				if(isset($data["overloads"]) and is_array($data["overloads"])){
+					foreach($data["overloads"] as $name => $d){
+						$params = [];
+						if(isset($d["parameters"])){
+							if(is_array($d["parameters"])){
+								foreach($d["parameters"] as $pn => $pd){
+									if(is_array($pd)){
+										$enum = null;
+										if(isset($pd["enum"]) and is_array($pd["enum"]) and isset($pd["enum-name"])){
+											
+											$enum = new CommandEnum($pd["enum-name"], arry_values($pd["enum"]));
+										}
+									 $param = new CommandParameter($pn, CommandParameter::getTypeFromString($pd["type"] ?? "rawtext"), (bool) $pd["optional"] ?? false,  CommandParameter::getFlagFromString($pd["flag"] ?? "valid"), $enum);
+									}
+									$params[] = $param;
+								}
+							}
+						}
+						$overload = new CommandOverload($name, $params);
+						$newCmd->addOverload($overload);
+					}
+				}
+				
+				if(isset($data["permissionLevel"])){
+					$newCmd->setPermissionLevel((int) $data["permissionLevel"]);
 				}
 
 				if(isset($data["aliases"]) and is_array($data["aliases"])){
