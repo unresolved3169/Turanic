@@ -263,7 +263,7 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 					$nbt->Item = $needItem->nbtSerialize(-1, "Item");
 					$nbt->PickupDelay = new ShortTag("PickupDelay", 10);
 					$f = 0.3;
-					$entity = new ItemEntity($this->getLevel(), $nbt, $this);
+					$entity = new ItemEntity($this->getLevel(), $nbt);
 					break;
 			}
 

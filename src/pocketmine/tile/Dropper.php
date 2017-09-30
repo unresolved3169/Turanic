@@ -267,7 +267,7 @@ class Dropper extends Spawnable implements InventoryHolder, Container, Nameable 
 			]);
 
 			$f = 0.3;
-			$itemEntity = new ItemEntity($this->getLevel(), $nbt, $this);
+			$itemEntity = new ItemEntity($this->getLevel(), $nbt);
 			$itemEntity->setMotion($itemEntity->getMotion()->multiply($f));
 			$itemEntity->spawnToAll();
 
