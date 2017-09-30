@@ -4388,7 +4388,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         parent::addEffect($effect);
     }
     
-    public function sendModalWindow(CustomUI $window){
+    public function sendModalForm(CustomUI $window){
     	$pk = new ModalFormRequestPacket;
     	$pk->formId = $id = $this->modalWindowId++;
     	$pk->formData = json_encode($window->jsonSerialize());
