@@ -38,14 +38,6 @@ class Sign extends Spawnable {
         if(isset($nbt->Text)){ //MCPE 1.2 save format
             $this->text = explode("\n", $nbt->Text->getValue());
             unset($nbt->Text);
-        }else{
-            for($i = 1; $i <= 4; ++$i){
-                $textKey = "Text$i";
-                if(isset($nbt->$textKey)){
-                    $this->text[$i - 1] = $nbt->$textKey->getValue();
-                    unset($nbt->$textKey);
-                }
-            }
         }
 
         parent::__construct($level, $nbt);
@@ -54,11 +46,6 @@ class Sign extends Spawnable {
     public function saveNBT(){
         parent::saveNBT();
         $this->namedtag->Text = new StringTag("Text", implode("\n", $this->text));
-
-        for($i = 1; $i <= 4; ++$i){ //Backwards-compatibility
-            $textKey = "Text$i";
-            $this->namedtag->$textKey = new StringTag($textKey, $this->getLine($i - 1));
-        }
 
         unset($this->namedtag->Creator);
     }
@@ -133,17 +120,8 @@ class Sign extends Spawnable {
         if($nbt["id"] !== Tile::SIGN){
             return false;
         }
-
-        if(isset($nbt->Text)){
-            $lines = array_pad(explode("\n", $nbt->Text->getValue()), 4, "");
-        }else{
-            $lines = [
-                $nbt->Text1->getValue(),
-                $nbt->Text2->getValue(),
-                $nbt->Text3->getValue(),
-                $nbt->Text4->getValue()
-            ];
-        }
+        
+        $lines = array_pad(explode("\n", $nbt->Text->getValue()), 4, "");
 
         $removeFormat = $player->getRemoveFormat();
 
@@ -169,13 +147,9 @@ class Sign extends Spawnable {
 	public function getSpawnCompound(){
 		return new CompoundTag("", [
 			new StringTag("id", Tile::SIGN),
-			$this->namedtag->Text1,
-			$this->namedtag->Text2,
-			$this->namedtag->Text3,
-			$this->namedtag->Text4,
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
+			new IntTag("z", (int) $this->z),
 		]);
 	}
 
