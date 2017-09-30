@@ -40,7 +40,7 @@ class DropItemAction extends InventoryAction{
 	 * @return bool
 	 */
 	public function isValid(Player $source) : bool{
-		return $this->sourceItem->getCount() != 0 or $this->sourceItem->getId() === Item::AIR;
+		return $this->sourceItem->getCount() == 0 or $this->sourceItem->getId() === Item::AIR;
 	}
 
 	public function onPreExecute(Player $source) : bool{
