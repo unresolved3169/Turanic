@@ -14,7 +14,7 @@ Channel rule: **Don't ask to ask, if anyone is here or alive, or uses something.
 - Avoid generic titles like "Crash", "Help" or "Broken". Do your best as long as it fits in the line.
 - Avoid unneeded emoji reactions, unless you're participating and providing informations.
 
-### Code Contributions
+### Code Contributions..
 
 - **Avoid using GitHub Web Editor.** GitHub Web doesn't provide every Git feature, and using the web editor means you haven't tested the code. It's immediately obvious if you've used the Web editor, and if you do, your PR is likely to be rejected. Also **do not use a mobile device** for code editing.
 
