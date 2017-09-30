@@ -1631,7 +1631,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
     }
 
-    protected function checkNearEntities(int $tickDiff){
+    protected function checkNearEntities(){
         foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
             $entity->scheduleUpdate();
             if(!$entity->isAlive()){
@@ -1793,7 +1793,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             }
 
             if(!$this->isSpectator()){
-                $this->checkNearEntities($tickDiff);
+                $this->checkNearEntities();
             }
 
             $this->speed = $to->subtract($from)->divide($tickDiff);
@@ -2336,16 +2336,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * Changes to this function won't be recorded on the version.
      *
      * @param DataPacket $packet
+     * @return bool
      */
     public function handleDataPacket(DataPacket $packet){
         if ($this->connected === false) {
-            return;
+            return false;
         }
 
         if ($packet::NETWORK_ID === 0xfe) {
             /** @var BatchPacket $packet */
             $this->server->getNetwork()->processBatch($packet, $this);
-            return;
+            return true;
         }
 
         $timings = Timings::getReceiveDataPacketTimings($packet);
@@ -2355,7 +2356,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
         if ($ev->isCancelled()) {
             $timings->stopTiming();
-            return;
+            return false;
         }
 
         switch ($packet::NETWORK_ID) {

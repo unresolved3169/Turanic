@@ -1885,7 +1885,7 @@ class Server{
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 				if($this->loadLevel($name) === false){
-					$seed = $this->getProperty("worlds.$name.seed", time());
+					$seed = $options["seed"] ?? time();
 					$options = explode(":", $this->getProperty("worlds.$name.generator", Generator::getGenerator("default")));
 					$generator = Generator::getGenerator(array_shift($options));
 					if(count($options) > 0){
@@ -2273,12 +2273,13 @@ class Server{
 		TimingsHandler::reload();
 	}
 
-	/**
-	 * Shutdowns the server correctly
+    /**
+     * Shutdowns the server correctly
      *
-	 * @param string $msg
-	 */
-	public function shutdown($restart = false, string $msg = ""){
+     * @param string $msg
+     * @internal param bool $restart
+     */
+	public function shutdown(string $msg = ""){
 		$this->isRunning = false;
 		if($msg != ""){
 			$this->propertyCache["settings.shutdown-message"] = $msg;
