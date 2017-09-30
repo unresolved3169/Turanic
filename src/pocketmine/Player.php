@@ -2270,15 +2270,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->resourcePackEntries = $manager->getResourceStack();
         $pk->mustAccept = $manager->resourcePacksRequired();
         $this->dataPacket($pk);
-        
-        $this->doFirstSpawn();
-
-        $this->level->sendTime();
-        
-        $this->sendAttributes(true);
-        $this->setNameTagVisible(true);
-        $this->setNameTagAlwaysVisible(true);
-        $this->setCanClimb(true);
 
         $this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
             TextFormat::AQUA . $this->username . TextFormat::WHITE,
@@ -2292,6 +2283,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->level->getName()
         ]));
 
+        $this->server->addOnlinePlayer($this);
+        $this->server->onPlayerCompleteLoginSequence($this);
+
+        $this->doFirstSpawn();
+
+        $this->level->sendTime();
+
+        $this->sendAttributes(true);
+        $this->setNameTagVisible(true);
+        $this->setNameTagAlwaysVisible(true);
+        $this->setCanClimb(true);
+
         if($this->isOp()){
             $this->setRemoveFormat(false);
         }
@@ -2301,9 +2304,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->inventory->sendCreativeContents();
 
         $this->level->getWeather()->sendWeather($this);
-
-        $this->server->addOnlinePlayer($this);
-        $this->server->onPlayerCompleteLoginSequence($this);
     }
     
     protected function sendAllInventories(){
@@ -2318,8 +2318,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /**
      * @return mixed
      */
-    public function getProtocol()
-    {
+    public function getProtocol(){
         return $this->protocol;
     }
 
