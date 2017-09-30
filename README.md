@@ -18,7 +18,7 @@ Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
 - [ ] **Advanced Cache**
 - [ ] **More thread/worker**
 - [ ] **Custom Particle/Sound**
-- [ ] **Command Parameters**
+- [x] **Command Parameters**
 - [ ] **Basic ChunkLoader System**
 - [ ] **New Chunk Region System**
 - [ ] **Fast Nbt writer/reader**
