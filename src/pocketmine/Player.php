@@ -3271,7 +3271,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $this->awardAchievement("makeBread");
                         break;
                     case Item::CAKE:
-                        //TODO: detect complex recipes like cake that leave remains
                         $this->awardAchievement("bakeCake");
                         $this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
                         break;
@@ -3315,7 +3314,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             case ProtocolInfo::SET_PLAYER_GAME_TYPE_PACKET:
                 if($packet->gamemode !== $this->gamemode){
-                	 //Set this back to default. TODO: handle this properly
                 	 $this->sendGamemode();
                 	 $this->sendSettings();
                 	}
@@ -3341,12 +3339,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
 
                 break;
+            // TODO
             case ProtocolInfo::BOSS_EVENT_PACKET:
-                break; // TODO
+                break;
             case ProtocolInfo::SHOW_CREDITS_PACKET:
-                break; // TODO
+                break;
             case ProtocolInfo::LEVEL_SOUND_EVENT_PACKET:
-                //TODO: add events so plugins can change this
                 $this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
                 break;
             case ProtocolInfo::BLOCK_PICK_REQUEST_PACKET:
@@ -3373,7 +3371,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->inventory->equipItem($packet->selectedHotbarSlot);
                 break;
             case ProtocolInfo::PLAYER_INPUT_PACKET:
-                break; // TODO : Ride (Sürme)
+                break;
             default:
                 break;
         }
@@ -4162,8 +4160,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
 
         $this->craftingGrid = new CraftingGrid($this);
-
-        //TODO: more windows
     }
 
     public function getCursorInventory() : PlayerCursorInventory{
