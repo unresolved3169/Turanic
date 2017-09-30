@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\event\player\PlayerDropItemEvent;
+use pocketmine\item\Item;
 use pocketmine\Player;
 
 /**
@@ -39,7 +40,7 @@ class DropItemAction extends InventoryAction{
 	 * @return bool
 	 */
 	public function isValid(Player $source) : bool{
-		return $this->sourceItem->isNull();
+		return $this->sourceItem->getCount() != 0 or $this->sourceItem->getId() === Item::AIR;
 	}
 
 	public function onPreExecute(Player $source) : bool{
