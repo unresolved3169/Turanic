@@ -303,7 +303,7 @@ class Server{
 	public $playerLoginMsg = "";
 	public $playerLogoutMsg = "";
 	public $keepExperience = false;
-	public $limitedCreative = true;
+	public $limitedCreative = false;
 	public $chunkRadius = -1;
 	public $destroyBlockParticle = true;
 	public $allowSplashPotion = true;
