@@ -146,6 +146,7 @@ abstract class Tile extends Position {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
+	    parent::__construct($level, $nbt);
 		$this->timings = Timings::getTileEntityTimings($this);
 
 		$this->namedtag = $nbt;
