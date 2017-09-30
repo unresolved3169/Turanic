@@ -117,7 +117,7 @@ class InventoryTransaction{
 	 */
 	protected function matchItems(array &$needItems, array &$haveItems) : bool{
 		foreach($this->actions as $key => $action){
-			if(!$action->getTargetItem()->isNull()){
+			if($action->getTargetItem()->getCount() != 0 or $action->getTargetItem()->getId() != Item::AIR){
 				$needItems[] = $action->getTargetItem();
 			}
 
@@ -125,7 +125,7 @@ class InventoryTransaction{
 				return false;
 			}
 
-			if(!$action->getSourceItem()->isNull()){
+			if($action->getSourceItem()->getCount() != 0 or $action->getSourceItem()->getId() != Item::AIR){
 				$haveItems[] = $action->getSourceItem();
 			}
 		}

@@ -68,11 +68,9 @@ use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
-use pocketmine\event\player\PlayerTextPreSendEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
-use pocketmine\event\player\PlayerToggleGlideEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
@@ -898,8 +896,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /**
      * @return bool
      */
-    public function isConnected(): bool
-    {
+    public function isConnected(): bool{
         return $this->connected === true;
     }
 
@@ -908,8 +905,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      *
      * @return string
      */
-    public function getDisplayName()
-    {
+    public function getDisplayName(){
         return $this->displayName;
     }
 
@@ -2022,18 +2018,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->timings->stopTiming();
 
         if (count($this->messageQueue) > 0) {
+            $message = array_shift($this->messageQueue);
             $pk = new TextPacket();
             $pk->type = TextPacket::TYPE_RAW;
-            $pk->message = implode("\n", $this->messageQueue);
+            $pk->message = $message;
             $this->dataPacket($pk);
-            $this->messageQueue = [];
         }
 
         return true;
     }
 
-    public function checkNetwork()
-    {
+    public function checkNetwork(){
         if (!$this->isOnline()) {
             return;
         }
@@ -2358,6 +2353,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         	       $pk = new ServerToClientHandshakePacket;
         	       $pk->jwt = ""; // TODO
         	       $this->directDataPacket($pk);
+        	       break;
             case ProtocolInfo::LOGIN_PACKET:
                 if($this->loggedIn){
                     break;
@@ -2599,7 +2595,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         }else{
                             $this->setPosition($realSpawn); //The client will move to the position of its own accord once chunks are sent
                             $this->nextChunkOrderRun = 0;
-                            $this->isTeleporting = true;
+                            $this->teleportPosition = $ev->getRespawnPosition();
                             $this->newPosition = null;
                         }
 
@@ -2608,7 +2604,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $this->setSprinting(false);
                         $this->setSneaking(false);
                         $this->setGliding(false);
-                        $this->isLinked = false;
+                        $this->linkedType = null;
                         $this->linkedEntity = null;
 
                         $this->extinguish();
@@ -2761,7 +2757,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                                 if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
                                 }elseif($this->isCreative()){
                                     $item = $this->inventory->getItemInHand();
-                                    if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true) === true){
+                                    if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this) === true){
                                         return true;
                                     }
                                 }elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
@@ -2769,7 +2765,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                                 }else{
                                     $item = $this->inventory->getItemInHand();
                                     $oldItem = clone $item;
-                                    if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
+                                    if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
                                         if(!$item->equalsExact($oldItem)){
                                             $this->inventory->setItemInHand($item);
                                             $this->inventory->sendHeldItem($this->hasSpawned);
@@ -3056,7 +3052,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 if ($this->spawned === false or !$this->isAlive()) {
                     break;
                 }
-                $this->craftingType = self::CRAFTING_SMALL;
+                $this->resetCraftingGridType();
                 if ($packet->type === TextPacket::TYPE_CHAT) {
                     $message = $packet->message;
                     $this->resetCraftingGridType();
@@ -3320,8 +3316,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break; // TODO
             case ProtocolInfo::SHOW_CREDITS_PACKET:
                 break; // TODO
-            case ProtocolInfo::CLIENT_TO_SERVER_HANDSHAKE_PACKET:
-                break; // TODO
             case ProtocolInfo::LEVEL_SOUND_EVENT_PACKET:
                 //TODO: add events so plugins can change this
                 $this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
@@ -3513,8 +3507,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param string $address
      * @param        $port
      */
-    public function transfer(string $address, $port)
-    {
+    public function transfer(string $address, $port){
         $pk = new TransferPacket();
         $pk->address = $address;
         $pk->port = $port;
@@ -3547,73 +3540,54 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             }
             $message = $message->getText();
         }
-        //TODO: Remove this workaround (broken client MCPE 1.0.0)
-        $this->messageQueue[] = $this->server->getLanguage()->translateString($message);
+
+        $mes = explode("\n", $message);
+        foreach($mes as $m){
+            if($m !== ""){
+                $this->messageQueue[] = $m;
+            }
+        }
         return true;
     }
 
     /**
      * @param       $message
      * @param array $parameters
-     *
-     * @return bool
      */
     public function sendTranslation($message, array $parameters = []){
         $pk = new TextPacket();
-        if (!$this->server->isLanguageForced()) {
+        if(!$this->server->isLanguageForced()){
             $pk->type = TextPacket::TYPE_TRANSLATION;
             $pk->message = $this->server->getLanguage()->translateString($message, $parameters, "pocketmine.");
-            foreach ($parameters as $i => $p) {
+            foreach($parameters as $i => $p){
                 $parameters[$i] = $this->server->getLanguage()->translateString($p, $parameters, "pocketmine.");
             }
             $pk->parameters = $parameters;
-        } else {
+        }else{
             $pk->type = TextPacket::TYPE_RAW;
             $pk->message = $this->server->getLanguage()->translateString($message, $parameters);
         }
-
-        $ev = new PlayerTextPreSendEvent($this, $pk->message, PlayerTextPreSendEvent::TRANSLATED_MESSAGE);
-        $this->server->getPluginManager()->callEvent($ev);
-        if (!$ev->isCancelled()) {
-            $this->dataPacket($pk);
-            return true;
-        }
-        return false;
+        $this->dataPacket($pk);
     }
 
     /**
      * @param $message
-     * @return bool
      */
-    public function sendPopup($message){
-        $ev = new PlayerTextPreSendEvent($this, $message, PlayerTextPreSendEvent::POPUP);
-        $this->server->getPluginManager()->callEvent($ev);
-        if (!$ev->isCancelled()) {
-            $pk = new TextPacket();
-            $pk->type = TextPacket::TYPE_POPUP;
-            $pk->message = $ev->getMessage();
-            $this->dataPacket($pk);
-            return true;
-        }
-        return false;
+    public function sendPopup(string $message){
+        $pk = new TextPacket();
+        $pk->type = TextPacket::TYPE_POPUP;
+        $pk->message = $message;
+        $this->dataPacket($pk);
     }
 
     /**
      * @param $message
-     *
-     * @return bool
      */
     public function sendTip(string $message){
-        $ev = new PlayerTextPreSendEvent($this, $message, PlayerTextPreSendEvent::TIP);
-        $this->server->getPluginManager()->callEvent($ev);
-        if (!$ev->isCancelled()) {
-            $pk = new TextPacket();
-            $pk->type = TextPacket::TYPE_TIP;
-            $pk->message = $ev->getMessage();
-            $this->dataPacket($pk);
-            return true;
-        }
-        return false;
+        $pk = new TextPacket();
+        $pk->type = TextPacket::TYPE_TIP;
+        $pk->message = $message;
+        $this->dataPacket($pk);
     }
 
     /**
@@ -4179,6 +4153,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function resetCraftingGridType(){
+        $this->craftingType = self::CRAFTING_SMALL;
         $contents = $this->craftingGrid->getContents();
         if(count($contents) > 0){
             $drops = $this->inventory->addItem(...$contents);
@@ -4257,6 +4232,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     /**
      * @param Inventory $inventory
+     * @param bool $force
      */
     public function removeWindow(Inventory $inventory, bool $force = false){
         if($this->windows->contains($inventory)){

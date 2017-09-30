@@ -1645,16 +1645,6 @@ class Server{
 
 			$this->about();
 
-            $this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
-
-            define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
-
-            ini_set('assert.exception', '1');
-
-            if($this->logger instanceof MainLogger){
-                $this->logger->setLogDebug(\pocketmine\DEBUG > 1);
-            }
-
 			$this->logger->info("Loading properties and configuration...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
@@ -1674,7 +1664,17 @@ class Server{
 				}
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
 			}
-			if(file_exists($this->dataPath . "lang.txt")){
+            $this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
+
+            define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+
+            ini_set('assert.exception', '1');
+
+            if($this->logger instanceof MainLogger){
+                $this->logger->setLogDebug(\pocketmine\DEBUG > 1);
+            }
+
+            if(file_exists($this->dataPath . "lang.txt")){
 				unlink($this->dataPath . "lang.txt");
 			}
 			$nowLang = $this->getProperty("settings.language", "eng");
