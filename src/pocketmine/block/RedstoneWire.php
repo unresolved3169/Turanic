@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
+ *  _____   _____   __   _   _   _____  __ __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -270,9 +270,9 @@ class RedstoneWire extends RedstoneSource {
 
 	/**
 	 * @param RedstoneWire $wire
-	 * @param array        $powers
-	 * @param array        $hasUpdated
-	 * @param bool         $isStart
+	 * @param array  $powers
+	 * @param array  $hasUpdated
+	 * @param bool   $isStart
 	 *
 	 * @return array
 	 */
@@ -435,8 +435,8 @@ class RedstoneWire extends RedstoneSource {
 
 	/**
 	 * @param Block $block
-	 * @param       $strength
-	 * @param       $type
+	 * @param $strength
+	 * @param $type
 	 * @param array $hasUpdated
 	 *
 	 * @return array
@@ -468,13 +468,13 @@ class RedstoneWire extends RedstoneSource {
 	}
 
 	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
+	 * @param Item  $item
+	 * @param Block $block
+	 * @param Block $target
+	 * @param int   $face
+	 * @param float $fx
+	 * @param float $fy
+	 * @param float $fz
 	 * @param Player|null $player
 	 *
 	 * @return bool|void

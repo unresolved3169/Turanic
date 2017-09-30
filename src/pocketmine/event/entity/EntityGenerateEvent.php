@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
+ *  _____   _____   __   _   _   _____  __ __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ class EntityGenerateEvent extends EntityEvent implements Cancellable {
 	 * EntityGenerateEvent constructor.
 	 *
 	 * @param Position $pos
-	 * @param int      $entityType
-	 * @param int      $cause
+	 * @param int   $entityType
+	 * @param int   $cause
 	 */
 	public function __construct(Position $pos, int $entityType, int $cause = self::CAUSE_MOB_SPAWNER){
 		$this->position = $pos;

@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____   _  _   __  __ _   __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \ 
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_| 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,10 +29,10 @@ use pocketmine\utils\Random;
 class TallGrass {
 	/**
 	 * @param ChunkManager $level
-	 * @param Vector3      $pos
-	 * @param Random       $random
-	 * @param int          $count
-	 * @param int          $radius
+	 * @param Vector3   $pos
+	 * @param Random $random
+	 * @param int $count
+	 * @param int $radius
 	 */
 	public static function growGrass(ChunkManager $level, Vector3 $pos, Random $random, $count = 15, $radius = 10){
 		$arr = [

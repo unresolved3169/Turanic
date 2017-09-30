@@ -2,14 +2,14 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
+ *  _____   _   _____  
+ * / ____| (_) |  __ \ 
  *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
  *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
  *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
  * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *    __/ |  
+ *   |___/   
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -55,8 +55,8 @@ class CaveCommand extends VanillaCommand {
 
 	/**
 	 * @param CommandSender $sender
-	 * @param string        $commandLabel
-	 * @param array         $args
+	 * @param string  $commandLabel
+	 * @param array   $args
 	 *
 	 * @return bool
 	 */
@@ -134,8 +134,8 @@ class CaveCommand extends VanillaCommand {
 
 	/**
 	 * @param Position $pos
-	 * @param          $cave
-	 * @param bool     $tt
+	 * @param $cave
+	 * @param bool  $tt
 	 */
 	public function caves(Position $pos, $cave, $tt = false){
 		$x = $pos->x;
@@ -249,9 +249,9 @@ class CaveCommand extends VanillaCommand {
 
 	/**
 	 * @param Level $level
-	 * @param       $x
-	 * @param       $y
-	 * @param       $z
+	 * @param $x
+	 * @param $y
+	 * @param $z
 	 */
 	public function lavaSpawn(Level $level, $x, $y, $z){
 		$level->getServer()->getLogger()->info("生成岩浆中 " . "floor($x)" . ", " . "floor($y)" . ", " . floor($z));
@@ -271,8 +271,8 @@ class CaveCommand extends VanillaCommand {
 
 	/**
 	 * @param Position $source
-	 * @param int      $rays
-	 * @param int      $size
+	 * @param int   $rays
+	 * @param int   $size
 	 */
 	public function explodeBlocks(Position $source, $rays = 16, $size = 4){
 		$vector = new Vector3(0, 0, 0);
@@ -326,9 +326,9 @@ class CaveCommand extends VanillaCommand {
 	}
 
 	/**
-	 * @param       $x
-	 * @param       $y
-	 * @param       $z
+	 * @param $x
+	 * @param $y
+	 * @param $z
 	 * @param Level $level
 	 * @param bool  $liu
 	 */
@@ -390,12 +390,12 @@ class CaveCommand extends VanillaCommand {
 
 	/**
 	 * @param Level $level
-	 * @param       $x
-	 * @param       $y
-	 * @param       $z
-	 * @param       $l
-	 * @param       $id
-	 * @param       $bd
+	 * @param $x
+	 * @param $y
+	 * @param $z
+	 * @param $l
+	 * @param $id
+	 * @param $bd
 	 */
 	public function tiankengy(Level $level, $x, $y, $z, $l, $id, $bd){
 		if($level->getBlock(new Vector3($x, $y, $z))->getId() == 0) $level->setBlock(new Vector3($x, $y, $z), Item::get($id, $bd)->getBlock());

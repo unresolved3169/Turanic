@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ *  ____   _  _   __  __ _   __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -112,11 +112,11 @@ abstract class PluginBase implements Plugin {
 	}
 
 	/**
-	 * @param PluginLoader      $loader
-	 * @param Server            $server
+	 * @param PluginLoader   $loader
+	 * @param Server   $server
 	 * @param PluginDescription $description
-	 * @param                   $dataFolder
-	 * @param                   $file
+	 * @param    $dataFolder
+	 * @param    $file
 	 */
 	public final function init(PluginLoader $loader, Server $server, PluginDescription $description, $dataFolder, $file){
 		if($this->initialized === false){
@@ -165,9 +165,9 @@ abstract class PluginBase implements Plugin {
 
 	/**
 	 * @param CommandSender $sender
-	 * @param Command       $command
-	 * @param string        $label
-	 * @param array         $args
+	 * @param Command $command
+	 * @param string  $label
+	 * @param array   $args
 	 *
 	 * @return bool
 	 */

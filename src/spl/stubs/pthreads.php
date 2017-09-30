@@ -6,7 +6,7 @@
  *
  * @author  Lisachenko Alexander <lisachenko.it@gmail.com>, updated by Shoghi Cervantes <shoghicp@gmail.com>
  * @version 3.0.0
- * @link    https://github.com/krakjoe/pthreads/blob/master/examples/stub.php
+ * @link https://github.com/krakjoe/pthreads/blob/master/examples/stub.php
  */
 
 /**
@@ -95,7 +95,7 @@ class Threaded implements Traversable, Collectable{
 	/**
 	 * Fetches a chunk of the objects properties table of the given size
 	 *
-	 * @param int  $size     The number of items to fetch
+	 * @param int  $size  The number of items to fetch
 	 * @param bool $preserve default false
 	 * @return array An array of items from the objects member table
 	 * @link http://www.php.net/manual/en/threaded.chunk.php
@@ -126,7 +126,7 @@ class Threaded implements Traversable, Collectable{
 	/**
 	 * Merges data into the current object
 	 *
-	 * @param mixed $from      The data to merge
+	 * @param mixed $from   The data to merge
 	 * @param bool  $overwrite Overwrite existing keys flag, by default true
 	 *
 	 * @link http://www.php.net/manual/en/threaded.merge.php
@@ -192,7 +192,7 @@ class Threaded implements Traversable, Collectable{
 	 * Executes the block while retaining the synchronization lock for the current context.
 	 *
 	 * @param \Closure $function The block of code to execute
-	 * @param mixed    $args     ... Variable length list of arguments to use as function arguments to the block
+	 * @param mixed $args  ... Variable length list of arguments to use as function arguments to the block
 	 *
 	 * @link http://www.php.net/manual/en/threaded.synchronized.php
 	 * @return mixed The return value from the block
@@ -420,7 +420,7 @@ class Pool{
 	/**
 	 * Construct a new Pool of Workers
 	 *
-	 * @param integer     $size  The maximum number of Workers this Pool can create
+	 * @param integer  $size  The maximum number of Workers this Pool can create
 	 * @param string|null $class The class for new Workers
 	 * @param array|null  $ctor  An array of arguments to be passed to new Workers
 	 *
@@ -467,7 +467,7 @@ class Pool{
 	/**
 	 * Submit the task to the specific Worker in the Pool
 	 *
-	 * @param int      $worker The worker for execution
+	 * @param int   $worker The worker for execution
 	 * @param Threaded $task   The task for execution
 	 *
 	 * @return int the identifier of the Worker that accepted the object

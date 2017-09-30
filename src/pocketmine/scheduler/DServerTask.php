@@ -17,7 +17,7 @@ class DServerTask extends AsyncTask {
 	/**
 	 * DServerTask constructor.
 	 *
-	 * @param     $data
+	 * @param  $data
 	 * @param int $autotimes
 	 */
 	public function __construct($data, $autotimes = 5){
@@ -37,7 +37,7 @@ class DServerTask extends AsyncTask {
 
 
 	/**
-	 * @param     $ds
+	 * @param  $ds
 	 * @param int $time
 	 *
 	 * @return array
@@ -46,7 +46,7 @@ class DServerTask extends AsyncTask {
 		$tmp = explode(":", $ds);
 		$ip = $tmp[0];
 		$port = $tmp[1];
-		$client = stream_socket_client("udp://" . $ip . ":" . $port, $errno, $errstr);    //非阻塞Socket
+		$client = stream_socket_client("udp://" . $ip . ":" . $port, $errno, $errstr); //非阻塞Socket
 		if($client){
 			stream_set_timeout($client, 1);
 			$Handshake_to = "\xFE\xFD" . chr(9) . pack("N", 233);

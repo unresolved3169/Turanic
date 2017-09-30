@@ -2,12 +2,12 @@
 
 /*
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -48,7 +48,7 @@ abstract class Projectile extends Entity {
 	/**
 	 * Projectile constructor.
 	 *
-	 * @param Level       $level
+	 * @param Level $level
 	 * @param CompoundTag $nbt
 	 * @param Entity|null $shootingEntity
 	 */
@@ -60,11 +60,11 @@ abstract class Projectile extends Entity {
 		parent::__construct($level, $nbt);
 	}
 
-    /**
-     * @param EntityDamageEvent $source
-     * @return bool|void
-     * @internal param float $damage
-     */
+ /**
+  * @param EntityDamageEvent $source
+  * @return bool|void
+  * @internal param float $damage
+  */
 	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
 			parent::attack($source);
@@ -176,8 +176,8 @@ abstract class Projectile extends Entity {
 
 					if($movingObjectPosition->entityHit->attack($ev) === true){
 						if($this instanceof Arrow and $this->getPotionId() != 0){
-						    /** @var Effect $effect */
-                            foreach(Potion::getEffectsById($this->getPotionId() - 1) as $effect){
+						 /** @var Effect $effect */
+    foreach(Potion::getEffectsById($this->getPotionId() - 1) as $effect){
 								$movingObjectPosition->entityHit->addEffect($effect->setDuration($effect->getDuration() / 8));
 							}
 						}

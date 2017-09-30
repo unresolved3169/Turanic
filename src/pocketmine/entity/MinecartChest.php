@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
+ *  _____   _____   __   _   _   _____  __ __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,10 +46,10 @@ class MinecartChest extends Minecart {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
+  $pk->entityRuntimeId = $this->getId();
 		$pk->type = MinecartChest::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
+  $pk->position = $this->getPosition();
+  $pk->motion = $this->getMotion();
 		$pk->yaw = 0;
 		$pk->pitch = 0;
 		$pk->metadata = $this->dataProperties;

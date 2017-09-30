@@ -2,14 +2,14 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
+ *  _____   _   _____  
+ * / ____| (_) |  __ \ 
  *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
  *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
  *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
  * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *    __/ |  
+ *   |___/   
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -54,10 +54,10 @@ class Llama extends Animal {
 	}
 
 	public function initEntity(){
-        $this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
-        $this->addBehavior(new StrollBehavior($this));
-        $this->addBehavior(new LookAtPlayerBehavior($this));
-        $this->addBehavior(new RandomLookaroundBehavior($this));
+  $this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+  $this->addBehavior(new StrollBehavior($this));
+  $this->addBehavior(new LookAtPlayerBehavior($this));
+  $this->addBehavior(new RandomLookaroundBehavior($this));
 
 		$this->setMaxHealth(30);
 		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, rand(0, 3));
@@ -69,10 +69,10 @@ class Llama extends Animal {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
+  $pk->entityRuntimeId = $this->getId();
 		$pk->type = self::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
+  $pk->position = $this->getPosition();
+  $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;

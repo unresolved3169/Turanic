@@ -41,10 +41,10 @@ class Painting extends Item {
 	 * @param Player $player
 	 * @param Block  $block
 	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
+	 * @param  $face
+	 * @param  $fx
+	 * @param  $fy
+	 * @param  $fz
 	 *
 	 * @return bool
 	 */

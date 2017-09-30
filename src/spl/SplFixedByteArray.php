@@ -65,8 +65,8 @@ class SplFixedByteArray extends SplFixedArray{
 
 	/**
 	 * @param string $str
-	 * @param int    $size
-	 * @param int    $start
+	 * @param int $size
+	 * @param int $start
 	 * @param bool   $convert
 	 *
 	 * @return SplFixedByteArray

@@ -39,8 +39,8 @@ define("YAML_CRLN_BREAK", 3);
  *
  * @param string $filename
  * @param mixed  $data
- * @param int    $encoding
- * @param int    $linebreak
+ * @param int $encoding
+ * @param int $linebreak
  * @param array  $callbacks
  *
  * @link http://www.php.net/manual/en/function.yaml-emit-file.php
@@ -67,8 +67,8 @@ function yaml_emit($data, $encoding = YAML_ANY_ENCODING, $linebreak = YAML_ANY_B
  * Parse a YAML stream from a file
  *
  * @param string $filename
- * @param int    $pos
- * @param int    &$ndocs
+ * @param int $pos
+ * @param int &$ndocs
  * @param array  $callbacks
  *
  * @link http://www.php.net/manual/en/function.yaml-parse-file.php
@@ -81,8 +81,8 @@ function yaml_parse_file($filename, $pos = 0, &$ndocs = null, array $callbacks =
  * Parse a YAML stream from a URL
  *
  * @param string $url
- * @param int    $pos
- * @param int    &$ndocs
+ * @param int $pos
+ * @param int &$ndocs
  * @param array  $callbacks
  *
  * @link http://www.php.net/manual/en/function.yaml-parse-url.php
@@ -95,8 +95,8 @@ function yaml_parse_url($url, $pos = 0, &$ndocs = null, array $callbacks = []){
  * Parse a YAML stream
  *
  * @param string $input
- * @param int    $pos
- * @param int    &$ndocs
+ * @param int $pos
+ * @param int &$ndocs
  * @param array  $callbacks
  *
  * @link http://www.php.net/manual/en/function.yaml-parse.php

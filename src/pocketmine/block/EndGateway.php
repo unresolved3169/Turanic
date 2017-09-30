@@ -3,12 +3,12 @@
 /*
  *
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,39 +29,39 @@ use pocketmine\utils\Color;
 
 class EndGateway extends Transparent {
 
-    public function __construct($meta = 0){
-        $this->meta = $meta;
-    }
+ public function __construct($meta = 0){
+  $this->meta = $meta;
+ }
 
-    public function getName(){
-        return "End Gateway";
-    }
+ public function getName(){
+  return "End Gateway";
+ }
 
-    public function canPassThrough(){
-        return true;
-    }
+ public function canPassThrough(){
+  return true;
+ }
 
-    public function isBreakable(Item $item){
-        return false;
-    }
+ public function isBreakable(Item $item){
+  return false;
+ }
 
-    public function getHardness(){
-        return -1;
-    }
+ public function getHardness(){
+  return -1;
+ }
 
-    public function getResistance(){
-        return 18000000;
-    }
+ public function getResistance(){
+  return 18000000;
+ }
 
-    public function getLightLevel(){
-        return 15;
-    }
+ public function getLightLevel(){
+  return 15;
+ }
 
-    public function hasEntityCollision(){
-        return true;
-    }
+ public function hasEntityCollision(){
+  return true;
+ }
 
-    public function getColor(){
-        return Color::getRGB(0, 0, 0);
-    }
+ public function getColor(){
+  return Color::getRGB(0, 0, 0);
+ }
 }

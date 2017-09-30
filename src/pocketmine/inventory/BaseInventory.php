@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ *  ____   _  _   __  __ _   __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -53,9 +53,9 @@ abstract class BaseInventory implements Inventory {
 	/**
 	 * @param InventoryHolder $holder
 	 * @param InventoryType   $type
-	 * @param Item[]          $items
-	 * @param int             $overrideSize
-	 * @param string          $overrideTitle
+	 * @param Item[] $items
+	 * @param int $overrideSize
+	 * @param string $overrideTitle
 	 */
 	public function __construct(InventoryHolder $holder, InventoryType $type, array $items = [], $overrideSize = null, $overrideTitle = null){
 		$this->holder = $holder;
@@ -218,7 +218,7 @@ abstract class BaseInventory implements Inventory {
 	}
 
 	/**
-	 * @param      $slot
+	 * @param   $slot
 	 * @param Item $item
 	 * @param bool $matchCount
 	 *
@@ -566,52 +566,52 @@ abstract class BaseInventory implements Inventory {
 	}
 
 
-    /**
-     * @param Player|Player[] $target
-     */
-    public function sendContents($target) {
-        if($target instanceof Player){
-            $target = [$target];
-        }
+ /**
+  * @param Player|Player[] $target
+  */
+ public function sendContents($target) {
+  if($target instanceof Player){
+   $target = [$target];
+  }
 
-        $pk = new InventoryContentPacket();
+  $pk = new InventoryContentPacket();
 
-        //Using getSize() here allows PlayerInventory to report that it's 4 slots smaller than it actually is (armor hack)
-        for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-            $pk->items[$i] = $this->getItem($i);
-        }
+  //Using getSize() here allows PlayerInventory to report that it's 4 slots smaller than it actually is (armor hack)
+  for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
+   $pk->items[$i] = $this->getItem($i);
+  }
 
-        foreach($target as $player){
-            if(($id = $player->getWindowId($this)) === ContainerIds::NONE or $player->spawned !== true){
-                $this->close($player);
-                continue;
-            }
-            $pk->windowId = $id;
-            $player->dataPacket($pk);
-        }
-    }
+  foreach($target as $player){
+   if(($id = $player->getWindowId($this)) === ContainerIds::NONE or $player->spawned !== true){
+ $this->close($player);
+ continue;
+   }
+   $pk->windowId = $id;
+   $player->dataPacket($pk);
+  }
+ }
 
 	/**
-	 * @param int             $index
+	 * @param int $index
 	 * @param Player|Player[] $target
 	 */
 	public function sendSlot($index, $target){
-        if($target instanceof Player){
-            $target = [$target];
-        }
+  if($target instanceof Player){
+   $target = [$target];
+  }
 
-        $pk = new InventorySlotPacket();
-        $pk->inventorySlot = $index;
-        $pk->item = $this->getItem($index);
+  $pk = new InventorySlotPacket();
+  $pk->inventorySlot = $index;
+  $pk->item = $this->getItem($index);
 
-        foreach($target as $player){
-            if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
-                $this->close($player);
-                continue;
-            }
-            $pk->windowId = $id;
-            $player->dataPacket($pk);
-        }
+  foreach($target as $player){
+   if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
+ $this->close($player);
+ continue;
+   }
+   $pk->windowId = $id;
+   $player->dataPacket($pk);
+  }
 	}
 
 	/**

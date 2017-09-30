@@ -39,10 +39,10 @@ class RakLibServer extends \Thread{
 
 	/**
 	 * @param \ThreadedLogger $logger
-	 * @param \ClassLoader    $loader
-	 * @param int             $port
-	 * @param string          $interface
-	 * @param bool            $autoStart
+	 * @param \ClassLoader $loader
+	 * @param int $port
+	 * @param string $interface
+	 * @param bool   $autoStart
 	 *
 	 * @throws \Exception
 	 */

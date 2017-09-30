@@ -3,12 +3,12 @@
 /*
  *
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  *
@@ -160,7 +160,7 @@ class OfflinePlayer implements IPlayer, Metadatable {
 	}
 
 	/**
-	 * @param string        $metadataKey
+	 * @param string  $metadataKey
 	 * @param MetadataValue $metadataValue
 	 */
 	public function setMetadata(string $metadataKey, MetadataValue $metadataValue){

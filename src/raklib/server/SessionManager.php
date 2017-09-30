@@ -47,7 +47,7 @@ use raklib\protocol\UNCONNECTED_PONG;
 use raklib\RakLib;
 
 class SessionManager{
-    /** @var \SplFixedArray<Packet|null>  */
+ /** @var \SplFixedArray<Packet|null>  */
 	protected $packetPool = [];
 
 	/** @var RakLibServer */
@@ -359,7 +359,7 @@ class SessionManager{
 
 	/**
 	 * @param string $ip
-	 * @param int    $port
+	 * @param int $port
 	 *
 	 * @return Session
 	 */

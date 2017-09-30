@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____   _  _   __  __ _   __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \ 
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_| 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -70,8 +70,8 @@ class Config {
 	];
 
 	/**
-	 * @param string $file     Path of the file to be loaded
-	 * @param int    $type     Config type to load, -1 by default (detect)
+	 * @param string $file  Path of the file to be loaded
+	 * @param int $type  Config type to load, -1 by default (detect)
 	 * @param array  $default  Array with the default values that will be written to the file if it did not exist
 	 * @param null   &$correct Sets correct to true if everything has been loaded correctly
 	 */
@@ -100,7 +100,7 @@ class Config {
 	}
 
 	/**
-	 * @param       $file
+	 * @param $file
 	 * @param int   $type
 	 * @param array $default
 	 *
@@ -279,7 +279,7 @@ class Config {
 	}
 
 	/**
-	 * @param       $key
+	 * @param $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -310,7 +310,7 @@ class Config {
 	}
 
 	/**
-	 * @param       $k
+	 * @param $k
 	 * @param mixed $default
 	 *
 	 * @return bool|mixed
@@ -340,7 +340,7 @@ class Config {
 	}
 
 	/**
-	 * @param      $k
+	 * @param   $k
 	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
 	 *
 	 * @return bool

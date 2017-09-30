@@ -2,12 +2,12 @@
 
 /*
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,20 +27,20 @@ use pocketmine\tile\VirtualHolder;
 
 class VirtualInventory extends CustomInventory {
 
-    /** @var  VirtualHolder */
-    protected $holder;
+ /** @var  VirtualHolder */
+ protected $holder;
 
-    public function __construct(VirtualHolder $tile){
-        parent::__construct($tile, InventoryType::get(InventoryType::CHEST));
-    }
+ public function __construct(VirtualHolder $tile){
+  parent::__construct($tile, InventoryType::get(InventoryType::CHEST));
+ }
 
-    public function getHolder(){
-        return $this->holder;
-    }
+ public function getHolder(){
+  return $this->holder;
+ }
 
-    public function onClose(Player $who){
-        $this->holder->cevir($who);
-        parent::onClose($who);
-        $this->holder->close();
-    }
+ public function onClose(Player $who){
+  $this->holder->cevir($who);
+  parent::onClose($who);
+  $this->holder->close();
+ }
 }

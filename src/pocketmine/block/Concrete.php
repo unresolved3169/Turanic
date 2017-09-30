@@ -3,12 +3,12 @@
 /*
  *
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -79,23 +79,23 @@ class Concrete extends Solid {
 		return $names[$this->meta & 0x0f];
 	}
 
-    /**
-     * @return int
-     */
-    public function getResistance(){
-        return 9;
+ /**
+  * @return int
+  */
+ public function getResistance(){
+  return 9;
 	}
 
-    /**
-     * @param Item $item
-     * @return array
-     */
-    public function getDrops(Item $item): array{
-        if($item->isPickaxe() >= 1){
-            return [
-                [Item::CONCRETE, 0, 1]
-            ];
-        }
-        return [];
-    }
+ /**
+  * @param Item $item
+  * @return array
+  */
+ public function getDrops(Item $item): array{
+  if($item->isPickaxe() >= 1){
+   return [
+ [Item::CONCRETE, 0, 1]
+   ];
+  }
+  return [];
+ }
 }

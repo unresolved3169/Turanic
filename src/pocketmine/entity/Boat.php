@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
+ *  _____   _____   __   _   _   _____  __ __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -43,7 +43,7 @@ class Boat extends Vehicle {
 	/**
 	 * Boat constructor.
 	 *
-	 * @param Level       $level
+	 * @param Level $level
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
@@ -68,8 +68,8 @@ class Boat extends Vehicle {
 		$pk = new AddEntityPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->type = Boat::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
+  $pk->position = $this->getPosition();
+  $pk->motion = $this->getMotion();
 		$pk->yaw = 0;
 		$pk->pitch = 0;
 		$pk->metadata = $this->dataProperties;
@@ -78,11 +78,11 @@ class Boat extends Vehicle {
 		parent::spawnTo($player);
 	}
 
-    /**
-     * @param EntityDamageEvent $source
-     * @return bool|void
-     * @internal param float $damage
-     */
+ /**
+  * @param EntityDamageEvent $source
+  * @return bool|void
+  * @internal param float $damage
+  */
 	public function attack(EntityDamageEvent $source){
 		parent::attack($source);
 

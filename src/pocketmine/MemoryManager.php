@@ -3,12 +3,12 @@
 /*
  *
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  *
@@ -158,8 +158,8 @@ class MemoryManager {
 	}
 
 	/**
-	 * @param      $memory
-	 * @param      $limit
+	 * @param   $memory
+	 * @param   $limit
 	 * @param bool $global
 	 * @param int  $triggerCount
 	 */
@@ -313,7 +313,7 @@ class MemoryManager {
 	}
 
 	/**
-	 * @param      $id
+	 * @param   $id
 	 * @param bool $includeObject
 	 *
 	 * @return array|null

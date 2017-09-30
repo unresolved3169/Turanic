@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ *  ____   _  _   __  __ _   __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -52,9 +52,9 @@ class TaskHandler {
 	/**
 	 * @param string $timingName
 	 * @param Task   $task
-	 * @param int    $taskId
-	 * @param int    $delay
-	 * @param int    $period
+	 * @param int $taskId
+	 * @param int $delay
+	 * @param int $period
 	 */
 	public function __construct($timingName, Task $task, $taskId, $delay = -1, $period = -1){
 		$this->task = $task;
@@ -133,17 +133,17 @@ class TaskHandler {
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
 	 */
-    public function cancel(){
-        try{
-            if(!$this->isCancelled()){
-                $this->task->onCancel();
-            }
-        }catch(\Throwable $e){
-            MainLogger::getLogger()->logException($e);
-        }finally{
-            $this->remove();
-        }
-    }
+ public function cancel(){
+  try{
+   if(!$this->isCancelled()){
+ $this->task->onCancel();
+   }
+  }catch(\Throwable $e){
+   MainLogger::getLogger()->logException($e);
+  }finally{
+   $this->remove();
+  }
+ }
 
 	public function remove(){
 		$this->cancelled = true;

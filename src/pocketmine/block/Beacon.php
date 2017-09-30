@@ -71,13 +71,13 @@ class Beacon extends Transparent {
 	}
 
 	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
+	 * @param Item  $item
+	 * @param Block $block
+	 * @param Block $target
+	 * @param int   $face
+	 * @param float $fx
+	 * @param float $fy
+	 * @param float $fz
 	 * @param Player|null $player
 	 *
 	 * @return bool
@@ -98,7 +98,7 @@ class Beacon extends Transparent {
 	}
 
 	/**
-	 * @param Item        $item
+	 * @param Item  $item
 	 * @param Player|null $player
 	 *
 	 * @return bool

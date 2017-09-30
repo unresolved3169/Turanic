@@ -3,12 +3,12 @@
 /*
  *
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -354,7 +354,7 @@ abstract class Liquid extends Transparent {
 
 	/**
 	 * @param Block $block
-	 * @param       $newFlowDecay
+	 * @param $newFlowDecay
 	 */
 	private function flowIntoBlock(Block $block, $newFlowDecay){
 		if($block->canBeFlowedInto()){
@@ -371,8 +371,8 @@ abstract class Liquid extends Transparent {
 
 	/**
 	 * @param Block $block
-	 * @param       $accumulatedCost
-	 * @param       $previousDirection
+	 * @param $accumulatedCost
+	 * @param $previousDirection
 	 *
 	 * @return int
 	 */
@@ -485,7 +485,7 @@ abstract class Liquid extends Transparent {
 
 	/**
 	 * @param Vector3 $pos
-	 * @param         $decay
+	 * @param   $decay
 	 *
 	 * @return int
 	 */
@@ -551,6 +551,6 @@ abstract class Liquid extends Transparent {
 	}
 
 	public function canHarvestWithHand(): bool{
-        return false;
-    }
+  return false;
+ }
 }

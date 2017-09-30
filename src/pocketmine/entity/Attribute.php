@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ *  ____   _  _   __  __ _   __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -67,7 +67,7 @@ class Attribute {
 	}
 
 	/**
-	 * @param int    $id
+	 * @param int $id
 	 * @param string $name
 	 * @param float  $minValue
 	 * @param float  $maxValue
@@ -90,7 +90,7 @@ class Attribute {
 	 * @return null|Attribute
 	 */
 	public static function getAttribute($id){
-        return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
+  return isset(self::$attributes[$id]) ? clone self::$attributes[$id] : null;
 	}
 
 	/**
@@ -99,7 +99,7 @@ class Attribute {
 	 * @return null|Attribute
 	 */
 	public static function getAttributeByName($name){
-        foreach(self::$attributes as $a){
+  foreach(self::$attributes as $a){
 			if($a->getName() === $name){
 				return clone $a;
 			}
@@ -111,11 +111,11 @@ class Attribute {
 	/**
 	 * Attribute constructor.
 	 *
-	 * @param      $id
-	 * @param      $name
-	 * @param      $minValue
-	 * @param      $maxValue
-	 * @param      $defaultValue
+	 * @param   $id
+	 * @param   $name
+	 * @param   $minValue
+	 * @param   $maxValue
+	 * @param   $defaultValue
 	 * @param bool $shouldSend
 	 */
 	public function __construct($id, $name, $minValue, $maxValue, $defaultValue, $shouldSend = true){
@@ -201,9 +201,9 @@ class Attribute {
 		return $this;
 	}
 
-    public function resetToDefault(){
-        $this->setValue($this->getDefaultValue());
-    }
+ public function resetToDefault(){
+  $this->setValue($this->getDefaultValue());
+ }
 
 	/**
 	 * @return float
@@ -213,7 +213,7 @@ class Attribute {
 	}
 
 	/**
-	 * @param      $value
+	 * @param   $value
 	 * @param bool $fit
 	 * @param bool $shouldSend
 	 *

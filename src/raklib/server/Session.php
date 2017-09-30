@@ -219,7 +219,7 @@ class Session{
 
 	/**
 	 * @param EncapsulatedPacket $pk
-	 * @param int                $flags
+	 * @param int $flags
 	 */
 	private function addToQueue(EncapsulatedPacket $pk, $flags = RakLib::PRIORITY_NORMAL){
 		$priority = $flags & 0b00000111;
@@ -257,7 +257,7 @@ class Session{
 
 	/**
 	 * @param EncapsulatedPacket $packet
-	 * @param int                $flags
+	 * @param int $flags
 	 */
 	public function addEncapsulatedToQueue(EncapsulatedPacket $packet, $flags = RakLib::PRIORITY_NORMAL){
 

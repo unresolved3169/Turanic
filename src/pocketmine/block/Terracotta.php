@@ -3,12 +3,12 @@
 /*
  *
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -32,10 +32,10 @@ class Terracotta extends Solid {
 
 	protected $id = self::TERRACOTTA;
 
-    /**
-     * Terracotta constructor.
-     * @param int $meta
-     */
+ /**
+  * Terracotta constructor.
+  * @param int $meta
+  */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
@@ -61,16 +61,16 @@ class Terracotta extends Solid {
 		return 1.25;
 	}
 
-    /**
-     * @param Item $item
-     * @return array
-     */
-    public function getDrops(Item $item): array{
-        if($item->isPickaxe() >= 1){
-            return [
-                [Item::TERRACOTTA, 0, 1],
-            ];
-        }
-        return [];
-    }
+ /**
+  * @param Item $item
+  * @return array
+  */
+ public function getDrops(Item $item): array{
+  if($item->isPickaxe() >= 1){
+   return [
+ [Item::TERRACOTTA, 0, 1],
+   ];
+  }
+  return [];
+ }
 }

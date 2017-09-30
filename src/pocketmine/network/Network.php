@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ *  ____   _  _   __  __ _   __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -227,9 +227,9 @@ class Network {
 	 * @param SourceInterface $interface
 	 */
 	public function registerInterface(SourceInterface $interface){
-        $interface->start();
-        $this->interfaces[$hash = spl_object_hash($interface)] = $interface;
-        if($interface instanceof AdvancedSourceInterface){
+  $interface->start();
+  $this->interfaces[$hash = spl_object_hash($interface)] = $interface;
+  if($interface instanceof AdvancedSourceInterface){
 			$this->advancedInterfaces[$hash] = $interface;
 			$interface->setNetwork($this);
 		}
@@ -282,30 +282,30 @@ class Network {
 
 	/**
 	 * @param BatchPacket $packet
-	 * @param Player      $p
+	 * @param Player   $p
 	 */
 	public function processBatch(BatchPacket $packet, Player $p){
-        try{
-            $packet->decode();
-            
-            foreach($packet->getPackets() as $buf){
-            	 if(($pk = $this->getPacket(ord($buf{0}))) != null){
-            	 	 $pk->setBuffer($buf, 0);
-            	 	 
-            	 	 $pk->decode();
-            	 	 
-            	 	 $p->handleDataPacket($pk);
-            	 }
-            }
-        }catch(\Exception $e){
-            if(\pocketmine\DEBUG > 1){
-                $logger = $this->server->getLogger();
-                if($logger instanceof MainLogger){
-                    $logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
-                    $logger->logException($e);
-                }
-            }
-        }
+  try{
+   $packet->decode();
+   
+   foreach($packet->getPackets() as $buf){
+   	 if(($pk = $this->getPacket(ord($buf{0}))) != null){
+   	 	 $pk->setBuffer($buf, 0);
+   	 	 
+   	 	 $pk->decode();
+   	 	 
+   	 	 $p->handleDataPacket($pk);
+   	 }
+   }
+  }catch(\Exception $e){
+   if(\pocketmine\DEBUG > 1){
+ $logger = $this->server->getLogger();
+ if($logger instanceof MainLogger){
+  $logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
+  $logger->logException($e);
+ }
+   }
+  }
 	}
 
 	/**
@@ -325,7 +325,7 @@ class Network {
 
 	/**
 	 * @param string $address
-	 * @param int    $port
+	 * @param int $port
 	 * @param string $payload
 	 */
 	public function sendPacket($address, $port, $payload){
@@ -338,7 +338,7 @@ class Network {
 	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
 	 *
 	 * @param string $address
-	 * @param int    $timeout
+	 * @param int $timeout
 	 */
 	public function blockAddress($address, $timeout = 300){
 		foreach($this->advancedInterfaces as $interface){
@@ -357,118 +357,118 @@ class Network {
 		}
 	}
 
-    /**
-     *
-     */
-    private function registerPackets(){
+ /**
+  *
+  */
+ private function registerPackets(){
 		$this->packetPool = new \SplFixedArray(256);
 
-        static::registerPacket(new LoginPacket());
-        static::registerPacket(new PlayStatusPacket());
-        static::registerPacket(new ServerToClientHandshakePacket());
-        static::registerPacket(new ClientToServerHandshakePacket());
-        static::registerPacket(new DisconnectPacket());
-        static::registerPacket(new ResourcePacksInfoPacket());
-        static::registerPacket(new ResourcePackStackPacket());
-        static::registerPacket(new ResourcePackClientResponsePacket());
-        static::registerPacket(new TextPacket());
-        static::registerPacket(new SetTimePacket());
-        static::registerPacket(new StartGamePacket());
-        static::registerPacket(new AddPlayerPacket());
-        static::registerPacket(new AddEntityPacket());
-        static::registerPacket(new RemoveEntityPacket());
-        static::registerPacket(new AddItemEntityPacket());
-        static::registerPacket(new AddHangingEntityPacket());
-        static::registerPacket(new TakeItemEntityPacket());
-        static::registerPacket(new MoveEntityPacket());
-        static::registerPacket(new MovePlayerPacket());
-        static::registerPacket(new RiderJumpPacket());
-        static::registerPacket(new UpdateBlockPacket());
-        static::registerPacket(new AddPaintingPacket());
-        static::registerPacket(new ExplodePacket());
-        static::registerPacket(new LevelSoundEventPacket());
-        static::registerPacket(new LevelEventPacket());
-        static::registerPacket(new BlockEventPacket());
-        static::registerPacket(new EntityEventPacket());
-        static::registerPacket(new MobEffectPacket());
-        static::registerPacket(new UpdateAttributesPacket());
-        static::registerPacket(new InventoryTransactionPacket());
-        static::registerPacket(new MobEquipmentPacket());
-        static::registerPacket(new MobArmorEquipmentPacket());
-        static::registerPacket(new InteractPacket());
-        static::registerPacket(new BlockPickRequestPacket());
-        static::registerPacket(new EntityPickRequestPacket());
-        static::registerPacket(new PlayerActionPacket());
-        static::registerPacket(new EntityFallPacket());
-        static::registerPacket(new HurtArmorPacket());
-        static::registerPacket(new SetEntityDataPacket());
-        static::registerPacket(new SetEntityMotionPacket());
-        static::registerPacket(new SetEntityLinkPacket());
-        static::registerPacket(new SetHealthPacket());
-        static::registerPacket(new SetSpawnPositionPacket());
-        static::registerPacket(new AnimatePacket());
-        static::registerPacket(new RespawnPacket());
-        static::registerPacket(new ContainerOpenPacket());
-        static::registerPacket(new ContainerClosePacket());
-        static::registerPacket(new PlayerHotbarPacket());
-        static::registerPacket(new InventoryContentPacket());
-        static::registerPacket(new InventorySlotPacket());
-        static::registerPacket(new ContainerSetDataPacket());
-        static::registerPacket(new CraftingDataPacket());
-        static::registerPacket(new CraftingEventPacket());
-        static::registerPacket(new GuiDataPickItemPacket());
-        static::registerPacket(new AdventureSettingsPacket());
-        static::registerPacket(new BlockEntityDataPacket());
-        static::registerPacket(new PlayerInputPacket());
-        static::registerPacket(new FullChunkDataPacket());
-        static::registerPacket(new SetCommandsEnabledPacket());
-        static::registerPacket(new SetDifficultyPacket());
-        static::registerPacket(new ChangeDimensionPacket());
-        static::registerPacket(new SetPlayerGameTypePacket());
-        static::registerPacket(new PlayerListPacket());
-        static::registerPacket(new SimpleEventPacket());
-        static::registerPacket(new EventPacket());
-        static::registerPacket(new SpawnExperienceOrbPacket());
-        static::registerPacket(new ClientboundMapItemDataPacket());
-        static::registerPacket(new MapInfoRequestPacket());
-        static::registerPacket(new RequestChunkRadiusPacket());
-        static::registerPacket(new ChunkRadiusUpdatedPacket());
-        static::registerPacket(new ItemFrameDropItemPacket());
-        static::registerPacket(new GameRulesChangedPacket());
-        static::registerPacket(new CameraPacket());
-        static::registerPacket(new BossEventPacket());
-        static::registerPacket(new ShowCreditsPacket());
-        static::registerPacket(new AvailableCommandsPacket());
-        static::registerPacket(new CommandRequestPacket());
-        static::registerPacket(new CommandBlockUpdatePacket());
-        static::registerPacket(new CommandOutputPacket());
-        static::registerPacket(new UpdateTradePacket());
-        static::registerPacket(new UpdateEquipPacket());
-        static::registerPacket(new ResourcePackDataInfoPacket());
-        static::registerPacket(new ResourcePackChunkDataPacket());
-        static::registerPacket(new ResourcePackChunkRequestPacket());
-        static::registerPacket(new TransferPacket());
-        static::registerPacket(new PlaySoundPacket());
-        static::registerPacket(new StopSoundPacket());
-        static::registerPacket(new SetTitlePacket());
-        static::registerPacket(new AddBehaviorTreePacket());
-        static::registerPacket(new StructureBlockUpdatePacket());
-        static::registerPacket(new ShowStoreOfferPacket());
-        static::registerPacket(new PurchaseReceiptPacket());
-        static::registerPacket(new PlayerSkinPacket());
-        static::registerPacket(new SubClientLoginPacket());
-        static::registerPacket(new WSConnectPacket());
-        static::registerPacket(new SetLastHurtByPacket());
-        static::registerPacket(new BookEditPacket());
-        static::registerPacket(new NpcRequestPacket());
-        static::registerPacket(new PhotoTransferPacket());
-        static::registerPacket(new ModalFormRequestPacket());
-        static::registerPacket(new ModalFormResponsePacket());
-        static::registerPacket(new ServerSettingsRequestPacket());
-        static::registerPacket(new ServerSettingsResponsePacket());
-        static::registerPacket(new ShowProfilePacket());
-        static::registerPacket(new SetDefaultGameTypePacket());
+  static::registerPacket(new LoginPacket());
+  static::registerPacket(new PlayStatusPacket());
+  static::registerPacket(new ServerToClientHandshakePacket());
+  static::registerPacket(new ClientToServerHandshakePacket());
+  static::registerPacket(new DisconnectPacket());
+  static::registerPacket(new ResourcePacksInfoPacket());
+  static::registerPacket(new ResourcePackStackPacket());
+  static::registerPacket(new ResourcePackClientResponsePacket());
+  static::registerPacket(new TextPacket());
+  static::registerPacket(new SetTimePacket());
+  static::registerPacket(new StartGamePacket());
+  static::registerPacket(new AddPlayerPacket());
+  static::registerPacket(new AddEntityPacket());
+  static::registerPacket(new RemoveEntityPacket());
+  static::registerPacket(new AddItemEntityPacket());
+  static::registerPacket(new AddHangingEntityPacket());
+  static::registerPacket(new TakeItemEntityPacket());
+  static::registerPacket(new MoveEntityPacket());
+  static::registerPacket(new MovePlayerPacket());
+  static::registerPacket(new RiderJumpPacket());
+  static::registerPacket(new UpdateBlockPacket());
+  static::registerPacket(new AddPaintingPacket());
+  static::registerPacket(new ExplodePacket());
+  static::registerPacket(new LevelSoundEventPacket());
+  static::registerPacket(new LevelEventPacket());
+  static::registerPacket(new BlockEventPacket());
+  static::registerPacket(new EntityEventPacket());
+  static::registerPacket(new MobEffectPacket());
+  static::registerPacket(new UpdateAttributesPacket());
+  static::registerPacket(new InventoryTransactionPacket());
+  static::registerPacket(new MobEquipmentPacket());
+  static::registerPacket(new MobArmorEquipmentPacket());
+  static::registerPacket(new InteractPacket());
+  static::registerPacket(new BlockPickRequestPacket());
+  static::registerPacket(new EntityPickRequestPacket());
+  static::registerPacket(new PlayerActionPacket());
+  static::registerPacket(new EntityFallPacket());
+  static::registerPacket(new HurtArmorPacket());
+  static::registerPacket(new SetEntityDataPacket());
+  static::registerPacket(new SetEntityMotionPacket());
+  static::registerPacket(new SetEntityLinkPacket());
+  static::registerPacket(new SetHealthPacket());
+  static::registerPacket(new SetSpawnPositionPacket());
+  static::registerPacket(new AnimatePacket());
+  static::registerPacket(new RespawnPacket());
+  static::registerPacket(new ContainerOpenPacket());
+  static::registerPacket(new ContainerClosePacket());
+  static::registerPacket(new PlayerHotbarPacket());
+  static::registerPacket(new InventoryContentPacket());
+  static::registerPacket(new InventorySlotPacket());
+  static::registerPacket(new ContainerSetDataPacket());
+  static::registerPacket(new CraftingDataPacket());
+  static::registerPacket(new CraftingEventPacket());
+  static::registerPacket(new GuiDataPickItemPacket());
+  static::registerPacket(new AdventureSettingsPacket());
+  static::registerPacket(new BlockEntityDataPacket());
+  static::registerPacket(new PlayerInputPacket());
+  static::registerPacket(new FullChunkDataPacket());
+  static::registerPacket(new SetCommandsEnabledPacket());
+  static::registerPacket(new SetDifficultyPacket());
+  static::registerPacket(new ChangeDimensionPacket());
+  static::registerPacket(new SetPlayerGameTypePacket());
+  static::registerPacket(new PlayerListPacket());
+  static::registerPacket(new SimpleEventPacket());
+  static::registerPacket(new EventPacket());
+  static::registerPacket(new SpawnExperienceOrbPacket());
+  static::registerPacket(new ClientboundMapItemDataPacket());
+  static::registerPacket(new MapInfoRequestPacket());
+  static::registerPacket(new RequestChunkRadiusPacket());
+  static::registerPacket(new ChunkRadiusUpdatedPacket());
+  static::registerPacket(new ItemFrameDropItemPacket());
+  static::registerPacket(new GameRulesChangedPacket());
+  static::registerPacket(new CameraPacket());
+  static::registerPacket(new BossEventPacket());
+  static::registerPacket(new ShowCreditsPacket());
+  static::registerPacket(new AvailableCommandsPacket());
+  static::registerPacket(new CommandRequestPacket());
+  static::registerPacket(new CommandBlockUpdatePacket());
+  static::registerPacket(new CommandOutputPacket());
+  static::registerPacket(new UpdateTradePacket());
+  static::registerPacket(new UpdateEquipPacket());
+  static::registerPacket(new ResourcePackDataInfoPacket());
+  static::registerPacket(new ResourcePackChunkDataPacket());
+  static::registerPacket(new ResourcePackChunkRequestPacket());
+  static::registerPacket(new TransferPacket());
+  static::registerPacket(new PlaySoundPacket());
+  static::registerPacket(new StopSoundPacket());
+  static::registerPacket(new SetTitlePacket());
+  static::registerPacket(new AddBehaviorTreePacket());
+  static::registerPacket(new StructureBlockUpdatePacket());
+  static::registerPacket(new ShowStoreOfferPacket());
+  static::registerPacket(new PurchaseReceiptPacket());
+  static::registerPacket(new PlayerSkinPacket());
+  static::registerPacket(new SubClientLoginPacket());
+  static::registerPacket(new WSConnectPacket());
+  static::registerPacket(new SetLastHurtByPacket());
+  static::registerPacket(new BookEditPacket());
+  static::registerPacket(new NpcRequestPacket());
+  static::registerPacket(new PhotoTransferPacket());
+  static::registerPacket(new ModalFormRequestPacket());
+  static::registerPacket(new ModalFormResponsePacket());
+  static::registerPacket(new ServerSettingsRequestPacket());
+  static::registerPacket(new ServerSettingsResponsePacket());
+  static::registerPacket(new ShowProfilePacket());
+  static::registerPacket(new SetDefaultGameTypePacket());
 
-        static::registerPacket(new BatchPacket());
+  static::registerPacket(new BatchPacket());
 	}
 }

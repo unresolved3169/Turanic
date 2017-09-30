@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____   _  _   __  __ _   __  __ ____  
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___   |  \/  |  _ \ 
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
  * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|  |_|  |_|_| 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -44,9 +44,9 @@ abstract class Living extends Entity implements Damageable {
 	protected $attackTime = 0;
 
 	protected $invisible = false;
-    protected $jumpVelocity = 0.42;
+ protected $jumpVelocity = 0.42;
 
-    protected function initEntity(){
+ protected function initEntity(){
 		parent::initEntity();
 
 		if(isset($this->namedtag->HealF)){
@@ -82,19 +82,19 @@ abstract class Living extends Entity implements Damageable {
 		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
 	}
 
-    public function jump(){
-        if($this->onGround){
-            $this->motionY = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
-        }
-    }
+ public function jump(){
+  if($this->onGround){
+   $this->motionY = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
+  }
+ }
 
-    /**
-     * Returns the initial upwards velocity of a jumping entity in blocks/tick, including additional velocity due to effects.
-     * @return float
-     */
-    public function getJumpVelocity() : float{
-        return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? ($this->getEffect(Effect::JUMP)->getAmplifier() / 10) : 0);
-    }
+ /**
+  * Returns the initial upwards velocity of a jumping entity in blocks/tick, including additional velocity due to effects.
+  * @return float
+  */
+ public function getJumpVelocity() : float{
+  return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? ($this->getEffect(Effect::JUMP)->getAmplifier() / 10) : 0);
+ }
 
 	/**
 	 * @return mixed
@@ -112,10 +112,10 @@ abstract class Living extends Entity implements Damageable {
 		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
-    /**
-     * @param EntityRegainHealthEvent $source
-     * @internal param float $amount
-     */
+ /**
+  * @param EntityRegainHealthEvent $source
+  * @internal param float $amount
+  */
 	public function heal(EntityRegainHealthEvent $source){
 		parent::heal($source);
 		if($source->isCancelled()){
@@ -125,10 +125,10 @@ abstract class Living extends Entity implements Damageable {
 		$this->attackTime = 0;
 	}
 
-    /**
-     * @param EntityDamageEvent $source
-     * @return bool|void
-     */
+ /**
+  * @param EntityDamageEvent $source
+  * @return bool|void
+  */
 	public function attack(EntityDamageEvent $source){
 		if($this->attackTime > 0 or $this->noDamageTicks > 0){
 			$lastCause = $this->getLastDamageCause();
@@ -171,9 +171,9 @@ abstract class Living extends Entity implements Damageable {
 
 	/**
 	 * @param Entity $attacker
-	 * @param        $damage
-	 * @param        $x
-	 * @param        $z
+	 * @param  $damage
+	 * @param  $x
+	 * @param  $z
 	 * @param float  $base
 	 */
 	public function knockBack(Entity $attacker, $damage, $x, $z, $base = 0.4){

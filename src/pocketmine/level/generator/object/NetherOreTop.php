@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
+ *  _____   _____   __   _   _   _____  __ __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,9 +49,9 @@ class NetherOreTop {
 
 	/**
 	 * @param ChunkManager $level
-	 * @param              $x
-	 * @param              $y
-	 * @param              $z
+	 * @param  $x
+	 * @param  $y
+	 * @param  $z
 	 *
 	 * @return bool
 	 */
@@ -61,9 +61,9 @@ class NetherOreTop {
 
 	/**
 	 * @param ChunkManager $level
-	 * @param              $x
-	 * @param              $y
-	 * @param              $z
+	 * @param  $x
+	 * @param  $y
+	 * @param  $z
 	 */
 	public function placeObject(ChunkManager $level, $x, $y, $z){
 		$clusterSize = (int) $this->type->clusterSize;

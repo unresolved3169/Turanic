@@ -19,7 +19,7 @@ class Bed extends Spawnable {
 	/**
 	 * Bed constructor.
 	 *
-	 * @param Level       $level
+	 * @param Level $level
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){

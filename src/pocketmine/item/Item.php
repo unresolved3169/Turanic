@@ -2,12 +2,12 @@
 
 /*
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -367,9 +367,9 @@ class Item implements ItemIds, \JsonSerializable {
 	}
 
 	/**
-	 * @param int    $id
-	 * @param int    $meta
-	 * @param int    $count
+	 * @param int $id
+	 * @param int $meta
+	 * @param int $count
 	 * @param string $tags
 	 *
 	 * @return Item
@@ -427,9 +427,9 @@ class Item implements ItemIds, \JsonSerializable {
 	/**
 	 * Item constructor.
 	 *
-	 * @param int    $id
-	 * @param int    $meta
-	 * @param int    $count
+	 * @param int $id
+	 * @param int $meta
+	 * @param int $count
 	 * @param string $name
 	 */
 	public function __construct(int $id, int $meta = 0, int $count = 1, string $name = "Unknown"){
@@ -1035,7 +1035,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @param int $meta
 	 */
 	public function setDamage(int $meta){
-        $this->meta = $meta !== null ? $meta & 32767 : null;
+  $this->meta = $meta !== null ? $meta & 32767 : null;
 	}
 
 	/**
@@ -1195,13 +1195,13 @@ class Item implements ItemIds, \JsonSerializable {
 		if($target instanceof Skeleton or $target instanceof Zombie or
 			$target instanceof Witch or $target instanceof PigZombie
 		){
-			//SMITE    wither skeletons
+			//SMITE wither skeletons
 			$rec += 2.5 * $this->getEnchantmentLevel(Enchantment::TYPE_WEAPON_SMITE);
 
 		}elseif($target instanceof Spider or $target instanceof CaveSpider or
 			$target instanceof Silverfish
 		){
-			//Bane of Arthropods    wither skeletons
+			//Bane of Arthropods wither skeletons
 			$rec += 2.5 * $this->getEnchantmentLevel(Enchantment::TYPE_WEAPON_ARTHROPODS);
 
 		}
@@ -1223,10 +1223,10 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @param Player $player
 	 * @param Block  $block
 	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
+	 * @param  $face
+	 * @param  $fx
+	 * @param  $fy
+	 * @param  $fz
 	 *
 	 * @return bool
 	 */
@@ -1258,15 +1258,15 @@ class Item implements ItemIds, \JsonSerializable {
 		return false;
 	}
 
-    /**
-     * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
-     * @param Item $other
-     *
-     * @return bool
-     */
-    final public function equalsExact(Item $other) : bool{
-        return $this->equals($other, true, true) and $this->count === $other->count;
-    }
+ /**
+  * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
+  * @param Item $other
+  *
+  * @return bool
+  */
+ final public function equalsExact(Item $other) : bool{
+  return $this->equals($other, true, true) and $this->count === $other->count;
+ }
 
 	/**
 	 * @return string
@@ -1275,29 +1275,29 @@ class Item implements ItemIds, \JsonSerializable {
 		return "Item " . $this->name . " (" . $this->id . ":" . ($this->meta === null ? "?" : $this->meta) . ")x" . $this->count . ($this->hasCompoundTag() ? " tags:0x" . bin2hex($this->getCompoundTag()) : "");
 	}
 
-    /**
-     * Called when a player uses the item on air, for example throwing a projectile.
-     * Returns whether the item was changed, for example count decrease or durability change.
-     *
-     * @param Player  $player
-     * @param Vector3 $directionVector
-     *
-     * @return bool
-     */
-    public function onClickAir(Player $player, Vector3 $directionVector) : bool{
-        return false;
-    }
+ /**
+  * Called when a player uses the item on air, for example throwing a projectile.
+  * Returns whether the item was changed, for example count decrease or durability change.
+  *
+  * @param Player  $player
+  * @param Vector3 $directionVector
+  *
+  * @return bool
+  */
+ public function onClickAir(Player $player, Vector3 $directionVector) : bool{
+  return false;
+ }
 
-    /**
-     * Called when a player is using this item and releases it. Used to handle bow shoot actions.
-     * Returns whether the item was changed, for example count decrease or durability change.
-     *
-     * @param Player $player
-     * @return bool
-     */
-    public function onReleaseUsing(Player $player) : bool{
-        return false;
-    }
+ /**
+  * Called when a player is using this item and releases it. Used to handle bow shoot actions.
+  * Returns whether the item was changed, for example count decrease or durability change.
+  *
+  * @param Player $player
+  * @return bool
+  */
+ public function onReleaseUsing(Player $player) : bool{
+  return false;
+ }
 
 	/**
 	 * @return array
@@ -1314,7 +1314,7 @@ class Item implements ItemIds, \JsonSerializable {
 	/**
 	 * Serializes the item to an NBT CompoundTag
 	 *
-	 * @param int    $slot    optional, the inventory slot of the item
+	 * @param int $slot optional, the inventory slot of the item
 	 * @param string $tagName the name to assign to the CompoundTag object
 	 *
 	 * @return CompoundTag

@@ -2,12 +2,12 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
+ *  _____   _____   __   _   _   _____  __ __  _____
  * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |  | |__   |   \| | | | | |___   \ \/ /  | |___
  * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ * | |_| | | |___  | | \  | | |  ___| |   / /  ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/  /_____/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,7 +173,7 @@ class PoweredRepeater extends RedstoneSource {
 	}
 
 	/**
-	 * @param Item        $item
+	 * @param Item  $item
 	 * @param Player|null $player
 	 *
 	 * @return bool
@@ -187,13 +187,13 @@ class PoweredRepeater extends RedstoneSource {
 	}
 
 	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
+	 * @param Item  $item
+	 * @param Block $block
+	 * @param Block $target
+	 * @param int   $face
+	 * @param float $fx
+	 * @param float $fy
+	 * @param float $fz
 	 * @param Player|null $player
 	 *
 	 * @return bool|void

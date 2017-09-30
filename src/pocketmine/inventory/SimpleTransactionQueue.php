@@ -2,12 +2,12 @@
 
 /*
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ * _______  _
+ *   |__   __|   (_)
+ *   | |_   _ _ __ __ _ _ __  _  ___
+ *   | | | | | '__/ _` | '_ \| |/ __|
+ *   | | |_| | | | (_| | | | | | (__
+ *   |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -45,7 +45,7 @@ class SimpleTransactionQueue implements TransactionQueue {
 	/** @var int */
 	protected $transactionCount = 0;
 
-    /**
+ /**
 	 * @param Player $player
 	 */
 	public function __construct(Player $player = null){
@@ -105,14 +105,14 @@ class SimpleTransactionQueue implements TransactionQueue {
 		}
 
 		if(!$this->transactionQueue->isEmpty()){
-            $this->player->getServer()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
-            foreach($this->transactionQueue as $transaction){
-                $env = $transaction->getInventory();
-                if($env instanceof ContainerInventory){
-                    $this->player->getServer()->getPluginManager()->callEvent($event = new InventoryClickEvent($env, $this->player));
-                    if($event->isCancelled()) $ev->setCancelled(true);
-                }
-            }
+   $this->player->getServer()->getPluginManager()->callEvent($ev = new InventoryTransactionEvent($this));
+   foreach($this->transactionQueue as $transaction){
+ $env = $transaction->getInventory();
+ if($env instanceof ContainerInventory){
+  $this->player->getServer()->getPluginManager()->callEvent($event = new InventoryClickEvent($env, $this->player));
+  if($event->isCancelled()) $ev->setCancelled(true);
+ }
+   }
 		}else{
 			return;
 		}
