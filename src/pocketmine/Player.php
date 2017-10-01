@@ -4411,25 +4411,28 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     	$id = $packet->formId;
     	$data = json_decode($packet->formData, true);
     	if(isset($this->modalWindows[$id])){
+    		$cancel = false;
     		if($data == null){
     			$this->server->getPluginManager()->callEvent($ev = new UICloseEvent($this, $packet));
     			if($ev->isCancelled()){
     				$this->sendModalForm($this->getModalForm($id));
-    				return;
+    				$cancel = true;
     			}
     			$this->modalWindows[$id]->close($this);
-    		}else{
-    			$handleData = $this->modalWindows[$id]->handle($data, $this);
-    			$this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet, $handleData));
-    			if($ev->isCancelled()){
-    				$this->sendModalForm($this->getModalForm($id));
-    				return;
-    			}
     		}
     		
-    		unset($this->modalWindows[$id]);
+    		$handleData = $this->modalWindows[$id]->handle($data, $this);
+    		$this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet, $handleData));
+    		if($ev->isCancelled()){
+    			$this->sendModalForm($this->getModalForm($id));
+    			$cancel = true;
+    		}
+    		
+    		if(!$cancel){
+    		 unset($this->modalWindows[$id]);
     		}
     	}
+    }
     	
     	public function sendServerSettings(CustomUI $window){
     		$pk = new ServerSettingsResponsePacket;
