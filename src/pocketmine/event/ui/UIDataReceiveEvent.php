@@ -27,4 +27,16 @@ use pocketmine\Player;
 
 class UIDataReceiveEvent extends UIEvent{
 	
+	public static $handlerList = null;
+	
+	protected $receivedData;
+	
+	public function __construct(Player $player, DataPacket $packet, $receivedData){
+		parent::__construct($player, $packet);
+		$this->receivedData = $receivedData;
+	}
+	
+	public function getReceivedData(){
+		return $this->receivedData;
+	}
 }

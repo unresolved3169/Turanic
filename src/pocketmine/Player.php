@@ -4419,12 +4419,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     			}
     			$this->modalWindows[$id]->close($this);
     		}else{
-    			$this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet));
+    			$handleData = $this->modalWindows[$id]->handle($data, $this);
+    			$this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet, $handleData));
     			if($ev->isCancelled()){
     				$this->sendModalForm($this->getModalForm($id));
     				return;
     			}
-    			$this->modalWindows[$id]->handle($data, $this);
     		}
     		
     		unset($this->modalWindows[$id]);

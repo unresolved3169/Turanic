@@ -8,8 +8,6 @@ use pocketmine\event\Event;
 
 abstract class UIEvent extends Event{
 
-	public static $handlerList = null;
-
 	/** @var DataPacket|ModalFormResponsePacket $packet */
 	protected $packet;
 	/** @var Player */

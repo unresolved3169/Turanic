@@ -23,4 +23,6 @@ namespace pocketmine\event\ui;
 
 class UICloseEvent extends UIEvent{
 	
+	public static $handlerList = null;
+	
 }
