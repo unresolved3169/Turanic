@@ -76,6 +76,7 @@ use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\event\ui\{UICloseEvent, UIDataReceiveEvent};
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
@@ -2361,7 +2362,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         switch ($packet::NETWORK_ID) {
         	   case ProtocolInfo::MODAL_FORM_RESPONSE_PACKET:
-        	       $this->checkModal($packet->formId, json_decode($packet->formData, true));
+        	       $this->checkModal($packet);
         	       break;
         	   case ProtocolInfo::COMMAND_REQUEST_PACKET:
         	       $cmd = $packet->command;
@@ -4406,23 +4407,39 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     	$this->modalWindows[$id] = $window;
     }
     
-    protected function checkModal($id, $data){
+    protected function checkModal(DataPacket $packet){
+    	$id = $packet->formId;
+    	$data = json_decode($packet->formData, true);
     	if(isset($this->modalWindows[$id])){
     		if($data == null){
+    			$this->server->getPluginManager()->callEvent($ev = new UICloseEvent($this, $packet));
+    			if($ev->isCancelled()){
+    				$this->sendModalForm($this->getModalForm($id));
+    				return;
+    			}
     			$this->modalWindows[$id]->close($this);
     		}else{
+    			$this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet));
+    			if($ev->isCancelled()){
+    				$this->sendModalForm($this->getModalForm($id));
+    				return;
+    			}
     			$this->modalWindows[$id]->handle($data, $this);
     		}
     		
     		unset($this->modalWindows[$id]);
+    		}
     	}
-    }
-    
-    public function sendServerSettings(CustomUI $window){
-    	$pk = new ServerSettingsResponsePacket;
-    	$pk->formId = $id = $this->modalWindowId++;
-    	$pk->formData = json_encode($window->jsonSerialize());
-    	$this->dataPacket($pk);
-    	$this->modalWindows[$id] = $window;
-    }
+    	
+    	public function sendServerSettings(CustomUI $window){
+    		$pk = new ServerSettingsResponsePacket;
+    		$pk->formId = $id = $this->modalWindowId++;
+    		$pk->formData = json_encode($window->jsonSerialize());
+    		$this->dataPacket($pk);
+    		$this->modalWindows[$id] = $window;
+    	}
+    	
+    	public function getModalForm(int $id){
+    		return $this->modalWindows[$id] ?? null;
+    	}
 }
