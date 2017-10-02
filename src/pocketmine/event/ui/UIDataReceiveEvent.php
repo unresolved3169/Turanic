@@ -24,8 +24,9 @@ namespace pocketmine\event\ui;
 
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\Player;
+use pocketmine\event\Cancellable;
 
-class UIDataReceiveEvent extends UIEvent{
+class UIDataReceiveEvent extends UIEvent implements Cancellable{
 	
 	public static $handlerList = null;
 	

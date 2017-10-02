@@ -119,6 +119,7 @@ use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
@@ -150,6 +151,7 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
+use pocketmine\utils\Skin;
 
 class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
 
@@ -291,6 +293,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $rawUUID;
     protected $modalWindowId = 0;
     protected $modalWindows = [];
+    protected $xuid = "";
 
     public function isValidUserName(string $name) : bool{
         $lname = strtolower($name);
@@ -877,10 +880,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param string $str
      * @param string $skinId
      */
-    public function setSkin(string $str, string $skinId){
-        parent::setSkin($str, $skinId);
+    public function setSkin(string $str, string $skinId, string $capeData = "", string $geometryName = "", string $geometryData = ""){
+        parent::setSkin($str, $skinId, $capeData, $geometryName, $geometryData);
         if ($this->spawned) {
-            $this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $skinId, $str);
+            $this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getDisplayName(), $skinId, $str, $capeData, $geometryName, $geometryData, $this->getXUID());
         }
     }
 
@@ -2415,6 +2418,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                 $this->uuid = UUID::fromString($packet->clientUUID);
                 $this->rawUUID = $this->uuid->toBinary();
+                $this->xuid = $packet->xuid;
 
                 if(!Player::isValidUserName($packet->username)){
                     $this->close("", "disconnectionScreen.invalidName");
@@ -2426,7 +2430,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     break;
                 }
 
-                $this->setSkin($packet->skin, $packet->skinId);
+                $this->setFullSkin(new Skin(
+                $packet->skinId,
+                $packet->skin,
+                $packet->capeData,
+                $packet->geometryName,
+                $packet->geometryData));
 
                 $this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
                 if($ev->isCancelled()){
@@ -4444,5 +4453,29 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     	
     	public function getModalForm(int $id){
     		return $this->modalWindows[$id] ?? null;
+    	}
+    
+        public function getXUID() : string{
+    		return $this->xuid;
+    	}
+    	
+    	public function changeSkin(string $skinId, string $skinName, string $serializeName, string $skinData, string $capeData, string $geometryName, string $geometryData){
+    		$this->setSkin($skinData, $skinId, $capeData, $geometryName, $geometryData);
+    		
+    		$pk = new PlayerSkinPacket;
+    		$pk->uuid = $this->getUniqueId();
+    		$pk->skinId = $this->skin->getSkinName();
+    		$pk->skinName = $skinName;
+    		$pk->skinData = $skinData;
+    		$pk->serializeName = $serializeName;
+    		$pk->capeData = $capeData;
+    		$pk->geometryModel = $geometryName;
+    		$pk->geometryData = $geometryData;
+    		
+    		$this->dataPacket($pk);
+    		
+    		foreach($this->getViewers() as $p){
+    			$p->dataPacket($pk);
+    		}
     	}
 }

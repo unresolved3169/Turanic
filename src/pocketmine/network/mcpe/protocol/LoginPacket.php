@@ -49,6 +49,12 @@ class LoginPacket extends DataPacket{
 	public $skinId;
 	/** @var string */
 	public $skin = "";
+	
+	public $capeData = "";
+	public $geometryName = "";
+	public $geometryData = "";
+	public $uiProfile;
+	public $xuid = "";
 
 	/** @var array (the "chain" index contains one or more JWTs) */
 	public $chainData = [];
@@ -81,6 +87,9 @@ class LoginPacket extends DataPacket{
 				if(isset($webtoken["extraData"]["identity"])){
 					$this->clientUUID = $webtoken["extraData"]["identity"];
 				}
+				if(isset($webtoken["extraData"]["XUID"])){
+					$this->xuid = $webtoken["extraData"]["XUID"];
+				}
 				if(isset($webtoken["identityPublicKey"])){
 					$this->identityPublicKey = $webtoken["identityPublicKey"];
 				}
@@ -96,6 +105,22 @@ class LoginPacket extends DataPacket{
 
 		if(isset($this->clientData["SkinData"])){
 			$this->skin = base64_decode($this->clientData["SkinData"]);
+		}
+		
+		if(isset($this->clientData["SkinGeometryName"])){
+			$this->geometryName = $this->clientData["SkinGeometryName"];
+		}
+		
+		if(isset($this->clientData["SkinGeometry"])){
+			$this->geometryData = base64_decode($this->clientData["SkinGeometry"]);
+		}
+		
+		if(isset($this->clientData["CapeData"])){
+			$this->capeData = base64_decode($this->clientData["CapeData"]);
+		}
+		
+		if(isset($this->clientData["UIProfile"])){
+			$this->uiProfile = $this->clientData["UIProfile"];
 		}
 	}
 

@@ -43,6 +43,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
+use pocketmine\utils\Skin;
 
 class Human extends Creature implements ProjectileSource, InventoryHolder {
 
@@ -73,8 +74,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     public $length = 0.6;
     public $height = 1.8;
     public $eyeHeight = 1.62;
-
-    protected $skinId;
+    
+    /** @var Skin */
     protected $skin;
 
     protected $foodTickTimer = 0;
@@ -87,14 +88,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * @return mixed
      */
     public function getSkinData(){
-        return $this->skin;
+        return $this->skin->getSkinData();
     }
 
     /**
      * @return mixed
      */
     public function getSkinId(){
-        return $this->skinId;
+        return $this->skin->getSkinName();
     }
 
     /**
@@ -110,14 +111,27 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     public function getRawUniqueId(){
         return $this->rawUUID;
     }
+    
+    public function setFullSkin(Skin $skin){
+    	$this->skin = $skin;
+    }
+    
+    public function getSkin() : Skin{
+    	return $this->skin;
+    }
 
     /**
      * @param string $str
      * @param string $skinId
+     *
+     * @deprecated
      */
-    public function setSkin(string $str, string $skinId){
-        $this->skin = $str;
-        $this->skinId = $skinId;
+    public function setSkin(string $str, string $skinId, string $capeData = "", string $geometryName = "", string $geometryData = ""){
+        $this->skin->setSkinName($skinId);
+        $this->skin->setSkinData($str);
+        $this->skin->setCapeData($capeData);
+        $this->skin->setGeometryName($geometryName);
+        $this->skin->setGeometryData($geometryData);
     }
 
     public function jump(){
@@ -556,7 +570,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
             }
 
             if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag){
-                $this->setSkin($this->namedtag->Skin["Data"], $this->namedtag->Skin["Name"]);
+            	   $skin = $this->namedtag->Skin->getValue();
+            	   $this->setFullSkin(new Skin(
+            	   $skin["Name"] ?? "",
+            	   $skin["Data"] ?? "",
+            	   $skin["capeData"] ?? "",
+            	   $skin["geometryName"] ?? "",
+            	   $skin["geometryData"] ?? ""));
             }
 
             $this->uuid = UUID::fromData($this->getId(), $this->getSkinData(), $this->getNameTag());
@@ -607,6 +627,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
             $this->namedtag->XpSeed = new IntTag("XpSeed", mt_rand(PHP_INT_MIN, PHP_INT_MAX));
         }
         $this->xpSeed = $this->namedtag["XpSeed"];
+        
+        $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
     }
 
     /**
@@ -752,7 +774,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         if(strlen($this->getSkinData()) > 0){
             $this->namedtag->Skin = new CompoundTag("Skin", [
                 "Data" => new StringTag("Data", $this->getSkinData()),
-                "Name" => new StringTag("Name", $this->getSkinId())
+                "Name" => new StringTag("Name", $this->getSkinId()),
+                "capeData" => new StringTag("capeData", $this->skin->getCapeData()),
+                "geometryName" => new StringTag("geometryName", $this->skin->getGeometryName()),
+                "geometryData" => new StringTag("geometryData", $this->skin->getGeometryData())
             ]);
         }
 
@@ -773,16 +798,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * @param Player $player
      */
     public function spawnTo(Player $player){
-        if(strlen($this->skin) < 64 * 32 * 4){
+        if(!$this->skin->isValid()){
             $e = new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
             $this->server->getLogger()->logException($e);
             $this->close();
         }elseif($player !== $this and !isset($this->hasSpawned[$player->getLoaderId()])){
             $this->hasSpawned[$player->getLoaderId()] = $player;
-
-            if(!($this instanceof Player)){
-                $this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skinId, $this->skin, [$player]);
-            }
+            
+            $xuid = ($this instanceof Player) ? $this->getXUID() : "";
+            $this->server->updatePlayerListData($this->getUniqueId(), $this->getId(), $this->getName(), $this->skin->getSkinName(), $this->skin->getSkinData(), $this->skin->getCapeData(), $this->skin->getGeometryName(), $this->skin->getGeometryData(), $xuid, [$player]);
 
             $pk = new AddPlayerPacket();
             $pk->uuid = $this->getUniqueId();

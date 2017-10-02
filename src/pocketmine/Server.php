@@ -2568,11 +2568,11 @@ class Server{
      * @param string        $skinData
      * @param Player[]|null $players
      */
-    public function updatePlayerListData(UUID $uuid, int $entityId, string $name, string $skinId, string $skinData, array $players = null){
+    public function updatePlayerListData(UUID $uuid, int $entityId, string $name, string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = "", string $xuid = "", array $players = null){
         $pk = new PlayerListPacket();
         $pk->type = PlayerListPacket::TYPE_ADD;
 
-        $pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skinId, $skinData);
+        $pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skinId, $skinData, $capeData, $geometryName, $geometryData, $xuid);
         $this->broadcastPacket($players ?? $this->playerList, $pk);
     }
 
@@ -2594,7 +2594,7 @@ class Server{
         $pk = new PlayerListPacket();
         $pk->type = PlayerListPacket::TYPE_ADD;
         foreach($this->playerList as $player){
-            $pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData());
+            $pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData(), $player->getSkin()->getCapeData(), $player->getSkin()->getGeometryName(), $player->getSkin()->getGeometryData(), $player->getXUID());
         }
 
         $p->dataPacket($pk);

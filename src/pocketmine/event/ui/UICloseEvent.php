@@ -21,7 +21,9 @@
 
 namespace pocketmine\event\ui;
 
-class UICloseEvent extends UIEvent{
+use pocketmine\event\Cancellable;
+
+class UICloseEvent extends UIEvent implements Cancellable{
 	
 	public static $handlerList = null;
 	
