@@ -5,7 +5,7 @@ namespace pocketmine\customUI\windows;
 use pocketmine\Player;
 use pocketmine\customUI\CustomUI;
 
-class ModalWindow implements CustomUI, \JsonSerializable{
+class ModalForm implements CustomUI, \JsonSerializable{
 
 	/** @var string */
 	protected $title = '';

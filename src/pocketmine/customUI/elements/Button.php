@@ -3,6 +3,7 @@
 namespace pocketmine\customUI\elements;
 
 use pocketmine\Player;
+use Exception;
 
 class Button extends UIElement{
 
