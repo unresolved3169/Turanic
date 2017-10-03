@@ -172,7 +172,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $movementSpeed = self::DEFAULT_SPEED;
     /** @var SourceInterface */
     protected $interface;
-
+    private $isMayMove = false;
     /** @var bool */
     public $playedBefore = false;
     public $spawned = false;
