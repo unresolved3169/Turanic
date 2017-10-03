@@ -1144,7 +1144,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     protected function sendRespawnPacket(Vector3 $pos){
         $pk = new RespawnPacket();
-        $pk->position = $pos->add(0, $this->baseOffset, 0);
+        $pk->position = $pos->add(0, $this->getEyeHeight(), 0);
         $this->dataPacket($pk);
     }
 
@@ -1613,7 +1613,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param float $dz
      */
     protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz){
-        if (!$this->onGround or $movY != 0) {
+        /*if (!$this->onGround or $movY != 0) {
             $bb = clone $this->boundingBox;
             $bb->maxY = $bb->minY + 0.5;
             $bb->minY -= 1;
@@ -1623,7 +1623,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->onGround = false;
             }
         }
-        $this->isCollided = $this->onGround;
+        $this->isCollided = $this->onGround;*/
     }
 
     protected function checkBlockCollision(){
@@ -1907,7 +1907,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @return bool
      */
     public function onUpdate($currentTick){
-        if (!$this->loggedIn or !$this->spawned) {
+        if (!$this->loggedIn) {
             return false;
         }
 
@@ -1921,8 +1921,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         $this->lastUpdate = $currentTick;
 
-        $this->sendAttributes();
-
         if (!$this->isAlive() and $this->spawned) {
             ++$this->deadTicks;
             if ($this->deadTicks >= 10) {
@@ -1934,54 +1932,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->timings->startTiming();
 
         if ($this->spawned) {
-            if ($this->server->netherEnabled) {
-                if (($this->isCreative() or $this->isSurvival() and $this->server->getTick() - $this->portalTime >= 80) and $this->portalTime > 0) {
-                    $netherLevel = null;
-                    if ($this->server->isLevelLoaded($this->server->netherName) or $this->server->loadLevel($this->server->netherName)) {
-                        $netherLevel = $this->server->getLevelByName($this->server->netherName);
-                    }
 
-                    if ($netherLevel instanceof Level) {
-                        if ($this->getLevel() !== $netherLevel) {
-                            $this->fromPos = $this->getPosition();
-                            $this->fromPos->x = ((int)$this->fromPos->x) + 0.5;
-                            $this->fromPos->z = ((int)$this->fromPos->z) + 0.5;
-                            $this->teleport($this->shouldResPos = $netherLevel->getSafeSpawn());
-                        } elseif ($this->fromPos instanceof Position) {
-                            if (!($this->getLevel()->isChunkLoaded($this->fromPos->x, $this->fromPos->z))) {
-                                $this->getLevel()->loadChunk($this->fromPos->x, $this->fromPos->z);
-                            }
-                            $add = [1, 0, -1, 0, 0, 1, 0, -1];
-                            $tempos = null;
-                            for ($j = 2; $j < 5; $j++) {
-                                for ($i = 0; $i < 4; $i++) {
-                                    if ($this->fromPos->getLevel()->getBlock($this->temporalVector->fromObjectAdd($this->fromPos, $add[$i] * $j, 0, $add[$i + 4] * $j))->getId() === Block::AIR) {
-                                        if ($this->fromPos->getLevel()->getBlock($this->temporalVector->fromObjectAdd($this->fromPos, $add[$i] * $j, 1, $add[$i + 4] * $j))->getId() === Block::AIR) {
-                                            $tempos = $this->fromPos->add($add[$i] * $j, 0, $add[$i + 4] * $j);
-                                            //$this->getLevel()->getServer()->getLogger()->debug($tempos);
-                                            break;
-                                        }
-                                    }
-                                }
-                                if ($tempos != null) {
-                                    break;
-                                }
-                            }
-                            if ($tempos === null) {
-                                $tempos = $this->fromPos->add(mt_rand(-2, 2), 0, mt_rand(-2, 2));
-                            }
-                            $this->teleport($this->shouldResPos = $tempos);
-                            $add = null;
-                            $tempos = null;
-                            $this->fromPos = null;
-                        } else {
-                            $this->teleport($this->shouldResPos = $this->server->getDefaultLevel()->getSafeSpawn());
-                        }
-                        $this->portalTime = 0;
-                    }
-                }
-            }
-
+            $this->sendAttributes();
             $this->processMovement($tickDiff);
             $this->entityBaseTick($tickDiff);
 
@@ -2009,7 +1961,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         #enable use of elytra. todo: check if it is open
                         $this->inAirTicks = 0;
                     }
-                    if (!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and !$this->isImmobile()) {
+                    if (!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping()) {
                         $expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
                         $diff = ($this->speed->y - $expectedVelocity) ** 2;
 
@@ -2026,10 +1978,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                     ++$this->inAirTicks;
                 }
-            }
-
-            if ($this->getTransactionQueue() !== null) {
-                $this->getTransactionQueue()->execute();
             }
         }
 
@@ -2511,13 +2459,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
 
             case ProtocolInfo::MOVE_PLAYER_PACKET:
-                   if ($this->dead === true || $this->spawned !== true) {
+                if (!$this->isAlive() || !$this->spawned) {
 					$this->sendPosition($this, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
 				} else {
 					$newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
-					if ($this->isTeleporting && $newPos->distanceSquared($this) > 2) {
+					if ($this->teleportPosition != null && $newPos->distanceSquared($this) > 2) {
 						$this->isTeleporting = false;
-						return;
+						break;
 					} else {
 						if (!is_null($this->newPosition)) {
 							$distanceSquared = ($newPos->x - $this->newPosition->x) ** 2 + ($newPos->z - $this->newPosition->z) ** 2;						
@@ -2526,8 +2474,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}
 						if ($distanceSquared > $this->movementSpeed * 200) {							
 							$this->revertMovement($this, $this->yaw, $this->pitch);
-							$this->isTeleporting = true;
-							return;
+							$this->teleportPosition = $this;
+							break;
 						}
 						$this->isTeleporting = false;						
 
@@ -2538,9 +2486,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							$packet->yaw += 360;
 						}
 
-						if (!$this->isMayMove) {
+						if (!$this->getDataFlag(self::DATA_FLAGS, 46)) {
 							if ($this->yaw != $packet->yaw || $this->pitch != $packet->pitch || abs($this->x - $packet->x) >= 0.05 || abs($this->z - $packet->z) >= 0.05) {
-								$this->setMayMove(true);
+                                $this->setDataFlag(self::DATA_FLAGS, 46, $state);
 								$spawn = $this->getSpawn();
 								$spawn->y += 0.1;
 								$this->teleport($spawn);
@@ -2551,7 +2499,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->newPosition = $newPos;
 					}
 				}
-                	break;
+                break;
             case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
                 /** @var AdventureSettingsPacket $packet */
                 if($packet->entityUniqueId !== $this->getId()){
@@ -4001,8 +3949,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /**
      * @param int $amount
      */
-    public function setHealth($amount)
-    {
+    public function setHealth($amount){
         parent::setHealth($amount);
         if ($this->spawned === true) {
             $this->foodTick = 0;
@@ -4051,7 +3998,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pitch = $pitch ?? $this->pitch;
         $pk = new MovePlayerPacket();
         $pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getOffsetPosition($pos);
+        $pk->x = $pos->x;
+        $pk->y = $pos->y + $this->getEyeHeight();
+        $pk->z = $pos->z;
         $pk->bodyYaw = $yaw;
         $pk->pitch = $pitch;
         $pk->yaw = $yaw;
@@ -4103,8 +4052,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /**
      * @return bool
      */
-    protected function checkTeleportPosition()
-    {
+    protected function checkTeleportPosition(){
         if ($this->teleportPosition !== null) {
             $chunkX = $this->teleportPosition->x >> 4;
             $chunkZ = $this->teleportPosition->z >> 4;
@@ -4170,8 +4118,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param float $yaw
      * @param float $pitch
      */
-    public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null)
-    {
+    public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null){
         if (parent::teleport($pos, $yaw, $pitch)) {
 
             foreach ($this->windowIndex as $window) {

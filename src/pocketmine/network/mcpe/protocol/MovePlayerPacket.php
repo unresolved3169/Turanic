@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 class MovePlayerPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
-	const PACKET_NAME = "MOVE_PLAYER_PACKET";
 
 	const MODE_NORMAL = 0;
 	const MODE_RESET = 1;
