@@ -165,7 +165,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     const CRAFTING_BIG = 1;
     const CRAFTING_ANVIL = 2;
     const CRAFTING_ENCHANT = 3;
-
+    const DEFAULT_SPEED = 0.1; 
+    
+    protected $isTeleporting = false;
+    
+    protected $movementSpeed = self::DEFAULT_SPEED;
     /** @var SourceInterface */
     protected $interface;
 
@@ -175,7 +179,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public $loggedIn = false;
     public $gamemode;
     public $lastBreak;
-
+    public $dead = false; 
     protected $windowCnt = 2;
     /** @var \SplObjectStorage<Inventory> */
     protected $windows;
@@ -295,6 +299,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $modalWindows = [];
     protected $xuid = "";
 
+    protected function revertMovement(Vector3 $pos, $yaw = 0, $pitch = 0) {
+		$this->sendPosition($pos, $yaw, $pitch, MovePlayerPacket::MODE_RESET);
+		$this->newPosition = null;
+	}
+    
     public function isValidUserName(string $name) : bool{
         $lname = strtolower($name);
         $len = strlen($lname);
@@ -2502,27 +2511,47 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
 
             case ProtocolInfo::MOVE_PLAYER_PACKET:
-                /** @var MovePlayerPacket $packet */
-                $newPos = $packet->position->subtract(0, $this->baseOffset, 0);
-                if($this->teleportPosition != null and $newPos->distanceSquared($this) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-                    $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-                }elseif((!$this->isAlive() or $this->spawned !== true) and $newPos->distanceSquared($this) > 0.01){
-                    $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-                }else{
-                    // Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-                    if($this->teleportPosition != null){
-                        $this->teleportPosition = null;
-                    }
-                    $packet->yaw %= 360;
-                    $packet->pitch %= 360;
-                    if($packet->yaw < 0){
-                        $packet->yaw += 360;
-                    }
-                    $this->setRotation($packet->yaw, $packet->pitch);
-                    $this->newPosition = $newPos;
-                }
+                   if ($this->dead === true || $this->spawned !== true) {
+					$this->sendPosition($this, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
+				} else {
+					$newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
+					if ($this->isTeleporting && $newPos->distanceSquared($this) > 2) {
+						$this->isTeleporting = false;
+						return;
+					} else {
+						if (!is_null($this->newPosition)) {
+							$distanceSquared = ($newPos->x - $this->newPosition->x) ** 2 + ($newPos->z - $this->newPosition->z) ** 2;						
+						} else {
+							$distanceSquared = ($newPos->x - $this->x) ** 2 + ($newPos->z - $this->z) ** 2;
+						}
+						if ($distanceSquared > $this->movementSpeed * 200) {							
+							$this->revertMovement($this, $this->yaw, $this->pitch);
+							$this->isTeleporting = true;
+							return;
+						}
+						$this->isTeleporting = false;						
 
-                break;
+						$packet->yaw %= 360;
+						$packet->pitch %= 360;
+
+						if ($packet->yaw < 0) {
+							$packet->yaw += 360;
+						}
+
+						if (!$this->isMayMove) {
+							if ($this->yaw != $packet->yaw || $this->pitch != $packet->pitch || abs($this->x - $packet->x) >= 0.05 || abs($this->z - $packet->z) >= 0.05) {
+								$this->setMayMove(true);
+								$spawn = $this->getSpawn();
+								$spawn->y += 0.1;
+								$this->teleport($spawn);
+							}
+						}
+
+						$this->setRotation($packet->yaw, $packet->pitch);
+						$this->newPosition = $newPos;
+					}
+				}
+                	break;
             case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
                 /** @var AdventureSettingsPacket $packet */
                 if($packet->entityUniqueId !== $this->getId()){
