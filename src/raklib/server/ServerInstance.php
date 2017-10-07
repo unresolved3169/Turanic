@@ -58,4 +58,6 @@ interface ServerInstance{
 	 * @param string $value
 	 */
 	public function handleOption($option, $value);
+
+    public function handlePing($identifier, $ping);
 }

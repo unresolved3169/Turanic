@@ -136,4 +136,5 @@ interface ProtocolInfo {
     const SERVER_SETTINGS_RESPONSE_PACKET = 0x67;
     const SHOW_PROFILE_PACKET = 0x68;
     const SET_DEFAULT_GAME_TYPE_PACKET = 0x69;
+    const PING_PACKET = 0x04;
 }

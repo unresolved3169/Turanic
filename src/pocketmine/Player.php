@@ -299,6 +299,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $modalWindows = [];
     protected $xuid = "";
 
+    private $ping = 0;
+
     protected function revertMovement(Vector3 $pos, $yaw = 0, $pitch = 0) {
 		$this->sendPosition($pos, $yaw, $pitch, MovePlayerPacket::MODE_RESET);
 		$this->newPosition = null;
@@ -3361,6 +3363,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             default:
                 break;
+            case ProtocolInfo::PING_PACKET:
+                $this->setPing($packet->ping);
         }
         $timings->stopTiming();
         return true;
@@ -4420,39 +4424,47 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     	}
     }
     	
-    	public function sendServerSettings(CustomUI $window){
-    		$pk = new ServerSettingsResponsePacket;
-    		$pk->formId = $id = $this->modalWindowId++;
-    		$pk->formData = json_encode($window->jsonSerialize());
-    		$this->dataPacket($pk);
-    		$this->modalWindows[$id] = $window;
-    	}
+    public function sendServerSettings(CustomUI $window){
+        $pk = new ServerSettingsResponsePacket;
+        $pk->formId = $id = $this->modalWindowId++;
+        $pk->formData = json_encode($window->jsonSerialize());
+        $this->dataPacket($pk);
+        $this->modalWindows[$id] = $window;
+    }
     	
-    	public function getModalForm(int $id){
-    		return $this->modalWindows[$id] ?? null;
-    	}
+    public function getModalForm(int $id){
+        return $this->modalWindows[$id] ?? null;
+    }
     
-        public function getXUID() : string{
-    		return $this->xuid;
-    	}
+    public function getXUID() : string{
+        return $this->xuid;
+    }
     	
-    	public function changeSkin(string $skinId, string $skinName, string $serializeName, string $skinData, string $capeData, string $geometryName, string $geometryData){
-    		$this->setSkin($skinData, $skinId, $capeData, $geometryName, $geometryData);
-    		
-    		$pk = new PlayerSkinPacket;
-    		$pk->uuid = $this->getUniqueId();
-    		$pk->skinId = $this->skin->getSkinName();
-    		$pk->skinName = $skinName;
-    		$pk->skinData = $skinData;
-    		$pk->serializeName = $serializeName;
-    		$pk->capeData = $capeData;
-    		$pk->geometryModel = $geometryName;
-    		$pk->geometryData = $geometryData;
-    		
-    		$this->dataPacket($pk);
-    		
-    		foreach($this->getViewers() as $p){
-    			$p->dataPacket($pk);
-    		}
-    	}
+    public function changeSkin(string $skinId, string $skinName, string $serializeName, string $skinData, string $capeData, string $geometryName, string $geometryData){
+        $this->setSkin($skinData, $skinId, $capeData, $geometryName, $geometryData);
+
+        $pk = new PlayerSkinPacket;
+        $pk->uuid = $this->getUniqueId();
+        $pk->skinId = $this->skin->getSkinName();
+        $pk->skinName = $skinName;
+        $pk->skinData = $skinData;
+        $pk->serializeName = $serializeName;
+        $pk->capeData = $capeData;
+        $pk->geometryModel = $geometryName;
+        $pk->geometryData = $geometryData;
+
+        $this->dataPacket($pk);
+
+        foreach ($this->getViewers() as $p) {
+            $p->dataPacket($pk);
+        }
+    }
+
+    public function setPing($ping){
+        $this->ping = $ping;
+    }
+
+    public function getPing(){
+        return $this->ping;
+    }
 }

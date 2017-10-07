@@ -115,6 +115,9 @@ class SessionManager{
 		$time = microtime(true);
 		foreach($this->sessions as $session){
 			$session->update($time);
+            if(($this->ticks % 40) === 0){
+                $this->streamPing($session);
+            }
 		}
 
 		foreach($this->ipSec as $address => $count){
@@ -242,6 +245,13 @@ class SessionManager{
 		$buffer = chr(RakLib::PACKET_SET_OPTION) . chr(strlen($name)) . $name . $value;
 		$this->server->pushThreadToMainPacket($buffer);
 	}
+
+    public function streamPing(Session $session){
+        $id = $session->getAddress() . ":" . $session->getPort();
+        $ping = $session->getPing();
+        $buffer = chr(RakLib::PACKET_PING) . chr(strlen($id)) . $id . chr(strlen($ping)) . $ping;
+        $this->server->pushThreadToMainPacket($buffer);
+    }
 
 	private function checkSessions(){
 		if(count($this->sessions) > 4096){

@@ -69,5 +69,4 @@ interface SourceInterface {
     public function start();
 
     public function emergencyShutdown();
-
 }

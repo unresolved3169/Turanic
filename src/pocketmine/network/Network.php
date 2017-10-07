@@ -68,6 +68,7 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\network\mcpe\protocol\PhotoTransferPacket;
+use pocketmine\network\mcpe\protocol\PingPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\PurchaseReceiptPacket;
@@ -468,7 +469,7 @@ class Network {
         static::registerPacket(new ServerSettingsResponsePacket());
         static::registerPacket(new ShowProfilePacket());
         static::registerPacket(new SetDefaultGameTypePacket());
-
         static::registerPacket(new BatchPacket());
+        static::registerPacket(new PingPacket());
 	}
 }

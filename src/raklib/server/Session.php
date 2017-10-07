@@ -97,6 +97,8 @@ class Session{
 	private $reliableWindow = [];
 	private $lastReliableIndex = -1;
 
+    private $pingAverage = [0.025];
+
 	public function __construct(SessionManager $sessionManager, $address, $port){
 		$this->sessionManager = $sessionManager;
 		$this->address = $address;
@@ -204,6 +206,7 @@ class Session{
 	}
 
 	private function sendPacket(Packet $packet){
+        $packet->sendTime = microtime(true);
 		$this->sessionManager->sendPacket($packet, $this->address, $this->port);
 	}
 
@@ -490,6 +493,10 @@ class Session{
 									unset($this->needACK[$pk->identifierACK][$pk->messageIndex]);
 								}
 							}
+                            $this->pingAverage[] = microtime(true) - $this->recoveryQueue[$seq]->sendTime;
+                            if (count($this->pingAverage) > 20) {
+                                array_shift($this->pingAverage);
+                            }
 							unset($this->recoveryQueue[$seq]);
 						}
 					}
@@ -537,4 +544,8 @@ class Session{
 		$this->sendQueue();
 		$this->sessionManager = null;
 	}
+
+	public function getPing(){
+        return round((array_sum($this->pingAverage) / count($this->pingAverage)) * 1000);
+    }
 }
