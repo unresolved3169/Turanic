@@ -3361,10 +3361,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             case ProtocolInfo::PLAYER_INPUT_PACKET:
                 break;
-            default:
-                break;
             case ProtocolInfo::PING_PACKET:
                 $this->setPing($packet->ping);
+                break;
+            default:
+                break;
         }
         $timings->stopTiming();
         return true;
