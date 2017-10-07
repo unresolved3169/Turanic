@@ -4,34 +4,35 @@ namespace pocketmine\command\overload;
 
 class CommandParameter{
 	
-	const FLAG_VALID = 1048576;
-	const FLAG_TEMPLATE = 16777216;
-	const FLAG_ENUM = 2097152;
+	const FLAG_VALID = 0x100000;
+	const FLAG_ENUM = 0x200000;
+	const FLAG_POSTFIX = 0x1000000;
 	
-	const TYPE_UNKNOWN = 0;
-	const TYPE_INT = 1;
-	const TYPE_FLOAT = 2;
-	const TYPE_MIXED = 3;
-	const TYPE_TARGET = 4;
-	const TYPE_STRING = 13;
-	const TYPE_POSITION = 14;
-	const TYPE_RAW_TEXT = 17;
-	const TYPE_TEXT = 19;
-	const TYPE_JSON = 22;
-	const TYPE_COMMAND = 29;
+	const TYPE_INT = 0x01;
+	const TYPE_FLOAT = 0x02;
+	const TYPE_VALUE = 0x03;
+	const TYPE_TARGET = 0x04;
+	const TYPE_STRING = 0x0d;
+	const TYPE_POSITION = 0x0e;
+	const TYPE_RAWTEXT = 0x11;
+	const TYPE_TEXT = 0x13;
+	const TYPE_JSON = 0x16;
+	const TYPE_COMMAND = 0x1d;
 	
 	protected $name;
 	protected $type;
 	protected $optional;
 	protected $enum;
 	protected $flag;
+	protected $postfix;
 	
-	public function __construct(string $name, int $type = self::TYPE_RAW_TEXT, bool $optional = true, int $flag = self::FLAG_VALID, CommandEnum $enum = null){
+	public function __construct(string $name, int $type = self::TYPE_STRING, bool $optional = true, int $flag = self::FLAG_VALID, CommandEnum $enum = null, string $postfix = ""){
 		$this->name = $name;
 		$this->type = $type;
 		$this->enum = $enum;
 		$this->optional = $optional;
 		$this->flag = $flag;
+		$this->postfix = $postfix;
 	}
 	
 	public function getName() : string{
@@ -44,6 +45,10 @@ class CommandParameter{
 	
 	public function getEnum(){
 		return $this->enum;
+	}
+	
+	public function getPostfix(){
+		return $this->postfix;
 	}
 	
 	public function isOptional() : bool{
@@ -71,7 +76,7 @@ class CommandParameter{
 			 return self::TYPE_POSITION;
 			case "rawtext":
 			case "raw_text":
-			 return self::TYPE_RAW_TEXT;
+			 return self::TYPE_RAWTEXT;
 			case "text":
 			 return self::TYPE_TEXT;
 			case "json":
@@ -86,11 +91,11 @@ class CommandParameter{
 		switch(strtolower($str)){
 			case "valid":
 			 return self::FLAG_VALID;
-			case "template":
-			 return self::FLAG_TEMPLATE;
 			case "enum":
 			case "list":
 			 return self::FLAG_ENUM;
+			case "postfix":
+			 return self::FLAG_POSTFIX;
 		}
 		return self::FLAG_VALID;
 	}

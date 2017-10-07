@@ -28,6 +28,7 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\command\CommandSender;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\command\overload\CommandParameter;
 
 class TransferServerCommand extends VanillaCommand {
 
@@ -44,6 +45,10 @@ class TransferServerCommand extends VanillaCommand {
 			["transferserver"]
 		);
 		$this->setPermission("pocketmine.command.transfer");
+		
+		$this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("address", CommandParameter::TYPE_STRING, false));
+		$this->getOverload("default")->setParameter(2, new CommandParameter("port", CommandParameter::TYPE_INT, true));
 	}
 
 	/**

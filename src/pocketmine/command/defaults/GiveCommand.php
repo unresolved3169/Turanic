@@ -29,6 +29,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\command\overload\CommandParameter;
 
 class GiveCommand extends VanillaCommand {
 
@@ -44,6 +45,11 @@ class GiveCommand extends VanillaCommand {
 			"%pocketmine.command.give.usage"
 		);
 		$this->setPermission("pocketmine.command.give");
+		
+		$this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("item name", CommandParameter::TYPE_STRING, false));
+		$this->getOverload("default")->setParameter(2, new CommandParameter("amount", CommandParameter::TYPE_INT, true));
+		$this->getOverload("default")->setParameter(3, new CommandParameter("tags", CommandParameter::TYPE_STRING, true));
 	}
 
 	/**

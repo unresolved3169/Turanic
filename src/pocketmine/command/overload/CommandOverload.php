@@ -21,5 +21,9 @@ class CommandOverload{
 	public function getParameters() : array{
 		return $this->params;
 	}
+	
+	public function setParameter(int $index, CommandParameter $param){
+		$this->params[$index] = $param;
+	}
 }
 ?>

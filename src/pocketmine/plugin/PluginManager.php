@@ -652,9 +652,9 @@ class PluginManager {
 										$enum = null;
 										if(isset($pd["enum"]) and is_array($pd["enum"]) and isset($pd["enum-name"])){
 											
-											$enum = new CommandEnum($pd["enum-name"], arry_values($pd["enum"]));
+											$enum = new CommandEnum($pd["enum-name"], array_values($pd["enum"]));
 										}
-									 $param = new CommandParameter($pn, CommandParameter::getTypeFromString($pd["type"] ?? "rawtext"), (bool) $pd["optional"] ?? false,  CommandParameter::getFlagFromString($pd["flag"] ?? "valid"), $enum);
+									 $param = new CommandParameter($pn, CommandParameter::getTypeFromString($pd["type"] ?? "rawtext"), (bool) $pd["optional"] ?? false,  CommandParameter::getFlagFromString($pd["flag"] ?? "valid"), $enum, $pd["postfix"] ?? "");
 									}
 									$params[] = $param;
 								}

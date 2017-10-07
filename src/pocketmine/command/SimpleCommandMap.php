@@ -420,8 +420,8 @@ class SimpleCommandMap implements CommandMap {
 	public function getAvailableCommands(CommandSender $sender) : array{
 		$available = [];
 		foreach($this->knownCommands as $i => $cmd){
-			if($cmd->scanPermission($sender)){
-				$available[] = $cmd;
+			if($cmd->scanPermission($sender) and $cmd instanceof Command){
+				$available[$cmd->getName()] = $cmd;
 			}
 		}
 		

@@ -95,7 +95,7 @@ abstract class Command {
 			$this->overloads = $overloads;
 		}
 	}
-
+	
 	/**
 	 * @return array
 	 */
@@ -107,7 +107,7 @@ abstract class Command {
 		$this->overloads[$overload->getName()] = $overload;
 	}
 	
-	public function getOverloadByName(string $name){
+	public function getOverload(string $name){
 		return $this->overloads[$name] ?? null;
 	}
 

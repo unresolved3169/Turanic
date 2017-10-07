@@ -26,84 +26,127 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\command\Command;
+use pocketmine\utils\{BinaryStream, Binary};
 use pocketmine\command\overload\{CommandParameter, CommandOverload, CommandEnum};
 
 class AvailableCommandsPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::AVAILABLE_COMMANDS_PACKET;
 	
+	/** @var Command[] */
 	public $commands = [];
-	public $postfixes = [];
 	
-	public function putCommandEnum(CommandEnum $list){
-		$this->putString($list->getName());
-		$this->putUnsignedVarInt(count($list));
+	private $enumValuesCount = 0;
+	
+	public function putCommandEnum(CommandEnum $list, BinaryStream $stream){
+		$stream->putString($list->getName());
+		$stream->putUnsignedVarInt(count($list->getValues()));
 		
-		foreach($list->getValues() as $index => $val){
-			$this->putByte($index); // TODO others
-			$this->putString($val);
+		foreach($list->getValues() as $index){
+			$this->putEnumIndex($index, $stream);
 		}
 	}
 	
-	public function putCommand(Command $cmd){
-		$this->putString($cmd->getName());
-		$this->putString($cmd->getDescription());
-		$this->putByte(0); // ???
-		$this->putByte($cmd->getPermissionLevel());
-		$this->putInt(-1); // TODO Aliases
+	private function putEnumIndex(int $index, BinaryStream $stream){
+		if ($this->enumValuesCount < 256) {
+			$stream->putByte($index);
+		}elseif($this->enumValuesCount < 65536) {
+			$stream->putLShort($index);
+		}else{
+			$stream->putLInt($index);
+		}	
+	}
+	
+	private function getPreparedCommandData(){
+		$extraDataStream = new BinaryStream;
+		$commandStream = new BinaryStream;
 		
-		$overloads = $cmd->getOverloads();
+		$enumValues = [];
+		$enums = [];
+		$postfixes = [];
 		
-		$this->putUnsignedVarInt(count($overloads));
-		foreach($overloads as $overload){
-			$params = $overload->getParameters();
-			$this->putUnsignedVarInt(count($params));
-			foreach($params as $param){
-				$this->putString($param->getName());
-				$this->putLInt($param->getFlag() | $param->getType());
-				$this->putBool($param->isOptional());
+		$this->enumValuesCount = 0;
+		
+		foreach($this->commands as $cmd){
+			if($cmd instanceof Command){
+				if($cmd->getName() == "help") continue; 
 				
-				if($param->getFlag() == $param::FLAG_ENUM){
-					$this->putCommandEnum($param->getEnum());
+				$commandStream->putString($cmd->getName());
+				$commandStream->putString($cmd->getDescription());
+				$commandStream->putByte(0); //  command flags (todo)
+				$commandStream->putByte($cmd->getPermissionLevel());
+				
+				$enumIndex = -1;
+				
+				if(count($cmd->getAliases()) > 0){
+					// recalculate enum indexs
+					$aliases = [];
+					foreach($cmd->getAliases() as $alias){
+						$enumValues[] = $alias;
+						$aliases[] = $this->enumValuesCount;
+						$this->enumValuesCount++;
+					}
+					$enum = new CommandEnum($cmd->getName() . "CommandAliases", $aliases);
+					$enums[] = $enum;
+					$enumIndex = count($enums) - 1;
 				}
+				
+				$commandStream->putLInt($enumIndex);
+				
+				$overloads = $cmd->getOverloads();
+				
+				$commandStream->putUnsignedVarInt(count($overloads));
+				foreach($overloads as $overload){
+					$params = $overload->getParameters();
+					$commandStream->putUnsignedVarInt(count($params));
+					foreach($params as $param){
+						$commandStream->putString($param->getName());
+						
+						$type = $param->getFlag() | $param->getType();
+						if($param->getFlag() == $param::FLAG_ENUM and $param->getEnum() != null){
+							$enum = $param->getEnum();
+							$realValues = [];
+							foreach($enum->getValues() as $v){
+								$enumValues[] = $v;
+								$realValues[] = $this->enumValuesCount;
+								$this->enumValuesCount++;
+							}
+							$enums[] = new CommandEnum($cmd->getName() . $enum->getName(), $realValues);
+							$enumIndex = count($enums) - 1;
+							$type |= $enumIndex;
+						}elseif($param->getFlag() == $param::FLAG_POSTFIX and strlen($param->getPostfix()) > 0){
+							$postfixes[] = $param->getPostfix();
+							$type |= count($postfixes) - 1;
+						}
+						
+						$commandStream->putLInt($type);
+						$commandStream->putBool($param->isOptional());
+			      }
+		      }
 			}
 		}
+		
+		$extraDataStream->putUnsignedVarInt($this->enumValuesCount);
+		foreach($enumValues as $v){
+			$extraDataStream->putString($v);
+		}
+		
+		$extraDataStream->putUnsignedVarInt(count($postfixes));
+		foreach($postfixes as $postfix){
+			$extraDataStream->putString($postfix);
+		}
+		
+		$extraDataStream->putUnsignedVarInt(count($enums));
+		foreach($enums as $enum){
+			$this->putCommandEnum($enum, $extraDataStream);
+		}
+		
+		$extraDataStream->putUnsignedVarInt(count($this->commands));
+		$extraDataStream->put($commandStream->buffer);
+		
+		return $extraDataStream->buffer;
 	}
 	
 	protected function encodePayload(){
-		$enums = [];
-		foreach($this->commands as $c){
-			foreach($c->getOverloads() as $ol){
-				foreach($ol->getParameters() as $pm){
-					if($pm->getFlag() == $pm::FLAG_ENUM){
-						$enums[] = $pm->getEnum();
-					}
-				}
-			}
-		}
-		$enumVals = [];
-		foreach($enums as $enum){
-			foreach($enum->getValues() as $val){
-				$enumVals[] = $val;
-			}
-		}
-		$this->putUnsignedVarInt(count($enumVals));
-		foreach($enumVals as $v){
-			$this->putString($v);
-		}
-		
-		$this->putUnsignedVarInt(count($this->postfixes));
-		foreach($this->postfixes as $pf){
-			$this->putString($pf);
-		}
-		
-		$this->putUnsignedVarInt(count($enums));
-		foreach($enums as $enum){
-			$this->putCommandEnum($enum);
-		}
-		
-		$this->putUnsignedVarInt(count($this->commands));
-		foreach($this->commands as $cmd){
-			$this->putCommand($cmd);
-		}
+		$this->put($this->getPreparedCommandData());
 	}
 }
