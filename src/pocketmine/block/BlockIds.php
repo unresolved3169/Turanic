@@ -340,4 +340,6 @@ interface BlockIds {
 	const OBSERVER = 251;
 
 	const INFO_RESERVED6 = 255;
+	
+	const JUKEBOX = 84;
 }

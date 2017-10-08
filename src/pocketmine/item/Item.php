@@ -272,6 +272,18 @@ class Item implements ItemIds, \JsonSerializable {
 			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
 			self::$list[self::PRISMARINE_SHARD] = PrismarineShard::class;
 			self::$list[self::FIRE_CHARGE] = FireCharge::class;
+			
+			self::$list[self::MUSIC_DISC_13] = MusicDisc13::class;
+			self::$list[self::MUSIC_DISC_CAT] = MusicDiscCat::class;
+			self::$list[self::MUSIC_DISC_BLOCKS] = MusicDiscBlocks::class;
+			self::$list[self::MUSIC_DISC_STRAD] = MusicDiscStrad::class;
+			self::$list[self::MUSIC_DISC_WARD] = MusicDiscWard::class;
+			self::$list[self::MUSIC_DISC_STAL] = MusicDiscStal::class;
+			self::$list[self::MUSIC_DISC_WAIT] = MusicDiscWait::class;
+			self::$list[self::MUSIC_DISC_MALL] = MusicDiscMall::class;
+			self::$list[self::MUSIC_DISC_CHIRP] = MusicDiscChirp::class;
+			self::$list[self::MUSIC_DISC_MELLOHI] = MusicDiscMellohi::class;
+			self::$list[self::MUSIC_DISC_FAR] = MusicDiscFar::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){

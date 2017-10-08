@@ -174,8 +174,8 @@ interface ItemIds extends BlockIds {
 	const BOTTLE_O_ENCHANTING = 384;
 	const ENCHANTING_BOTTLE = 384;
 	const FIRE_CHARGE = 385;
-	//const BOOK_AND_QUILL = 386;
-	//const WRITTTEN_BOOK = 387;  
+	const BOOK_AND_QUILL = 386;
+	const WRITTTEN_BOOK = 387;  
 	const EMERALD = 388;
 	const ITEM_FRAME = 389;
 	const FLOWER_POT = 390;
@@ -194,8 +194,8 @@ interface ItemIds extends BlockIds {
 	const CARROT_ON_A_STICK = 398;
 	const NETHER_STAR = 399;
 	const PUMPKIN_PIE = 400;
-	//const FIREWORK = 401;
-	//const FIREWORK_STAR = 402;
+	const FIREWORK = 401;
+	const FIREWORK_STAR = 402;
 	const ENCHANTED_BOOK = 403;
 	const COMPARATOR = 404;
 	const NETHER_BRICK = 405;
@@ -220,8 +220,8 @@ interface ItemIds extends BlockIds {
 	const PRISMARINE_CRYSTALS = 422;
 	const RAW_MUTTON = 423;
 	const COOKED_MUTTON = 424;
-	//const BANNER = 425;
-	//const END_CRYSTAL = 426;
+	const BANNER = 425;
+	const END_CRYSTAL = 426;
 	const SPRUCE_DOOR = 427;
 	const BIRCH_DOOR = 428;
 	const JUNGLE_DOOR = 429;
@@ -247,4 +247,17 @@ interface ItemIds extends BlockIds {
 	const ENCHANTED_GOLDEN_APPLE = 466;
 
 	const CAMERA = 498; #blamemojang
+	
+	const MUSIC_DISC_13 = 500;
+	const MUSIC_DISC_CAT = 501;
+	const MUSIC_DISC_BLOCKS = 502;
+	const MUSIC_DISC_CHIRP = 503;
+	const MUSIC_DISC_FAR = 504;
+	const MUSIC_DISC_MALL = 505;
+	const MUSIC_DISC_MELLOHI = 506;
+	const MUSIC_DISC_STAL = 507;
+	const MUSIC_DISC_STRAD = 508;
+	const MUSIC_DISC_WARD = 509;
+	const MUSIC_DISC_11 = 510;
+	const MUSIC_DISC_WAIT = 511;
 }

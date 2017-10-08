@@ -55,6 +55,7 @@ abstract class Tile extends Position {
 	const DROPPER = "Dropper";
 	const BEACON = "Beacon";
 	const VIRTUAL_HOLDER = "VirtualHolder";
+	const JUKEBOX = "JUKEBOX";
 
 	public static $tileCount = 1;
 
@@ -95,6 +96,7 @@ abstract class Tile extends Position {
 		self::registerTile(Sign::class);
 		self::registerTile(Skull::class);
 		self::registerTile(VirtualHolder::class);
+		self::registerTile(Jukebox::class);
 	}
 
 	/**
@@ -112,6 +114,17 @@ abstract class Tile extends Position {
 		}
 
 		return null;
+	}
+	
+	public static function createTileFromPosition(string $type, Position $pos, ...$args){
+		$nbt = new CompoundTag("", [
+			new StringTag("id", $type),
+			new IntTag("x", (int) $pos->x),
+			new IntTag("y", (int) $pos->y),
+			new IntTag("z", (int) $pos->z),
+		]);
+		
+		return self::createTile($type, $pos->level, $nbt, ...$args);
 	}
 
 	/**
