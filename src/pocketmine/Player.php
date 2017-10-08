@@ -2460,48 +2460,41 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->dataPacket($pk);
                 break;
 
-            case ProtocolInfo::MOVE_PLAYER_PACKET:
-                if (!$this->isAlive() || !$this->spawned) {
-					$this->sendPosition($this, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
-				} else {
+            case ProtocolInfo::MOVE_PLAYER_PACKET:		
+				$revert = false;
+				if($this->dead === true || $this->spawned !== true){
+					//$revert = true;
+					$revert = false;
+					//$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
+				}
+				if($revert){
+					$this->sendPosition($this->forceMovement, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
+				}else{
 					$newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
-					if ($this->teleportPosition != null && $newPos->distanceSquared($this) > 2) {
-						$this->isTeleporting = false;
-						break;
-					} else {
-						if (!is_null($this->newPosition)) {
-							$distanceSquared = ($newPos->x - $this->newPosition->x) ** 2 + ($newPos->z - $this->newPosition->z) ** 2;						
-						} else {
-							$distanceSquared = ($newPos->x - $this->x) ** 2 + ($newPos->z - $this->z) ** 2;
-						}
-						if ($distanceSquared > $this->movementSpeed * 200) {							
-							$this->revertMovement($this, $this->yaw, $this->pitch);
-							$this->teleportPosition = $this;
-							break;
-						}
-						$this->isTeleporting = false;						
-
+					if(!($this->forceMovement instanceof Vector3) || $newPos->distanceSquared($this->forceMovement) <= 0.1){
 						$packet->yaw %= 360;
 						$packet->pitch %= 360;
-
-						if ($packet->yaw < 0) {
+						if($packet->yaw < 0){
 							$packet->yaw += 360;
 						}
-
-						if (!$this->getDataFlag(self::DATA_FLAGS, 46)) {
-							if ($this->yaw != $packet->yaw || $this->pitch != $packet->pitch || abs($this->x - $packet->x) >= 0.05 || abs($this->z - $packet->z) >= 0.05) {
-                                $this->setDataFlag(self::DATA_FLAGS, 46, $state);
+						if(!$this->isMayMove){
+							if($this->yaw != $packet->yaw || $this->pitch != $packet->pitch || abs($this->x - $packet->x) >= 0.05 || abs($this->z - $packet->z) >= 0.05){
+								$this->setMayMove(true);
 								$spawn = $this->getSpawn();
 								$spawn->y += 0.1;
 								$this->teleport($spawn);
 							}
 						}
-
 						$this->setRotation($packet->yaw, $packet->pitch);
-						$this->newPosition = $newPos;
+						$this->newPosition = $newPos;	
+						$this->forceMovement = null;
+					}elseif(microtime(true) - $this->lastTeleportTime > 3){
+						$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
+						$this->sendPosition($this->forceMovement, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
+						$this->lastTeleportTime = microtime(true);
 					}
 				}
-                break;
+				break;
             case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
                 /** @var AdventureSettingsPacket $packet */
                 if($packet->entityUniqueId !== $this->getId()){
