@@ -31,11 +31,11 @@ class WallBanner extends StandingBanner{
 
 	protected $id = self::WALL_BANNER;
 
-	public function getName(){
+	public function getName() : string{
 		return "Wall Banner";
 	}
 
-	public function onUpdate($type) : string{
+	public function onUpdate($type){
 		$faces = [
 			Vector3::SIDE_NORTH => 3,
 			Vector3::SIDE_SOUTH => 2,
