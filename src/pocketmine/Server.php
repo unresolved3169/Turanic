@@ -1512,7 +1512,7 @@ class Server{
     §r§bGithub§8: §fhttps://github.com/TuranicTeam§f
     §9Discord§8: §fhttps://discord.gg/DyPYdYT§f
     ";
-		$this->getLogger()->info($string);
+		$this->getLogger()->directSend($string);
 	}
 
 	public function loadAdvancedConfig(){
@@ -2780,8 +2780,7 @@ class Server{
 			$this->logger->logException($e);
 		}
 	}
-
-
+	
 	/**
 	 * Tries to execute a server tick
 	 */
