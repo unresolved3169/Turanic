@@ -324,6 +324,9 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::JUKEBOX] = Jukebox::class;
 			self::$list[self::WALL_BANNER] = WallBanner::class;
 			self::$list[self::STANDING_BANNER] = StandingBanner::class;
+			self::$list[self::STAINED_GLASS] = StainedGlass::class;
+			self::$list[self::STAINED_GLASS_PANE] = StainedGlassPane::class;
+			
 			
 			foreach(self::$list as $id => $class){
 				if($class !== null){
