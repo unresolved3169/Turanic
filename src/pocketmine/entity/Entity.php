@@ -358,6 +358,7 @@ abstract class Entity extends Location implements Metadatable {
 	public $height;
 
 	public $eyeHeight = null;
+	public $baseOffset = 0;
 
 	public $width;
 	public $length;
@@ -2030,15 +2031,15 @@ abstract class Entity extends Location implements Metadatable {
 
 	/**
 	 * @param Vector3|Position|Location $pos
-	 * @param float                     $yaw
-	 * @param float                     $pitch
+	 * @param float|null                $yaw
+	 * @param float|null                $pitch
 	 *
 	 * @return bool
 	 */
 	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
 		if($pos instanceof Location){
-			$yaw = $yaw === null ? $pos->yaw : $yaw;
-			$pitch = $pitch === null ? $pos->pitch : $pitch;
+			$yaw = $yaw ?? $pos->yaw;
+			$pitch = $pitch ?? $pos->pitch;
 		}
 		$from = Position::fromObject($this, $this->level);
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->level);
@@ -2050,7 +2051,7 @@ abstract class Entity extends Location implements Metadatable {
 		$pos = $ev->getTo();
 
 		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw === null ? $this->yaw : $yaw, $pitch === null ? $this->pitch : $pitch) !== false){
+		if($this->setPositionAndRotation($pos, $yaw ?? $this->yaw, $pitch ?? $this->pitch) !== false){
 			$this->resetFallDistance();
 			$this->onGround = true;
 

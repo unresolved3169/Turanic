@@ -39,57 +39,54 @@ class MovePlayerPacket extends DataPacket{
 	const TELEPORTATION_CAUSE_BEHAVIOR = 4;
 	const TELEPORTATION_CAUSE_COUNT = 5; // ???
 
-	public $eid;
-	public $x;
-	public $y;
-	public $z;
+	/** @var int */
+	public $entityRuntimeId;
+	/** @var Vector3 */
+	public $position;
+	/** @var float */
 	public $yaw;
+	/** @var float */
 	public $bodyYaw;
+	/** @var float */
 	public $pitch;
+	/** @var int */
 	public $mode = self::MODE_NORMAL;
-	public $onGround;
+	/** @var bool */
+	public $onGround = false; //TODO
+	/** @var int */
+	public $ridingEid = 0;
+	/** @var int */
+	public $teleportCause = self::TELEPORTATION_CAUSE_UNKNOWN;
+	/** @var int */
+	public $int2 = 1;
 
-	public function clean(){
-		$this->teleport = false;
-		return parent::clean();
-	}
-
-	public function decode(){
-	
-		$this->eid = $this->getVarInt();
-		
-		$this->x = $this->getLFloat();
-		$this->y = $this->getLFloat();
-		$this->z = $this->getLFloat();
-		
+	protected function decodePayload(){
+		$this->entityRuntimeId = $this->getEntityRuntimeId();
+		$this->position = $this->getVector3Obj();
 		$this->pitch = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
-		
 		$this->bodyYaw = $this->getLFloat();
 		$this->mode = $this->getByte();
-		$this->onGround = $this->getByte() > 0;
-	}
-
-	public function encode(){
-	
-		$this->putVarInt($this->eid);
-		
-		$this->putLFloat($this->x);
-		$this->putLFloat($this->y);
-		$this->putLFloat($this->z);
-		
-		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->yaw);
-		
-		$this->putLFloat($this->bodyYaw);
-		$this->putByte($this->mode);
-		$this->putByte($this->onGround > 0);
-		/** @todo do it right */
-		$this->putVarInt(0); // riding runtime ID
-		if (self::MODE_TELEPORT == $this->mode) {
-			$this->putInt(self::TELEPORTATION_CAUSE_UNKNOWN);
-			$this->putInt(1);
+		$this->onGround = $this->getBool();
+		$this->ridingEid = $this->getEntityRuntimeId();
+		if($this->mode === MovePlayerPacket::MODE_TELEPORT){
+			$this->teleportCause = $this->getLInt();
+			$this->int2 = $this->getLInt();
 		}
 	}
 
+	protected function encodePayload(){
+		$this->putEntityRuntimeId($this->entityRuntimeId);
+		$this->putVector3Obj($this->position);
+		$this->putLFloat($this->pitch);
+		$this->putLFloat($this->yaw);
+		$this->putLFloat($this->bodyYaw); //TODO
+		$this->putByte($this->mode);
+		$this->putBool($this->onGround);
+		$this->putEntityRuntimeId($this->ridingEid);
+		if($this->mode === MovePlayerPacket::MODE_TELEPORT){
+			$this->putLInt($this->teleportCause);
+			$this->putLInt($this->int2);
+		}
+	}
 }
