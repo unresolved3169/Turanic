@@ -110,7 +110,7 @@ class StandingBanner extends Transparent{
 		return 0;
 	}
 
-	public function getDrops(Item $item): arrray{
+	public function getDrops(Item $item): array{
 		return [];
 	}
 
