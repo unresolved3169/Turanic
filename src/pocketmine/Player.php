@@ -210,6 +210,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $forceMovement = null;
     /** @var Vector3 */
     protected $teleportPosition = null;
+    protected $lastTeleportTime = 0;
     protected $connected = true;
     protected $ip;
     protected $removeFormat = false;
