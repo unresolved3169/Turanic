@@ -1642,14 +1642,10 @@ class Server{
 
 			$version = new VersionString($this->getPocketMineVersion());
 			$this->version = $version;
-
+			
 			$this->about();
 			
-			if(Translate::checkTurkish() === "yes"){
-				$this->logger->info("Ayarlar ve Kayıtlar Yükleniyor...");
-			}else{
-				$this->logger->info("Loading properties and configuration...");
-			}
+			$this->logger->info("Loading properties and configuration...");
 			
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
