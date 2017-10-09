@@ -35,7 +35,7 @@ class WallBanner extends StandingBanner{
 		return "Wall Banner";
 	}
 
-	public function onUpdate($type){
+	public function onUpdate($type) : string{
 		$faces = [
 			Vector3::SIDE_NORTH => 3,
 			Vector3::SIDE_SOUTH => 2,
