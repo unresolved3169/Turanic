@@ -266,7 +266,8 @@ interface BlockIds {
 	const COAL_BLOCK = 173;
 	const PACKED_ICE = 174;
 	const DOUBLE_PLANT = 175;
-
+	const STANDING_BANNER = 176;
+	const WALL_BANNER = 177;
 	const INVERTED_DAYLIGHT_SENSOR = 178;
 	const DAYLIGHT_SENSOR_INVERTED = 178;
 	const RED_SANDSTONE = 179;

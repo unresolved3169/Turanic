@@ -28,7 +28,6 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
@@ -323,7 +322,9 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$list[self::DRAGON_EGG] = DragonEgg::class;
 			self::$list[self::COMMAND_BLOCK] = CommandBlock::class;
 			self::$list[self::JUKEBOX] = Jukebox::class;
-
+			self::$list[self::WALL_BANNER] = WallBanner::class;
+			self::$list[self::STANDING_BANNER] = StandingBanner::class;
+			
 			foreach(self::$list as $id => $class){
 				if($class !== null){
 					/** @var Block $block */
