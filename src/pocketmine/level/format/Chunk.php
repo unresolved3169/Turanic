@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level\format;
 
-use pocketmine\block\BlockFactory;
+use pocketmine\block\Block as BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
