@@ -1644,8 +1644,13 @@ class Server{
 			$this->version = $version;
 
 			$this->about();
-
-			$this->logger->info("Loading properties and configuration...");
+			
+			if(Translate::checkTurkish() === "yes"){
+				$this->logger->info("Ayarlar ve Kayıtlar Yükleniyor...");
+			}else{
+				$this->logger->info("Loading properties and configuration...");
+			}
+			
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
 					$langFile = new Config($configPath = $this->dataPath . "lang.txt", Config::ENUM, []);
@@ -1677,6 +1682,7 @@ class Server{
             if(file_exists($this->dataPath . "lang.txt")){
 				unlink($this->dataPath . "lang.txt");
 			}
+			
 			$nowLang = $this->getProperty("settings.language", "eng");
 
 			//Crashes unsupported builds without the correct configuration
