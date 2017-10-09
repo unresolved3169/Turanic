@@ -1,7 +1,7 @@
 <img src="https://i.imgur.com/jw0b3BH.png" border="0">
 
-Fast server software for Minecraft PE and W10 Edition - v1.2.x.
-Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
+Fast server software for Minecraft: Bedrock/PE Edition and W10 Edition - v1.2.x.
+Turanic based on Steadfast2, Nukkit, GenisysPro and MiNET.
 
 | Travis CI | Discord |
 | :---: | :---:|
@@ -12,8 +12,8 @@ Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
 ## Test Server:
 
 You can test Turanic on this sevrer
-IP Address: dts.kro.kr
-Port: 19132
+IP Address: **dts.kro.kr**
+Port: **19132**
 
 ## Known Bugs in 1.2:
 
@@ -21,7 +21,7 @@ Port: 19132
 - DroppedItems
 - Move/Fly Bug (no gravity)
 - Inventory/Crafting Bugs
-- Not Changing skin when skin changed by client
+- Skin change in-game does not work
 
 ### TODO List (After fully 1.2 update):
 - [ ] **Custom Potions**
@@ -29,7 +29,7 @@ Port: 19132
 - [ ] **Custom Enchants**
 - [x] **Optimization and Stability**
 - [x] **Virtual Inventory** 
-- [ ] **Fully MobAI(indev)**
+- [ ] **Fully MobAI (indev)**
 - [ ] **Ultra Fast Chunk Load/Unload/Generate**
 - [ ] **Advanced Cache**
 - [ ] **More thread/worker**
@@ -37,7 +37,7 @@ Port: 19132
 - [x] **Command Parameters**
 - [ ] **Basic ChunkLoader System**
 - [ ] **New Chunk Region System**
-- [ ] **Fast Nbt writer/reader**
-- [ ] **Basic Redstone system(without lag)**
+- [ ] **Fast NBT Writer/reader**
+- [ ] **Basic Redstone system (without lag)**
 - [ ] **Pistons and ShulkerBox**
 - [ ] **Fix some issues on inventory/transaction**
