@@ -9,6 +9,12 @@ Turanic based on SteadFast2, Nukkit, GenisysPro and MiNET.
 
 # Current Version: 1.2
 
+## Test Server:
+
+You can test Turanic on this sevrer
+IP Address: dts.kro.kr
+Port: 19132
+
 ## Known Bugs in 1.2:
 
 - Block place/break issues
