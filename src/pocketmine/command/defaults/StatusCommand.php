@@ -41,7 +41,7 @@ class StatusCommand extends VanillaCommand{
 		);
 		$this->setPermission("pocketmine.command.status");
 	}
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
+	public function execute(CommandSender $sender, $commandLabel, array $args){
 		if(!$this->testPermission($sender)){
 			return true;
 		}
