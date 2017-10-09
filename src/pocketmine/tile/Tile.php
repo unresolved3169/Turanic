@@ -247,4 +247,8 @@ abstract class Tile extends Position {
             return null;
         }
     }
+    
+    public function isClosed() : bool{
+    	return $this->closed;
+    }
 }

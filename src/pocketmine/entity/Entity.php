@@ -2345,5 +2345,9 @@ abstract class Entity extends Location implements Metadatable {
 	public function resetLastDamageCause(){
 		$this->lastDamageCause = null;
 	}
+	
+	public function isClosed() : bool{
+		return $this->closed;
+	}
 
 }
