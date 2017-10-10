@@ -149,7 +149,7 @@ class Noteblock extends Solid implements ElectricalAppliance {
 			case Block::NETHERRACK:
 			case Block::ENCHANTING_TABLE:
 			case Block::END_STONE:
-			case Block::STAINED_CLAY:
+			//case Block::STAINED_CLAY:
 			case Block::COAL_BLOCK:
 				return NoteblockSound::INSTRUMENT_BASS_DRUM;
 		}

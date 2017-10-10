@@ -285,7 +285,21 @@ class MainLogger extends \AttachableThreadedLogger {
 			});
 		}
 	}
-
+	
+	public function directSend($message){
+		$message = TextFormat::toANSI($message);
+		$cleanMessage = TextFormat::clean($message);
+		if(!Terminal::hasFormattingCodes()){
+			echo $cleanMessage . PHP_EOL;
+		}else{
+			echo $message . PHP_EOL;
+		}
+	}
+	
+	public static function clear(){
+		echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
+	}
+	
 	/*public function run(){
 		$this->shutdown = false;
 		if($this->write){

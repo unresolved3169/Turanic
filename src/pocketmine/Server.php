@@ -1512,7 +1512,7 @@ class Server{
     §r§bGithub§8: §fhttps://github.com/TuranicTeam§f
     §9Discord§8: §fhttps://discord.gg/DyPYdYT§f
     ";
-		$this->getLogger()->info($string);
+		$this->getLogger()->directSend($string);
 	}
 
 	public function loadAdvancedConfig(){
@@ -1646,6 +1646,7 @@ class Server{
 			$this->about();
 
 			$this->logger->info("Loading properties and configuration...");
+
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
 					$langFile = new Config($configPath = $this->dataPath . "lang.txt", Config::ENUM, []);
@@ -1677,6 +1678,7 @@ class Server{
             if(file_exists($this->dataPath . "lang.txt")){
 				unlink($this->dataPath . "lang.txt");
 			}
+			
 			$nowLang = $this->getProperty("settings.language", "eng");
 
 			//Crashes unsupported builds without the correct configuration
@@ -2780,8 +2782,7 @@ class Server{
 			$this->logger->logException($e);
 		}
 	}
-
-
+	
 	/**
 	 * Tries to execute a server tick
 	 */

@@ -165,13 +165,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     const CRAFTING_BIG = 1;
     const CRAFTING_ANVIL = 2;
     const CRAFTING_ENCHANT = 3;
-    const DEFAULT_SPEED = 0.1; 
     
-    protected $isTeleporting = false;
-    
-    protected $movementSpeed = self::DEFAULT_SPEED;
     /** @var SourceInterface */
     protected $interface;
+    
+    /** @var bool */
+    protected $isTeleporting = false;
 
     /** @var bool */
     public $playedBefore = false;
@@ -206,11 +205,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     protected $protocol;
 
-    /** @var Vector3 */
-    protected $forceMovement = null;
-    /** @var Vector3 */
-    protected $teleportPosition = null;
-    protected $lastTeleportTime = 0;
     protected $connected = true;
     protected $ip;
     protected $removeFormat = false;
@@ -301,11 +295,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $xuid = "";
 
     private $ping = 0;
-
-    protected function revertMovement(Vector3 $pos, $yaw = 0, $pitch = 0) {
-		$this->sendPosition($pos, $yaw, $pitch, MovePlayerPacket::MODE_RESET);
-		$this->newPosition = null;
-	}
     
     public function isValidUserName(string $name) : bool{
         $lname = strtolower($name);
@@ -1703,138 +1692,134 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param $tickDiff
      */
     protected function processMovement(int $tickDiff){
-        if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->isSleeping()){
-            return;
-        }
+		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->isSleeping()){
+			return;
+		}
 
-        assert($this->x !== null and $this->y !== null and $this->z !== null);
-        assert($this->newPosition->x !== null and $this->newPosition->y !== null and $this->newPosition->z !== null);
+		assert($this->x !== null and $this->y !== null and $this->z !== null);
+		assert($this->newPosition->x !== null and $this->newPosition->y !== null and $this->newPosition->z !== null);
 
-        $newPos = $this->newPosition;
-        $distanceSquared = $newPos->distanceSquared($this);
+		$newPos = $this->newPosition;
+		$distanceSquared = $newPos->distanceSquared($this);
 
-        $revert = false;
+		$revert = false;
 
-        if(($distanceSquared / ($tickDiff ** 2)) > 100){
-            $this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
-            $this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
-            $revert = true;
-        }else{
-            if($this->chunk === null or !$this->chunk->isGenerated()){
-                $chunk = $this->level->getChunk($newPos->x >> 4, $newPos->z >> 4, false);
-                if($chunk === null or !$chunk->isGenerated()){
-                    $revert = true;
-                    $this->nextChunkOrderRun = 0;
-                }else{
-                    if($this->chunk !== null){
-                        $this->chunk->removeEntity($this);
-                    }
-                    $this->chunk = $chunk;
-                }
-            }
-        }
+		if(($distanceSquared / ($tickDiff ** 2)) > 100){
+			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
+			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
+			$revert = true;
+		}else{
+			if($this->chunk === null or !$this->chunk->isGenerated()){
+				$chunk = $this->level->getChunk($newPos->x >> 4, $newPos->z >> 4, false);
+				if($chunk === null or !$chunk->isGenerated()){
+					$revert = true;
+					$this->nextChunkOrderRun = 0;
+				}else{
+					if($this->chunk !== null){
+						$this->chunk->removeEntity($this);
+					}
+					$this->chunk = $chunk;
+				}
+			}
+		}
 
-        if(!$revert and $distanceSquared != 0){
-            $dx = $newPos->x - $this->x;
-            $dy = $newPos->y - $this->y;
-            $dz = $newPos->z - $this->z;
+		if(!$revert and $distanceSquared != 0){
+			$dx = $newPos->x - $this->x;
+			$dy = $newPos->y - $this->y;
+			$dz = $newPos->z - $this->z;
 
-            $this->move($dx, $dy, $dz);
+			$this->move($dx, $dy, $dz);
 
-            $diffX = $this->x - $newPos->x;
-            $diffY = $this->y - $newPos->y;
-            $diffZ = $this->z - $newPos->z;
+			$diffX = $this->x - $newPos->x;
+			$diffY = $this->y - $newPos->y;
+			$diffZ = $this->z - $newPos->z;
 
-            $diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
+			$diff = ($diffX ** 2 + $diffY ** 2 + $diffZ ** 2) / ($tickDiff ** 2);
 
-            if($this->isSurvival() and !$revert and $diff > 0.0625){
-                $ev = new PlayerIllegalMoveEvent($this, $newPos);
-                $ev->setCancelled($this->allowMovementCheats);
+			if($this->isSurvival() and !$revert and $diff > 0.0625){
+				$ev = new PlayerIllegalMoveEvent($this, $newPos);
+				$ev->setCancelled($this->allowMovementCheats);
 
-                $this->server->getPluginManager()->callEvent($ev);
+				$this->server->getPluginManager()->callEvent($ev);
 
-                if(!$ev->isCancelled()){
-                    $revert = true;
-                    $this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
-                    $this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
-                }
-            }
+				if(!$ev->isCancelled()){
+					$revert = true;
+					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
+					$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
+				}
+			}
 
-            if($diff > 0){
-                $this->x = $newPos->x;
-                $this->y = $newPos->y;
-                $this->z = $newPos->z;
-                $radius = $this->width / 2;
-                $this->boundingBox->setBounds($this->x - $radius, $this->y, $this->z - $radius, $this->x + $radius, $this->y + $this->height, $this->z + $radius);
-            }
-        }
+			if($diff > 0){
+				$this->x = $newPos->x;
+				$this->y = $newPos->y;
+				$this->z = $newPos->z;
+				$radius = $this->width / 2;
+				$this->boundingBox->setBounds($this->x - $radius, $this->y, $this->z - $radius, $this->x + $radius, $this->y + $this->height, $this->z + $radius);
+			}
+		}
 
-        $from = new Location($this->lastX, $this->lastY, $this->lastZ, $this->lastYaw, $this->lastPitch, $this->level);
-        $to = $this->getLocation();
+		$from = new Location($this->lastX, $this->lastY, $this->lastZ, $this->lastYaw, $this->lastPitch, $this->level);
+		$to = $this->getLocation();
 
-        $delta = (($this->lastX - $to->x) ** 2) + (($this->lastY - $to->y) ** 2) + (($this->lastZ - $to->z) ** 2);
-        $deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
+		$delta = (($this->lastX - $to->x) ** 2) + (($this->lastY - $to->y) ** 2) + (($this->lastZ - $to->z) ** 2);
+		$deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
 
-        if(!$revert and ($delta > 0.0001 or $deltaAngle > 1.0)){
+		if(!$revert and ($delta > 0.0001 or $deltaAngle > 1.0)){
 
-            $isFirst = ($this->lastX === null or $this->lastY === null or $this->lastZ === null);
+			$isFirst = ($this->lastX === null or $this->lastY === null or $this->lastZ === null);
 
-            $this->lastX = $to->x;
-            $this->lastY = $to->y;
-            $this->lastZ = $to->z;
+			$this->lastX = $to->x;
+			$this->lastY = $to->y;
+			$this->lastZ = $to->z;
 
-            $this->lastYaw = $to->yaw;
-            $this->lastPitch = $to->pitch;
+			$this->lastYaw = $to->yaw;
+			$this->lastPitch = $to->pitch;
 
-            if(!$isFirst){
-                $ev = new PlayerMoveEvent($this, $from, $to);
+			if(!$isFirst){
+				$ev = new PlayerMoveEvent($this, $from, $to);
 
-                $this->server->getPluginManager()->callEvent($ev);
+				$this->server->getPluginManager()->callEvent($ev);
 
-                if(!($revert = $ev->isCancelled())){ //Yes, this is intended
-                    if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
-                        $this->teleport($ev->getTo());
-                    }else{
-                        $this->broadcastMovement();
+				if(!($revert = $ev->isCancelled())){ //Yes, this is intended
+					if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
+						$this->teleport($ev->getTo());
+					}else{
+						$this->broadcastMovement();
 
-                        $distance = $from->distance($to);
-                        //TODO: check swimming (adds 0.015 exhaustion in MCPE)
-                        if($this->isSprinting()){
-                            $this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
-                        }else{
-                            $this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
-                        }
-                    }
-                }
-            }
+						$distance = $from->distance($to);
+						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+						if($this->isSprinting()){
+							$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+						}else{
+							$this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
+						}
+					}
+				}
+			}
 
-            if(!$this->isSpectator()){
-                $this->checkNearEntities();
-            }
+			$this->speed = $to->subtract($from)->divide($tickDiff);
+		}elseif($distanceSquared == 0){
+			$this->speed = new Vector3(0, 0, 0);
+		}
 
-            $this->speed = $to->subtract($from)->divide($tickDiff);
-        }elseif($distanceSquared == 0){
-            $this->speed = new Vector3(0, 0, 0);
-        }
+		if($revert){
 
-        if($revert){
+			$this->lastX = $from->x;
+			$this->lastY = $from->y;
+			$this->lastZ = $from->z;
 
-            $this->lastX = $from->x;
-            $this->lastY = $from->y;
-            $this->lastZ = $from->z;
+			$this->lastYaw = $from->yaw;
+			$this->lastPitch = $from->pitch;
 
-            $this->lastYaw = $from->yaw;
-            $this->lastPitch = $from->pitch;
+			$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
+		}else{
+			if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
+				$this->nextChunkOrderRun = 20;
+			}
+		}
 
-            $this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
-        }else{
-            if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
-                $this->nextChunkOrderRun = 20;
-            }
-        }
-
-        $this->newPosition = null;
-    }
+		$this->newPosition = null;
+	}
 
     public function tryChangeMovement(){
 
@@ -1983,8 +1968,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
             }
         }
-
-        $this->checkTeleportPosition();
 
         $this->timings->stopTiming();
 
@@ -2461,41 +2444,30 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->dataPacket($pk);
                 break;
 
-            case ProtocolInfo::MOVE_PLAYER_PACKET:		
-				$revert = false;
-				if($this->dead === true || $this->spawned !== true){
-					//$revert = true;
-					$revert = false;
-					//$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
-				}
-				if($revert){
-					$this->sendPosition($this->forceMovement, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
-				}else{
-					$newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
-					if(!($this->forceMovement instanceof Vector3) || $newPos->distanceSquared($this->forceMovement) <= 0.1){
-						$packet->yaw %= 360;
-						$packet->pitch %= 360;
-						if($packet->yaw < 0){
-							$packet->yaw += 360;
-						}
-						if(!$this->isMayMove){
-							if($this->yaw != $packet->yaw || $this->pitch != $packet->pitch || abs($this->x - $packet->x) >= 0.05 || abs($this->z - $packet->z) >= 0.05){
-								$this->setMayMove(true);
-								$spawn = $this->getSpawn();
-								$spawn->y += 0.1;
-								$this->teleport($spawn);
-							}
-						}
-						$this->setRotation($packet->yaw, $packet->pitch);
-						$this->newPosition = $newPos;	
-						$this->forceMovement = null;
-					}elseif(microtime(true) - $this->lastTeleportTime > 3){
-						$this->forceMovement = new Vector3($this->x, $this->y, $this->z);
-						$this->sendPosition($this->forceMovement, $packet->yaw, $packet->pitch, MovePlayerPacket::MODE_RESET);
-						$this->lastTeleportTime = microtime(true);
-					}
-				}
-				break;
+            case ProtocolInfo::MOVE_PLAYER_PACKET:	
+                $newPos = $packet->position->subtract(0, $this->baseOffset, 0);
+                if($this->isTeleporting and $newPos->distanceSquared($this) > 1){
+                	$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+                	$this->server->getLogger()->debug("Got outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
+                }elseif((!$this->isAlive() or $this->spawned !== true) and $newPos->distanceSquared($this) > 0.01){
+                	$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
+                	$this->server->getLogger()->debug("Reverted movement of " . $this->getName() . " due to not alive or not spawned, received " . $newPos . ", locked at " . $this->asVector3());
+                }else{
+                	if($this->isTeleporting){
+                		$this->isTeleporting = false;
+                	}
+                	
+                	$packet->yaw %= 360;
+                	$packet->pitch %= 360;
+                	
+                	if($packet->yaw < 0){
+                		$packet->yaw += 360;
+                	}
+                	
+                	$this->setRotation($packet->yaw, $packet->pitch);
+                	$this->newPosition = $newPos;
+                }
+				    break;
             case ProtocolInfo::ADVENTURE_SETTINGS_PACKET:
                 /** @var AdventureSettingsPacket $packet */
                 if($packet->entityUniqueId !== $this->getId()){
@@ -3997,9 +3969,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pitch = $pitch ?? $this->pitch;
         $pk = new MovePlayerPacket();
         $pk->entityRuntimeId = $this->getId();
-        $pk->x = $pos->x;
-        $pk->y = $pos->y + $this->getEyeHeight();
-        $pk->z = $pos->z;
+        $pk->position = $this->getOffsetPosition($this);
         $pk->bodyYaw = $yaw;
         $pk->pitch = $pitch;
         $pk->yaw = $yaw;
@@ -4048,95 +4018,44 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
     }
 
-    /**
-     * @return bool
-     */
-    protected function checkTeleportPosition(){
-        if ($this->teleportPosition !== null) {
-            $chunkX = $this->teleportPosition->x >> 4;
-            $chunkZ = $this->teleportPosition->z >> 4;
+   /**
+	 * {@inheritdoc}
+	 */
+	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+		if(parent::teleport($pos, $yaw, $pitch)){
 
-            for ($X = -1; $X <= 1; ++$X) {
-                for ($Z = -1; $Z <= 1; ++$Z) {
-                    if (!isset($this->usedChunks[$index = Level::chunkHash($chunkX + $X, $chunkZ + $Z)]) or $this->usedChunks[$index] === false) {
-                        return false;
-                    }
-                }
-            }
+			$this->removeAllWindows();
 
-            $this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
-            $this->spawnToAll();
-            $this->forceMovement = $this->teleportPosition;
-            $this->teleportPosition = null;
+			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT);
+			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_TELEPORT, $this->getViewers());
 
-            return true;
-        }
+			$this->spawnToAll();
 
-        return true;
-    }
+			$this->resetFallDistance();
+			$this->nextChunkOrderRun = 0;
+			$this->newPosition = null;
+			$this->stopSleep();
 
-    /**
-     * @param Vector3|Position|Location $pos
-     * @param float $yaw
-     * @param float $pitch
-     *
-     * @return bool
-     */
-    public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
-        if (!$this->isOnline()) {
-            return false;
-        }
+			$this->isTeleporting = true;
 
-        $oldPos = $this->getPosition();
-        if (parent::teleport($pos, $yaw, $pitch)) {
+			return true;
+		}
 
-            $this->removeAllWindows();
+		return false;
+	}
 
-            $this->teleportPosition = new Vector3($this->x, $this->y, $this->z);
-
-            if (!$this->checkTeleportPosition()) {
-                $this->forceMovement = $oldPos;
-            } else {
-                $this->spawnToAll();
-            }
-
-            $this->resetFallDistance();
-            $this->nextChunkOrderRun = 0;
-            $this->newPosition = null;
-            $this->stopSleep();
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * This method may not be reliable. Clients don't like to be moved into unloaded chunks.
-     * Use teleport() for a delayed teleport after chunks have been sent.
-     *
-     * @param Vector3 $pos
-     * @param float $yaw
-     * @param float $pitch
-     */
-    public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null){
-        if (parent::teleport($pos, $yaw, $pitch)) {
-
-            foreach ($this->windowIndex as $window) {
-                if ($window === $this->inventory) {
-                    continue;
-                }
-                $this->removeWindow($window);
-            }
-
-            $this->forceMovement = new Vector3($this->x, $this->y, $this->z);
-            $this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_RESET);
-
-
-            $this->resetFallDistance();
-            $this->orderChunks();
-            $this->nextChunkOrderRun = 0;
-            $this->newPosition = null;
-        }
-    }
+	/**
+	 * @deprecated This functionality is now performed in {@link Player#teleport}.
+	 *
+	 * @param Vector3    $pos
+	 * @param float|null $yaw
+	 * @param float|null $pitch
+	 *
+	 * @return bool
+	 */
+	public function teleportImmediate(Vector3 $pos, $yaw = null, $pitch = null){
+		return $this->teleport($pos, $yaw, $pitch);
+	}
 
     protected function addDefaultWindows(){
         $this->addWindow($this->getInventory(), ContainerIds::INVENTORY, true);
@@ -4461,5 +4380,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     public function getPing(){
         return $this->ping;
+    }
+    
+    public function isTeleporting() : bool{
+    	return $this->isTeleporting;
     }
 }

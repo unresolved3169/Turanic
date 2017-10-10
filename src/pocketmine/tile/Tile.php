@@ -23,7 +23,6 @@
 /**
  * All the Tile classes and related classes
  */
-
 namespace pocketmine\tile;
 
 use pocketmine\event\Timings;
@@ -55,7 +54,8 @@ abstract class Tile extends Position {
 	const DROPPER = "Dropper";
 	const BEACON = "Beacon";
 	const VIRTUAL_HOLDER = "VirtualHolder";
-	const JUKEBOX = "JUKEBOX";
+	const JUKEBOX = "Jukebox";
+	const BANNER = "Banner";
 
 	public static $tileCount = 1;
 
@@ -73,6 +73,7 @@ abstract class Tile extends Position {
 	public $metadata;
 	public $closed = false;
 	public $namedtag;
+	
 	protected $lastUpdate;
 	protected $server;
 	protected $timings;
@@ -81,6 +82,7 @@ abstract class Tile extends Position {
 	public $tickTimer;
 
 	public static function init(){
+		self::registerTile(Banner::class);
 		self::registerTile(Bed::class);
 		self::registerTile(BrewingStand::class);
 		self::registerTile(Cauldron::class);
