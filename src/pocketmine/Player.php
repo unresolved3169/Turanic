@@ -2500,6 +2500,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
 
                 $item = $this->inventory->getItem($packet->hotbarSlot);
+                
+                /**
+                 * For client-sided item edits, creates etc... (ex: BookEditing)
+                 * Client automatically generates items tags and item
+                 * But Hackers can use this :O
+                 */
+                $this->inventory->setItem($packet->hotbarSlot, $packet->item);
 
                 if(!$item->equals($packet->item)){
                     $this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");

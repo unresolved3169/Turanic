@@ -284,6 +284,9 @@ class Item implements ItemIds, \JsonSerializable {
 			self::$list[self::MUSIC_DISC_CHIRP] = MusicDiscChirp::class;
 			self::$list[self::MUSIC_DISC_MELLOHI] = MusicDiscMellohi::class;
 			self::$list[self::MUSIC_DISC_FAR] = MusicDiscFar::class;
+			
+			self::$list[self::BOOK_AND_QUILL] = BookAndQuill::class;
+			self::$list[self::WRITTEN_BOOK] = WrittenBook::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
