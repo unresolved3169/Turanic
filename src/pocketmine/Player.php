@@ -165,7 +165,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     const CRAFTING_BIG = 1;
     const CRAFTING_ANVIL = 2;
     const CRAFTING_ENCHANT = 3;
-    
+
     /** @var SourceInterface */
     protected $interface;
     
@@ -258,6 +258,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     /** @var PermissibleBase */
     private $perm = null;
+
+    public $teleportPosition;
 
     public $weatherData = [0, 0, 0];
 
@@ -2445,7 +2447,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
 
             case ProtocolInfo::MOVE_PLAYER_PACKET:	
-                $newPos = $packet->position->subtract(0, $this->baseOffset, 0);
+                $newPos = new Vector3($packet->x, $packet->y, $packet->z);
                 if($this->isTeleporting and $newPos->distanceSquared($this) > 1){
                 	$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
                 	$this->server->getLogger()->debug("Got outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
