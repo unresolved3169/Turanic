@@ -42,8 +42,9 @@ class MainLogger extends \AttachableThreadedLogger {
 	public $shouldSendMsg = "";
 	public $shouldRecordMsg = false;
 	private $lastGet = 0;
+    private $attachment;
 
-	/**
+    /**
 	 * @param $b
 	 */
 	public function setSendMsg($b){
@@ -207,35 +208,36 @@ class MainLogger extends \AttachableThreadedLogger {
 		}
 	}
 
-	/**
-	 * @param mixed  $level
-	 * @param string $message
-	 */
-	public function log($level, $message){
+    /**
+     * @param mixed $level
+     * @param string $message
+     * @param string $name
+     */
+	public function log($level, $message, $name = ""){
 		switch($level){
 			case LogLevel::EMERGENCY:
-				$this->emergency($message);
+				$this->emergency($message, $name != "" ? "EMERGENCY ".$name : "EMERGENCY");
 				break;
 			case LogLevel::ALERT:
-				$this->alert($message);
+				$this->alert($message, $name != "" ? "ALERT ".$name : "ALERT");
 				break;
 			case LogLevel::CRITICAL:
-				$this->critical($message);
+				$this->critical($message,$name != "" ? "CRITICAL ".$name : "CRITICAL");
 				break;
 			case LogLevel::ERROR:
-				$this->error($message);
+				$this->error($message, $name != "" ? "ERROR ".$name : "ERROR");
 				break;
 			case LogLevel::WARNING:
-				$this->warning($message);
+				$this->warning($message, $name != "" ? "WARNING ".$name : "WARNING");
 				break;
 			case LogLevel::NOTICE:
-				$this->notice($message);
+				$this->notice($message, $name != "" ? "NOTICE ".$name : "NOTICE");
 				break;
 			case LogLevel::INFO:
-				$this->info($message);
+				$this->info($message, $name != "" ? "INFO ".$name : "INFO");
 				break;
 			case LogLevel::DEBUG:
-				$this->debug($message);
+				$this->debug($message, $name != "" ? "DEBUG ".$name : "DEBUG");
 				break;
 		}
 	}
@@ -287,52 +289,16 @@ class MainLogger extends \AttachableThreadedLogger {
 	}
 	
 	public function directSend($message){
-		$message = TextFormat::toANSI($message);
-		$cleanMessage = TextFormat::clean($message);
-		if(!Terminal::hasFormattingCodes()){
-			echo $cleanMessage . PHP_EOL;
+		if(Terminal::hasFormattingCodes()){
+			echo TextFormat::toANSI($message) . PHP_EOL;
 		}else{
-			echo $message . PHP_EOL;
+			echo TextFormat::clean($message) . PHP_EOL;
 		}
 	}
 	
 	public static function clear(){
 		echo chr(27) . chr(91) . 'H' . chr(27) . chr(91) . 'J';
 	}
-	
-	/*public function run(){
-		$this->shutdown = false;
-		if($this->write){
-			$this->logResource = fopen($this->logFile, "a+b");
-			if(!is_resource($this->logResource)){
-				throw new \RuntimeException("Couldn't open log file");
-			}
-
-			while($this->shutdown === false){
-				if(!$this->write) {
-					fclose($this->logResource);
-					break;
-				}
-				$this->synchronized(function(){
-					while($this->logStream->count() > 0){
-						$chunk = $this->logStream->shift();
-						fwrite($this->logResource, $chunk);
-					}
-
-					$this->wait(25000);
-				});
-			}
-
-			if($this->logStream->count() > 0){
-				while($this->logStream->count() > 0){
-					$chunk = $this->logStream->shift();
-					fwrite($this->logResource, $chunk);
-				}
-			}
-
-			fclose($this->logResource);
-		}
-	}*/
 
 	public function run(){
 		$this->shutdown = false;

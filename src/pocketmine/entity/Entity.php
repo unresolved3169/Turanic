@@ -440,7 +440,7 @@ abstract class Entity extends Location implements Metadatable {
 		$this->justCreated = true;
 		$this->namedtag = $nbt;
 
-		$this->chunk = $level->getChunk($this->namedtag["Pos"][0] >> 4, $this->namedtag["Pos"][2] >> 4);
+		$this->chunk = $level->getChunk($this->namedtag["Pos"][0] >> 4, $this->namedtag["Pos"][2] >> 4, true);
 		assert($this->chunk !== null);
 		$this->setLevel($level);
 		$this->server = $level->getServer();
@@ -1558,16 +1558,14 @@ abstract class Entity extends Location implements Metadatable {
      * @param $onGround
      */
 	protected function updateFallState($distanceThisTick, $onGround){
-		if($onGround === true){
-			if($this->fallDistance > 0){
-				if($this instanceof Living){
-					$this->fall($this->fallDistance);
-				}
-				$this->resetFallDistance();
-			}
-		}elseif($distanceThisTick < 0){
-			$this->fallDistance -= $distanceThisTick;
-		}
+        if($onGround){
+            if($this->fallDistance > 0){
+                $this->fall($this->fallDistance);
+                $this->resetFallDistance();
+            }
+        }elseif($distanceThisTick < 0){
+            $this->fallDistance -= $distanceThisTick;
+        }
 	}
 
 	/**
@@ -1805,13 +1803,15 @@ abstract class Entity extends Location implements Metadatable {
             if(!$this->setPosition($pos)){
                 return false;
             }else{
-                $bb = clone $this->boundingBox;
-                $bb->maxY = $bb->minY + 0.5;
-                $bb->minY -= 1;
-                if (count($this->level->getCollisionBlocks($bb)) > 0) {
-                    $this->onGround = true;
-                } else {
-                    $this->onGround = false;
+                if(!$this->isPlayer){
+                    $bb = clone $this->boundingBox;
+                    $bb->maxY = $bb->minY + 0.5;
+                    $bb->minY -= 1;
+                    if (count($this->level->getCollisionBlocks($bb)) > 0) {
+                        $this->onGround = true;
+                    } else {
+                        $this->onGround = false;
+                    }
                 }
                 $this->isCollided = $this->onGround;
                 $this->updateFallState($dy, $this->onGround);
