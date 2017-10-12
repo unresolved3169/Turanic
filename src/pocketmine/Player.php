@@ -178,7 +178,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public $loggedIn = false;
     public $gamemode;
     public $lastBreak;
-    public $dead = false; 
+
     protected $windowCnt = 2;
     /** @var \SplObjectStorage<Inventory> */
     protected $windows;
@@ -263,10 +263,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     /** @var Vector3 */
     public $fromPos = null;
-    private $portalTime = 0;
     protected $shouldSendStatus = false;
-    /** @var  Position */
-    private $shouldResPos;
 
     /** @var FishingHook */
     public $fishingHook = null;
@@ -280,7 +277,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected $personalCreativeItems = [];
 
     /** @var int */
-    protected $lastEnderPearlUse = 0;
+    public $lastEnderPearlUse = 0;
     /** @var  CraftingGrid */
     protected $craftingGrid;
     /** @var  PlayerCursorInventory */
@@ -3976,7 +3973,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pitch = $pitch ?? $this->pitch;
         $pk = new MovePlayerPacket();
         $pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getOffsetPosition($this);
+        $pk->position = $this->getOffsetPosition($pos);
         $pk->bodyYaw = $yaw;
         $pk->pitch = $pitch;
         $pk->yaw = $yaw;
@@ -4025,10 +4022,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
     }
 
-   /**
-	 * {@inheritdoc}
-	 */
-	public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
+    /**
+     * @param Vector3 $pos
+     * @param null $yaw
+     * @param null $pitch
+     * @return bool
+     */
+    public function teleport(Vector3 $pos, $yaw = null, $pitch = null){
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			$this->removeAllWindows();
@@ -4326,7 +4326,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     			$this->server->getPluginManager()->callEvent($ev = new UICloseEvent($this, $packet));
     			if($ev->isCancelled()){
     				$this->sendModalForm($this->getModalForm($id));
-    				$cancel = true;
     			}
     			$this->modalWindows[$id]->close($this);
                 return;

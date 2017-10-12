@@ -1386,6 +1386,7 @@ class Level implements ChunkManager, Metadatable
             }
 
             $block->position($pos);
+            $block->clearBoundingBoxes();
             unset($this->blockCache[Level::blockHash($pos->x, $pos->y, $pos->z)]);
 
             $index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
@@ -1413,7 +1414,7 @@ class Level implements ChunkManager, Metadatable
                     foreach ($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 1, $block->y + 1, $block->z + 1)) as $entity) {
                         $entity->scheduleUpdate();
                     }
-                    $ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
+                    $block->onUpdate(self::BLOCK_UPDATE_NORMAL);
                 }
 
                 $this->updateAround($pos);

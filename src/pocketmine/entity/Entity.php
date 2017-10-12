@@ -1730,56 +1730,37 @@ abstract class Entity extends Location implements Metadatable {
 		return false;
 	}
 
-	/**
-	 * @param $dx
-	 * @param $dy
-	 * @param $dz
-	 *
-	 * @return bool
-	 */
-	public function fastMove($dx, $dy, $dz){
-		if($dx == 0 and $dz == 0 and $dy == 0){
-			return true;
-		}
-
-		Timings::$entityMoveTimer->startTiming();
-
-		/*$newBB = $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz);
-
-		$list = $this->level->getCollisionCubes($this, $newBB, false);
-
-		if(count($list) === 0){
-			$this->boundingBox = $newBB;
-		}*/
-
-		$this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->y = $this->boundingBox->minY - $this->ySize;
-		$this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
-
-		$this->checkChunks();
-
-		if(!$this->onGround or $dy != 0){
-			$bb = clone $this->boundingBox;
-			$bb->minY -= 0.75;
-			$this->onGround = false;
-			if(!$this->level->getBlock(new Vector3($this->x, $this->y - 1, $this->z))->isTransparent())
-				$this->onGround = true;
-			/*
-                        if(count($this->level->getCollisionBlocks($bb)) > 0){
-                            $this->onGround = true;
-                        }*/
-		}
-		$this->isCollided = $this->onGround;
-		$this->updateFallState($dy, $this->onGround);
-
-
-		Timings::$entityMoveTimer->stopTiming();
-
-		return true;
-	}
-
 	public function getStepHeight(){
 	    return 0;
+    }
+
+    public function fastMove(float $dx, float $dy, float $dz) : bool{
+        $this->blocksAround = null;
+        if($dx == 0 and $dz == 0 and $dy == 0){
+            return true;
+        }
+        Timings::$entityMoveTimer->startTiming();
+        $newBB = $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz);
+        $list = $this->level->getCollisionCubes($this, $newBB, false);
+        if(count($list) === 0){
+            $this->boundingBox = $newBB;
+        }
+        $this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+        $this->y = $this->boundingBox->minY - $this->ySize;
+        $this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+        $this->checkChunks();
+        if(!$this->onGround or $dy != 0){
+            $bb = clone $this->boundingBox;
+            $bb->minY -= 0.75;
+            $this->onGround = false;
+            if(count($this->level->getCollisionBlocks($bb)) > 0){
+                $this->onGround = true;
+            }
+        }
+        $this->isCollided = $this->onGround;
+        $this->updateFallState($dy, $this->onGround);
+        Timings::$entityMoveTimer->stopTiming();
+        return true;
     }
 
 	/**
@@ -1789,33 +1770,86 @@ abstract class Entity extends Location implements Metadatable {
 	 *
 	 * @return bool
 	 */
-
 	public function move($dx, $dy, $dz){
-	    if($dx == 0 and $dz == 0 and $dy == 0){
+        $this->blocksAround = [];
+        if($dx == 0 and $dz == 0 and $dy == 0){
             return true;
         }
         if($this->keepMovement){
             $this->boundingBox->offset($dx, $dy, $dz);
-            $this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
+            $this->setPosition($this->temporalVector->setComponents(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
+            $this->onGround = $this->isPlayer ? true : false;
             return true;
         }else{
-            $pos = new Vector3($this->x + $dx, $this->y + $dy, $this->z + $dz);
-            if(!$this->setPosition($pos)){
-                return false;
-            }else{
-                if(!$this->isPlayer){
-                    $bb = clone $this->boundingBox;
-                    $bb->maxY = $bb->minY + 0.5;
-                    $bb->minY -= 1;
-                    if (count($this->level->getCollisionBlocks($bb)) > 0) {
-                        $this->onGround = true;
-                    } else {
-                        $this->onGround = false;
-                    }
-                }
-                $this->isCollided = $this->onGround;
-                $this->updateFallState($dy, $this->onGround);
+            Timings::$entityMoveTimer->startTiming();
+            $this->ySize *= 0.4;
+            $movX = $dx;
+            $movY = $dy;
+            $movZ = $dz;
+            $axisalignedbb = clone $this->boundingBox;
+            assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
+            $list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);
+            foreach($list as $bb){
+                $dy = $bb->calculateYOffset($this->boundingBox, $dy);
             }
+            $this->boundingBox->offset(0, $dy, 0);
+            $fallingFlag = ($this->onGround or ($dy != $movY and $movY < 0));
+            foreach($list as $bb){
+                $dx = $bb->calculateXOffset($this->boundingBox, $dx);
+            }
+            $this->boundingBox->offset($dx, 0, 0);
+            foreach($list as $bb){
+                $dz = $bb->calculateZOffset($this->boundingBox, $dz);
+            }
+            $this->boundingBox->offset(0, 0, $dz);
+            if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)){
+                $cx = $dx;
+                $cy = $dy;
+                $cz = $dz;
+                $dx = $movX;
+                $dy = $this->stepHeight;
+                $dz = $movZ;
+                $axisalignedbb1 = clone $this->boundingBox;
+                $this->boundingBox->setBB($axisalignedbb);
+                $list = $this->level->getCollisionCubes($this, $this->boundingBox->addCoord($dx, $dy, $dz), false);
+                foreach($list as $bb){
+                    $dy = $bb->calculateYOffset($this->boundingBox, $dy);
+                }
+                $this->boundingBox->offset(0, $dy, 0);
+                foreach($list as $bb){
+                    $dx = $bb->calculateXOffset($this->boundingBox, $dx);
+                }
+                $this->boundingBox->offset($dx, 0, 0);
+                foreach($list as $bb){
+                    $dz = $bb->calculateZOffset($this->boundingBox, $dz);
+                }
+                $this->boundingBox->offset(0, 0, $dz);
+                if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
+                    $dx = $cx;
+                    $dy = $cy;
+                    $dz = $cz;
+                    $this->boundingBox->setBB($axisalignedbb1);
+                }else{
+                    $this->ySize += 0.5;
+                }
+            }
+            $this->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
+            $this->y = $this->boundingBox->minY - $this->ySize;
+            $this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+            $this->checkChunks();
+            $this->checkBlockCollision();
+            $this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
+            $this->updateFallState($dy, $this->onGround);
+            if($movX != $dx){
+                $this->motionX = 0;
+            }
+            if($movY != $dy){
+                $this->motionY = 0;
+            }
+            if($movZ != $dz){
+                $this->motionZ = 0;
+            }
+            Timings::$entityMoveTimer->stopTiming();
             return true;
         }
     }

@@ -438,6 +438,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->getLevel()->setBlock($this, $this, true, true);
 	}
 
+	public function clearBoundingBoxes(){
+	    $this->boundingBox = null;
+    }
+
 	/**
 	 * Returns if the item can be broken with an specific Item
 	 *
