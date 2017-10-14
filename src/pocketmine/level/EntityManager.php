@@ -38,22 +38,21 @@ class EntityManager{
 	}
 	
 	public function despawnMobs(int $tick){
-		return; // deprecating livetexts plugin -_-
-		if($tick % 400 == 0){		
-			foreach($this->level->getEntities() as $e){
-				if($e instanceof Player) continue;
-				
-				if($e instanceof Creature){
-				 if(count($e->getViewers()) == 0){
-					 $e->close();
-				 }
-				}
-			}
-		}
+		return; // deprecating livetexts plugin.
+        $tick = [];
+		if($tick % 400 == 0) {
+            foreach ($this->level->getEntities() as $e) {
+                if ($e instanceof Player) continue;
+                if ($e instanceof Creature) {
+                    if (count($e->getViewers()) == 0) {
+                        $e->close();
+                    }
+                }
+            }
+        }
 	}
 	
 	public function attemptMobs(int $tick){
 		// TODO
 	}
 }
-?>

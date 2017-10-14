@@ -59,7 +59,7 @@ class Flat extends Generator {
 	 * @return string
 	 */
 	public function getName() : string{
-		return "flat";
+		return "Flat";
 	}
 
 	/**

@@ -27,7 +27,6 @@ namespace pocketmine\plugin;
 
 use pocketmine\command\CommandExecutor;
 
-
 /**
  * It is recommended to use PluginBase for the actual plugin
  *

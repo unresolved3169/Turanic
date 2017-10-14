@@ -65,5 +65,4 @@ interface PluginLoader {
 	 */
 	public function disablePlugin(Plugin $plugin);
 
-
 }

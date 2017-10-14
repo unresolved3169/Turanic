@@ -430,5 +430,4 @@ class SimpleCommandMap implements CommandMap {
 		
 		return $available;
 	}
-
 }

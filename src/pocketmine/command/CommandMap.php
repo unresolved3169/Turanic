@@ -60,5 +60,4 @@ interface CommandMap {
 	 */
 	public function getCommand($name);
 
-
 }

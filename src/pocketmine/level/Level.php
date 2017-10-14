@@ -98,8 +98,7 @@ use pocketmine\utils\ReversePriorityQueue;
 
 #include <rules/Level.h>
 
-class Level implements ChunkManager, Metadatable
-{
+class Level implements ChunkManager, Metadatable{
 
     private static $levelIdCounter = 1;
     private static $chunkLoaderCounter = 1;
@@ -862,6 +861,7 @@ class Level implements ChunkManager, Metadatable
      * @param Player[] $target
      * @param Block[] $blocks
      * @param int $flags
+     * @param bool $optimizeRebuilds
      */
     public function sendBlocks(array $target, array $blocks, $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false){
 		$packets = [];

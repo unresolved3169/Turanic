@@ -85,5 +85,4 @@ abstract class Event {
 
 		return static::$handlerList;
 	}
-
 }

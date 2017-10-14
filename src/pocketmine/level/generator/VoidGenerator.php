@@ -48,7 +48,7 @@ class VoidGenerator extends Generator {
 	/**
 	 * @return string
 	 */
-	public function getName(){
+	public function getName(): string {
 		return "Void";
 	}
 
@@ -115,7 +115,6 @@ class VoidGenerator extends Generator {
 	 * @return mixed|void
 	 */
 	public function populateChunk($chunkX, $chunkZ){
-
 	}
 
 	/**
@@ -124,5 +123,4 @@ class VoidGenerator extends Generator {
 	public function getSpawn(){
 		return new Vector3(128, 72, 128);
 	}
-
 }
