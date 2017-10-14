@@ -329,7 +329,9 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @param Item $item
 	 */
 	public static function addCreativeItem(Item $item){
-		Item::$creative[] = clone $item;
+		if(!in_array($item, Item::$creative)){
+		 Item::$creative[] = clone $item;
+		}
 	}
 
 	/**
