@@ -364,7 +364,7 @@ abstract class Entity extends Location implements Metadatable {
 	public $length;
 
 	/** @var int */
-	private $health = 20;
+	protected $health = 20;
 	private $maxHealth = 20;
 
 	protected $ySize = 0;

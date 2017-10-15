@@ -1979,6 +1979,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             }
 
             if (!$this->isSpectator() and $this->isAlive()) {
+                $this->checkNearEntities();
                 if ($this->hasEffect(Effect::LEVITATION)) {
                     $this->inAirTicks = 0;
                 }
