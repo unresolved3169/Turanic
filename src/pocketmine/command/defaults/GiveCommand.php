@@ -101,7 +101,7 @@ class GiveCommand extends VanillaCommand {
 
 		if($player instanceof Player){
 			if($item->getId() === 0){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.give.item.notFound", [$args[1]]));
+				$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.give.item.notFound", [$args[1]]));
 
 				return true;
 			}
@@ -109,7 +109,7 @@ class GiveCommand extends VanillaCommand {
 			//TODO: overflow
 			$player->getInventory()->addItem(clone $item);
 		}else{
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.player.notFound"));
 
 			return true;
 		}

@@ -24,8 +24,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\math\Vector3;
-
 class MovePlayerPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
 

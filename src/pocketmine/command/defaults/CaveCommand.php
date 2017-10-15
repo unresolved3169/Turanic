@@ -98,10 +98,10 @@ class CaveCommand extends VanillaCommand {
 		$caves[4] = isset($args[3]) ? $args[3] : mt_rand(1, 10);
 		$caves[3] = [false, true, true];
 		$sender->sendMessage(new TranslationContainer("pocketmine.commands.cave.info", [$caves[0], $caves[1], $caves[2], $caves[4]]));
-		$sender->sendMessage(new TranslationContainer(TextFormat::YELLOW . "%pocketmine.commands.cave.start"));
+		$sender->sendMessage(TextFormat::YELLOW . new TranslationContainer("%pocketmine.commands.cave.start"));
 		$sender->sendMessage($pos->x . " " . $pos->y . " " . $pos->z);
 		$this->caves($pos, $caves);
-		$sender->sendMessage(new TranslationContainer(TextFormat::GREEN . "%pocketmine.commands.cave.success"));
+		$sender->sendMessage(TextFormat::GREEN . new TranslationContainer("%pocketmine.commands.cave.success"));
 		return true;
 	}
 

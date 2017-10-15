@@ -60,7 +60,7 @@ class FormattedCommandAlias extends Command {
 				if($e instanceof \InvalidArgumentException){
 					$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				}else{
-					$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
+					$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.exception"));
 					$logger = $sender->getServer()->getLogger();
 					if($logger instanceof MainLogger){
 						$logger->logException($e);

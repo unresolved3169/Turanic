@@ -178,7 +178,7 @@ class CommandReader extends Thread {
 			$this->initStdin();
 		}
 
-		while(!$this->shutdown and $this->readLine());
+		while(!$this->shutdown and $this->readLine()) ;
 
 		if($this->type !== self::TYPE_READLINE){
 			global $stdin;

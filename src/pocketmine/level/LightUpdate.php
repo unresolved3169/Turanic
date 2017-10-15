@@ -23,8 +23,8 @@ namespace pocketmine\level;
 use pocketmine\block\Block;
 
 //TODO: make light updates asynchronous
-abstract class LightUpdate{
-
+abstract class LightUpdate
+{
     /** @var Level */
     protected $level;
     /** @var \SplQueue */
@@ -36,17 +36,20 @@ abstract class LightUpdate{
     /** @var bool[] */
     protected $removalVisited = [];
 
-    public function __construct(Level $level){
+    public function __construct(Level $level)
+    {
         $this->level = $level;
         $this->removalQueue = new \SplQueue();
         $this->spreadQueue = new \SplQueue();
     }
 
-    public function addSpreadNode(int $x, int $y, int $z){
+    public function addSpreadNode(int $x, int $y, int $z)
+    {
         $this->spreadQueue->enqueue([$x, $y, $z]);
     }
 
-    public function addRemoveNode(int $x, int $y, int $z, int $oldLight){
+    public function addRemoveNode(int $x, int $y, int $z, int $oldLight)
+    {
         $this->spreadQueue->enqueue([$x, $y, $z, $oldLight]);
     }
 
@@ -54,7 +57,8 @@ abstract class LightUpdate{
 
     abstract protected function setLight(int $x, int $y, int $z, int $level);
 
-    public function setAndUpdateLight(int $x, int $y, int $z, int $newLevel){
+    public function setAndUpdateLight(int $x, int $y, int $z, int $newLevel)
+    {
         if (isset($this->spreadVisited[$index = Level::blockHash($x, $y, $z)]) or isset($this->removalVisited[$index])) {
             throw new \InvalidArgumentException("Already have a visit ready for this block");
         }
@@ -71,7 +75,8 @@ abstract class LightUpdate{
         }
     }
 
-    public function execute(){
+    public function execute()
+    {
         while (!$this->removalQueue->isEmpty()) {
             list($x, $y, $z, $oldAdjacentLight) = $this->removalQueue->dequeue();
             $points = [
@@ -112,7 +117,8 @@ abstract class LightUpdate{
         }
     }
 
-    protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel){
+    protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel)
+    {
         $current = $this->getLight($x, $y, $z);
         if ($current !== 0 and $current < $oldAdjacentLevel) {
             $this->setLight($x, $y, $z, 0);
@@ -130,7 +136,8 @@ abstract class LightUpdate{
         }
     }
 
-    protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel){
+    protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel)
+    {
         $current = $this->getLight($x, $y, $z);
         $potentialLight = $newAdjacentLevel - Block::$lightFilter[$this->level->getBlockIdAt($x, $y, $z)];
         if ($current < $potentialLight) {

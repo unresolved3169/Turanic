@@ -57,10 +57,10 @@ class ReloadCommand extends VanillaCommand {
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer(TextFormat::YELLOW . "%pocketmine.command.reload.reloading"));
+		Command::broadcastCommandMessage($sender, TextFormat::YELLOW . new TranslationContainer("%pocketmine.command.reload.reloading"));
 
 		$sender->getServer()->reload();
-		Command::broadcastCommandMessage($sender, new TranslationContainer(TextFormat::YELLOW . "%pocketmine.command.reload.reloaded"));
+		Command::broadcastCommandMessage($sender, TextFormat::YELLOW . new TranslationContainer("%pocketmine.command.reload.reloaded"));
 
 		return true;
 	}

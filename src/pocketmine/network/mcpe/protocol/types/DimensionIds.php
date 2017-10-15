@@ -27,6 +27,6 @@ interface DimensionIds{
 
 	const OVERWORLD = 0;
 	const NETHER = 1;
-	const END = 2;
+	const THE_END = 2;
 
 }

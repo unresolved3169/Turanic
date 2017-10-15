@@ -2226,7 +2226,7 @@ class Server{
 		}
 
 
-		$sender->sendMessage(new TranslationContainer(TextFormat::GOLD . "%commands.generic.notFound"));
+		$sender->sendMessage(TextFormat::GOLD . new TranslationContainer("%commands.generic.notFound"));
 
 		return false;
 	}

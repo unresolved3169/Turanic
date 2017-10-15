@@ -132,7 +132,7 @@ class WhitelistCommand extends VanillaCommand {
 	 */
 	private function badPerm(CommandSender $sender, $perm){
 		if(!$sender->hasPermission("pocketmine.command.whitelist.$perm")){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.permission"));
 
 			return true;
 		}

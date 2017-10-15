@@ -168,7 +168,7 @@ abstract class Command {
 		}
 
 		if($this->permissionMessage === null){
-			$target->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+			$target->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.permission"));
 		}elseif($this->permissionMessage !== ""){
 			$target->sendMessage(str_replace("<permission>", $this->getPermission(), $this->permissionMessage));
 		}
@@ -382,7 +382,7 @@ abstract class Command {
 		}else{
 			$users = $source->getServer()->getPluginManager()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 			$result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
-			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [$source->getName(), $message]);
+			$colored = TextFormat::GRAY . TextFormat::ITALIC . new TranslationContainer("%chat.type.admin", [$source->getName(), $message]);
 		}
 
 		if($sendToSource === true and !($source instanceof ConsoleCommandSender)){

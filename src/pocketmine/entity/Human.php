@@ -85,15 +85,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     protected $xpSeed;
     protected $xpCooldown = 0;
 
-    public function jump(){
-        parent::jump();
-        if($this->isSprinting()){
-            $this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
-        }else{
-            $this->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
-        }
-    }
-
     /**
      * @return mixed
      */
@@ -134,9 +125,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * @param string $str
      * @param string $skinId
      *
-     * @param string $capeData
-     * @param string $geometryName
-     * @param string $geometryData
      * @deprecated
      */
     public function setSkin(string $str, string $skinId, string $capeData = "", string $geometryName = "", string $geometryData = ""){
@@ -145,6 +133,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         $this->skin->setCapeData($capeData);
         $this->skin->setGeometryName($geometryName);
         $this->skin->setGeometryData($geometryData);
+    }
+
+    public function jump(){
+        parent::jump();
+        if($this->isSprinting()){
+            $this->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+        }else{
+            $this->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
+        }
     }
 
     /**
@@ -816,8 +813,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
             $pk->uuid = $this->getUniqueId();
             $pk->username = $this->getName();
             $pk->entityRuntimeId = $this->getId();
-            $pk->position = $this->asVector3();
-            $pk->motion = $this->getMotion();
+            $pk->x = $this->x;
+            $pk->y = $this->y;
+            $pk->z = $this->z;
+            $pk->speedX = $this->motionX;
+            $pk->speedY = $this->motionY;
+            $pk->speedZ = $this->motionZ;
             $pk->yaw = $this->yaw;
             $pk->pitch = $this->pitch;
             $pk->item = $this->getInventory()->getItemInHand();

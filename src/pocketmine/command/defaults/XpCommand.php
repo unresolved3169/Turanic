@@ -102,7 +102,7 @@ class XpCommand extends VanillaCommand {
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 			return false;
 		}else{
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.player.notFound"));
 			return false;
 		}
 	}

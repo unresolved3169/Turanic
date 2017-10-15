@@ -133,7 +133,7 @@ class PluginLogger implements \AttachableLogger {
 	 * @param string $message
 	 */
 	public function log($level, $message){
-        Server::getInstance()->getLogger()->log($level, $message, $this->pluginName);
+		Server::getInstance()->getLogger()->log($level, $this->pluginName . $message);
 		foreach($this->attachments as $attachment){
 			$attachment->log($level, $message);
 		}
