@@ -49,7 +49,7 @@ class BlockEventPacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
-		$this->putBlockPosition($this->x, $this->y, $this->z);
+		$this->putBlockPosition((int)$this->x, (int)$this->y, (int)$this->z);
 		$this->putVarInt($this->case1);
 		$this->putVarInt($this->case2);
 	}

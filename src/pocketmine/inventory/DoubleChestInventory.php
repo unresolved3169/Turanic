@@ -140,7 +140,7 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder {
 			$pk->y = $this->right->getHolder()->getY();
 			$pk->z = $this->right->getHolder()->getZ();
 			$pk->case1 = 1;
-			$pk->case2 = 2;
+			$pk->case2 = 1;
 			if(($level = $this->right->getHolder()->getLevel()) instanceof Level){
 				$level->addChunkPacket($this->right->getHolder()->getX() >> 4, $this->right->getHolder()->getZ() >> 4, $pk);
 			}

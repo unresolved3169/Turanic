@@ -74,7 +74,7 @@ class ChestInventory extends ContainerInventory {
 			$pk->y = $this->getHolder()->getY();
 			$pk->z = $this->getHolder()->getZ();
 			$pk->case1 = 1;
-			$pk->case2 = 2;
+			$pk->case2 = 1;
 			if(($level = $this->getHolder()->getLevel()) instanceof Level){
 				$level->broadcastLevelSoundEvent($this->getHolder(), LevelSoundEventPacket::SOUND_CHEST_OPEN);
 				$level->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
