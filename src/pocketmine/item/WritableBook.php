@@ -30,7 +30,7 @@ use pocketmine\nbt\tag\StringTag;
 class WritableBook extends Item{
 
 	public function __construct(int $meta = 0){
-		parent::__construct(self::WRITABLE_BOOK, $meta, "Book & Quill");
+		parent::__construct(self::WRITABLE_BOOK, $meta, 1, "Book & Quill");
 	}
 
 	/**

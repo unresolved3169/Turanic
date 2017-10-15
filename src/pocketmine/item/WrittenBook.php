@@ -34,7 +34,7 @@ class WrittenBook extends WritableBook{
 	const GENERATION_TATTERED = 3;
 
 	public function __construct(int $meta = 0){
-		Item::__construct(self::WRITTEN_BOOK, $meta, "Written Book");
+		Item::__construct(self::WRITTEN_BOOK, $meta, 1, "Written Book");
 	}
 
 	public function getMaxStackSize() : int{
