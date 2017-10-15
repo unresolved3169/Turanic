@@ -65,7 +65,7 @@ class EnchantCommand extends VanillaCommand {
 		$player = $sender->getServer()->getPlayer($args[0]);
 
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.player.notFound"));
 			return true;
 		}
 
@@ -96,7 +96,7 @@ class EnchantCommand extends VanillaCommand {
 		}
 
 		if(Enchantment::getEnchantAbility($item) === 0){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.enchant.cantEnchant"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.enchant.cantEnchant"));
 			return true;
 		}
 

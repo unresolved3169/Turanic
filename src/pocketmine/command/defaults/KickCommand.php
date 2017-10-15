@@ -75,7 +75,7 @@ class KickCommand extends VanillaCommand {
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kick.success", [$player->getName()]));
 			}
 		}else{
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.player.notFound"));
 		}
 
 

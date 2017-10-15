@@ -25,6 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+
+use pocketmine\network\mcpe\NetworkSession;
+
 class EntityFallPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ENTITY_FALL_PACKET;
 
@@ -45,5 +48,9 @@ class EntityFallPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putLFloat($this->fallDistance);
 		$this->putBool($this->bool1);
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleEntityFall($this);
 	}
 }

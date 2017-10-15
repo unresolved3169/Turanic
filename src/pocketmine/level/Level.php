@@ -98,7 +98,8 @@ use pocketmine\utils\ReversePriorityQueue;
 
 #include <rules/Level.h>
 
-class Level implements ChunkManager, Metadatable{
+class Level implements ChunkManager, Metadatable
+{
 
     private static $levelIdCounter = 1;
     private static $chunkLoaderCounter = 1;
@@ -861,7 +862,6 @@ class Level implements ChunkManager, Metadatable{
      * @param Player[] $target
      * @param Block[] $blocks
      * @param int $flags
-     * @param bool $optimizeRebuilds
      */
     public function sendBlocks(array $target, array $blocks, $flags = UpdateBlockPacket::FLAG_NONE, bool $optimizeRebuilds = false){
 		$packets = [];
@@ -1386,7 +1386,6 @@ class Level implements ChunkManager, Metadatable{
             }
 
             $block->position($pos);
-            $block->clearBoundingBoxes();
             unset($this->blockCache[Level::blockHash($pos->x, $pos->y, $pos->z)]);
 
             $index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
@@ -1414,7 +1413,7 @@ class Level implements ChunkManager, Metadatable{
                     foreach ($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 1, $block->y + 1, $block->z + 1)) as $entity) {
                         $entity->scheduleUpdate();
                     }
-                    $block->onUpdate(self::BLOCK_UPDATE_NORMAL);
+                    $ev->getBlock()->onUpdate(self::BLOCK_UPDATE_NORMAL);
                 }
 
                 $this->updateAround($pos);

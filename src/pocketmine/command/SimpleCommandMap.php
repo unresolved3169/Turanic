@@ -335,7 +335,7 @@ class SimpleCommandMap implements CommandMap {
 				$target->execute($sender, $sentCommandLabel, $args);
 			}
 		}catch(\Throwable $e){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.generic.exception"));
 			$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.command.exception", [$commandLine, (string) $target, $e->getMessage()]));
 			$logger = $sender->getServer()->getLogger();
 			if($logger instanceof MainLogger){
@@ -430,4 +430,5 @@ class SimpleCommandMap implements CommandMap {
 		
 		return $available;
 	}
+
 }

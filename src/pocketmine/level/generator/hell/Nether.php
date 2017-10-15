@@ -207,4 +207,5 @@ class Nether extends Generator {
 	public function getSpawn(){
 		return new Vector3(127.5, 128, 127.5);
 	}
+
 }

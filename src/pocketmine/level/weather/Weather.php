@@ -28,7 +28,6 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 class Weather {
-
 	const CLEAR = 0;
 	const SUNNY = 0;
 	const RAIN = 1;

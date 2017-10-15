@@ -69,7 +69,7 @@ class TellCommand extends VanillaCommand {
 		$player = $sender->getServer()->getPlayer($name);
 
 		if($player === $sender){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.message.sameTarget"));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.message.sameTarget"));
 			return true;
 		}
 

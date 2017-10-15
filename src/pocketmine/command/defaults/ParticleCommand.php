@@ -116,7 +116,7 @@ class ParticleCommand extends VanillaCommand {
 		$particle = $this->getParticle($name, $pos, $xd, $yd, $zd, $data);
 
 		if($particle === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.particle.notFound", [$name]));
+			$sender->sendMessage(TextFormat::RED . new TranslationContainer("%commands.particle.notFound", [$name]));
 			return true;
 		}
 
