@@ -1485,9 +1485,9 @@ abstract class Entity extends Location implements Metadatable {
 		//return !($this instanceof Player);
 	}
 
- /**
-  * @depracated
-  */
+   /**
+   * @depracated
+   */
 	public final function scheduleUpdate(){
 		
 	}

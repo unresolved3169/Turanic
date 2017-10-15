@@ -1602,17 +1602,38 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param float $dz
      */
     protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz){
-        /*if (!$this->onGround or $movY != 0) {
-            $bb = clone $this->boundingBox;
-            $bb->maxY = $bb->minY + 0.5;
-            $bb->minY -= 1;
-            if (count($this->level->getCollisionBlocks($bb, true)) > 0) {
-                $this->onGround = true;
-            } else {
-                $this->onGround = false;
-            }
+        $bb = clone $this->boundingBox;
+        $bb->minY = $this->y - 0.1;
+        $bb->maxY = $this->y + 0.1;
+        if(count($this->level->getCollisionBlocks($bb, true)) > 0){
+            $this->onGround = true;
+        }else{
+            $this->onGround = false;
         }
-        $this->isCollided = $this->onGround;*/
+        $this->isCollided = $this->onGround;
+    }
+
+    public function move($dx, $dy, $dz){
+        $this->checkGroundState(0,0,0,0,0,0);
+        if($dx == 0 and $dz == 0 and $dy == 0){
+            return true;
+        }
+
+        if($this->keepMovement){
+            $this->boundingBox->offset($dx, $dy, $dz);
+            $this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
+            $this->onGround = $this->isPlayer ? true : false;
+            return true;
+        }else{
+            $pos = new Vector3($this->x + $dx, $this->y + $dy, $this->z + $dz);
+            if(!$this->setPosition($pos)){
+                return false;
+            }else{
+                $this->checkChunks();
+                $this->updateFallState($dy, $this->onGround);
+            }
+            return true;
+        }
     }
 
     protected function checkBlockCollision(){
@@ -1932,7 +1953,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
             }
 
-            if (!$this->isSpectator() and $this->speed !== null) {
+            if (!$this->isSpectator() and $this->isAlive()) {
                 if ($this->hasEffect(Effect::LEVITATION)) {
                     $this->inAirTicks = 0;
                 }
@@ -1961,7 +1982,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         }
                     }
 
-                    ++$this->inAirTicks;
+                    $this->inAirTicks += $tickDiff;
                 }
             }
         }
@@ -2302,7 +2323,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $timings->stopTiming();
             return false;
         }
-
         switch ($packet::NETWORK_ID) {
         	   case ProtocolInfo::MODAL_FORM_RESPONSE_PACKET:
         	       $this->checkModal($packet);
@@ -2441,7 +2461,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->dataPacket($pk);
                 break;
 
-            case ProtocolInfo::MOVE_PLAYER_PACKET:	
+            case ProtocolInfo::MOVE_PLAYER_PACKET:
+                /** @var MovePlayerPacket $packet */
                 $newPos = $packet->position->subtract(0, $this->baseOffset, 0);
                 if($this->isTeleporting and $newPos->distanceSquared($this) > 1){
                 	$this->sendPosition($this, null, null, MovePlayerPacket::MODE_RESET);
