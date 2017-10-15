@@ -39,6 +39,16 @@ class Sign extends Spawnable {
             $this->text = explode("\n", $nbt->Text->getValue());
             unset($nbt->Text);
         }
+        
+        /**
+         * For old Signs
+         */
+        if(isset($nbt->Text1)){
+        	$this->text[0] = $nbt->Text1->getValue();
+        	$this->text[1] = $nbt->Text2->getValue();
+        	$this->text[2] = $nbt->Text3->getValue();
+        	$this->text[3] = $nbt->Text4->getValue();
+        }
 
         parent::__construct($level, $nbt);
     }
