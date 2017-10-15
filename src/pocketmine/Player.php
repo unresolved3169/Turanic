@@ -877,6 +877,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /**
      * @param string $str
      * @param string $skinId
+     * @param string $capeData
+     * @param string $geometryName
+     * @param string $geometryData
      */
     public function setSkin(string $str, string $skinId, string $capeData = "", string $geometryName = "", string $geometryData = ""){
         parent::setSkin($str, $skinId, $capeData, $geometryName, $geometryData);
@@ -3908,7 +3911,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         }
 
-        Entity::kill();
+        parent::kill();
 
         $ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params));
         $ev->setKeepInventory($this->server->keepInventory);
@@ -3935,11 +3938,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
         }
 
-        $pos = $this->getSpawn();
-
-        $this->setHealth(0);
-
-        $this->sendRespawnPacket($pos);
+        $this->sendRespawnPacket($this->getSpawn());
     }
 
     /**
