@@ -142,6 +142,9 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
+use pocketmine\network\mcpe\protocol\BookEditPacket;
+use pocketmine\item\{WrittenBook,WritableBook};
+use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -2544,13 +2547,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
 
                 $item = $this->inventory->getItem($packet->hotbarSlot);
-                
-                /**
-                 * For client-sided item edits, creates etc... (ex: BookEditing)
-                 * Client automatically generates items tags and item
-                 * But Hackers can use this :O
-                 */
-                $this->inventory->setItem($packet->hotbarSlot, $packet->item);
 
                 if(!$item->equals($packet->item)){
                     $this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
@@ -3381,8 +3377,53 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             case ProtocolInfo::PING_PACKET:
                 $this->setPing($packet->ping);
                 break;
+            case ProtocolInfo::BOOK_EDIT_PACKET:
+             /** @var WritableBook $oldBook */
+             $oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
+             if($oldBook->getId() !== Item::WRITABLE_BOOK){
+            	 return false;
+             }
+            
+             $newBook = clone $oldBook;
+             $modifiedPages = [];
+            
+             switch($packet->type){
+            	 case BookEditPacket::TYPE_REPLACE_PAGE:
+            	  $newBook->setPageText($packet->pageNumber, $packet->text);
+            	  $modifiedPages[] = $packet->pageNumber;
+            	  break;
+            	 case BookEditPacket::TYPE_ADD_PAGE:
+            	  $newBook->insertPage($packet->pageNumber, $packet->text);
+            	  $modifiedPages[] = $packet->pageNumber;
+            	  break;
+            	 case BookEditPacket::TYPE_DELETE_PAGE:
+            	  $newBook->deletePage($packet->pageNumber);
+            	  $modifiedPages[] = $packet->pageNumber;
+            	  break;
+            	 case BookEditPacket::TYPE_SWAP_PAGES:
+            	  $newBook->swapPage($packet->pageNumber, $packet->secondaryPageNumber);
+            	  $modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
+            	  break;
+            	 case BookEditPacket::TYPE_SIGN_BOOK:
+            	  /** @var WrittenBook $newBook */
+            	  $newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
+            	  $newBook->setAuthor($packet->author);
+            	  $newBook->setTitle($packet->title);
+            	  $newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
+            	  break;
+            	 default:
+            	  break;
+             }
+            
+             $this->getServer()->getPluginManager()->callEvent($event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages));
+             if($event->isCancelled()){
+             	return true;
+             }
+            
+             $this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
+             break;
             default:
-                break;
+             break;
         }
         $timings->stopTiming();
         return true;

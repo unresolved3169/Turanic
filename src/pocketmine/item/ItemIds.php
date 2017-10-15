@@ -174,7 +174,7 @@ interface ItemIds extends BlockIds {
 	const BOTTLE_O_ENCHANTING = 384;
 	const ENCHANTING_BOTTLE = 384;
 	const FIRE_CHARGE = 385;
-	const BOOK_AND_QUILL = 386;
+	const WRITABLE_BOOK = 386;
 	const WRITTEN_BOOK = 387;  
 	const EMERALD = 388;
 	const ITEM_FRAME = 389;

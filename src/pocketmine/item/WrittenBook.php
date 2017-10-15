@@ -2,91 +2,130 @@
 
 /*
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
- *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author TuranicTeam
- * @link https://github.com/TuranicTeam/Turanic
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
  *
- */
+ *
+*/
+
+declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\nbt\tag\{ListTag, NamedTag, StringTag};
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 
-class WrittenBook extends Item{
+class WrittenBook extends WritableBook{
+
+	const GENERATION_ORIGINAL = 0;
+	const GENERATION_COPY = 1;
+	const GENERATION_COPY_OF_COPY = 2;
+	const GENERATION_TATTERED = 3;
+
+	public function __construct(int $meta = 0){
+		Item::__construct(self::WRITTEN_BOOK, $meta, "Written Book");
+	}
+
+	public function getMaxStackSize() : int{
+		return 16;
+	}
+
 	/**
-	 * WrittenBook constructor.
+	 * Returns the generation of the book.
+	 * Generations higher than 1 can not be copied.
 	 *
-	 * @param int $meta
-	 * @param int $count
+	 * @return int
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::WRITTEN_BOOK, 0, $count, "WrittenBook");
+	public function getGeneration() : int{
+		if(!isset($this->getNamedTag()->generation)) {
+			return -1;
+		}
+		return $this->getNamedTag()->generation->getValue();
 	}
-	
-	public function setAuthor(string $name){
-		return $this->setOption("author", new StringTag("author", $name));
+
+	/**
+	 * Sets the generation of a book.
+	 *
+	 * @param int $generation
+	 */
+	public function setGeneration(int $generation) : void{
+		if($generation < 0 or $generation > 3){
+			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
+		}
+		$namedTag = $this->getNamedTag();
+
+		if(isset($namedTag->generation)){
+			$namedTag->generation->setValue($generation);
+		}else{
+			$namedTag->generation = new IntTag("generation", $generation);
+		}
+		$this->setNamedTag($namedTag);
 	}
-	
+
+	/**
+	 * Returns the author of this book.
+	 * This is not a reliable way to get the name of the player who signed this book.
+	 * The author can be set to anything when signing a book.
+	 *
+	 * @return string
+	 */
 	public function getAuthor() : string{
-		return $this->getOption("author");
+		if(!isset($this->getNamedTag()->author)){
+			return "";
+		}
+		return $this->getNamedTag()->author->getValue();
 	}
-	
-	public function setTitle(string $name){
-		return $this->setOption("title", new StringTag("title", $name));
+
+	/**
+	 * Sets the author of this book.
+	 *
+	 * @param string $authorName
+	 */
+	public function setAuthor(string $authorName) : void{
+		$namedTag = $this->getNamedTag();
+		if(isset($namedTag->author)){
+			$namedTag->author->setValue($authorName);
+		}else{
+			$namedTag->author = new StringTag("author", $authorName);
+		}
+		$this->setNamedTag($namedTag);
 	}
-	
+
+	/**
+	 * Returns the title of this book.
+	 *
+	 * @return string
+	 */
 	public function getTitle() : string{
-		return $this->getOption("title");
-	}
-	
-	public function setOption(string $name, $value){
-		$nbt = $this->getNamedTag();
-		$nbt->{$name} = $value;
-		$this->setNamedTag($nbt);
-	}
-	
-	public function getOption(string $name){
-		$v = $this->getNamedTag()->{$name} ?? "";
-		if($v instanceof NamedTag) $v = $v->getValue();
-		
-		return $v;
-	}
-	
-	public function getPages() : array{
-		return $this->getOption("pages");
-	}
-	
-	public function setPage(int $pageNumber, string $text, string $photoName = ""){
-		$nbt = $this->getNamedTag();
-		if(!isset($nbt->pages)){
-			$nbt->pages = new ListTag("pages", []);
+		if(!isset($this->getNamedTag()->title)){
+			return "";
 		}
-		$nbt->pages->{$pageNumber} = new StringTag("$pageNumber", json_encode(["photoname" => $photoname, "text" => $text]));
-		
-		$this->setNamedTag($nbt);
+		return $this->getNamedTag()->title->getValue();
 	}
-	
-	public function getPage(int $pageNumber) : array{
-		/** 
-		 * array contains: pageTitle and pageText fields
-		 */
-		$pages = $this->getPages();
-		if(isset($pages[$pageNumber])){
-			$page = $pages[$pageNumber];
-			return json_decode($page->getValue());
+
+	/**
+	 * Sets the author of this book.
+	 *
+	 * @param string $title
+	 */
+	public function setTitle(string $title) : void{
+		$namedTag = $this->getNamedTag();
+		if(isset($namedTag->title)){
+			$namedTag->title->setValue($title);
+		}else{
+			$namedTag->title = new StringTag("title", $title);
 		}
-		return ["photoname" => "null", "text" => "null"]; //empty
+		$this->setNamedTag($namedTag);
 	}
 }
