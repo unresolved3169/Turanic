@@ -59,7 +59,7 @@ class WrittenBook extends WritableBook{
 	 *
 	 * @param int $generation
 	 */
-	public function setGeneration(int $generation) : void{
+	public function setGeneration(int $generation){
 		if($generation < 0 or $generation > 3){
 			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
 		}
@@ -92,7 +92,7 @@ class WrittenBook extends WritableBook{
 	 *
 	 * @param string $authorName
 	 */
-	public function setAuthor(string $authorName) : void{
+	public function setAuthor(string $authorName){
 		$namedTag = $this->getNamedTag();
 		if(isset($namedTag->author)){
 			$namedTag->author->setValue($authorName);
@@ -119,7 +119,7 @@ class WrittenBook extends WritableBook{
 	 *
 	 * @param string $title
 	 */
-	public function setTitle(string $title) : void{
+	public function setTitle(string $title){
 		$namedTag = $this->getNamedTag();
 		if(isset($namedTag->title)){
 			$namedTag->title->setValue($title);

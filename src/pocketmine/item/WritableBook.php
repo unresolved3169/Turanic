@@ -51,7 +51,7 @@ class WritableBook extends Item{
 	 *
 	 * @return string|null
 	 */
-	public function getPageText(int $pageId) : ?string{
+	public function getPageText(int $pageId){
 		if(!$this->pageExists($pageId)){
 			return null;
 		}
@@ -86,7 +86,7 @@ class WritableBook extends Item{
 	 *
 	 * @param int $pageId
 	 */
-	public function addPage(int $pageId) : void{
+	public function addPage(int $pageId){
 		if($pageId < 0){
 			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
 		}
