@@ -24,7 +24,7 @@ namespace pocketmine\item;
 
 use pocketmine\nbt\tag\{ListTag, NamedTag, StringTag};
 
-class WrittenBook extends BookAndQuill{
+class WrittenBook extends Item{
 	/**
 	 * WrittenBook constructor.
 	 *
@@ -49,5 +49,44 @@ class WrittenBook extends BookAndQuill{
 	
 	public function getTitle() : string{
 		return $this->getOption("title");
+	}
+	
+	public function setOption(string $name, $value){
+		$nbt = $this->getNamedTag();
+		$nbt->{$name} = $value;
+		$this->setNamedTag($nbt);
+	}
+	
+	public function getOption(string $name){
+		$v = $this->getNamedTag()->{$name} ?? "";
+		if($v instanceof NamedTag) $v = $v->getValue();
+		
+		return $v;
+	}
+	
+	public function getPages() : array{
+		return $this->getOption("pages");
+	}
+	
+	public function setPage(int $pageNumber, string $text, string $photoName = ""){
+		$nbt = $this->getNamedTag();
+		if(!isset($nbt->pages)){
+			$nbt->pages = new ListTag("pages", []);
+		}
+		$nbt->pages->{$pageNumber} = new StringTag("$pageNumber", json_encode(["photoname" => $photoname, "text" => $text]));
+		
+		$this->setNamedTag($nbt);
+	}
+	
+	public function getPage(int $pageNumber) : array{
+		/** 
+		 * array contains: pageTitle and pageText fields
+		 */
+		$pages = $this->getPages();
+		if(isset($pages[$pageNumber])){
+			$page = $pages[$pageNumber];
+			return json_decode($page->getValue());
+		}
+		return ["photoname" => "null", "text" => "null"]; //empty
 	}
 }
