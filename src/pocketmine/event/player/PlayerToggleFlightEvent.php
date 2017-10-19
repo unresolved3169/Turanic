@@ -14,37 +14,37 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
+
+declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerToggleFlightEvent extends PlayerEvent implements Cancellable {
+class PlayerToggleFlightEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
 	/** @var bool */
 	protected $isFlying;
 
 	/**
-	 * PlayerToggleFlightEvent constructor.
-	 *
 	 * @param Player $player
-	 * @param        $isFlying
+	 * @param bool   $isFlying
 	 */
-	public function __construct(Player $player, $isFlying){
+	public function __construct(Player $player, bool $isFlying){
 		$this->player = $player;
-		$this->isFlying = (bool) $isFlying;
+		$this->isFlying = $isFlying;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isFlying(){
+	public function isFlying() : bool{
 		return $this->isFlying;
 	}
 

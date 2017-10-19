@@ -50,9 +50,6 @@ class Jukebox extends Spawnable {
     }
     
     public function setRecord(int $record){
-    	if($record > 511 or $record < 500){
-    		return false;
-    	}
     	$this->record = $record;
     }
     

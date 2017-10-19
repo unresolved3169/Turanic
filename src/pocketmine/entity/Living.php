@@ -277,6 +277,40 @@ abstract class Living extends Entity implements Damageable {
 	public function getDrops(){
 		return [];
 	}
+	
+	/**
+	 * Returns the number of ticks remaining in the entity's air supply. Note that the entity may survive longer than
+	 * this amount of time without damage due to enchantments such as Respiration.
+	 *
+	 * @return int
+	 */
+	public function getAirSupplyTicks() : int{
+		return $this->getDataProperty(self::DATA_AIR);
+	}
+
+	/**
+	 * Sets the number of air ticks left in the entity's air supply.
+	 * @param int $ticks
+	 */
+	public function setAirSupplyTicks(int $ticks){
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+	}
+
+	/**
+	 * Returns the maximum amount of air ticks the entity's air supply can contain.
+	 * @return int
+	 */
+	public function getMaxAirSupplyTicks() : int{
+		return $this->getDataProperty(self::DATA_MAX_AIR);
+	}
+
+	/**
+	 * Sets the maximum amount of air ticks the air supply can hold.
+	 * @param int $ticks
+	 */
+	public function setMaxAirSupplyTicks(int $ticks){
+		$this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $ticks);
+	}
 
 	/**
 	 * @param int   $maxDistance

@@ -2373,5 +2373,11 @@ abstract class Entity extends Location implements Metadatable {
 	public function isClosed() : bool{
 		return $this->closed;
 	}
+	
+	protected function resetLastMovements(){
+		list($this->lastX, $this->lastY, $this->lastZ) = [$this->x, $this->y, $this->z];
+		list($this->lastYaw, $this->lastPitch) = [$this->yaw, $this->pitch];
+		list($this->lastMotionX, $this->lastMotionY, $this->lastMotionZ) = [$this->motionX, $this->motionY, $this->motionZ];
+	}
 
 }

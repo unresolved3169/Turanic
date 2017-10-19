@@ -19,467 +19,280 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityArmorChangeEvent;
-use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
-use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\protocol\InventoryContentPacket;
+use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\network\mcpe\protocol\InventoryContentPacket;
-use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\Player;
 use pocketmine\Server;
 
-class PlayerInventory extends BaseInventory {
+class PlayerInventory extends EntityInventory{
 
+	/** @var Human */
+	protected $holder;
+
+	/** @var int */
 	protected $itemInHandIndex = 0;
-	/** @var int[] */
-	protected $hotbar;
 
 	/**
-	 * PlayerInventory constructor.
-	 *
 	 * @param Human $player
-	 * @param null  $contents
 	 */
-	public function __construct(Human $player, $contents = null){
-		$this->hotbar = range(0, $this->getHotbarSize() - 1, 1);
-		parent::__construct($player, InventoryType::get(InventoryType::PLAYER));
-
-		if($contents !== null){
-			if($contents instanceof ListTag){ //Saved data to be loaded into the inventory
-				foreach($contents as $item){
-					if($item["Slot"] >= 0 and $item["Slot"] < $this->getHotbarSize()){ //Hotbar
-						if(isset($item["TrueSlot"])){
-
-							//Valid slot was found, change the linkage to this slot
-							if(0 <= $item["TrueSlot"] and $item["TrueSlot"] < $this->getSize()){
-								$this->hotbar[$item["Slot"]] = $item["TrueSlot"];
-
-							}elseif($item["TrueSlot"] < 0){ //Link to an empty slot (empty hand)
-								$this->hotbar[$item["Slot"]] = -1;
-							}
-						}
-						/* If TrueSlot is not set, leave the slot index as its default which was filled in above
-						 * This only overwrites slot indexes for valid links */
-					}elseif($item["Slot"] >= 100 and $item["Slot"] < 104){ //Armor
-						$this->setItem($this->getSize() + $item["Slot"] - 100, Item::nbtDeserialize($item), false);
-					}else{
-						$this->setItem($item["Slot"] - $this->getHotbarSize(), Item::nbtDeserialize($item), false);
-					}
-				}
-			}else{
-				throw new \InvalidArgumentException("Expecting ListTag, received " . gettype($contents));
-			}
-		}
+	public function __construct(Human $player){
+		parent::__construct($player);
 	}
 
-    private function isHotbarSlot(int $slot) : bool{
-        return $slot >= 0 and $slot <= $this->getHotbarSize();
-    }
+	public function getName() : string{
+		return "Player";
+	}
 
-    public function equipItem(int $hotbarSlot) : bool{
-        if(!$this->isHotbarSlot($hotbarSlot)){
-            $this->sendContents($this->getHolder());
-            return false;
-        }
+	public function getDefaultSize() : int{
+		return 40; //36 inventory, 4 armor
+	}
 
-        $this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot, $hotbarSlot));
-
-        if($ev->isCancelled()){
-            $this->sendHeldItem($this->getHolder());
-            return false;
-        }
-
-        $this->setHeldItemIndex($hotbarSlot, false);
-
-        return true;
-    }
-
-	/**
-	 * @return int
-	 */
-	public function getSize(){
+	public function getSize() : int{
 		return parent::getSize() - 4; //Remove armor slots
 	}
 
-	/**
-	 * @param $size
-	 */
-	public function setSize($size){
+	public function setSize(int $size){
 		parent::setSize($size + 4);
 		$this->sendContents($this->getViewers());
 	}
 
 	/**
-	 * @param int $index
+	 * Called when a client equips a hotbar slot. This method should not be used by plugins.
+	 * This method will call PlayerItemHeldEvent.
 	 *
-	 * @return int
+	 * @param int $hotbarSlot Number of the hotbar slot to equip.
 	 *
-	 * Returns the index of the inventory slot linked to the specified hotbar slot
+	 * @return bool if the equipment change was successful, false if not.
 	 */
-	public function getHotbarSlotIndex($index){
-		return ($index >= 0 and $index < $this->getHotbarSize()) ? $this->hotbar[$index] : -1;
-	}
-	/**
-	 * @return int
-	 *
-	 * Returns the index of the inventory slot the player is currently holding
-	 */
-	public function getHeldItemIndex(){
-		return $this->itemInHandIndex;
-	}
-
-	/**
-	 * @param int  $hotbarSlotIndex
-	 * @param bool $sendToHolder
-	 * @param int  $slotMapping
-	 *
-	 * Sets which hotbar slot the player is currently holding.
-	 * Allows slot remapping as specified by a MobEquipmentPacket. DO NOT CHANGE SLOT MAPPING IN PLUGINS!
-	 * This new implementation is fully compatible with older APIs.
-	 * NOTE: Slot mapping is the raw slot index sent by MCPE, which will be between 9 and 44.
-	 */
-	public function setHeldItemIndex($hotbarSlotIndex, $sendToHolder = true, $slotMapping = null){
-		if($slotMapping !== null){
-			//Get the index of the slot in the actual inventory
-			$slotMapping -= $this->getHotbarSize();
+	public function equipItem(int $hotbarSlot) : bool{
+		if(!$this->isHotbarSlot($hotbarSlot)){
+			$this->sendContents($this->getHolder());
+			return false;
 		}
-		if(0 <= $hotbarSlotIndex and $hotbarSlotIndex < $this->getHotbarSize()){
-			$this->itemInHandIndex = $hotbarSlotIndex;
-			if($slotMapping !== null){
-				/* Handle a hotbar slot mapping change. This allows PE to select different inventory slots.
-				 * This is the only time slot mapping should ever be changed. */
 
-				if($slotMapping < 0 or $slotMapping >= $this->getSize()){
-					//Mapping was not in range of the inventory, set it to -1
-					//This happens if the client selected a blank slot (sends 255)
-					$slotMapping = -1;
-				}
+		$this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot));
 
-				$item = $this->getItem($slotMapping);
-				if($this->getHolder() instanceof Player){
-					Server::getInstance()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $slotMapping, $hotbarSlotIndex));
-					if($ev->isCancelled()){
-						$this->sendHeldItem($this->getHolder());
-						$this->sendContents($this->getHolder());
-						return;
-					}
-				}
+		if($ev->isCancelled()){
+			$this->sendHeldItem($this->getHolder());
+			return false;
+		}
 
-				if(($key = array_search($slotMapping, $this->hotbar)) !== false and $slotMapping !== -1){
-					/* Do not do slot swaps if the slot was null
-					 * Chosen slot is already linked to a hotbar slot, swap the two slots around.
-					 * This will already have been done on the client-side so no changes need to be sent. */
-					$this->hotbar[$key] = $this->hotbar[$this->itemInHandIndex];
-				}
+		$this->setHeldItemIndex($hotbarSlot, false);
 
-				$this->hotbar[$this->itemInHandIndex] = $slotMapping;
-			}
-			$this->sendHeldItem($this->getHolder()->getViewers());
-			if($sendToHolder){
-				$this->sendHeldItem($this->getHolder());
-			}
+		return true;
+	}
+
+	private function isHotbarSlot(int $slot) : bool{
+		return $slot >= 0 and $slot <= $this->getHotbarSize();
+	}
+
+	/**
+	 * @param int $slot
+	 * @throws \InvalidArgumentException
+	 */
+	private function throwIfNotHotbarSlot(int $slot){
+		if(!$this->isHotbarSlot($slot)){
+			throw new \InvalidArgumentException("$slot is not a valid hotbar slot index (expected 0 - " . ($this->getHotbarSize() - 1) . ")");
 		}
 	}
 
 	/**
+	 * Returns the item in the specified hotbar slot.
+	 *
+	 * @param int $hotbarSlot
 	 * @return Item
 	 *
-	 * Returns the item the player is currently holding
+	 * @throws \InvalidArgumentException if the hotbar slot index is out of range
 	 */
-	public function getItemInHand(){
-		$item = $this->getItem($this->getHeldItemSlot());
-		if($item instanceof Item){
-			return $item;
-		}else{
-			return Item::get(Item::AIR, 0, 0);
-		}
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return bool
-	 *
-	 * Sets the item in the inventory slot the player is currently holding.
-	 */
-	public function setItemInHand(Item $item){
-		return $this->setItem($this->getHeldItemSlot(), $item);
-	}
-
-	/**
-	 * @return int[]
-	 *
-	 * Returns an array of hotbar indices
-	 */
-	public function getHotbar(){
-		return $this->hotbar;
-	}
-
-	/**
-	 * @return int
-	 *
-	 * Returns the inventory slot index of the currently equipped slot
-	 */
-	public function getHeldItemSlot(){
-		return $this->getHotbarSlotIndex($this->itemInHandIndex);
+	public function getHotbarSlotItem(int $hotbarSlot) : Item{
+		$this->throwIfNotHotbarSlot($hotbarSlot);
+		return $this->getItem($hotbarSlot);
 	}
 
 	/**
 	 * @deprecated
-	 *
-	 * @param int $slot
-	 */
-	public function setHeldItemSlot($slot){
-	}
-
-    /**
-     * Sends the currently-held item to specified targets.
-     * @param Player|Player[] $target
-     */
-    public function sendHeldItem($target){
-        $item = $this->getItemInHand();
-
-        $pk = new MobEquipmentPacket();
-        $pk->entityRuntimeId = $this->getHolder()->getId();
-        $pk->item = $item;
-        $pk->inventorySlot = $pk->hotbarSlot = $this->getHeldItemIndex();
-        $pk->windowId = ContainerIds::INVENTORY;
-
-        if(!is_array($target)){
-            $target->dataPacket($pk);
-            if($target === $this->getHolder()){
-                $this->sendSlot($this->getHeldItemIndex(), $target);
-            }
-        }else{
-            $this->getHolder()->getLevel()->getServer()->broadcastPacket($target, $pk);
-            if(in_array($this->getHolder(), $target, true)){
-                $this->sendSlot($this->getHeldItemIndex(), $this->getHolder());
-            }
-        }
-    }
-
-	/**
-	 * @param int  $index
-	 * @param Item $before
-	 * @param bool $send
-	 */
-	public function onSlotChange($index, $before, $send){
-		if($send){
-			$holder = $this->getHolder();
-			if(!$holder instanceof Player or !$holder->spawned){
-				return;
-			}
-
-			parent::onSlotChange($index, $before, $send);
-		}
-		if($index === $this->itemInHandIndex){
-			$this->sendHeldItem($this->getHolder()->getViewers());
-			if($send){
-				$this->sendHeldItem($this->getHolder());
-			}
-
-		}elseif($index >= $this->getSize()){ //Armour equipment
-			$this->sendArmorSlot($index, $this->getViewers());
-			$this->sendArmorSlot($index, $this->getHolder()->getViewers());
-		}
-	}
-
-	/**
 	 * @return int
 	 */
-	public function getHotbarSize(){
+	public function getHeldItemSlot() : int{
+		return $this->getHeldItemIndex();
+	}
+
+	/**
+	 * Returns the hotbar slot number the holder is currently holding.
+	 * @return int
+	 */
+	public function getHeldItemIndex() : int{
+		return $this->itemInHandIndex;
+	}
+
+	/**
+	 * Sets which hotbar slot the player is currently loading.
+	 *
+	 * @param int  $hotbarSlot 0-8 index of the hotbar slot to hold
+	 * @param bool $send Whether to send updates back to the inventory holder. This should usually be true for plugin calls.
+	 *                    It should only be false to prevent feedback loops of equipment packets between client and server.
+	 *
+	 * @throws \InvalidArgumentException if the hotbar slot is out of range
+	 */
+	public function setHeldItemIndex(int $hotbarSlot, bool $send = true){
+		$this->throwIfNotHotbarSlot($hotbarSlot);
+
+		$this->itemInHandIndex = $hotbarSlot;
+
+		if($this->getHolder() instanceof Player and $send){
+			$this->sendHeldItem($this->getHolder());
+		}
+
+		$this->sendHeldItem($this->getHolder()->getViewers());
+	}
+
+	/**
+	 * Returns the currently-held item.
+	 *
+	 * @return Item
+	 */
+	public function getItemInHand() : Item{
+		return $this->getHotbarSlotItem($this->itemInHandIndex);
+	}
+
+	/**
+	 * Sets the item in the currently-held slot to the specified item.
+	 *
+	 * @param Item $item
+	 *
+	 * @return bool
+	 */
+	public function setItemInHand(Item $item) : bool{
+		return $this->setItem($this->getHeldItemIndex(), $item);
+	}
+
+	/**
+	 * Sends the currently-held item to specified targets.
+	 * @param Player|Player[] $target
+	 */
+	public function sendHeldItem($target){
+		$item = $this->getItemInHand();
+
+		$pk = new MobEquipmentPacket();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
+		$pk->item = $item;
+		$pk->inventorySlot = $pk->hotbarSlot = $this->getHeldItemIndex();
+		$pk->windowId = ContainerIds::INVENTORY;
+
+		if(!is_array($target)){
+			$target->dataPacket($pk);
+			if($target === $this->getHolder()){
+				$this->sendSlot($this->getHeldItemIndex(), $target);
+			}
+		}else{
+			$this->getHolder()->getLevel()->getServer()->broadcastPacket($target, $pk);
+			if(in_array($this->getHolder(), $target, true)){
+				$this->sendSlot($this->getHeldItemIndex(), $this->getHolder());
+			}
+		}
+	}
+
+	public function onSlotChange(int $index, Item $before, bool $send) {
+		$holder = $this->getHolder();
+		if($holder instanceof Player and !$holder->spawned){
+			return;
+		}
+
+		if($index >= $this->getSize()){
+			$this->sendArmorSlot($index, $this->getViewers());
+			$this->sendArmorSlot($index, $this->getHolder()->getViewers());
+		}else{
+			//Do not send armor by accident here.
+			parent::onSlotChange($index, $before, $send);
+		}
+	}
+
+	/**
+	 * Returns the number of slots in the hotbar.
+	 * @return int
+	 */
+	public function getHotbarSize() : int{
 		return 9;
 	}
 
-	/**
-	 * @param $index
-	 *
-	 * @return Item
-	 */
-	public function getArmorItem($index){
+	public function getArmorItem(int $index) : Item{
 		return $this->getItem($this->getSize() + $index);
 	}
 
-	/**
-	 * @param      $index
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	public function setArmorItem($index, Item $item){
+	public function setArmorItem(int $index, Item $item) : bool{
 		return $this->setItem($this->getSize() + $index, $item);
 	}
 
-	/**
-	 * @param $index
-	 * @param $cost
-	 */
-	public function damageArmor($index, $cost){
-		$this->slots[$this->getSize() + $index]->useOn($this->slots[$this->getSize() + $index], $cost);
-		if($this->slots[$this->getSize() + $index]->getDamage() >= $this->slots[$this->getSize() + $index]->getMaxDurability()){
-			$this->setItem($this->getSize() + $index, Item::get(Item::AIR, 0, 0));
-		}
-		$this->sendArmorContents($this->getViewers());
-	}
-
-	/**
-	 * @return Item
-	 */
-	public function getHelmet(){
+	public function getHelmet() : Item{
 		return $this->getItem($this->getSize());
 	}
 
-	/**
-	 * @return Item
-	 */
-	public function getChestplate(){
+	public function getChestplate() : Item{
 		return $this->getItem($this->getSize() + 1);
 	}
 
-	/**
-	 * @return Item
-	 */
-	public function getLeggings(){
+	public function getLeggings() : Item{
 		return $this->getItem($this->getSize() + 2);
 	}
 
-	/**
-	 * @return Item
-	 */
-	public function getBoots(){
+	public function getBoots() : Item{
 		return $this->getItem($this->getSize() + 3);
 	}
 
-	/**
-	 * @param Item $helmet
-	 *
-	 * @return bool
-	 */
-	public function setHelmet(Item $helmet){
+	public function setHelmet(Item $helmet) : bool{
 		return $this->setItem($this->getSize(), $helmet);
 	}
 
-	/**
-	 * @param Item $chestplate
-	 *
-	 * @return bool
-	 */
-	public function setChestplate(Item $chestplate){
+	public function setChestplate(Item $chestplate) : bool{
 		return $this->setItem($this->getSize() + 1, $chestplate);
 	}
 
-	/**
-	 * @param Item $leggings
-	 *
-	 * @return bool
-	 */
-	public function setLeggings(Item $leggings){
+	public function setLeggings(Item $leggings) : bool{
 		return $this->setItem($this->getSize() + 2, $leggings);
 	}
 
-	/**
-	 * @param Item $boots
-	 *
-	 * @return bool
-	 */
-	public function setBoots(Item $boots){
+	public function setBoots(Item $boots) : bool{
 		return $this->setItem($this->getSize() + 3, $boots);
 	}
 
-	/**
-	 * @param int  $index
-	 * @param Item $item
-	 * @param bool $send
-	 *
-	 * @return bool
-	 */
-	public function setItem($index, Item $item, $send = true){
-		if($index < 0 or $index >= $this->size){
-			return false;
-		}elseif($item->getId() === 0 or $item->getCount() <= 0){
-			return $this->clear($index, $send);
-		}
-
-		if($index >= $this->getSize()){ //Armor change
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
-			if($ev->isCancelled() and $this->getHolder() instanceof Human){
-				$this->sendArmorSlot($index, $this->getViewers());
-				return false;
-			}
-			$item = $ev->getNewItem();
-		}else{
-			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+	protected function doSetItemEvents(int $index, Item $newItem){
+		if($index >= $this->getSize()){
+			Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $newItem, $index));
 			if($ev->isCancelled()){
-				$this->sendSlot($index, $this->getViewers());
-				return false;
+				return null;
 			}
-			$item = $ev->getNewItem();
+
+			return $ev->getNewItem();
 		}
 
-
-		$old = $this->getItem($index);
-		$this->slots[$index] = clone $item;
-		$this->onSlotChange($index, $old, $send);
-
-		return true;
+		return parent::doSetItemEvents($index, $newItem);
 	}
 
-	/**
-	 * @param int  $index
-	 * @param bool $send
-	 *
-	 * @return bool
-	 */
-	public function clear($index, $send = true){
-		if(isset($this->slots[$index])){
-			$item = Item::get(Item::AIR, 0, 0);
-			$old = $this->slots[$index];
-			if($index >= $this->getSize() and $index < $this->size){ //Armor change
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $old, $item, $index));
-				if($ev->isCancelled()){
-					if($index >= $this->size){
-						$this->sendArmorSlot($index, $this->getViewers());
-					}else{
-						$this->sendSlot($index, $this->getViewers());
-					}
-					return false;
-				}
-				$item = $ev->getNewItem();
-			}else{
-				Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $old, $item, $index));
-				if($ev->isCancelled()){
-					if($index >= $this->size){
-						$this->sendArmorSlot($index, $this->getViewers());
-					}else{
-						$this->sendSlot($index, $this->getViewers());
-					}
-					return false;
-				}
-				$item = $ev->getNewItem();
-			}
-			if($item->getId() !== Item::AIR){
-				$this->slots[$index] = clone $item;
-			}else{
-				unset($this->slots[$index]);
-			}
+	public function clearAll() {
+		parent::clearAll();
 
-			$this->onSlotChange($index, $old, $send);
+		for($i = $this->getSize(), $m = $i + 4; $i < $m; ++$i){
+			$this->clear($i, false);
 		}
 
-		return true;
+		$this->sendArmorContents($this->getViewers());
 	}
 
 	/**
 	 * @return Item[]
 	 */
-	public function getArmorContents(){
+	public function getArmorContents() : array{
 		$armor = [];
 
 		for($i = 0; $i < 4; ++$i){
@@ -489,41 +302,32 @@ class PlayerInventory extends BaseInventory {
 		return $armor;
 	}
 
-	public function clearAll($send = true){
-		$limit = $this->getSize() + 4;
-		for($index = 0; $index < $limit; ++$index){
-			$this->clear($index, false);
+	/**
+	 * @param Player|Player[] $target
+	 */
+	public function sendArmorContents($target){
+		if($target instanceof Player){
+			$target = [$target];
 		}
-		$this->hotbar = range(0, $this->getHotbarSize() - 1, 1);
-		$this->sendContents($this->getViewers());
+
+		$armor = $this->getArmorContents();
+
+		$pk = new MobArmorEquipmentPacket();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
+		$pk->slots = $armor;
+		$pk->encode();
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				$pk2 = new InventoryContentPacket();
+				$pk2->windowId = ContainerIds::ARMOR;
+				$pk2->items = $armor;
+				$player->dataPacket($pk2);
+			}else{
+				$player->dataPacket($pk);
+			}
+		}
 	}
-
-    /**
-     * @param Player|Player[] $target
-     */
-    public function sendArmorContents($target){
-        if($target instanceof Player){
-            $target = [$target];
-        }
-
-        $armor = $this->getArmorContents();
-
-        $pk = new MobArmorEquipmentPacket();
-        $pk->entityRuntimeId = $this->getHolder()->getId();
-        $pk->slots = $armor;
-        $pk->encode();
-
-        foreach($target as $player){
-            if($player === $this->getHolder()){
-                $pk2 = new InventoryContentPacket();
-                $pk2->windowId = ContainerIds::ARMOR;
-                $pk2->items = $armor;
-                $player->dataPacket($pk2);
-            }else{
-                $player->dataPacket($pk);
-            }
-        }
-    }
 
 	/**
 	 * @param Item[] $items
@@ -534,60 +338,59 @@ class PlayerInventory extends BaseInventory {
 				$items[$i] = Item::get(Item::AIR, 0, 0);
 			}
 
-			if($items[$i]->getId() === Item::AIR){
-				$this->clear($this->getSize() + $i);
+			$this->setItem($this->getSize() + $i, $items[$i], false);
+		}
+
+		$this->sendArmorContents($this->getViewers());
+	}
+
+
+	/**
+	 * @param int             $index
+	 * @param Player|Player[] $target
+	 */
+	public function sendArmorSlot(int $index, $target){
+		if($target instanceof Player){
+			$target = [$target];
+		}
+
+		$armor = $this->getArmorContents();
+
+		$pk = new MobArmorEquipmentPacket();
+		$pk->entityRuntimeId = $this->getHolder()->getId();
+		$pk->slots = $armor;
+		$pk->encode();
+
+		foreach($target as $player){
+			if($player === $this->getHolder()){
+				/** @var Player $player */
+
+				$pk2 = new InventorySlotPacket();
+				$pk2->windowId = ContainerIds::ARMOR;
+				$pk2->inventorySlot = $index - $this->getSize();
+				$pk2->item = $this->getItem($index);
+				$player->dataPacket($pk2);
 			}else{
-				$this->setItem($this->getSize() + $i, $items[$i]);
+				$player->dataPacket($pk);
 			}
 		}
 	}
 
+	public function sendCreativeContents(){
+		$pk = new InventoryContentPacket();
+		$pk->windowId = ContainerIds::CREATIVE;
 
-    /**
-     * @param int             $index
-     * @param Player|Player[] $target
-     */
-    public function sendArmorSlot(int $index, $target){
-        if($target instanceof Player){
-            $target = [$target];
-        }
+		if(!$this->getHolder()->isSpectator()){ //fill it for all gamemodes except spectator
+			foreach(Item::getCreativeItems() as $i => $item){
+				$pk->items[$i] = clone $item;
+			}
+		}
 
-        $armor = $this->getArmorContents();
-
-        $pk = new MobArmorEquipmentPacket();
-        $pk->entityRuntimeId = $this->getHolder()->getId();
-        $pk->slots = $armor;
-        $pk->encode();
-
-        foreach($target as $player){
-            if($player === $this->getHolder()){
-                /** @var Player $player */
-
-                $pk2 = new InventorySlotPacket();
-                $pk2->windowId = ContainerIds::ARMOR;
-                $pk2->inventorySlot = $index - $this->getSize();
-                $pk2->item = $this->getItem($index);
-                $player->dataPacket($pk2);
-            }else{
-                $player->dataPacket($pk);
-            }
-        }
-    }
-
-    public function sendCreativeContents(){
-        $pk = new InventoryContentPacket();
-        $pk->windowId = ContainerIds::CREATIVE;
-
-        if(!$this->getHolder()->isSpectator()){ //fill it for all gamemodes except spectator
-            foreach(Item::getCreativeItems() as $i => $item){
-                $pk->items[$i] = clone $item;
-            }
-        }
-
-        $this->getHolder()->dataPacket($pk);
-    }
+		$this->getHolder()->dataPacket($pk);
+	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
 	 * @return Human|Player
 	 */
 	public function getHolder(){

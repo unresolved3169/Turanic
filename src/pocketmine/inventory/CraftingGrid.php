@@ -28,10 +28,14 @@ use pocketmine\Player;
 class CraftingGrid extends BaseInventory{
 
 	public function __construct(Player $holder){
-		parent::__construct($holder, InventoryType::get(InventoryType::CRAFTING));
+		parent::__construct($holder);
 	}
 
-	public function setSize($size){
+	public function getDefaultSize() : int{
+		return 4;
+	}
+
+	public function setSize(int $size){
 		throw new \BadMethodCallException("Cannot change the size of a crafting grid");
 	}
 
@@ -39,11 +43,11 @@ class CraftingGrid extends BaseInventory{
 		return "Crafting";
 	}
 
-	public function sendSlot($index, $target){
+	public function sendSlot(int $index, $target){
 		//we can't send a slot of a client-sided inventory window
 	}
 
-	public function sendContents($target) {
-		//we can't send the contents of a client-sided inventory window
+	public function sendContents($target){
+		//no way to do this
 	}
 }

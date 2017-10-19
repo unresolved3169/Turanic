@@ -1317,18 +1317,6 @@ class Item implements ItemIds, \JsonSerializable {
     }
 
 	/**
-	 * @return array
-	 */
-	final public function jsonSerialize(){
-		return [
-			"id" => $this->id,
-			"damage" => $this->meta,
-			"count" => $this->count, //TODO: separate items and stacks
-			"nbt" => $this->tags
-		];
-	}
-
-	/**
 	 * Serializes the item to an NBT CompoundTag
 	 *
 	 * @param int    $slot    optional, the inventory slot of the item
@@ -1383,5 +1371,69 @@ class Item implements ItemIds, \JsonSerializable {
 
 		return $item;
 	}
+	
+	public function isNull() : bool{
+		return $this->count <= 0 or $this->getId() == Item::AIR;
+	}
+	
+	/**
+	 * Returns an array of item stack properties that can be serialized to json.
+	 *
+	 * @return array
+	 */
+	final public function jsonSerialize(){
+		$data = [
+			"id" => $this->getId()
+		];
+
+		if($this->getDamage() !== 0){
+			$data["damage"] = $this->getDamage();
+		}
+
+		if($this->getCount() !== 1){
+			$data["count"] = $this->getCount();
+		}
+
+		if($this->hasCompoundTag()){
+			$data["nbt_hex"] = bin2hex($this->getCompoundTag());
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
+	 *
+	 * @param array $data
+	 * @return Item
+	 */
+	final public static function jsonDeserialize(array $data) : Item{
+		return Item::get(
+			(int) $data["id"],
+			(int) ($data["damage"] ?? 0),
+			(int) ($data["count"] ?? 1),
+			(string) ($data["nbt"] ?? (isset($data["nbt_hex"]) ? hex2bin($data["nbt_hex"]) : "")) //`nbt` key might contain old raw data
+		);
+	}
+	
+	/**
+	 * Pops an item from the stack and returns it, decreasing the stack count of this item stack by one.
+	 * @return Item
+	 *
+	 * @throws \InvalidStateException if the count is less than or equal to zero, or if the stack is air.
+	 */
+	public function pop() : Item{
+		if($this->isNull()){
+			throw new \InvalidStateException("Cannot pop an item from a null stack");
+		}
+
+		$item = clone $this;
+		$item->setCount(1);
+
+		$this->count--;
+
+		return $item;
+	}
+
 
 }

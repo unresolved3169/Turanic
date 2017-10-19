@@ -52,7 +52,8 @@ class CreativeInventoryAction extends InventoryAction{
 	 * @return bool
 	 */
 	public function isValid(Player $source) : bool{
-		return $source->isCreative() and ($this->actionType === self::TYPE_DELETE_ITEM or Item::getCreativeItemIndex($this->sourceItem) !== -1);
+		return $source->isCreative(true) and
+			($this->actionType === self::TYPE_DELETE_ITEM or Item::getCreativeItemIndex($this->sourceItem) !== -1);
 	}
 
 	/**
@@ -73,11 +74,11 @@ class CreativeInventoryAction extends InventoryAction{
 		return true;
 	}
 
-	public function onExecuteSuccess(Player $source){
+	public function onExecuteSuccess(Player $source) {
 
 	}
 
-	public function onExecuteFail(Player $source){
+	public function onExecuteFail(Player $source) {
 
 	}
 

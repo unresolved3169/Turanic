@@ -19,105 +19,74 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\inventory;
 
-use pocketmine\block\TrappedChest;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 
-class ChestInventory extends ContainerInventory {
+class ChestInventory extends ContainerInventory{
+
+	/** @var Chest */
+	protected $holder;
+
 	/**
-	 * ChestInventory constructor.
-	 *
 	 * @param Chest $tile
 	 */
 	public function __construct(Chest $tile){
-		parent::__construct($tile, InventoryType::get(InventoryType::CHEST));
+		parent::__construct($tile);
+	}
+
+	public function getNetworkType() : int{
+		return WindowTypes::CONTAINER;
+	}
+
+	public function getName() : string{
+		return "Chest";
+	}
+
+	public function getDefaultSize() : int{
+		return 27;
 	}
 
 	/**
+	 * This override is here for documentation and code completion purposes only.
 	 * @return Chest
 	 */
 	public function getHolder(){
 		return $this->holder;
 	}
 
-	/**
-	 * @param bool $withAir
-	 *
-	 * @return array|\pocketmine\item\Item[]
-	 */
-	public function getContents($withAir = false){
-		if($withAir){
-			$contents = [];
-			for($i = 0; $i < $this->getSize(); ++$i){
-				$contents[$i] = $this->getItem($i);
-			}
-
-			return $contents;
-		}
-		return parent::getContents();
-	}
-
-	/**
-	 * @param Player $who
-	 */
-	public function onOpen(Player $who){
+	public function onOpen(Player $who) {
 		parent::onOpen($who);
 
-		if(count($this->getViewers()) === 1){
-			$pk = new BlockEventPacket();
-			$pk->x = $this->getHolder()->getX();
-			$pk->y = $this->getHolder()->getY();
-			$pk->z = $this->getHolder()->getZ();
-			$pk->case1 = 1;
-			$pk->case2 = 1;
-			if(($level = $this->getHolder()->getLevel()) instanceof Level){
-				$level->broadcastLevelSoundEvent($this->getHolder(), LevelSoundEventPacket::SOUND_CHEST_OPEN);
-				$level->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
-			}
-		}
-
-		if($this->getHolder()->getLevel() instanceof Level){
-			/** @var TrappedChest $block */
-			$block = $this->getHolder()->getBlock();
-			if($block instanceof TrappedChest){
-				if(!$block->isActivated()){
-					$block->activate();
-				}
-			}
+		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
+			$this->broadcastBlockEventPacket($this->getHolder(), true);
+			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_OPEN);
 		}
 	}
 
-	/**
-	 * @param Player $who
-	 */
-	public function onClose(Player $who){
-		if($this->getHolder()->getLevel() instanceof Level){
-			/** @var TrappedChest $block */
-			$block = $this->getHolder()->getBlock();
-			if($block instanceof TrappedChest){
-				if($block->isActivated()){
-					$block->deactivate();
-				}
-			}
-		}
-
-		if(count($this->getViewers()) === 1){
-			$pk = new BlockEventPacket();
-			$pk->x = $this->getHolder()->getX();
-			$pk->y = $this->getHolder()->getY();
-			$pk->z = $this->getHolder()->getZ();
-			$pk->case1 = 1;
-			$pk->case2 = 0;
-			if(($level = $this->getHolder()->getLevel()) instanceof Level){
-				$level->broadcastLevelSoundEvent($this->getHolder(), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
-				$level->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
-			}
+	public function onClose(Player $who) {
+		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
+			$this->broadcastBlockEventPacket($this->getHolder(), false);
+			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
 		}
 		parent::onClose($who);
+	}
+
+	protected function broadcastBlockEventPacket(Vector3 $vector, bool $isOpen) {
+		$pk = new BlockEventPacket();
+		$pk->x = (int) $vector->x;
+		$pk->y = (int) $vector->y;
+		$pk->z = (int) $vector->z;
+		$pk->case1 = 1; //it's always 1 for a chest
+		$pk->case2 = $isOpen ? 1 : 0;
+		$this->getHolder()->getLevel()->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
 	}
 }

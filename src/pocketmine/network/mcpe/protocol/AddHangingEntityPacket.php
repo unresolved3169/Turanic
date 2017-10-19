@@ -54,5 +54,4 @@ class AddHangingEntityPacket extends DataPacket{
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putVarInt($this->unknown);
 	}
-
 }

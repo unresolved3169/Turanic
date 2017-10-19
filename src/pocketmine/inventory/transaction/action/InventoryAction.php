@@ -80,7 +80,7 @@ abstract class InventoryAction{
 	 *
 	 * @param InventoryTransaction $transaction
 	 */
-	public function onAddToTransaction(InventoryTransaction $transaction){
+	public function onAddToTransaction(InventoryTransaction $transaction) {
 
 	}
 
@@ -112,13 +112,13 @@ abstract class InventoryAction{
 	 *
 	 * @param Player $source
 	 */
-	abstract public function onExecuteSuccess(Player $source);
+	abstract public function onExecuteSuccess(Player $source) ;
 
 	/**
 	 * Performs additional actions when this inventory-action did not complete successfully.
 	 *
 	 * @param Player $source
 	 */
-	abstract public function onExecuteFail(Player $source);
+	abstract public function onExecuteFail(Player $source) ;
 
 }

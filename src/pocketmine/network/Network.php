@@ -282,41 +282,13 @@ class Network {
 	}
 
 	/**
-	 * @param BatchPacket $packet
-	 * @param Player      $p
-	 */
-	public function processBatch(BatchPacket $packet, Player $p){
-        try{
-            $packet->decode();
-            
-            foreach($packet->getPackets() as $buf){
-            	 if(($pk = $this->getPacket(ord($buf{0}))) != null){
-            	 	 $pk->setBuffer($buf, 0);
-            	 	 
-            	 	 $pk->decode();
-            	 	 
-            	 	 $p->handleDataPacket($pk);
-            	 }
-            }
-        }catch(\Exception $e){
-            if(\pocketmine\DEBUG > 1){
-                $logger = $this->server->getLogger();
-                if($logger instanceof MainLogger){
-                    $logger->debug("BatchPacket " . " 0x" . bin2hex($packet->payload));
-                    $logger->logException($e);
-                }
-            }
-        }
-	}
-
-	/**
 	 * @param $id
 	 *
 	 * @return DataPacket
 	 */
 	public function getPacket($id){
 		/** @var DataPacket $class */
-		$class = $this->packetPool[$id];
+		$class = $this->packetPool[$id] ?? null;
 		if($class !== null){
 			return clone $class;
 		}

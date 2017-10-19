@@ -19,8 +19,32 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\inventory;
 
-class BigShapedRecipe extends ShapedRecipe {
+use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityInventoryChangeEvent;
+use pocketmine\item\Item;
+use pocketmine\Server;
 
+abstract class EntityInventory extends BaseInventory{
+	/** @var Entity */
+	protected $holder;
+
+	protected function doSetItemEvents(int $index, Item $newItem){
+		Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $newItem, $index));
+		if($ev->isCancelled()){
+			return null;
+		}
+
+		return $ev->getNewItem();
+	}
+
+	/**
+	 * @return Entity|InventoryHolder
+	 */
+	public function getHolder(){
+		return parent::getHolder();
+	}
 }

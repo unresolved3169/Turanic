@@ -14,23 +14,26 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
+
+declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
+use pocketmine\event\TextContainer;
 use pocketmine\Player;
 
 /**
  * Called when a player leaves the server
  */
-class PlayerKickEvent extends PlayerEvent implements Cancellable {
+class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	public static $handlerList = null;
 
-	/** @var string */
+	/** @var TextContainer|string */
 	protected $quitMessage;
 
 	/** @var string */
@@ -39,32 +42,29 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable {
 	/**
 	 * PlayerKickEvent constructor.
 	 *
-	 * @param Player $player
-	 * @param        $reason
-	 * @param        $quitMessage
+	 * @param Player               $player
+	 * @param string               $reason
+	 * @param TextContainer|string $quitMessage
 	 */
-	public function __construct(Player $player, $reason, $quitMessage){
+	public function __construct(Player $player, string $reason, $quitMessage){
 		$this->player = $player;
 		$this->quitMessage = $quitMessage;
 		$this->reason = $reason;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getReason(){
+	public function getReason() : string{
 		return $this->reason;
 	}
 
 	/**
-	 * @param $quitMessage
+	 * @param TextContainer|string $quitMessage
 	 */
 	public function setQuitMessage($quitMessage){
 		$this->quitMessage = $quitMessage;
 	}
 
 	/**
-	 * @return string
+	 * @return TextContainer|string
 	 */
 	public function getQuitMessage(){
 		return $this->quitMessage;

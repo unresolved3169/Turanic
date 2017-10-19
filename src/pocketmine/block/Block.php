@@ -927,4 +927,33 @@ class Block extends Position implements BlockIds, Metadatable{
 			$this->getLevel()->getBlockMetadata()->removeMetadata($this, $metadataKey, $plugin);
 		}
 	}
+	
+	/**
+	 * Returns the 4 blocks on the horizontal axes around the block (north, south, east, west)
+	 *
+	 * @return Block[]
+	 */
+	public function getHorizontalSides() : array{
+		return [
+			$this->getSide(Vector3::SIDE_NORTH),
+			$this->getSide(Vector3::SIDE_SOUTH),
+			$this->getSide(Vector3::SIDE_WEST),
+			$this->getSide(Vector3::SIDE_EAST)
+		];
+	}
+
+	/**
+	 * Returns the six blocks around this block.
+	 *
+	 * @return Block[]
+	 */
+	public function getAllSides() : array{
+		return array_merge(
+			[
+				$this->getSide(Vector3::SIDE_DOWN),
+				$this->getSide(Vector3::SIDE_UP)
+			],
+			$this->getHorizontalSides()
+		);
+	}
 }

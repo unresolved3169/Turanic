@@ -145,8 +145,6 @@ abstract class RakLib{
 	 */
 	const PACKET_BLOCK_ADDRESS = 0x09;
 
-    const PACKET_PING = 0x0a;
-
 	/*
 	 * UNBLOCK_ADDRESS payload:
 	 * byte (address length)
