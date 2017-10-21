@@ -1502,7 +1502,7 @@ class Server{
 
 	public function about(){
 		$string = TextFormat::BOLD.TextFormat::AQUA."
-  _______					_
+  _______				   _
  |__   __|				  (_)	 
 	| |_   _ _ __ __ _ _ __  _  ___ 
 	| | | | | '__/ _` | '_ \| |/ __|
