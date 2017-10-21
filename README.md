@@ -9,11 +9,8 @@ Turanic based on Steadfast2, Nukkit, GenisysPro and MiNET.
 
 ## Known Bugs in 1.2:
 
-- Block place/break issues
-- DroppedItems
-- Move/Fly Bug (no gravity)
-- Inventory/Crafting Bugs
-- Skin change in-game does not work
+- Movement Bug (players not affected by gravity in 32bit systems)
+
 
 ### TODO List (After fully 1.2 update):
 - [ ] **Custom Potions**
