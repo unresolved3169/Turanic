@@ -2882,7 +2882,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 									$slot = $this->inventory->getItemInHand();
 									--$slot->count;
 									$this->inventory->setItemInHand($slot);
-									$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
+									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
 								}
 
 								$this->removeAllEffects();
