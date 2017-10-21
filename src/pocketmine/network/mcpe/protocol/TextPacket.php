@@ -26,6 +26,8 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
+use pocketmine\network\mcpe\NetworkSession;
+
 class TextPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::TEXT_PACKET;
 
@@ -108,6 +110,10 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->putString($this->xboxUserId);
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleText($this);
 	}
 
 }

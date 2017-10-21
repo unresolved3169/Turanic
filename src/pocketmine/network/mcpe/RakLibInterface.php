@@ -180,10 +180,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 					}
 				}
 			}catch(\Throwable $e){
-                $logger = $this->server->getLogger();
-                $logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
-                $logger->logException($e);
-                $this->interface->blockAddress($address, 5);
+				$logger = $this->server->getLogger();
+				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+				$logger->logException($e);
+				$this->interface->blockAddress($address, 5);
 			}
 		}
 	}

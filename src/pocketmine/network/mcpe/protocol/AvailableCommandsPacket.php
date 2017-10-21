@@ -35,7 +35,7 @@ class AvailableCommandsPacket extends DataPacket{
 	/** @var Command[] */
 	public $commands = [];
 	
-	private $enumValuesCount = 0;
+	protected $enumValuesCount = 0;
 	
 	public function putCommandEnum(CommandEnum $list, BinaryStream $stream){
 		$stream->putString($list->getName());
@@ -46,7 +46,7 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 	
-	private function putEnumIndex(int $index, BinaryStream $stream){
+	public function putEnumIndex(int $index, BinaryStream $stream){
 		if ($this->enumValuesCount < 256) {
 			$stream->putByte($index);
 		}elseif($this->enumValuesCount < 65536) {
@@ -56,7 +56,7 @@ class AvailableCommandsPacket extends DataPacket{
 		}	
 	}
 	
-	private function getPreparedCommandData(){
+	protected function getPreparedCommandData(){
 		$extraDataStream = new BinaryStream;
 		$commandStream = new BinaryStream;
 		
@@ -72,7 +72,7 @@ class AvailableCommandsPacket extends DataPacket{
 				
 				$commandStream->putString($cmd->getName());
 				$commandStream->putString($cmd->getDescription());
-				$commandStream->putByte(0); //  command flags (todo)
+				$commandStream->putByte(0); // command flags (todo)
 				$commandStream->putByte($cmd->getPermissionLevel());
 				
 				$enumIndex = -1;
@@ -120,8 +120,8 @@ class AvailableCommandsPacket extends DataPacket{
 						
 						$commandStream->putLInt($type);
 						$commandStream->putBool($param->isOptional());
-			      }
-		      }
+						}
+					}
 			}
 		}
 		

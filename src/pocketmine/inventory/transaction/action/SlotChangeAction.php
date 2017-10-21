@@ -83,8 +83,9 @@ class SlotChangeAction extends InventoryAction{
 	 * Adds this action's target inventory to the transaction's inventory list.
 	 *
 	 * @param InventoryTransaction $transaction
+	 *
 	 */
-	public function onAddToTransaction(InventoryTransaction $transaction){
+	public function onAddToTransaction(InventoryTransaction $transaction) {
 		$transaction->addInventory($this->inventory);
 	}
 
@@ -104,7 +105,7 @@ class SlotChangeAction extends InventoryAction{
 	 *
 	 * @param Player $source
 	 */
-	public function onExecuteSuccess(Player $source){
+	public function onExecuteSuccess(Player $source) {
 		$viewers = $this->inventory->getViewers();
 		unset($viewers[spl_object_hash($source)]);
 		$this->inventory->sendSlot($this->inventorySlot, $viewers);
@@ -115,7 +116,7 @@ class SlotChangeAction extends InventoryAction{
 	 *
 	 * @param Player $source
 	 */
-	public function onExecuteFail(Player $source){
+	public function onExecuteFail(Player $source) {
 		$this->inventory->sendSlot($this->inventorySlot, $source);
 	}
 }

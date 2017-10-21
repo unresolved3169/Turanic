@@ -43,7 +43,7 @@ class BlockPlaceSound extends GenericSound {
 		$pk->sound = $this->id;
 		$pk->pitch = 1;
 		$pk->extraData = $this->data;
-		list($pk->x, $pk->y, $pk->z) = [$this->x, $this->y, $this->z];
+		$pk->position = $this;
 		
 		return $pk;
 	}

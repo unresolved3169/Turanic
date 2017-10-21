@@ -2,12 +2,12 @@
 
 /*
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *	_______					_
+ *   |__   __|				  (_)
+ *	  | |_   _ _ __ __ _ _ __  _  ___
+ *	  | | | | | '__/ _` | '_ \| |/ __|
+ *	  | | |_| | | | (_| | | | | | (__
+ *	  |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,7 +40,6 @@ use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\CraftingManager;
-use pocketmine\inventory\InventoryType;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentLevelTable;
@@ -110,6 +109,7 @@ use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
 use pocketmine\workers\ServerPacketWorker;
+use pocketmine\entity\Skin;
 
 /**
  * The class that manages everything
@@ -325,7 +325,7 @@ class Server{
 	 * @return string
 	 */
 	public function getName() : string{
-        return "Turanic";
+		return "Turanic";
 	}
 
 	/**
@@ -707,8 +707,8 @@ class Server{
 	}
 
 	public function getResourcePackManager() : ResourcePackManager{
-	    return $this->resourceManager;
-    }
+		return $this->resourceManager;
+	}
 
 	/**
 	 * @return ServerScheduler
@@ -767,12 +767,12 @@ class Server{
 		return $this->commandMap;
 	}
 
-    /**
-     * @return Player[]
-     */
-    public function getLoggedInPlayers() : array{
-        return $this->loggedInPlayers;
-    }
+	/**
+	 * @return Player[]
+	 */
+	public function getLoggedInPlayers() : array{
+		return $this->loggedInPlayers;
+	}
 
 	/**
 	 * @return Player[]
@@ -880,7 +880,7 @@ class Server{
 	/**
 	 * @param string   $name
 	 * @param CompoundTag $nbtTag
-	 * @param bool     $async
+	 * @param bool	 $async
 	 */
 	public function saveOfflinePlayerData($name, CompoundTag $nbtTag, $async = false){
 		if($this->shouldSavePlayerData()){
@@ -1119,7 +1119,7 @@ class Server{
 
 		$level->initLevel();
 
-        $this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
 		$level->setTickRate($this->baseTickRate);
 
@@ -1130,7 +1130,7 @@ class Server{
 	 * Generates a new level if it does not exists
 	 *
 	 * @param string $name
-	 * @param int    $seed
+	 * @param int	$seed
 	 * @param string $generator Class name that extends pocketmine\level\generator\Noise
 	 * @param array  $options
 	 *
@@ -1228,7 +1228,7 @@ class Server{
 	 * Searches all levels for the entity with the specified ID.
 	 * Useful for tracking entities across multiple worlds without needing strong references.
 	 *
-	 * @param int        $entityId
+	 * @param int		$entityId
 	 * @param Level|null $expectedLevel Level to look in first for the target
 	 *
 	 * @return Entity|null
@@ -1293,7 +1293,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param int    $defaultValue
+	 * @param int	$defaultValue
 	 *
 	 * @return int
 	 */
@@ -1308,7 +1308,7 @@ class Server{
 
 	/**
 	 * @param string $variable
-	 * @param int    $value
+	 * @param int	$value
 	 */
 	public function setConfigInt($variable, $value){
 		$this->properties->set($variable, (int) $value);
@@ -1354,7 +1354,7 @@ class Server{
 	 * @param string $name
 	 *
 	 * @return command\Command
-     */
+	 */
 	public function getPluginCommand($name){
 		if(($command = $this->commandMap->getCommand($name)) instanceof PluginIdentifiableCommand){
 			return $command;
@@ -1502,16 +1502,16 @@ class Server{
 
 	public function about(){
 		$string = TextFormat::BOLD.TextFormat::AQUA."
-  _______                    _
- |__   __|                  (_)     
-    | |_   _ _ __ __ _ _ __  _  ___ 
-    | | | | | '__/ _` | '_ \| |/ __|
-    | | |_| | | | (_| | | | | | (__ 
-    |_|\__,_|_|  \__,_|_| |_|_|\___|
-    
-    §r§bGithub§8: §fhttps://github.com/TuranicTeam§f
-    §9Discord§8: §fhttps://discord.gg/DyPYdYT§f
-    ";
+  _______					_
+ |__   __|				  (_)	 
+	| |_   _ _ __ __ _ _ __  _  ___ 
+	| | | | | '__/ _` | '_ \| |/ __|
+	| | |_| | | | (_| | | | | | (__ 
+	|_|\__,_|_|  \__,_|_| |_|_|\___|
+	
+	§r§bGithub§8: §fhttps://github.com/TuranicTeam§f
+	§9Discord§8: §fhttps://discord.gg/DyPYdYT§f
+	";
 		$this->getLogger()->directSend($string);
 	}
 
@@ -1605,12 +1605,12 @@ class Server{
 	}
 
 	/**
-	 * @param \ClassLoader    $autoloader
+	 * @param \ClassLoader	$autoloader
 	 * @param \ThreadedLogger $logger
-	 * @param string          $filePath
-	 * @param string          $dataPath
-	 * @param string          $pluginPath
-	 * @param string          $defaultLang
+	 * @param string		  $filePath
+	 * @param string		  $dataPath
+	 * @param string		  $pluginPath
+	 * @param string		  $defaultLang
 	 */
 	public function __construct(\ClassLoader $autoloader, \ThreadedLogger $logger, $filePath, $dataPath, $pluginPath, $defaultLang = "unknown"){
 		self::$instance = $this;
@@ -1650,7 +1650,7 @@ class Server{
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
 				if(file_exists($this->dataPath . "lang.txt")){
 					$langFile = new Config($configPath = $this->dataPath . "lang.txt", Config::ENUM, []);
-                    $wizardLang = null;
+					$wizardLang = null;
 					foreach ($langFile->getAll(true) as $langName) {
 						$wizardLang = $langName;
 						break;
@@ -1665,17 +1665,17 @@ class Server{
 				}
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
 			}
-            $this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
+			$this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
 
-            define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
+			define('pocketmine\DEBUG', (int) $this->getProperty("debug.level", 1));
 
-            ini_set('assert.exception', '1');
+			ini_set('assert.exception', '1');
 
-            if($this->logger instanceof MainLogger){
-                $this->logger->setLogDebug(\pocketmine\DEBUG > 1);
-            }
+			if($this->logger instanceof MainLogger){
+				$this->logger->setLogDebug(\pocketmine\DEBUG > 1);
+			}
 
-            if(file_exists($this->dataPath . "lang.txt")){
+			if(file_exists($this->dataPath . "lang.txt")){
 				unlink($this->dataPath . "lang.txt");
 			}
 			
@@ -1833,7 +1833,6 @@ class Server{
 
 			Entity::init();
 			Tile::init();
-			InventoryType::init();
 			Block::init();
 			Enchantment::init();
 			Item::init();
@@ -1852,8 +1851,8 @@ class Server{
 			$this->profilingTickRate = (float) $this->getProperty("settings.profile-report-trigger", 20);
 			$this->pluginManager->registerInterface(PharPluginLoader::class);
 			if($this->folderpluginloader === true) {
-                $this->pluginManager->registerInterface(FolderPluginLoader::class);
-            }
+				$this->pluginManager->registerInterface(FolderPluginLoader::class);
+			}
 			$this->pluginManager->registerInterface(ScriptPluginLoader::class);
 
 			//set_exception_handler([$this, "exceptionHandler"]);
@@ -1969,7 +1968,7 @@ class Server{
 	}
 
 	/**
-	 * @param string        $message
+	 * @param string		$message
 	 * @param Player[]|null $recipients
 	 *
 	 * @return int
@@ -1988,7 +1987,7 @@ class Server{
 	}
 
 	/**
-	 * @param string        $tip
+	 * @param string		$tip
 	 * @param Player[]|null $recipients
 	 *
 	 * @return int
@@ -2014,7 +2013,7 @@ class Server{
 	}
 
 	/**
-	 * @param string        $popup
+	 * @param string		$popup
 	 * @param Player[]|null $recipients
 	 *
 	 * @return int
@@ -2066,9 +2065,9 @@ class Server{
 	/**
 	 * @param string $title
 	 * @param string $subtitle
-	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int    $stay Duration in ticks to stay on screen for
-	 * @param int    $fadeOut Duration in ticks for fade-out.
+	 * @param int	$fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int	$stay Duration in ticks to stay on screen for
+	 * @param int	$fadeOut Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 *
 	 * @return int
@@ -2112,14 +2111,14 @@ class Server{
 		}
 	}
 
-    /**
-     * Broadcasts a list of packets in a batch to a list of players
-     *
-     * @param Player[] $players
-     * @param DataPacket[]|string $packets
-     * @param bool $forceSync
-     * @param bool $immediate
-     */
+	/**
+	 * Broadcasts a list of packets in a batch to a list of players
+	 *
+	 * @param Player[] $players
+	 * @param DataPacket[]|string $packets
+	 * @param bool $forceSync
+	 * @param bool $immediate
+	 */
 	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
 		Timings::$playerNetworkTimer->startTiming();
 
@@ -2216,7 +2215,7 @@ class Server{
 	 * Executes a command from a CommandSender
 	 *
 	 * @param CommandSender $sender
-	 * @param string        $commandLine
+	 * @param string		$commandLine
 	 *
 	 * @return bool
 	 */
@@ -2266,8 +2265,8 @@ class Server{
 
 		$this->pluginManager->registerInterface(PharPluginLoader::class);
 		if($this->folderpluginloader === true) {
-               $this->pluginManager->registerInterface(FolderPluginLoader::class);
-           }
+			   $this->pluginManager->registerInterface(FolderPluginLoader::class);
+		   }
 		$this->pluginManager->registerInterface(ScriptPluginLoader::class);
 		$this->pluginManager->loadPlugins($this->pluginPath);
 		$this->enablePlugins(PluginLoadOrder::STARTUP);
@@ -2275,12 +2274,12 @@ class Server{
 		TimingsHandler::reload();
 	}
 
-    /**
-     * Shutdowns the server correctly
-     *
-     * @param string $msg
-     * @internal param bool $restart
-     */
+	/**
+	 * Shutdowns the server correctly
+	 *
+	 * @param string $msg
+	 * @internal param bool $restart
+	 */
 	public function shutdown(string $msg = ""){
 		$this->isRunning = false;
 		if($msg != ""){
@@ -2532,17 +2531,17 @@ class Server{
 		if($this->sendUsageTicker > 0){
 			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
 		}
-        $this->loggedInPlayers[$player->getRawUniqueId()] = $player;
+		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
 
-    public function onPlayerCompleteLoginSequence(Player $player){
-        $this->sendFullPlayerListData($player);
-        $player->dataPacket($this->craftingManager->getCraftingDataPacket());
-    }
+	public function onPlayerCompleteLoginSequence(Player $player){
+		$this->sendFullPlayerListData($player);
+		$player->dataPacket($this->craftingManager->getCraftingDataPacket());
+	}
 
-    public function onPlayerLogout(Player $player){
-        unset($this->loggedInPlayers[$player->getRawUniqueId()]);
-    }
+	public function onPlayerLogout(Player $player){
+		unset($this->loggedInPlayers[$player->getRawUniqueId()]);
+	}
 
 	public function addPlayer($identifier, Player $player){
 		$this->players[$identifier] = $player;
@@ -2552,55 +2551,55 @@ class Server{
 	public function addOnlinePlayer(Player $player){
 		$this->playerList[$player->getRawUniqueId()] = $player;
 
-		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData());
+		$this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin());
 	}
 
 	public function removeOnlinePlayer(Player $player){
-        if(isset($this->playerList[$player->getRawUniqueId()])){
-            unset($this->playerList[$player->getRawUniqueId()]);
-            $this->removePlayerListData($player->getUniqueId());
-        }
+		if(isset($this->playerList[$player->getRawUniqueId()])){
+			unset($this->playerList[$player->getRawUniqueId()]);
+			$this->removePlayerListData($player->getUniqueId());
+		}
 	}
 
-    /**
-     * @param UUID          $uuid
-     * @param int           $entityId
-     * @param string        $name
-     * @param string        $skinId
-     * @param string        $skinData
-     * @param Player[]|null $players
-     */
-    public function updatePlayerListData(UUID $uuid, int $entityId, string $name, string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = "", string $xuid = "", array $players = null){
-        $pk = new PlayerListPacket();
-        $pk->type = PlayerListPacket::TYPE_ADD;
+	/**
+	 * @param UUID		  $uuid
+	 * @param int		   $entityId
+	 * @param string		$name
+	 * @param string		$skinId
+	 * @param string		$skinData
+	 * @param Player[]|null $players
+	 */
+	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, array $players = null){
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_ADD;
 
-        $pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skinId, $skinData, $capeData, $geometryName, $geometryData, $xuid);
-        $this->broadcastPacket($players ?? $this->playerList, $pk);
-    }
+		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin);
+		$this->broadcastPacket($players ?? $this->playerList, $pk);
+	}
 
-    /**
-     * @param UUID          $uuid
-     * @param Player[]|null $players
-     */
-    public function removePlayerListData(UUID $uuid, array $players = null){
-        $pk = new PlayerListPacket();
-        $pk->type = PlayerListPacket::TYPE_REMOVE;
-        $pk->entries[] = PlayerListEntry::createRemovalEntry($uuid);
-        $this->broadcastPacket($players ?? $this->playerList, $pk);
-    }
+	/**
+	 * @param UUID		  $uuid
+	 * @param Player[]|null $players
+	 */
+	public function removePlayerListData(UUID $uuid, array $players = null){
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_REMOVE;
+		$pk->entries[] = PlayerListEntry::createRemovalEntry($uuid);
+		$this->broadcastPacket($players ?? $this->playerList, $pk);
+	}
 
-    /**
-     * @param Player $p
-     */
-    public function sendFullPlayerListData(Player $p){
-        $pk = new PlayerListPacket();
-        $pk->type = PlayerListPacket::TYPE_ADD;
-        foreach($this->playerList as $player){
-            $pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkinId(), $player->getSkinData(), $player->getSkin()->getCapeData(), $player->getSkin()->getGeometryName(), $player->getSkin()->getGeometryData(), $player->getXUID());
-        }
+	/**
+	 * @param Player $p
+	 */
+	public function sendFullPlayerListData(Player $p){
+		$pk = new PlayerListPacket();
+		$pk->type = PlayerListPacket::TYPE_ADD;
+		foreach($this->playerList as $player){
+			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin());
+		}
 
-        $p->dataPacket($pk);
-    }
+		$p->dataPacket($pk);
+	}
 
 	private function checkTickUpdates($currentTick, $tickTime){
 		if($this->alwaysTickPlayers){
@@ -2722,7 +2721,7 @@ class Server{
 
 	/**
 	 * @param string $address
-	 * @param int    $port
+	 * @param int	$port
 	 * @param string $payload
 	 *
 	 * TODO: move this to Network
@@ -2745,8 +2744,8 @@ class Server{
 	}
 
 	/**
-	 * @param             $variable
-	 * @param null        $defaultValue
+	 * @param			 $variable
+	 * @param null		$defaultValue
 	 * @param Config|null $cfg
 	 * @return bool|mixed|null
 	 */
@@ -2786,7 +2785,7 @@ class Server{
 	/**
 	 * Tries to execute a server tick
 	 */
-    private function tick(){
+	private function tick(){
 		$tickTime = microtime(true);
 		if(($tickTime - $this->nextTick) < -0.025){ //Allow half a tick of diff
 			return false;

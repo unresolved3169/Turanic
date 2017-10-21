@@ -24,6 +24,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\Player;
 use pocketmine\tile\VirtualHolder;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class VirtualInventory extends CustomInventory {
 
@@ -31,7 +32,7 @@ class VirtualInventory extends CustomInventory {
     protected $holder;
 
     public function __construct(VirtualHolder $tile){
-        parent::__construct($tile, InventoryType::get(InventoryType::CHEST));
+        parent::__construct($tile);
     }
 
     public function getHolder(){
@@ -42,5 +43,9 @@ class VirtualInventory extends CustomInventory {
         $this->holder->cevir($who);
         parent::onClose($who);
         $this->holder->close();
+    }
+    
+    public function getNetworkType() : int{
+    	return WindowTypes::CONTAINER;
     }
 }

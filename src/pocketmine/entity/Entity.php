@@ -485,6 +485,8 @@ abstract class Entity extends Location implements Metadatable {
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
 		$this->attributeMap = new AttributeMap();
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_HAS_COLLISION, true);
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);
@@ -2372,6 +2374,12 @@ abstract class Entity extends Location implements Metadatable {
 	
 	public function isClosed() : bool{
 		return $this->closed;
+	}
+	
+	protected function resetLastMovements(){
+		list($this->lastX, $this->lastY, $this->lastZ) = [$this->x, $this->y, $this->z];
+		list($this->lastYaw, $this->lastPitch) = [$this->yaw, $this->pitch];
+		list($this->lastMotionX, $this->lastMotionY, $this->lastMotionZ) = [$this->motionX, $this->motionY, $this->motionZ];
 	}
 
 }

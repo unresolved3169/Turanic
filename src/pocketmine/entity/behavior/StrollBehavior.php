@@ -88,7 +88,7 @@ class StrollBehavior extends Behavior{
         $blockUp = $level->getBlock($coord->add(0,1,0));
 
         if(($block->isSolid() and !$blockUp->isSolid()) or $blockIn->isSolid()){
-            $motion->y += 0.65;
+            $motion->y += 0.7;
         }elseif($block->isSolid() and $blockUp->isSolid()){
             $this->timeLeft = 0;
             return;

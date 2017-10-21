@@ -25,6 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+
+use pocketmine\network\mcpe\NetworkSession;
+
 class SetEntityDataPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_ENTITY_DATA_PACKET;
 
@@ -41,5 +44,9 @@ class SetEntityDataPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putEntityMetadata($this->metadata);
+	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleSetEntityData($this);
 	}
 }

@@ -67,11 +67,6 @@ abstract class Mob extends Creature{
         return parent::onUpdate($tick);
     }
 
-    protected function updateMovement(){
-     $this->forceMovement();
-     $this->forceMotion();
-    }
-
     private function checkBehavior(){
         foreach($this->behaviors as $index => $behavior){
             if($behavior == $this->currentBehavior){
@@ -102,16 +97,12 @@ abstract class Mob extends Creature{
     public function addBehavior(Behavior $behavior){
         $this->behaviors[] = $behavior;
     }
+    
+    public function setBehavior(int $index, Behavior $b){
+    	$this->behaviors[$index] = $b;
+    }
 
-    public function removeBehavior($key){
+    public function removeBehavior(int $key){
         unset($this->behaviors[$key]);
-    }
-
-    public function forceMovement(){
-        $this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->id, $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch);
-    }
-
-    public function forceMotion(){
-        $this->level->addEntityMotion($this->x >> 4, $this->z >> 4, $this->id, $this->motionX, $this->motionY, $this->motionZ);
     }
 }

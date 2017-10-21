@@ -17,24 +17,28 @@ namespace raklib\protocol;
 
 #include <rules/RakLibPacket.h>
 
-class CLIENT_CONNECT_DataPacket extends Packet{
-	public static $ID = 0x09;
 
-	public $clientID;
-	public $sendPing;
-	public $useSecurity = false;
+use raklib\RakLib;
+
+class OpenConnectionRequest1 extends OfflineMessage{
+	public static $ID = MessageIdentifiers::ID_OPEN_CONNECTION_REQUEST_1;
+
+	/** @var int */
+	public $protocol = RakLib::PROTOCOL;
+	/** @var int */
+	public $mtuSize;
 
 	public function encode(){
 		parent::encode();
-		$this->putLong($this->clientID);
-		$this->putLong($this->sendPing);
-		$this->putByte($this->useSecurity ? 1 : 0);
+		$this->writeMagic();
+		$this->putByte($this->protocol);
+		$this->put(str_repeat(chr(0x00), $this->mtuSize - 18));
 	}
 
 	public function decode(){
 		parent::decode();
-		$this->clientID = $this->getLong();
-		$this->sendPing = $this->getLong();
-		$this->useSecurity = $this->getByte() > 0;
+		$this->readMagic();
+		$this->protocol = $this->getByte();
+		$this->mtuSize = strlen($this->get(true)) + 18;
 	}
 }

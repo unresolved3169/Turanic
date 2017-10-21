@@ -13,22 +13,26 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\protocol;
 
-#include <rules/RakLibPacket.h>
+use raklib\RakLib;
 
-class PING_DataPacket extends Packet{
-	public static $ID = 0x00;
+abstract class OfflineMessage extends Packet{
+	/** @var string */
+	protected $magic;
 
-	public $pingID;
-
-	public function encode(){
-		parent::encode();
-		$this->putLong($this->pingID);
+	protected function readMagic(){
+		$this->magic = $this->get(16);
 	}
 
-	public function decode(){
-		parent::decode();
-		$this->pingID = $this->getLong();
+	protected function writeMagic(){
+		$this->put(RakLib::MAGIC);
 	}
+
+	public function isValid() : bool{
+		return $this->magic === RakLib::MAGIC;
+	}
+
 }

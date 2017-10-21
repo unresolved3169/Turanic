@@ -19,46 +19,19 @@
  *
 */
 
-namespace pocketmine\inventory;
+declare(strict_types=1);
 
-use pocketmine\item\Item;
-use pocketmine\Player;
+namespace pocketmine\network\mcpe\protocol\types;
 
-interface Transaction {
+class EntityLink{
 
-	//Transaction type constants
-	const TYPE_NORMAL = 0;
-	const TYPE_DROP_ITEM = 1;
+	/** @var int */
+	public $fromEntityUniqueId;
+	/** @var int */
+	public $toEntityUniqueId;
+	/** @var int */
+	public $type;
+	/** @var int */
+	public $byte2;
 
-	/**
-	 * @return Inventory
-	 */
-	public function getInventory();
-
-	/**
-	 * @return int
-	 */
-	public function getSlot();
-
-	/**
-	 * @return Item
-	 */
-	public function getTargetItem();
-	
-	/**
-	 * @return Item
-	 */
-	public function getSourceItem();
-
-	/**
-	 * @return float
-	 */
-	public function getCreationTime();
-
-	/**
-	 * @param Player $source
-	 *
-	 * @return bool
-	 */
-	public function execute(Player $source) : bool;
 }

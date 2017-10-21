@@ -27,6 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\UUID;
 
 class AddPlayerPacket extends DataPacket{
@@ -46,10 +48,10 @@ class AddPlayerPacket extends DataPacket{
 	public $motion;
 	/** @var float */
 	public $pitch = 0.0;
-	/** @var float|null */
-	public $headYaw = null; //TODO
 	/** @var float */
 	public $yaw = 0.0;
+	/** @var float|null */
+	public $headYaw = null; //TODO
 	/** @var Item */
 	public $item;
 	/** @var array */
@@ -64,6 +66,7 @@ class AddPlayerPacket extends DataPacket{
 
 	public $long1 = 0;
 
+	/** @var EntityLink[] */
 	public $links = [];
 
 	protected function decodePayload(){
@@ -74,8 +77,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->position = $this->getVector3Obj();
 		$this->motion = $this->getVector3Obj();
 		$this->pitch = $this->getLFloat();
-		$this->headYaw = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
+		$this->headYaw = $this->getLFloat();
 		$this->item = $this->getSlot();
 		$this->metadata = $this->getEntityMetadata();
 
@@ -94,7 +97,6 @@ class AddPlayerPacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
-		if(isset($this->x)) $this->position = new Vector3($this->x, $this->y, $this->z);
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
@@ -102,8 +104,8 @@ class AddPlayerPacket extends DataPacket{
 		$this->putVector3Obj($this->position);
 		$this->putVector3ObjNullable($this->motion);
 		$this->putLFloat($this->pitch);
-		$this->putLFloat($this->headYaw ?? $this->yaw);
 		$this->putLFloat($this->yaw);
+		$this->putLFloat($this->headYaw ?? $this->yaw);
 		$this->putSlot($this->item);
 		$this->putEntityMetadata($this->metadata);
 
@@ -120,4 +122,9 @@ class AddPlayerPacket extends DataPacket{
 			$this->putEntityLink($link);
 		}
 	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleAddPlayer($this);
+	}
+
 }

@@ -14,29 +14,30 @@
  * (at your option) any later version.
  *
  * @author PocketMine Team
- * @link   http://www.pocketmine.net/
+ * @link http://www.pocketmine.net/
  *
  *
- */
+*/
 
-/**
- * Events called when a player attempts to perform movement cheats such as clipping through blocks.
- */
+declare(strict_types=1);
+
 
 namespace pocketmine\event\player\cheat;
 
 use pocketmine\event\Cancellable;
-use pocketmine\Player;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
 
-class PlayerIllegalMoveEvent extends PlayerCheatEvent implements Cancellable {
+/**
+ * Called when a player attempts to perform movement cheats such as clipping through blocks.
+ */
+class PlayerIllegalMoveEvent extends PlayerCheatEvent implements Cancellable{
 	public static $handlerList = null;
 
+	/** @var Vector3 */
 	private $attemptedPosition;
 
 	/**
-	 * PlayerIllegalMoveEvent constructor.
-	 *
 	 * @param Player  $player
 	 * @param Vector3 $attemptedPosition
 	 */
@@ -46,6 +47,7 @@ class PlayerIllegalMoveEvent extends PlayerCheatEvent implements Cancellable {
 	}
 
 	/**
+	 * Returns the position the player attempted to move to.
 	 * @return Vector3
 	 */
 	public function getAttemptedPosition() : Vector3{

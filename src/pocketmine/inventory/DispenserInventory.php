@@ -22,6 +22,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\tile\Dispenser;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class DispenserInventory extends ContainerInventory {
 	/**
@@ -30,7 +31,15 @@ class DispenserInventory extends ContainerInventory {
 	 * @param Dispenser $tile
 	 */
 	public function __construct(Dispenser $tile){
-		parent::__construct($tile, InventoryType::get(InventoryType::DISPENSER));
+		parent::__construct($tile);
+	}
+	
+	public function getName() : string{
+		return "Dispenser";
+	}
+	
+	public function getDefaultSize() : int{
+		return 9;
 	}
 
 	/**
@@ -38,5 +47,9 @@ class DispenserInventory extends ContainerInventory {
 	 */
 	public function getHolder(){
 		return $this->holder;
+	}
+	
+	public function getNetworkType() : int{
+		return WindowTypes::DISPENSER;
 	}
 }

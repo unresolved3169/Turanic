@@ -58,4 +58,9 @@ class AnimatePacket extends DataPacket{
 			$this->putLFloat($this->float);
 		}
 	}
+
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleAnimate($this);
+	}
+
 }
