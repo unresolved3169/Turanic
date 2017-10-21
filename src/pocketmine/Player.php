@@ -3391,13 +3391,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	public function handleBatch(BatchPacket $packet) : bool{
-		foreach($packet->getPackets() as $buf){
-			$pk = $this->server->getNetwork()->getPacket(ord($buf[0]));
-			if($pk instanceof DataPacket and !($pk instanceof BatchPacket)){
-				$pk->setBuffer($buf, 1);
-				$pk->decode();
-				$this->handleDataPacket($pk);
-			}
+		try{
+		 foreach($packet->getPackets() as $buf){
+			 $pk = $this->server->getNetwork()->getPacket(ord($buf[0]));
+			 if($pk instanceof DataPacket and !($pk instanceof BatchPacket)){
+				 $pk->setBuffer($buf, 1);
+				 $pk->decode();
+				 $this->handleDataPacket($pk);
+			 }
+		 }
+		}catch(\Exception $e){
+			
 		}
 		return true;
 	}
