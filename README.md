@@ -9,7 +9,7 @@ Turanic based on Steadfast2, Nukkit, GenisysPro and MiNET.
 
 ## Known Bugs in 1.2:
 
-- Movement Bug (players not affected by gravity in 32bit systems)
+- Movement Bug (players not affected by gravity in 32bit server systems)
 
 
 ### TODO List (After fully 1.2 update):
