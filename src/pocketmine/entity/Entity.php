@@ -485,6 +485,8 @@ abstract class Entity extends Location implements Metadatable {
 		$this->invulnerable = $this->namedtag["Invulnerable"] > 0 ? true : false;
 
 		$this->attributeMap = new AttributeMap();
+		$this->addAttributes();
+		
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_HAS_COLLISION, true);
 
@@ -972,8 +974,6 @@ abstract class Entity extends Location implements Metadatable {
 		}
 
 		$this->scheduleUpdate();
-
-		$this->addAttributes();
 
 		if(isset($this->namedtag->ActiveEffects)){
 			foreach($this->namedtag->ActiveEffects->getValue() as $e){

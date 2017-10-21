@@ -169,7 +169,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 */
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
-            $address = $this->players[$identifier]->getAddress();
+			$address = $this->players[$identifier]->getAddress();
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
@@ -180,10 +180,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 					}
 				}
 			}catch(\Throwable $e){
-				$logger = $this->server->getLogger();
-				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
-				$logger->logException($e);
-				$this->interface->blockAddress($address, 5);
+				$this->server->getLogger()->debug("Unhandled Packet" . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
 			}
 		}
 	}

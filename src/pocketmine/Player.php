@@ -1988,7 +1988,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					}
 					$this->inAirTicks = 0;
 				} else {
-					if ($this->getInventory()->getItem($this->getInventory()->getSize() + 1)->getId() == "444") {
+					if ($this->getInventory()->getItem($this->getInventory()->getSize() + 1)->getId() == 444) {
 						#enable use of elytra. todo: check if it is open
 						$this->inAirTicks = 0;
 					}
@@ -3377,7 +3377,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
-		return true;//$this->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+		return $this->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
 	}
 	
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
@@ -3391,17 +3391,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	public function handleBatch(BatchPacket $packet) : bool{
-		try{
-		 foreach($packet->getPackets() as $buf){
-			 $pk = $this->server->getNetwork()->getPacket(ord($buf[0]));
-			 if($pk instanceof DataPacket and !($pk instanceof BatchPacket)){
-				 $pk->setBuffer($buf, 1);
-				 $pk->decode();
-				 $this->handleDataPacket($pk);
-			 }
-		 }
-		}catch(\Exception $e){
-			
+		foreach($packet->getPackets() as $buf){
+			$pk = $this->server->getNetwork()->getPacket(ord($buf[0]));
+			if($pk instanceof DataPacket and !($pk instanceof BatchPacket)){
+				$pk->setBuffer($buf, 1);
+				$pk->decode();
+				$this->handleDataPacket($pk);
+			}
 		}
 		return true;
 	}
@@ -3435,7 +3431,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		try{
 			$this->{$handleName}($packet);
 		}catch(\Exception $e){
-			$this->server->getLogger()->debug($packet->getName() . " not handled from " . $this->getName());
 			$timings->stopTiming();
 			return false;
 		}
