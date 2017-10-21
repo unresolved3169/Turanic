@@ -158,6 +158,7 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
+use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\item\{WrittenBook,WritableBook};
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -2243,7 +2244,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
 
-		$this->level->sendTime($this);
+		$this->level->sendTime();
 
 		$this->sendAttributes(true);
 		$this->setNameTagVisible(true);
@@ -2639,7 +2640,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true) === true){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
 								return true;
 							}
 						}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
@@ -2647,7 +2648,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}else{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
 								if(!$item->equalsExact($oldItem)){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
@@ -2770,7 +2771,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$heldItem = $this->inventory->getItemInHand();
 
 						$damage = [
-							EntityDamageEvent::MODIFIER_BASE => $heldItem->getAttackPoints()
+							EntityDamageEvent::MODIFIER_BASE => $heldItem->getAttackDamage()
 						];
 
 						if(!$this->canInteract($target, 8)){
@@ -2867,7 +2868,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 									$slot = $this->inventory->getItemInHand();
 									--$slot->count;
 									$this->inventory->setItemInHand($slot);
-									$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
+									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
 								}
 
 								$this->removeAllEffects();
@@ -2941,7 +2942,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$block = $this->level->getBlock($this->temporalVector->setComponents($packet->blockX, $packet->blockY, $packet->blockZ));
 
 		//TODO: this doesn't handle crops correctly (need more API work)
-		$item = Item::get($block->getItemId(), $block->getVariant());
+		$item = Item::get($block->getId(), $block->getVariant());
 
 		if($packet->addUserData){
 			$tile = $this->getLevel()->getTile($block);
@@ -2955,7 +2956,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
-		if(!$this->isCreative(true)){
+		if(!$this->isCreative()){
 			$this->server->getLogger()->debug("Got block-pick request from " . $this->getName() . " when not in creative mode (gamemode " . $this->getGamemode() . ")");
 			$ev->setCancelled();
 		}
@@ -3950,7 +3951,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params));
 		$ev->setKeepInventory($this->server->keepInventory);
-		$ev->setKeepExperience($this->server->keepExperience);
+		//$ev->setKeepExperience($this->server->keepExperience);
 		$this->server->getPluginManager()->callEvent($ev);
 
 		if (!$ev->getKeepInventory()) {
@@ -3963,11 +3964,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 		}
 
-		if ($this->server->expEnabled and !$ev->getKeepExperience()) {
+		/*if ($this->server->expEnabled and !$ev->getKeepExperience()) {
 			$exp = min(91, $this->getTotalXp()); //Max 7 levels of exp dropped
 			$this->getLevel()->spawnXPOrb($this->add(0, 0.2, 0), $exp);
 			$this->setTotalXp(0, true);
-		}
+		}*/
 
 		if ($ev->getDeathMessage() != "") {
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
