@@ -169,7 +169,7 @@ abstract class DataPacket extends BinaryStream{
 					$this->getSignedBlockPosition(...$value);
 					break;
 				case Entity::DATA_TYPE_LONG:
-					$value = $this->getVarLong();
+					$value = $this->getVarInt();
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
 					$value = [0.0, 0.0, 0.0];
@@ -223,7 +223,7 @@ abstract class DataPacket extends BinaryStream{
 					$this->putSignedBlockPosition(...$d[1]);
 					break;
 				case Entity::DATA_TYPE_LONG:
-					$this->putVarLong($d[1]);
+					$this->putVarInt($d[1]);
 					break;
 				case Entity::DATA_TYPE_VECTOR3F:
 					//TODO: change this implementation (use objects)
@@ -285,7 +285,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @return int
 	 */
 	public function getEntityUniqueId() : int{
-		return $this->getVarLong();
+		return $this->getVarInt();
 	}
 
 	/**
@@ -293,7 +293,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @param int $eid
 	 */
 	public function putEntityUniqueId(int $eid){
-		$this->putVarLong($eid);
+		$this->putVarInt($eid);
 	}
 
 	/**
@@ -301,7 +301,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @return int
 	 */
 	public function getEntityRuntimeId() : int{
-		return $this->getUnsignedVarLong();
+		return $this->getUnsignedVarInt();
 	}
 
 	/**
@@ -309,7 +309,7 @@ abstract class DataPacket extends BinaryStream{
 	 * @param int $eid
 	 */
 	public function putEntityRuntimeId(int $eid){
-		$this->putUnsignedVarLong($eid);
+		$this->putUnsignedVarInt($eid);
 	}
 
 	/**
@@ -511,7 +511,7 @@ abstract class DataPacket extends BinaryStream{
 	}
 	
 	/**
-	 * For old fields
+	 * Fix old fields
 	 */
 	public function checkFields(){
 		if(isset($this->x) and isset($this->position)){

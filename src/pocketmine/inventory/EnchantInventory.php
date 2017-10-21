@@ -56,7 +56,7 @@ class EnchantInventory extends ContainerInventory{
 		return $this->holder;
 	}
 
-	public function onClose(Player $who) : void{
+	public function onClose(Player $who){
 		parent::onClose($who);
 
 		for($i = 0; $i < 2; ++$i){

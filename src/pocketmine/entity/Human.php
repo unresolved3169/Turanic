@@ -26,7 +26,6 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
-use pocketmine\inventory\FloatingInventory;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
@@ -61,9 +60,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 
 	/** @var EnderChestInventory */
 	protected $enderChestInventory;
-
-	/** @var FloatingInventory */
-	protected $floatingInventory;
 
 	/** @var UUID */
 	protected $uuid;
@@ -538,13 +534,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		return $this->enderChestInventory;
 	}
 
-	/**
-	 * @return FloatingInventory
-	 */
-	public function getFloatingInventory(){
-		return $this->floatingInventory;
-	}
-
 	protected function initEntity(){
 		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
@@ -573,10 +562,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		}else{
 			$this->inventory->setHeldItemIndex(0, false);
 		}
-		//$this->enderChestInventory = new EnderChestInventory($this, ($this->namedtag->EnderChestInventory ?? null));
-
-		//Virtual inventory for desktop GUI crafting and anti-cheat transaction processing
-		//$this->floatingInventory = new FloatingInventory($this);
+		$this->enderChestInventory = new EnderChestInventory($this, ($this->namedtag->EnderChestInventory ?? null));
 
 			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag and $this->skin == null){
 				   $skin = $this->namedtag->Skin->getValue();
@@ -758,7 +744,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 			$this->namedtag->SelectedInventorySlot = new IntTag("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
 
-		/*$this->namedtag->EnderChestInventory = new ListTag("EnderChestInventory", []);
+		$this->namedtag->EnderChestInventory = new ListTag("EnderChestInventory", []);
 		$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);
 		if($this->enderChestInventory !== null){
 			for($slot = 0; $slot < $this->enderChestInventory->getSize(); $slot++){
@@ -766,7 +752,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 					$this->namedtag->EnderChestInventory[$slot] = $item->nbtSerialize($slot);
 				}
 			}
-		}*/
+		}
 
 		if($this->skin instanceof Skin){
 			$this->namedtag->Skin = new CompoundTag("Skin", [
@@ -824,13 +810,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 
 	public function close(){
 		if(!$this->closed){
-			if($this->getFloatingInventory() instanceof FloatingInventory){
-				foreach($this->getFloatingInventory()->getContents() as $craftingItem){
-					$this->level->dropItem($this, $craftingItem);
-				}
-			}else{
-				$this->server->getLogger()->debug("Attempted to drop a null crafting inventory\n");
-			}
 			if(!($this instanceof Player) or $this->loggedIn){
 				foreach($this->inventory->getViewers() as $viewer){
 					$viewer->removeWindow($this->inventory);

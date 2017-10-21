@@ -154,11 +154,10 @@ use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
-use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\item\{WrittenBook,WritableBook};
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -171,6 +170,8 @@ use pocketmine\tile\Spawnable;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use pocketmine\entity\Skin;
+use pocketmine\customUI\windows\CustomForm;
+use pocketmine\customUI\elements\Label;
 
 class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
 	
@@ -311,6 +312,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $modalWindowId = 0;
 	protected $modalWindows = [];
 	protected $xuid = "";
+	/** @var CustomForm */
+	protected $defaultServerSettings;
 
 	private $ping = 0;
 	
@@ -842,6 +845,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->allowMovementCheats = (bool)$this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 		$this->allowInstaBreak = (bool)$this->server->getProperty("player.anti-cheat.allow-instabreak", false);
+		
+		/**
+		 * A CustomForm about Turanic
+		 * You can edit this with Player::setDefaultServerSettings function
+		 */
+		$form = new CustomForm("Turanic Server Software");
+		$form->setIconUrl("https://avatars2.githubusercontent.com/u/31800317?s=400&v=4"); // turanic logo
+		$form->addElement(new Label("Turanic is a MC:BE Server Software\n Based On GenisysPro, PocketMine-MP, Nukkit, MiNET and Steadfast2\n You can download from github: https://github.com/TuranicTeam/Turanic"));
+		
+		$this->defaultServerSettings = $form;
 	}
 
 	/**
@@ -1389,7 +1402,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$pk = new AnimatePacket();
 			$pk->entityRuntimeId = $this->id;
-			$pk->action = AnimatePacket::ACTION_STOP_SLEEP;
+			$pk->action = PlayerAnimationEvent::WAKE_UP;
 			$this->dataPacket($pk);
 		}
 
@@ -2244,7 +2257,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
 
-		$this->level->sendTime();
+		$this->level->sendTime($this);
 
 		$this->sendAttributes(true);
 		$this->setNameTagVisible(true);
@@ -2640,7 +2653,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true) === true){
 								return true;
 							}
 						}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
@@ -2648,7 +2661,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}else{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
 								if(!$item->equalsExact($oldItem)){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);
@@ -2785,7 +2798,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 							$points = 0;
 							foreach($target->getInventory()->getArmorContents() as $armorItem){
-								$points += $armorItem->getDefensePoints();
+								$points += $armorItem->getArmorValue();
 							}
 
 							$damage[EntityDamageEvent::MODIFIER_ARMOR] = -($damage[EntityDamageEvent::MODIFIER_BASE] * $points * 0.04);
@@ -2868,7 +2881,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 									$slot = $this->inventory->getItemInHand();
 									--$slot->count;
 									$this->inventory->setItemInHand($slot);
-									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
+									$this->inventory->addItem(ItemFactory::get(Item::BUCKET, 0, 1));
 								}
 
 								$this->removeAllEffects();
@@ -2956,7 +2969,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$ev = new PlayerBlockPickEvent($this, $block, $item);
-		if(!$this->isCreative()){
+		if(!$this->isCreative(true)){
 			$this->server->getLogger()->debug("Got block-pick request from " . $this->getName() . " when not in creative mode (gamemode " . $this->getGamemode() . ")");
 			$ev->setCancelled();
 		}
@@ -3371,6 +3384,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 	
+	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+		$this->sendServerSettings($this->getDefaultServerSettings());
+		return true;
+	}
+	
 	public function handleBatch(BatchPacket $packet) : bool{
 		foreach($packet->getPackets() as $buf){
 			$pk = $this->server->getNetwork()->getPacket(ord($buf[0]));
@@ -3413,7 +3431,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->{$handleName}($packet);
 		}catch(\Exception $e){
 			$this->server->getLogger()->debug($packet->getName() . " not handled from " . $this->getName());
-			$this->server->getLogger()->debug($e->getMessage());
 			$timings->stopTiming();
 			return false;
 		}
@@ -3771,7 +3788,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->inventory = null;
-		$this->floatingInventory = null;
 		$this->enderChestInventory = null;
 
 		$this->chunk = null;
@@ -4412,6 +4428,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->formData = json_encode($window->jsonSerialize());
 		$this->dataPacket($pk);
 		$this->modalWindows[$id] = $window;
+	}
+	
+	public function getDefaultServerSettings() : CustomForm{
+		return $this->defaultServerSettings;
+	}
+	
+	public function setDefaultServerSettings(CustomForm $form){
+		$this->defaultServerSettings = $form;
 	}
 		
 	public function getModalForm(int $id){

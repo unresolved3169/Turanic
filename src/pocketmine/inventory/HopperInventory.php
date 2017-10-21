@@ -22,6 +22,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\tile\Hopper;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class HopperInventory extends ContainerInventory {
 	/**
@@ -30,7 +31,15 @@ class HopperInventory extends ContainerInventory {
 	 * @param Hopper $tile
 	 */
 	public function __construct(Hopper $tile){
-		parent::__construct($tile, InventoryType::get(InventoryType::HOPPER));
+		parent::__construct($tile);
+	}
+	
+	public function getName() : string{
+		return "Hopper";
+	}
+	
+	public function getDefaultSize() : int{
+		return 5;
 	}
 
 	/**
@@ -38,5 +47,9 @@ class HopperInventory extends ContainerInventory {
 	 */
 	public function getHolder(){
 		return $this->holder;
+	}
+	
+	public function getNetworkType() : int{
+		return WindowTypes::HOPPER;
 	}
 }
