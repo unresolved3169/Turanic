@@ -2,12 +2,12 @@
 
 /*
  *
- *	_______					_
- *   |__   __|				  (_)
- *	  | |_   _ _ __ __ _ _ __  _  ___
- *	  | | | | | '__/ _` | '_ \| |/ __|
- *	  | | |_| | | | (_| | | | | | (__
- *	  |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
 
 namespace pocketmine;
 
@@ -2567,9 +2567,22 @@ class Server{
 	 * @param string		$name
 	 * @param Player[]|null $players
 	 */
-	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, array $players = null){
+	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, ...$vals){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
+		
+		$skin = null;
+		$players = [];
+		if(count($vals) == 2){
+			$skin = $vals[0] ?? null;
+			$players = $vals[1] ?? null;
+		}elseif(count($vals) > 2){
+			$skin = new Skin($vals[0] ?? "", $vals[1] ?? "");
+			$players = $vals[3] ?? [];
+		}
+		
+		if(!is_array($players)) $players = null;
+		if(!$skin instanceof Skin) $skin = new Skin("", "", "", "", "");
 
 		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin);
 		$this->broadcastPacket($players ?? $this->playerList, $pk);
