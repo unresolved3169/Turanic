@@ -77,7 +77,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	protected $foodTickTimer = 0;
 
 	protected $totalXp = 0;
-	protected $xpSeed;
+	protected $xpSeed = 0;
 	protected $xpCooldown = 0;
 
 	public function jump(){
@@ -618,8 +618,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 			$this->namedtag->XpSeed = new IntTag("XpSeed", mt_rand(PHP_INT_MIN, PHP_INT_MAX));
 		}
 		$this->xpSeed = $this->namedtag["XpSeed"];
-		
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
 	}
 
 	/**

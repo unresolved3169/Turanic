@@ -86,7 +86,7 @@ class PlayerEditBookEvent extends PlayerEvent implements Cancellable{
 	 *
 	 * @param WritableBook $book
 	 */
-	public function setNewBook(WritableBook $book) : void{
+	public function setNewBook(WritableBook $book){
 		$this->newBook = $book;
 	}
 

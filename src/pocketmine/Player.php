@@ -1066,10 +1066,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 		}
-		
-		if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false){
-			$this->doFirstSpawn();
-		}
 	}
 
 	protected function sendNextChunk(){
@@ -1107,8 +1103,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected function doFirstSpawn(){
 		$this->spawned = true;
-
-		$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
@@ -2205,12 +2199,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->loggedIn = true;
 		$this->server->onPlayerLogin($this);
-
-		$pk = new ResourcePacksInfoPacket();
-		$manager = $this->server->getResourceManager();
-		$pk->resourcePackEntries = $manager->getResourceStack();
-		$pk->mustAccept = $manager->resourcePacksRequired();
-		$this->dataPacket($pk);
+		
+		$this->completeLoginSequence();
 	}
 
 	protected function completeLoginSequence(){
@@ -2284,6 +2274,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->sendSettings();
 		$this->sendPotionEffects($this);
 		$this->sendData($this);
+		
+		$this->doFirstSpawn();
 
 		$this->inventory->sendContents($this);
 		$this->inventory->sendArmorContents($this);
@@ -2292,6 +2284,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->server->addOnlinePlayer($this);
 		$this->server->onPlayerCompleteLoginSequence($this);
+		
+		$pk = new ResourcePacksInfoPacket();
+		$manager = $this->server->getResourceManager();
+		$pk->resourcePackEntries = $manager->getResourceStack();
+		$pk->mustAccept = $manager->resourcePacksRequired();
+		$this->dataPacket($pk);
 	}
 	
 	protected function sendAllInventories(){
@@ -2450,7 +2448,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->dataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
-				$this->completeLoginSequence();
+				$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 				break;
 			default:
 				return false;
@@ -3962,7 +3960,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 
 			default:
-
+			 break;
 		}
 
 		$ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params));
@@ -3991,10 +3989,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 		
 		parent::kill();
-
-		$this->health = 0;
-		$this->foodTick = 0;
-		$this->getAttributeMap()->getAttribute(Attribute::HEALTH)->setMaxValue($this->getMaxHealth())->setValue(0, true);
 
 		$this->sendRespawnPacket($this->getSpawn());
 	}
