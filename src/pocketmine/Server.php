@@ -2565,6 +2565,7 @@ class Server{
 	 * @param UUID		  $uuid
 	 * @param int		   $entityId
 	 * @param string		$name
+	 * @param Skin $skin
 	 * @param Player[]|null $players
 	 */
 	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, ...$vals){
@@ -2572,13 +2573,24 @@ class Server{
 		$pk->type = PlayerListPacket::TYPE_ADD;
 		
 		$skin = null;
-		$players = [];
-		if(count($vals) == 2){
-			$skin = $vals[0] ?? null;
-			$players = $vals[1] ?? null;
-		}elseif(count($vals) > 2){
-			$skin = new Skin($vals[0] ?? "", $vals[1] ?? "");
-			$players = $vals[3] ?? [];
+		$players = null;
+		if(count($vals) >= 2){
+			$v1 = $vals[0] ?? null;
+			$v2 = $vals[1] ?? null;
+			$v3 = $vals[2] ?? null;
+			if($v1 instanceof Skin){ // new api
+				$skin = $v1;
+				if(is_array($v2)){
+				 $players = $v2;
+			 }
+			}
+			
+			if(is_string($v1) and is_string($v2)){ // old api
+				$skin = new Skin($v1,$v2);
+				if(is_array($v3)){
+					$players = $v3;
+				}
+			}
 		}
 		
 		if(!is_array($players)) $players = null;
