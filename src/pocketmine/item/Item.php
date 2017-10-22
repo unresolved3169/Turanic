@@ -38,7 +38,6 @@ use pocketmine\entity\Skeleton;
 use pocketmine\entity\Spider;
 use pocketmine\entity\Witch;
 use pocketmine\entity\Zombie;
-use pocketmine\inventory\Fuel;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
@@ -1070,17 +1069,10 @@ class Item implements ItemIds, \JsonSerializable {
 	}
 
 	/**
-	 * @return null
+	 * @return int
 	 */
-	final public function getFuelTime(){
-		if(!isset(Fuel::$duration[$this->id])){
-			return null;
-		}
-		if($this->id !== self::BUCKET or $this->meta === 10){
-			return Fuel::$duration[$this->id];
-		}
-
-		return null;
+	public function getFuelTime() : int{
+		return 0;
 	}
 
 	/**
