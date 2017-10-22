@@ -784,7 +784,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		if($player !== $this and !isset($this->hasSpawned[$player->getLoaderId()])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
 
-			if(!$this->skin->isValid()){
+			if($this->skin === null or !$this->skin->isValid()){
 				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
 			}
 
