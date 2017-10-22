@@ -3594,6 +3594,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
+	public function getMovementSpeed(){
+	    return $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->getValue();
+    }
+
 	/**
 	 * Sends a direct chat message to a player
 	 *
