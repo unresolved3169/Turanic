@@ -2565,8 +2565,6 @@ class Server{
 	 * @param UUID		  $uuid
 	 * @param int		   $entityId
 	 * @param string		$name
-	 * @param string		$skinId
-	 * @param string		$skinData
 	 * @param Player[]|null $players
 	 */
 	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, array $players = null){

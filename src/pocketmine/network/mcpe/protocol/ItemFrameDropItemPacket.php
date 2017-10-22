@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class ItemFrameDropItemPacket extends DataPacket{
 
 	const NETWORK_ID = ProtocolInfo::ITEM_FRAME_DROP_ITEM_PACKET;
@@ -44,10 +42,6 @@ class ItemFrameDropItemPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleItemFrameDropItem($this);
 	}
 
 }

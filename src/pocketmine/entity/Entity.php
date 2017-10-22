@@ -455,7 +455,14 @@ abstract class Entity extends Location implements Metadatable {
 			$this->namedtag->Rotation[0],
 			$this->namedtag->Rotation[1]
 		);
-		$this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+
+        if(isset($this->namedtag->Motion)){
+            $this->setMotion($this->temporalVector->setComponents($this->namedtag["Motion"][0], $this->namedtag["Motion"][1], $this->namedtag["Motion"][2]));
+        }else{
+            $this->setMotion($this->temporalVector->setComponents(0, 0, 0));
+        }
+
+        $this->resetLastMovements();
 
 		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
@@ -468,6 +475,9 @@ abstract class Entity extends Location implements Metadatable {
 			$this->namedtag->Fire = new ShortTag("Fire", 0);
 		}
 		$this->fireTicks = $this->namedtag["Fire"];
+        if($this->isOnFire()){
+            $this->setDataFlag(self::DATA_FLAGS,self::DATA_FLAG_ONFIRE, true, self::DATA_TYPE_LONG);
+        }
 
 		if(!isset($this->namedtag->Air)){
 			$this->namedtag->Air = new ShortTag("Air", 300);
@@ -1444,25 +1454,25 @@ abstract class Entity extends Location implements Metadatable {
 			return false;
 		}
 
+        $this->lastUpdate = $currentTick;
+
 		if(!$this->isAlive()){
 			++$this->deadTicks;
-			if($this->deadTicks >= 10){
+			if($this->deadTicks >= 20){
 				$this->despawnFromAll();
 				if(!$this->isPlayer){
 					$this->close();
 				}
 			}
 
-			return $this->deadTicks < 10;
+			return $this->deadTicks < 20;
 		}
 
 		$tickDiff = $currentTick - $this->lastUpdate;
 		if($tickDiff <= 0){
 			return false;
 		}
-
-		$this->lastUpdate = $currentTick;
-
+        
 		$this->timings->startTiming();
 
 		$hasUpdate = $this->entityBaseTick($tickDiff);

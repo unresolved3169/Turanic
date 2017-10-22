@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\entity\Attribute;
-use pocketmine\network\mcpe\NetworkSession;
 
 class UpdateAttributesPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
@@ -46,9 +44,4 @@ class UpdateAttributesPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putAttributeList(...$this->entries);
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleUpdateAttributes($this);
-	}
-
 }

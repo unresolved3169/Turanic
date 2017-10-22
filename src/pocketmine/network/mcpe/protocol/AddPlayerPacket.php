@@ -27,7 +27,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\UUID;
 
@@ -122,9 +121,4 @@ class AddPlayerPacket extends DataPacket{
 			$this->putEntityLink($link);
 		}
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleAddPlayer($this);
-	}
-
 }

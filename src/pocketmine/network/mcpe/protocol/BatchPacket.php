@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 #endif
@@ -103,25 +102,6 @@ class BatchPacket extends DataPacket{
 
 	public function setCompressionLevel(int $level){
 		$this->compressionLevel = $level;
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		if($this->payload === ""){
-			return false;
-		}
-
-		foreach($this->getPackets() as $buf){
-			$pk = PacketPool::getPacketById(ord($buf{0}));
-
-			if(!$pk->canBeBatched()){
-				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");
-			}
-
-			$pk->setBuffer($buf, 1);
-			$session->handleDataPacket($pk);
-		}
-
-		return true;
 	}
 
 }

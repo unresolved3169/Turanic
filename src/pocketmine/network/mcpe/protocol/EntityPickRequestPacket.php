@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class EntityPickRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
 
@@ -43,9 +41,5 @@ class EntityPickRequestPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putLLong($this->entityTypeId);
 		$this->putByte($this->hotbarSlot);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleEntityPickRequest($this);
 	}
 }

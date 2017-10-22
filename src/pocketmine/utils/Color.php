@@ -2,26 +2,25 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
 
-/*
-* Copied from @beito123's FlowerPot plugin
- */
+declare(strict_types=1);
 
 namespace pocketmine\utils;
 
@@ -50,8 +49,9 @@ class Color {
 
 	/** @var \SplFixedArray */
 	public static $dyeColors = null;
+    private $alpha = 0;
 
-	public static function init(){
+    public static function init(){
 		if(self::$dyeColors === null){
 			self::$dyeColors = new \SplFixedArray(16); //What's the point of making a 256-long array for 16 objects?
 			self::$dyeColors[self::COLOR_DYE_BLACK] = Color::getRGB(30, 27, 27);
@@ -115,18 +115,36 @@ class Color {
 		return Color::getRGB(0, 0, 0);
 	}
 
-	/**
-	 * Color constructor.
-	 *
-	 * @param $r
-	 * @param $g
-	 * @param $b
-	 */
-	public function __construct($r, $g, $b){
-		$this->red = $r;
-		$this->green = $g;
-		$this->blue = $b;
+    /**
+     * Color constructor.
+     *
+     * @param $r
+     * @param $g
+     * @param $b
+     * @param int $a
+     */
+	public function __construct($r, $g, $b, $a = 0xff){
+		$this->red = $r & 0xff;
+		$this->green = $g & 0xff;
+		$this->blue = $b & 0xff;
+        $this->alpha = $a & 0xff;
 	}
+
+    /**
+     * Returns the alpha (transparency) value of this colour.
+     * @return int
+     */
+    public function getAlpha() : int{
+        return $this->alpha;
+    }
+
+    /**
+     * Sets the alpha (opacity) value of this colour, lower = more transparent
+     * @param int $a
+     */
+    public function setAlpha(int $a){
+        $this->alpha = $a & 0xff;
+    }
 
 	/**
 	 * @return int
@@ -162,4 +180,61 @@ class Color {
 	public function __toString(){
 		return "Color(red:" . $this->red . ", green:" . $this->green . ", blue:" . $this->blue . ")";
 	}
+
+    /**
+     * Returns a Color from the supplied RGB colour code (24-bit)
+     * @param int $code
+     *
+     * @return Color
+     */
+    public static function fromRGB(int $code){
+        return new Color(($code >> 16) & 0xff, ($code >> 8) & 0xff, $code & 0xff);
+    }
+
+    /**
+     * Returns a Color from the supplied ARGB colour code (32-bit)
+     *
+     * @param int $code
+     *
+     * @return Color
+     */
+    public static function fromARGB(int $code){
+        return new Color(($code >> 16) & 0xff, ($code >> 8) & 0xff, $code & 0xff, ($code >> 24) & 0xff);
+    }
+
+    /**
+     * Returns an ARGB 32-bit colour value.
+     * @return int
+     */
+    public function toARGB() : int{
+        return ($this->alpha << 24) | ($this->red << 16) | ($this->green << 8) | $this->blue;
+    }
+
+    /**
+     * Returns a little-endian ARGB 32-bit colour value.
+     * @return int
+     */
+    public function toBGRA() : int{
+        return ($this->blue << 24) | ($this->green << 16) | ($this->red << 8) | $this->alpha;
+    }
+
+    /**
+     * Returns an RGBA 32-bit colour value.
+     * @return int
+     */
+    public function toRGBA() : int{
+        return ($this->red << 24) | ($this->green << 16) | ($this->blue << 8) | $this->alpha;
+    }
+
+    /**
+     * Returns a little-endian RGBA colour value.
+     * @return int
+     */
+    public function toABGR() : int{
+        return ($this->alpha << 24) | ($this->blue << 16) | ($this->green << 8) | $this->red;
+    }
+
+    public static function fromABGR(int $code){
+        return new Color($code & 0xff, ($code >> 8) & 0xff, ($code >> 16) & 0xff, ($code >> 24) & 0xff);
+    }
 }

@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 
 class LevelSoundEventPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::LEVEL_SOUND_EVENT_PACKET;
@@ -222,9 +221,5 @@ class LevelSoundEventPacket extends DataPacket{
 		$this->putVarInt($this->pitch);
 		$this->putBool($this->unknownBool);
 		$this->putBool($this->disableRelativeVolume);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleLevelSoundEvent($this);
 	}
 }

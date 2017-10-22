@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class CommandOutputPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
@@ -36,9 +34,5 @@ class CommandOutputPacket extends DataPacket{
 
 	protected function encodePayload(){
 		//TODO
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleCommandOutput($this);
 	}
 }

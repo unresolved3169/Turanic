@@ -26,8 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class UpdateTradePacket extends DataPacket{
@@ -76,9 +74,5 @@ class UpdateTradePacket extends DataPacket{
 		$this->putEntityUniqueId($this->playerEid);
 		$this->putString($this->displayName);
 		$this->put($this->offers);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleUpdateTrade($this);
 	}
 }

@@ -26,10 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\resourcepacks\ResourcePack;
-use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
 class ResourcePackStackPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_STACK_PACKET;
@@ -75,9 +72,5 @@ class ResourcePackStackPacket extends DataPacket{
 			$this->putString($entry->getPackVersion());
 			$this->putString(""); //TODO
 		}
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePackStack($this);
 	}
 }

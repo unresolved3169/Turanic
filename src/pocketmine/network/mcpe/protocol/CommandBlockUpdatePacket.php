@@ -27,8 +27,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class CommandBlockUpdatePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
 
@@ -97,9 +95,5 @@ class CommandBlockUpdatePacket extends DataPacket{
 		$this->putString($this->name);
 
 		$this->putBool($this->shouldTrackOutput);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleCommandBlockUpdate($this);
 	}
 }

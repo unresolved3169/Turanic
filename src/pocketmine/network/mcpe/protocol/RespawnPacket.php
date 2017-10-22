@@ -43,8 +43,4 @@ class RespawnPacket extends DataPacket{
 		$this->putVector3Obj($this->position);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleRespawn($this);
-	}
-
 }

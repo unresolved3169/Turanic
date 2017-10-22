@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class StartGamePacket extends DataPacket{
@@ -195,9 +193,4 @@ class StartGamePacket extends DataPacket{
 
 		$this->putVarInt($this->enchantmentSeed);
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleStartGame($this);
-	}
-
 }

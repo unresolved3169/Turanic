@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class BookEditPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
 
@@ -107,9 +105,5 @@ class BookEditPacket extends DataPacket{
 			default:
 				throw new \UnexpectedValueException("Unknown book edit type $this->type!");
 		}
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleBookEdit($this);
 	}
 }

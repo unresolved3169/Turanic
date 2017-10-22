@@ -46,9 +46,4 @@ class SetEntityMotionPacket extends DataPacket{
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putVector3Obj($this->motion);
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityMotion($this);
-	}
-
 }

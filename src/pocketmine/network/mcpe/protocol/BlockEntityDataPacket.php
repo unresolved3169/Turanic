@@ -50,8 +50,4 @@ class BlockEntityDataPacket extends DataPacket{
 		$this->put($this->namedtag);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleBlockEntityData($this);
-	}
-
 }

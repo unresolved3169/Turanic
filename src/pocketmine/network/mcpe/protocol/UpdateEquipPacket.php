@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class UpdateEquipPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
 
@@ -55,9 +53,5 @@ class UpdateEquipPacket extends DataPacket{
 		$this->putVarInt($this->unknownVarint);
 		$this->putEntityUniqueId($this->entityUniqueId);
 		$this->put($this->namedtag);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleUpdateEquip($this);
 	}
 }

@@ -25,10 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\resourcepacks\ResourcePack;
-use pocketmine\resourcepacks\ResourcePackInfoEntry;
 
 class ResourcePacksInfoPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
@@ -80,9 +77,5 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putString(""); //TODO
 			$this->putString(""); //TODO
 		}
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleResourcePacksInfo($this);
 	}
 }

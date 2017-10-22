@@ -25,9 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class PlayerActionPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAYER_ACTION_PACKET;
 
@@ -80,9 +77,4 @@ class PlayerActionPacket extends DataPacket{
 		$this->putBlockPosition($this->x, $this->y, $this->z);
 		$this->putVarInt($this->face);
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayerAction($this);
-	}
-
 }

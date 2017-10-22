@@ -26,9 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class RiderJumpPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RIDER_JUMP_PACKET;
 
@@ -41,9 +38,5 @@ class RiderJumpPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putVarInt($this->unknown);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleRiderJump($this);
 	}
 }

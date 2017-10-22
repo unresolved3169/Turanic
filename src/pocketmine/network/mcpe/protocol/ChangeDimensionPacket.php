@@ -51,8 +51,4 @@ class ChangeDimensionPacket extends DataPacket{
 		$this->putBool($this->respawn);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleChangeDimension($this);
-	}
-
 }

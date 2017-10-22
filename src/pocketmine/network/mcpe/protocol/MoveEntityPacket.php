@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 
 class MoveEntityPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MOVE_ENTITY_PACKET;
@@ -66,10 +64,6 @@ class MoveEntityPacket extends DataPacket{
 		$this->putByteRotation($this->yaw);
 		$this->putBool($this->onGround);
 		$this->putBool($this->teleported);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleMoveEntity($this);
 	}
 
 }

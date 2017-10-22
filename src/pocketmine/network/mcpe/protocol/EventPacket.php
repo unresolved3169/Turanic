@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class EventPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::EVENT_PACKET;
 
@@ -62,9 +60,5 @@ class EventPacket extends DataPacket{
 		$this->putByte($this->type);
 
 		//TODO: also nice confusing mess
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleEvent($this);
 	}
 }

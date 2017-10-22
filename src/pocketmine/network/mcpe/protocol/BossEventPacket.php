@@ -25,9 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class BossEventPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::BOSS_EVENT_PACKET;
 
@@ -125,9 +122,4 @@ class BossEventPacket extends DataPacket{
 				break;
 		}
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleBossEvent($this);
-	}
-
 }

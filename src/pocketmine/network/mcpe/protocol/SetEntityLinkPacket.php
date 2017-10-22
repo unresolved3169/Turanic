@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 
 class SetEntityLinkPacket extends DataPacket{
@@ -42,9 +40,4 @@ class SetEntityLinkPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityLink($this->link);
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetEntityLink($this);
-	}
-
 }

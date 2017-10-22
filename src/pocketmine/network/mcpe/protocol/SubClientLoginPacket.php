@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class SubClientLoginPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SUB_CLIENT_LOGIN_PACKET;
 
@@ -39,9 +37,5 @@ class SubClientLoginPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putString($this->connectionRequestData);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSubClientLogin($this);
 	}
 }

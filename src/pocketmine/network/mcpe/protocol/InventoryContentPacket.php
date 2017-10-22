@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\NetworkSession;
 
 class InventoryContentPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INVENTORY_CONTENT_PACKET;
@@ -50,9 +49,5 @@ class InventoryContentPacket extends DataPacket{
 		foreach($this->items as $item){
 			$this->putSlot($item);
 		}
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleInventoryContent($this);
 	}
 }

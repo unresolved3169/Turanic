@@ -95,6 +95,7 @@ class AvailableCommandsPacket extends DataPacket{
 				$overloads = $cmd->getOverloads();
 				
 				$commandStream->putUnsignedVarInt(count($overloads));
+				/** @var CommandOverload $overload */
 				foreach($overloads as $overload){
 					$params = $overload->getParameters();
 					$commandStream->putUnsignedVarInt(count($params));

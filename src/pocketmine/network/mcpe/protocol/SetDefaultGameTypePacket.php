@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class SetDefaultGameTypePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_DEFAULT_GAME_TYPE_PACKET;
 
@@ -39,9 +37,5 @@ class SetDefaultGameTypePacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->gamemode);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetDefaultGameType($this);
 	}
 }

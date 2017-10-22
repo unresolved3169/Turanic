@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class StructureBlockUpdatePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::STRUCTURE_BLOCK_UPDATE_PACKET;
 
@@ -36,9 +34,5 @@ class StructureBlockUpdatePacket extends DataPacket{
 
 	protected function encodePayload(){
 		//TODO
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleStructureBlockUpdate($this);
 	}
 }

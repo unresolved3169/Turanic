@@ -25,9 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class PlayStatusPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::PLAY_STATUS_PACKET;
 
@@ -53,9 +50,4 @@ class PlayStatusPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putInt($this->status);
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayStatus($this);
-	}
-
 }

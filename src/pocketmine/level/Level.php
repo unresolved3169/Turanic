@@ -1774,7 +1774,7 @@ class Level implements ChunkManager, Metadatable{
 				return false;
 			}
 
-			$this->addSound(new BlockPlaceSound($hand));
+            $this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, 1, $hand->getId());
 		}
 
 		if ($hand->place($item, $block, $target, $face, $facepos->x, $facepos->y, $facepos->z, $player) === false) {

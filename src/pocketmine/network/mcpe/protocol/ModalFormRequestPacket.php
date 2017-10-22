@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class ModalFormRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::MODAL_FORM_REQUEST_PACKET;
 
@@ -43,9 +41,5 @@ class ModalFormRequestPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->formId);
 		$this->putString($this->formData);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleModalFormRequest($this);
 	}
 }

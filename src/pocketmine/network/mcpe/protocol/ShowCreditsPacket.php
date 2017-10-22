@@ -26,9 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class ShowCreditsPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SHOW_CREDITS_PACKET;
 
@@ -48,9 +45,5 @@ class ShowCreditsPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->playerEid);
 		$this->putVarInt($this->status);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleShowCredits($this);
 	}
 }

@@ -25,9 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class InteractPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::INTERACT_PACKET;
 
@@ -70,9 +67,4 @@ class InteractPacket extends DataPacket{
 			$this->putLFloat($this->z);
 		}
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleInteract($this);
-	}
-
 }

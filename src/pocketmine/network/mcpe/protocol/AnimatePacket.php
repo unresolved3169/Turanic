@@ -25,9 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class AnimatePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ANIMATE_PACKET;
 
@@ -57,10 +54,6 @@ class AnimatePacket extends DataPacket{
 		if($this->action & 0x80){
 			$this->putLFloat($this->float);
 		}
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleAnimate($this);
 	}
 
 }

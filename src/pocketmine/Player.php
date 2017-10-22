@@ -23,10 +23,7 @@
 namespace pocketmine;
 
 use pocketmine\customUI\CustomUI;
-use pocketmine\event\block\ItemFrameDropItemEvent;
-use pocketmine\block\Air;
 use pocketmine\block\Block;
-use pocketmine\block\Fire;
 use pocketmine\block\PressurePlate;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -60,7 +57,6 @@ use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
-use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\player\PlayerMoveEvent;
@@ -70,7 +66,6 @@ use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
-use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\TextContainer;
@@ -86,8 +81,6 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\event\ui\{UICloseEvent, UIDataReceiveEvent};
 use pocketmine\inventory\InventoryHolder;
-use pocketmine\inventory\ShapedRecipe;
-use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
@@ -145,7 +138,6 @@ use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
@@ -154,7 +146,6 @@ use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
@@ -304,6 +295,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $craftingGrid;
 	/** @var  PlayerCursorInventory */
 	protected $cursorInventory;
+	/** @var  CraftingTransaction */
 	protected $craftingTransaction;
 	public $namedtag;
 	public $server;
@@ -1546,24 +1538,25 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @return bool
 	 */
-	public function isSurvival(): bool
-	{
+	public function isSurvival(): bool{
 		return ($this->gamemode & 0x01) === 0;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isCreative(): bool
-	{
-		return ($this->gamemode & 0x01) > 0;
+	public function isCreative(bool $real = false): bool{
+        if($literal){
+            return $this->gamemode === Player::CREATIVE;
+        }else{
+            return ($this->gamemode & 0x01) === 1;
+        }
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isSpectator(): bool
-	{
+	public function isSpectator(): bool{
 		return $this->gamemode === 3;
 	}
 
@@ -1947,7 +1940,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if (!$this->isAlive() and $this->spawned) {
 			++$this->deadTicks;
-			if ($this->deadTicks >= 10) {
+			if ($this->deadTicks >= 20) {
 				$this->despawnFromAll();
 			}
 			return true;
@@ -2074,16 +2067,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @return array
 	 */
-	public function getCreativeItems(): array
-	{
+	public function getCreativeItems(): array{
 		return $this->personalCreativeItems;
 	}
 
 	/**
 	 * @param Item $item
 	 */
-	public function addCreativeItem(Item $item)
-	{
+	public function addCreativeItem(Item $item){
 		$this->personalCreativeItems[] = Item::get($item->getId(), $item->getDamage());
 	}
 
@@ -2248,7 +2239,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
 
-		$this->level->sendTime($this);
+		$this->level->sendTime();
 
 		$this->sendAttributes(true);
 		$this->setNameTagVisible(true);
@@ -2652,7 +2643,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
 								return true;
 							}
 						}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
@@ -2660,7 +2651,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}else{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
+							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
 								if(!$item->equalsExact($oldItem)){
 									$this->inventory->setItemInHand($item);
 									$this->inventory->sendHeldItem($this->hasSpawned);

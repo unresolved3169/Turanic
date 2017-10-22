@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\entity\Skin;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 
 class PlayerListPacket extends DataPacket{
@@ -91,9 +89,4 @@ class PlayerListPacket extends DataPacket{
 			}
 		}
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handlePlayerList($this);
-	}
-
 }

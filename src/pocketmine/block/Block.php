@@ -956,4 +956,25 @@ class Block extends Position implements BlockIds, Metadatable{
 			$this->getHorizontalSides()
 		);
 	}
+
+    /**
+     * Bitmask to use to remove superfluous information from block meta when getting its item form or name.
+     * This defaults to -1 (don't remove any data). Used to remove rotation data and bitflags from block drops.
+     *
+     * If your block should not have any meta value when it's dropped as an item, override this to return 0 in
+     * descendent classes.
+     *
+     * @return int
+     */
+    public function getVariantBitmask() : int{
+        return -1;
+    }
+
+    /**
+     * Returns the block meta, stripped of non-variant flags.
+     * @return int
+     */
+    public function getVariant() : int{
+        return $this->meta & $this->getVariantBitmask();
+    }
 }

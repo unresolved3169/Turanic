@@ -25,8 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession;
-
 class ServerSettingsResponsePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_RESPONSE_PACKET;
 
@@ -43,9 +41,5 @@ class ServerSettingsResponsePacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->formId);
 		$this->putString($this->formData);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleServerSettingsResponse($this);
 	}
 }

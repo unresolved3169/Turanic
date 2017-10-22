@@ -29,6 +29,7 @@ use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 
@@ -492,22 +493,26 @@ abstract class DataPacket extends BinaryStream{
 		}
 	}
 
-	/**
-	 * @return array
-	 */
-	protected function getEntityLink() : array{
-		return [$this->getEntityUniqueId(), $this->getEntityUniqueId(), $this->getByte(), $this->getByte()];
-	}
+    /**
+     * @return EntityLink
+     */
+    protected function getEntityLink() : EntityLink{
+        $link = new EntityLink();
+        $link->fromEntityUniqueId = $this->getEntityUniqueId();
+        $link->toEntityUniqueId = $this->getEntityUniqueId();
+        $link->type = $this->getByte();
+        $link->byte2 = $this->getByte();
+        return $link;
+    }
 
-	/**
-	 * @param array $link
-	 */
-	protected function putEntityLink(array $link){
-		$this->putEntityUniqueId($link[0]);
-		$this->putEntityUniqueId($link[1]);
-		$this->putByte($link[2]);
-		$this->putByte($link[3]);
-
+    /**
+     * @param EntityLink $link
+     */
+	protected function putEntityLink(EntityLink $link){
+        $this->putEntityUniqueId($link->fromEntityUniqueId);
+        $this->putEntityUniqueId($link->toEntityUniqueId);
+        $this->putByte($link->type);
+        $this->putByte($link->byte2);
 	}
 	
 	/**

@@ -25,9 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
-use pocketmine\network\mcpe\NetworkSession;
-
 class SetDifficultyPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::SET_DIFFICULTY_PACKET;
 
@@ -41,9 +38,4 @@ class SetDifficultyPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->difficulty);
 	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleSetDifficulty($this);
-	}
-
 }

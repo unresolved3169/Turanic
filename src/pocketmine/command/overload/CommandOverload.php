@@ -24,8 +24,6 @@
 
 namespace pocketmine\command\overload;
 
-use pocketmine\command\Command;
-
 class CommandOverload{
 	
 	protected $name;
