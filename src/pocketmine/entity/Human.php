@@ -123,9 +123,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	 *
 	 * @param Skin $skin
 	 */
-	public function setSkin($skin = "", string $skinData = "", string $capeData = "", string $geoName = "", string $geoData = ""){
+	public function setSkin($skin = "", string $skinId = "", string $capeData = "", string $geoName = "", string $geoData = ""){
 		if(!($skin instanceof Skin)){ // support old skin api
-		 $skin = new Skin($skin, $skinData, $capeData, $geoName, $geoData);
+		 $skin = new Skin($skinId, $skin, $capeData, $geoName, $geoData);
 		}
 		if(!$skin->isValid()){
 			throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
