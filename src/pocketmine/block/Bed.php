@@ -242,7 +242,7 @@ class Bed extends Transparent {
 	/**
 	 * @return int
 	 */
-	public function getVariantBitmask(){
+	public function getVariantBitmask() : int{
 		return 0x08;
 	}
 

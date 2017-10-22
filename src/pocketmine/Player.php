@@ -1545,7 +1545,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @return bool
 	 */
-	public function isCreative(bool $real = false): bool{
+	public function isCreative(bool $literal = false): bool{
         if($literal){
             return $this->gamemode === Player::CREATIVE;
         }else{
