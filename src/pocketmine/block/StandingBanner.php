@@ -106,7 +106,7 @@ class StandingBanner extends Transparent{
 		return Tool::TYPE_AXE;
 	}
 
-	public function getVariantBitmask(){
+	public function getVariantBitmask() : int{
 		return 0;
 	}
 
