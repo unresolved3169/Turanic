@@ -123,10 +123,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	 *
 	 * @param Skin $skin
 	 */
-	public function setSkin($skin = "", string $skinId = "", string $capeData = "", string $geoName = "", string $geoData = ""){
-		if(!($skin instanceof Skin)){ // support old skin api
-		 $skin = new Skin($skinId, $skin, $capeData, $geoName, $geoData);
-		}
+	public function setSkin(Skin $skin){
 		if(!$skin->isValid()){
 			throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
 		}
@@ -567,10 +564,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		$this->enderChestInventory = new EnderChestInventory($this, ($this->namedtag->EnderChestInventory ?? null));
 
 			if(isset($this->namedtag->Skin) and $this->namedtag->Skin instanceof CompoundTag and $this->skin == null){
-				   $skin = $this->namedtag->Skin->getValue();
+				   $skin = $this->namedtag->Skin;
 				   $this->setSkin(new Skin(
-				   $skin["Name"] ?? "",
-				   $skin["Data"] ?? ""));
+				   isset($skin->Name) ? $skin->Name->getValue() : "",
+				   isset($skin->Data) ? $skin->Data->getValue() : "",
+				   isset($skin->CapeData) ? $skin->CapeData->getValue() : "",
+				   isset($skin->GeometryName) ? $skin->GeometryName->getValue() : "",
+				   isset($skin->GeometryData) ? $skin->GeometryData->getValue() : ""));
 			}
 
 			$this->uuid = UUID::fromData($this->getId(), $this->getSkinData(), $this->getNameTag());
@@ -758,9 +758,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 			$this->namedtag->Skin = new CompoundTag("Skin", [
 				"Data" => new StringTag("Data", $this->skin->getSkinData()),
 				"Name" => new StringTag("Name", $this->skin->getSkinId()),
-				"capeData" => new StringTag("capeData", $this->skin->getCapeData()),
-				"geometryName" => new StringTag("geometryName", $this->skin->getGeometryName()),
-				"geometryData" => new StringTag("geometryData", $this->skin->getGeometryData())
+				"CapeData" => new StringTag("CapeData", $this->skin->getCapeData()),
+				"GeometryName" => new StringTag("GeometryName", $this->skin->getGeometryName()),
+				"GeometryData" => new StringTag("GeometryData", $this->skin->getGeometryData())
 			]);
 		}
 

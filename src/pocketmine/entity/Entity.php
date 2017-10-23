@@ -1134,9 +1134,9 @@ abstract class Entity extends Location implements Metadatable {
 	 */
 	public function setHealth($amount){
 		$amount = (int) $amount;
-		if($amount === $this->health){
+	/*	if($amount === $this->health){
 			return;
-		}
+		}*/
 
 		if($amount <= 0){
 			if($this->isAlive()){

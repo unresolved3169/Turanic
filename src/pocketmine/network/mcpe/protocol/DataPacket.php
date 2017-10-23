@@ -331,10 +331,10 @@ abstract class DataPacket extends BinaryStream{
 	 * @param int $y
 	 * @param int $z
 	 */
-	public function putBlockPosition(int $x, int $y, int $z){
-		$this->putVarInt($x);
-		$this->putUnsignedVarInt($y);
-		$this->putVarInt($z);
+	public function putBlockPosition($x, $y, $z){
+		$this->putVarInt((int) $x);
+		$this->putUnsignedVarInt((int) $y);
+		$this->putVarInt((int) $z);
 	}
 
 	/**
