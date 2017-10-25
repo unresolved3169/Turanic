@@ -229,6 +229,18 @@ class PlayerInventory extends EntityInventory{
 	public function getArmorItem(int $index) : Item{
 		return $this->getItem($this->getSize() + $index);
 	}
+	
+	/**
+	 * @param $index
+	 * @param $cost
+	 */
+	public function damageArmor(int $index, int $cost){
+		$this->slots[$this->getSize() + $index]->useOn($this->slots[$this->getSize() + $index], $cost);
+		if($this->slots[$this->getSize() + $index]->getDamage() >= $this->slots[$this->getSize() + $index]->getMaxDurability()){
+			$this->setItem($this->getSize() + $index, Item::get(Item::AIR, 0, 0));
+		}
+		$this->sendArmorContents($this->getViewers());
+	}
 
 	public function setArmorItem(int $index, Item $item) : bool{
 		return $this->setItem($this->getSize() + $index, $item);
