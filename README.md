@@ -1,4 +1,4 @@
-<img src="https://github.com/TuranicTeam/Turanic/blob/master/resources/turanic_banner.png?raw=true" border="0">
+<img src="https://i.imgur.com/jw0b3BH.png" border="0">
 
 Fast server software for Minecraft: Bedrock/PE Edition and W10 Edition - v1.2.x.
 Turanic based on Steadfast2, Nukkit, GenisysPro and MiNET.

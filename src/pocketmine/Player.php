@@ -846,7 +846,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		 */
 		$form = new CustomForm("Turanic Server Software");
 		$form->setIconUrl("https://avatars2.githubusercontent.com/u/31800317?s=400&v=4"); // turanic logo
-		$form->addElement(new Label("Turanic is a MC:BE Server Software\n Based On GenisysPro, PocketMine-MP, Nukkit, MiNET and Steadfast2\n You can download from github: https://github.com/TuranicTeam/Turanic"));
+		$form->addElement(new Label("Turanic is a MC:BE Server Software\nYou can download from github: https://github.com/TuranicTeam/Turanic"));
 		
 		$this->defaultServerSettings = $form;
 	}
@@ -1140,8 +1140,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @return bool
 	 */
-	protected function orderChunks()
-	{
+	protected function orderChunks(){
 		if ($this->connected === false or $this->viewDistance === -1) {
 			return false;
 		}
@@ -1240,8 +1239,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool
 	 */
-	public function batchDataPacket(DataPacket $packet)
-	{
+	public function batchDataPacket(DataPacket $packet){
 		if ($this->connected === false) {
 			return false;
 		}
@@ -3073,6 +3071,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->removeAllEffects();
 				$this->setHealth($this->getMaxHealth());
 
+				/** @var Attribute $attr */
 				foreach($this->attributeMap->getAll() as $attr){
 					$attr->resetToDefault();
 				}
@@ -3389,8 +3388,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->checkModal($packet);
 		return true;
 	}
-	
-	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+
+    /**
+     * @param ServerSettingsRequestPacket $packet
+     * @return bool
+     */
+    public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
 		$this->sendServerSettings($this->getDefaultServerSettings());
 		return true;
 	}
