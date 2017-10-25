@@ -133,7 +133,6 @@ use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
-use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 

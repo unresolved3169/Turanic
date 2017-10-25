@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\NetworkSession;
 
 class RespawnPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
