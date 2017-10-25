@@ -1934,6 +1934,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if ($tickDiff <= 0) {
 			return true;
 		}
+		
+		$this->sendAttributes();
 
 		$this->messageCounter = 2;
 
@@ -1950,7 +1952,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->timings->startTiming();
 
 		if ($this->spawned) {
-			$this->sendAttributes();
 			$this->processMovement($tickDiff);
 			$this->entityBaseTick($tickDiff);
 
