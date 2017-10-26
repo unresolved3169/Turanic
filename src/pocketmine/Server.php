@@ -1502,15 +1502,15 @@ class Server{
 
 	public function about(){
 		$string = TextFormat::BOLD.TextFormat::AQUA."
-  _______					_
- |__   __|				  (_)	 
-	| |_   _ _ __ __ _ _ __  _  ___ 
-	| | | | | '__/ _` | '_ \| |/ __|
-	| | |_| | | | (_| | | | | | (__ 
-	|_|\__,_|_|  \__,_|_| |_|_|\___|
+  _______                    _      
+ |__   __|                  (_)     
+    | |_   _ _ __ __ _ _ __  _  ___ 
+    | | | | | '__/ _` | '_ \| |/ __|
+    | | |_| | | | (_| | | | | | (__ 
+    |_|\__,_|_|  \__,_|_| |_|_|\___|
 	
-	§r§bGithub§8: §fhttps://github.com/TuranicTeam§f
-	§9Discord§8: §fhttps://discord.gg/DyPYdYT§f
+   §r§bGithub§8: §fhttps://github.com/TuranicTeam§f
+   §9Discord§8: §fhttps://discord.gg/DyPYdYT§f
 	";
 		$this->getLogger()->directSend($string);
 	}
