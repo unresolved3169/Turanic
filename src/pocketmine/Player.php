@@ -2487,7 +2487,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$message = TextFormat::clean($message, $this->removeFormat);
 		foreach(explode("\n", $message) as $messagePart){
 			if(trim($messagePart) !== "" and strlen($messagePart) <= 255 and $this->messageCounter-- > 0){
-				$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $ev->getMessage()));
+				$this->server->getPluginManager()->callEvent($ev = new PlayerChatEvent($this, $messagePart));
 				if(!$ev->isCancelled()){
 					$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
 				}
