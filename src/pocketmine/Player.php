@@ -2319,7 +2319,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 		$line = substr($cmd, 1);
-		$this->server->getPluginManager()->callEvent($event = new PlayerCommandPreprocessEvent($this, $line));
+		$this->server->getPluginManager()->callEvent($event = new PlayerCommandPreprocessEvent($this, $cmd));
 		if($event->isCancelled()){
 			return false;
 		}
