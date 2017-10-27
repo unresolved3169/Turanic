@@ -54,6 +54,7 @@ use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
+use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
@@ -3562,15 +3563,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 	}
 
-	/**
-	 * @param string $address
-	 * @param		$port
-	 */
-	public function transfer(string $address, $port){
-		$pk = new TransferPacket();
-		$pk->address = $address;
-		$pk->port = $port;
-		$this->dataPacket($pk);
+	public function transfer(string $address, int $port){
+        $this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port, "transfer"));
+        if(!$ev->isCancelled()) {
+            $pk = new TransferPacket();
+            $pk->address = $address;
+            $pk->port = $port;
+            $this->directDataPacket($pk);
+
+            return true;
+        }
+        return false;
 	}
 
 	/**
