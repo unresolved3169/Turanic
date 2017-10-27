@@ -1681,7 +1681,9 @@ abstract class Entity extends Location implements Metadatable {
 
 		foreach($blocks as $block){
 			if($block instanceof Portal){
-				return true;
+				return "nether";
+			}elseif($block->getId() == 119){
+				return "ender";
 			}
 		}
 

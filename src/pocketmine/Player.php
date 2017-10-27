@@ -1969,9 +1969,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			if (!$this->isSpectator() and $this->isAlive()) {
 				if($currentTick % 20 == 0){
-					if($this->isInsideOfPortal()){
+					if($portalType = $this->isInsideOfPortal()){
 						if($this->portalStatus === self::PORTAL_STATUS_OUT){
-							$to = $this->level->getFolderName() == "nether" ? $this->server->getDefaultLevel()->getFolderName() : "nether";
+							$to = $this->level->getFolderName() == $portalType ? $this->server->getDefaultLevel()->getFolderName() : $portalType;
 							if($targetLevel = $this->server->getLevelByName($to)){
 								$this->teleport($targetLevel->getSafeSpawn());
 							}
