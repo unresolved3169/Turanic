@@ -23,20 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\inventory\transaction\action\CraftingTakeResultAction;
-use pocketmine\inventory\transaction\action\CraftingTransferMaterialAction;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\action\CraftingTransferMaterialAction;
+use pocketmine\inventory\transaction\action\CraftingTakeResultAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\action\UnknownAction;
 use pocketmine\item\Item;
+use pocketmine\inventory\EnchantInventory;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\Player;
 
 class NetworkInventoryAction{
+	
 	const SOURCE_CONTAINER = 0;
-
-	const SOURCE_WORLD = 2; //drop/pickup item entity
+	const SOURCE_GLOABAL = 1;
+	const SOURCE_WORLD = 2;
 	const SOURCE_CREATIVE = 3;
 	const SOURCE_TODO = 99999;
 
@@ -49,42 +52,44 @@ class NetworkInventoryAction{
 	 *
 	 * Expect these to change in the future.
 	 */
-	const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
-	const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
-	const SOURCE_TYPE_CRAFTING_RESULT = -4;
-	const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
+	const SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = 1;
+	const SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = 2;
+	const SOURCE_TYPE_CRAFTING_RESULT = 3;
+	const SOURCE_TYPE_CRAFTING_USE_INGREDIENT = 4;
 
-	const SOURCE_TYPE_ANVIL_INPUT = -10;
-	const SOURCE_TYPE_ANVIL_MATERIAL = -11;
-	const SOURCE_TYPE_ANVIL_RESULT = -12;
-	const SOURCE_TYPE_ANVIL_OUTPUT = -13;
+	const SOURCE_TYPE_ANVIL_INPUT = 9;
+	const SOURCE_TYPE_ANVIL_MATERIAL = 10;
+	const SOURCE_TYPE_ANVIL_RESULT = 11;
+	const SOURCE_TYPE_ANVIL_OUTPUT = 12;
 
-	const SOURCE_TYPE_ENCHANT_INPUT = -15;
-	const SOURCE_TYPE_ENCHANT_MATERIAL = -16;
-	const SOURCE_TYPE_ENCHANT_OUTPUT = -17;
+	const SOURCE_TYPE_ENCHANT_INPUT = 14;
+	const SOURCE_TYPE_ENCHANT_MATERIAL = 15;
+	const SOURCE_TYPE_ENCHANT_OUTPUT = 16;
 
-	const SOURCE_TYPE_TRADING_INPUT_1 = -20;
-	const SOURCE_TYPE_TRADING_INPUT_2 = -21;
-	const SOURCE_TYPE_TRADING_USE_INPUTS = -22;
-	const SOURCE_TYPE_TRADING_OUTPUT = -23;
+	const SOURCE_TYPE_TRADING_INPUT_1 = 21;
+	const SOURCE_TYPE_TRADING_INPUT_2 = 22;
+	const SOURCE_TYPE_TRADING_USE_INPUTS = 23;
+	const SOURCE_TYPE_TRADING_OUTPUT = 24;
 
-	const SOURCE_TYPE_BEACON = -24;
+	const SOURCE_TYPE_BEACON = 23;
 
 	/** Any client-side window dropping its contents when the player closes it */
-	const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
+	const SOURCE_TYPE_CONTAINER_DROP_CONTENTS = 100;
 
 	const ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
 	const ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
 
 	const ACTION_MAGIC_SLOT_DROP_ITEM = 0;
 	const ACTION_MAGIC_SLOT_PICKUP_ITEM = 1;
+	
+	const FLAG_RANDOM = 0;
 
 	/** @var int */
 	public $sourceType;
 	/** @var int */
 	public $windowId = ContainerIds::NONE;
 	/** @var int */
-	public $unknown = 0;
+	public $flags = self::FLAG_RANDOM;
 	/** @var int */
 	public $inventorySlot;
 	/** @var Item */
@@ -101,21 +106,13 @@ class NetworkInventoryAction{
 
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
+			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
 				break;
 			case self::SOURCE_WORLD:
-				$this->unknown = $packet->getUnsignedVarInt();
+				$this->flags = $packet->getUnsignedVarInt();
 				break;
 			case self::SOURCE_CREATIVE:
-				break;
-			case self::SOURCE_TODO:
-				$this->windowId = $packet->getVarInt();
-				switch($this->windowId){
-					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-					case self::SOURCE_TYPE_CRAFTING_RESULT:
-						$packet->isCraftingPart = true;
-						break;
-				}
 				break;
 		}
 
@@ -134,15 +131,13 @@ class NetworkInventoryAction{
 
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
+			case self::SOURCE_TODO:
 				$packet->putVarInt($this->windowId);
 				break;
 			case self::SOURCE_WORLD:
-				$packet->putUnsignedVarInt($this->unknown);
+				$packet->putUnsignedVarInt($this->flags);
 				break;
 			case self::SOURCE_CREATIVE:
-				break;
-			case self::SOURCE_TODO:
-				$packet->putVarInt($this->windowId);
 				break;
 		}
 
@@ -160,7 +155,6 @@ class NetworkInventoryAction{
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
 				if($this->windowId === ContainerIds::ARMOR){
-					//TODO: HACK!
 					$this->inventorySlot += 36;
 					$this->windowId = ContainerIds::INVENTORY;
 				}
@@ -172,11 +166,7 @@ class NetworkInventoryAction{
 
 				return null;
 			case self::SOURCE_WORLD:
-				if($this->inventorySlot === self::ACTION_MAGIC_SLOT_DROP_ITEM){
-					return new DropItemAction($this->oldItem, $this->newItem);
-				}
-
-				return null;
+				return new DropItemAction($this->oldItem, $this->newItem);
 			case self::SOURCE_CREATIVE:
 				switch($this->inventorySlot){
 					case self::ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
@@ -187,7 +177,6 @@ class NetworkInventoryAction{
 						break;
 					default:
 						return null;
-
 				}
 
 				return new CreativeInventoryAction($this->oldItem, $this->newItem, $type);
@@ -202,12 +191,9 @@ class NetworkInventoryAction{
 						return new CraftingTakeResultAction($this->oldItem, $this->newItem);
 					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
 						return new CraftingTransferMaterialAction($this->oldItem, $this->newItem, $this->inventorySlot);
-
 					case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
-						//TODO: this type applies to all fake windows, not just crafting
 						$window = $player->getCraftingGrid();
 
-						//DROP_CONTENTS doesn't bother telling us what slot the item is in, so we find it ourselves
 						$inventorySlot = $window->first($this->oldItem, true);
 						if($inventorySlot === -1){
 							return null;
@@ -215,11 +201,9 @@ class NetworkInventoryAction{
 						return new SlotChangeAction($window, $inventorySlot, $this->oldItem, $this->newItem);
 				}
 
-				//TODO: more stuff
-				return null;
+				return new UnknownAction();
 		}
 
 		return null;
-	}
-
+ }
 }

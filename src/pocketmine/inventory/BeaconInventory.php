@@ -49,7 +49,7 @@ class BeaconInventory extends ContainerInventory {
 	}
 	
 	public function getDefaultSize() : int{
-		return 3;
+		return 1;
 	}
 
 	/**

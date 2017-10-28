@@ -42,17 +42,7 @@ class CraftingTransferMaterialAction extends InventoryAction{
 	}
 
 	public function onAddToTransaction(InventoryTransaction $transaction) {
-		if($transaction instanceof CraftingTransaction){
-			if($this->sourceItem->isNull()){
-				$transaction->setInput($this->slot, $this->targetItem);
-			}elseif($this->targetItem->isNull()){
-				$transaction->setExtraOutput($this->slot, $this->sourceItem);
-			}else{
-				throw new \InvalidStateException("Invalid " . get_class($this) . ", either source or target item must be air, got source: " . $this->sourceItem . ", target: " . $this->targetItem);
-			}
-		}else{
-			throw new \InvalidStateException(get_class($this) . " can only be added to CraftingTransactions");
-		}
+		
 	}
 
 	public function isValid(Player $source) : bool{

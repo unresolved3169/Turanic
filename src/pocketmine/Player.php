@@ -39,6 +39,7 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
+use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
@@ -151,6 +152,7 @@ use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
+use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\item\{WrittenBook,WritableBook};
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -955,6 +957,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function setUsingItem(bool $value){
 		$this->startAction = $value ? $this->server->getTick() : -1;
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, $value);
 	}
 
 	public function getItemUseDuration() : int{
@@ -2587,29 +2590,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$actions[] = $action;
 		}
-
-		if($packet->isCraftingPart){
-			if($this->craftingTransaction === null){
-				$this->craftingTransaction = new CraftingTransaction($this, $actions);
-			}else{
-				foreach($actions as $action){
-					$this->craftingTransaction->addAction($action);
-				}
-			}
-
-			if($this->craftingTransaction->getPrimaryOutput() !== null){
-				//we get the actions for this in several packets, so we can't execute it until we get the result
-
-				$this->craftingTransaction->execute();
-				$this->craftingTransaction = null;
-			}
-
-			return true;
-		}elseif($this->craftingTransaction !== null){
-			$this->server->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction from " . $this->getName() . ", refusing to execute crafting");
-			$this->craftingTransaction = null;
-		}
-
+		
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
 				$transaction = new InventoryTransaction($this, $actions);
@@ -2893,6 +2874,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		return false; //TODO
+	}
+	
+	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
+		//HACK!
+		//TODO: Scan input and output
+		$recipe = $this->server->getCraftingManager()->getRecipe($packet->id);
+		$this->server->getPluginManager()->callEvent($event = new CraftItemEvent($this, $packet->input, $packet->output, $recipe));
+		if($event->isCancelled()){
+			$this->inventory->sendContents($this);
+			return false;
+		}
+		$this->inventory->addItem(...$event->getOutput());
+		return true;
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{

@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,36 +18,37 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
 
-namespace pocketmine\command\overload;
+declare(strict_types=1);
 
-class CommandEnum{
+namespace pocketmine\inventory\transaction\action;
+
+use pocketmine\Player;
+use pocketmine\item\Item;
+
+/**
+ * Receives Unknown Action
+ */
+class UnknownAction extends InventoryAction{
 	
-	protected $name;
-	protected $values = [];
-	protected $type;
-	
-	const TYPE_ITEM = 1;
-	const TYPE_CUSTOM = 0;
-	
-	public function __construct(string $name, array $values = [], int $type = self::TYPE_CUSTOM){
-		$this->name = $name;
-		$this->values = $values;
-		$this->type = $type;
+	public function __construct(){
+		parent::__construct(Item::get(Item::AIR), Item::get(Item::AIR));
 	}
 	
-	public function getName() : string{
-		return $this->name;
+	public function isValid(Player $source) : bool{
+		return true;
 	}
 	
-	public function getValues() : array{
-		return $this->values;
+	public function execute(Player $source) : bool{
+		return true;
 	}
 	
-	public function getType() : int{
-		return $this->type;
+	public function onExecuteSuccess(Player $player){
+		
+	}
+	
+	public function onExecuteFail(Player $player){
+		
 	}
 }
-?>

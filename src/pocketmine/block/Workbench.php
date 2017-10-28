@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\Player;
+use pocketmine\inventory\BigCraftingGrid;
 
 //TODO: check orientation
 class Workbench extends Solid {
@@ -76,6 +77,7 @@ class Workbench extends Solid {
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
 			if($player->getServer()->limitedCreative and $player->isCreative()) return true;
+			$player->setCraftingGrid(new BigCraftingGrid($player));
 			$player->craftingType = Player::CRAFTING_BIG;
 		}
 
