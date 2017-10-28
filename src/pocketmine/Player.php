@@ -79,7 +79,6 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\event\ui\{UICloseEvent, UIDataReceiveEvent};
 use pocketmine\inventory\InventoryHolder;
@@ -153,7 +152,9 @@ use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
-use pocketmine\item\{WrittenBook,WritableBook};
+use pocketmine\item\{
+    Elytra, WrittenBook, WritableBook
+};
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -298,8 +299,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $craftingGrid;
 	/** @var  PlayerCursorInventory */
 	protected $cursorInventory;
-	/** @var  CraftingTransaction */
-	protected $craftingTransaction;
 	public $namedtag;
 	public $server;
 	public $boundingBox;
@@ -311,6 +310,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var CustomForm */
 	protected $defaultServerSettings;
 	protected $portalStatus = self::PORTAL_STATUS_OUT;
+    private $elytraIsActivated = false;
 	
 	const PORTAL_STATUS_OUT = 0;
 	const PORTAL_STATUS_IN = 1;
@@ -1299,7 +1299,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
-		//Basic safety restriction. TODO: improve this
 		if(!$this->loggedIn and !$packet->canBeSentBeforeLogin()){
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getName() . " too early");
 		}
@@ -1441,8 +1440,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * Returns a client-friendly gamemode of the specified real gamemode
 	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
 	 *
-	 * TODO: remove this when Spectator Mode gets added properly to MCPE
-	 *
 	 * @param int $gamemode
 	 *
 	 * @return int
@@ -1548,9 +1545,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return ($this->gamemode & 0x01) === 0;
 	}
 
-	/**
-	 * @return bool
-	 */
+    /**
+     * @param bool $literal
+     * @return bool
+     */
 	public function isCreative(bool $literal = false): bool{
         if($literal){
             return $this->gamemode === Player::CREATIVE;
@@ -1822,7 +1820,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->broadcastMovement();
 
 						$distance = $from->distance($to);
-						//TODO: check swimming (adds 0.015 exhaustion in MCPE)
 						if($this->isSprinting()){
 							$this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
 						}else{
@@ -1993,13 +1990,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if ($this->inAirTicks !== 0) {
 						$this->startAirTicks = 5;
 					}
+                    if ($this->elytraIsActivated) {
+					    $this->elytraIsActivated = false;
+                    }
 					$this->inAirTicks = 0;
 				} else {
-					if ($this->getInventory()->getItem($this->getInventory()->getSize() + 1)->getId() == 444) {
-						#enable use of elytra. todo: check if it is open
-						$this->inAirTicks = 0;
-					}
-					if (!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
+					if (!$this->isUseElytra() and !$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
 						$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
 						$diff = ($this->speed->y - $expectedVelocity) ** 2;
 
@@ -2031,6 +2027,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		return true;
 	}
+
+    public function isUseElytra() {
+        return ($this->isHaveElytra() && $this->elytraIsActivated);
+    }
+
+    public function isHaveElytra() {
+        if ($this->getInventory()->getArmorItem(1) instanceof Elytra) {
+            return true;
+        }
+        return false;
+    }
 
 	public function checkNetwork(){
 		if (!$this->isOnline()) {
@@ -2114,8 +2121,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return int
 	 */
-	public function getCreativeItemIndex(Item $item): int
-	{
+	public function getCreativeItemIndex(Item $item): int{
 		foreach ($this->personalCreativeItems as $i => $d) {
 			if ($item->equals($d, !$item->isTool())) {
 				return $i;
@@ -2142,13 +2148,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}else{
 			$this->dataPacket($pk);
 		}
-	}
-	
-	protected function verifyXboxLogin() : bool{
-		// TODO: Xbox Live Auth Verifaction
-		
-		$this->processLogin();
-		return true;
 	}
 
 	protected function processLogin(){
@@ -2252,7 +2251,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->hasAchievementsDisabled = true;
 		$pk->time = $this->level->getTime();
 		$pk->eduMode = false;
-		$pk->rainLevel = 0; //TODO: implement these properly
+		$pk->rainLevel = 0;
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;
 		$pk->levelId = "";
@@ -2376,7 +2375,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		/* Mojang, some stupid reason, send every single model for every single skin in the selected skin-pack.
 		 * Not only that, they are pretty-printed. This decode/encode is to get rid of the pretty-print, which cuts down
 		 * significantly on the amount of wasted bytes.
-		 * TODO: find out what model crap can be safely dropped from the packet (unless it gets fixed first)
 		 */
 
 		$geometryJsonEncoded = base64_decode($packet->clientData["SkinGeometry"] ?? "");
@@ -2416,9 +2414,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			return true;
 		}
-
-		if($this->verifyXboxLogin()){
-			// verified
+		if($packet->identityPublicKey !== null){
+            $this->processLogin();
 		}
 
 		return true;
@@ -2427,7 +2424,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
-				//TODO: add lang strings for this
 				$this->close("", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
@@ -2534,7 +2530,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
-		//TODO: add events so plugins can change this
 		$this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
 		return true;
 	}
@@ -2600,8 +2595,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 					return false; //oops!
 				}
-
-				//TODO: fix achievement for getting iron from furnace
 
 				return true;
 			case InventoryTransactionPacket::TYPE_MISMATCH:
@@ -2735,7 +2728,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-						break; //TODO
+						break;
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_ATTACK:
 						if(!$target->isAlive()){
 							return true;
@@ -2873,7 +2866,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		}
 
-		return false; //TODO
+		return false;
 	}
 	
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
@@ -2924,7 +2917,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		switch($packet->action){
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
 			case InteractPacket::ACTION_MOUSEOVER:
-				break; //TODO: handle these
+				break;
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from " . $this->getName());
 
@@ -2937,7 +2930,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
 		$block = $this->level->getBlock($this->temporalVector->setComponents($packet->blockX, $packet->blockY, $packet->blockZ));
 
-		//TODO: this doesn't handle crops correctly (need more API work)
 		$item = Item::get($block->getId(), $block->getVariant());
 
 		if($packet->addUserData){
@@ -2993,7 +2985,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 
 				if(!$this->isCreative()){
-					//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
 					$breakTime = ceil($target->getBreakTime($this->inventory->getItemInHand()) * 20);
 					if($breakTime > 0){
 						$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
@@ -3105,7 +3096,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				return true;
 			case PlayerActionPacket::ACTION_START_GLIDE:
 			case PlayerActionPacket::ACTION_STOP_GLIDE:
-				break; //TODO
+			    $glide = $packet->action == PlayerActionPacket::ACTION_START_GLIDE;
+			    if($glide && $this->isHaveElytra()){
+			        $this->elytraIsActivated = true;
+                }else{
+			        $this->elytraIsActivated = false;
+                }
+				break;
 			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
 				$block = $this->level->getBlock($pos);
 				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
@@ -3194,7 +3191,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
 		if($packet->entityUniqueId !== $this->getId()){
-			return false; //TODO
+			return false;
 		}
 
 		$handled = false;
@@ -3218,8 +3215,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.noclip"]));
 			return true;
 		}
-
-		//TODO: check other changes
 
 		return $handled;
 	}
@@ -3250,7 +3245,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
 		if($packet->gamemode !== $this->gamemode){
-			//Set this back to default. TODO: handle this properly
 			$this->sendGamemode();
 			$this->sendSettings();
 		}
