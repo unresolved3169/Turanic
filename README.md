@@ -15,8 +15,7 @@ Joinable, playable.. but have some bugs in game (not much)
 
 ## Known Bugs in 1.2:
 
-- Movement Bug (players not affected by gravity in 32bit systems)
-- Crafting recipe see buggy
+- Movement Bug (players not affected by gravity in some server devices)
 
 ## Features of Turanic:
 - Soft Codes
