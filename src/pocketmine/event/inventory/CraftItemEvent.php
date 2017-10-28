@@ -26,55 +26,49 @@ namespace pocketmine\event\inventory;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\inventory\Recipe;
-use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 class CraftItemEvent extends Event implements Cancellable{
+	
 	public static $handlerList = null;
-
-	/** @var CraftingTransaction */
-	private $transaction;
-
-	/**
-	 * @param CraftingTransaction $transaction
-	 */
-	public function __construct(CraftingTransaction $transaction){
-		$this->transaction = $transaction;
+	
+	protected $player, $input, $output, $recipe;
+	
+	public function __construct(Player $player, array $input, array $output, Recipe $recipe = null){
+		$this->player = $player;
+		$this->input = $input;
+		$this->output = $output;
+		$this->recipe = $recipe;
 	}
 
-	public function getTransaction() : CraftingTransaction{
-		return $this->transaction;
-	}
-
-	/**
-	 * @deprecated This returns a one-dimensional array of ingredients and does not account for the positioning of
-	 * items in the crafting grid. Prefer getting the input map from the transaction instead.
-	 *
-	 * @return Item[]
-	 */
 	public function getInput() : array{
-		return array_map(function(Item $item) : Item{
-			return clone $item;
-		}, array_merge(...$this->transaction->getInputMap()));
+		return $this->input;
+	}
+	
+	public function getOutput() : array{
+		return $this->output;
+	}
+	
+	public function setInput(array $input){
+		$this->input = $input;
+	}
+	
+	public function setOutput(array $output){
+		$this->output = $output;
 	}
 
 	/**
-	 * @return Recipe
+	 * @return Recipe|null
 	 */
-	public function getRecipe() : Recipe{
-		$recipe = $this->transaction->getRecipe();
-		if($recipe === null){
-			throw new \RuntimeException("This shouldn't be called if the transaction can't be executed");
-		}
-
-		return $recipe;
+	public function getRecipe(){
+		return $this->recipe;
 	}
 
 	/**
 	 * @return Player
 	 */
 	public function getPlayer() : Player{
-		return $this->transaction->getSource();
+		return $this->player;
 	}
 }
