@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\event\player\PlayerCreationEvent;
-use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\Network;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\network\mcpe\protocol\DataPacket;
@@ -169,7 +168,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
      */
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
-			$address = $this->players[$identifier]->getAddress();
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
@@ -180,7 +178,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 					}
 				}
 			}catch(\Throwable $e){
-				$this->server->getLogger()->debug("Unhandled Packet" . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+				$this->server->getLogger()->debug("Unhandled Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
 			}
 		}
 	}
