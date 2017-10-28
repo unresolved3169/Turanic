@@ -81,14 +81,14 @@ class Chest extends Transparent {
 	 * @return AxisAlignedBB
 	 */
 	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x + 0.0625,
-			$this->y,
-			$this->z + 0.0625,
-			$this->x + 0.9375,
-			$this->y + 0.9475,
-			$this->z + 0.9375
-		);
+        return new AxisAlignedBB(
+            $this->x + 0.025,
+            $this->y,
+            $this->z + 0.025,
+            $this->x + 0.975,
+            $this->y + 0.95,
+            $this->z + 0.975
+        );
 	}
 
 	/**
