@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -46,6 +47,9 @@ class GamemodeCommand extends VanillaCommand {
 			["gm"]
 		);
 		$this->setPermission("pocketmine.command.gamemode");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("gamemode", CommandParameter::TYPE_STRING, false));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("player", CommandParameter::TYPE_STRING, true));
 	}
 
 	/**
@@ -79,12 +83,10 @@ class GamemodeCommand extends VanillaCommand {
 			$target = $sender->getServer()->getPlayer($args[1]);
 			if($target === null){
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
-
 				return true;
 			}
 		}elseif(!($sender instanceof Player)){
 			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-
 			return true;
 		}
 
@@ -95,10 +97,7 @@ class GamemodeCommand extends VanillaCommand {
 				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.self", [' ', ' ', Server::getGamemodeString($gameMode)]));
 			}else{
 				$target->sendMessage(new TranslationContainer("gameMode.changed"));
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [
-				    $target->getName(),
-                    Server::getGamemodeString($gameMode)
-                ]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.gamemode.success.other", [$target->getName(), Server::getGamemodeString($gameMode)]));
 			}
 		}
 		return true;
