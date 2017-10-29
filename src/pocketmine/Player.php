@@ -317,7 +317,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	private $ping = 0;
 	
-	public function isValidUserName(string $name) : bool{
+	public static function isValidUserName(string $name) : bool{
 		$lname = strtolower($name);
 		$len = strlen($lname);
 		return $lname !== "rcon" && $lname !== "console" && $len >= 1 && $len <= 16 && preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
@@ -3367,13 +3367,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->checkModal($packet);
 		return true;
 	}
-
-    /**
-     * @param ServerSettingsRequestPacket $packet
-     * @return bool
-     */
-    public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
-		$this->sendServerSettings($this->getDefaultServerSettings());
+	
+ /**
+  * @param ServerSettingsRequestPacket $packet
+  * @return bool
+  */
+ public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+ 	 if($this->server->getAdvencedProperty("server.show-turanic", false)){
+		 $this->sendServerSettings($this->getDefaultServerSettings());
+		}
 		return true;
 	}
 	
@@ -4485,5 +4487,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	
 	public function isTeleporting() : bool{
 		return $this->isTeleporting;
+	}
+	
+	public function getLowerCaseName() : string{
+		return $this->iusername;
 	}
 }

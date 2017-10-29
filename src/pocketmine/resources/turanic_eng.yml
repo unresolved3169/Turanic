@@ -12,7 +12,7 @@
 
 #Version of this file
 config:
- version: 28
+ version: 29
 
 level:
  #Set if weather is enabled (rain may cause lag to older devices)
@@ -58,6 +58,8 @@ ender:
  level-name: "ender"
 
 server:
+ #Show Turanic CustomUI in Player ServerSettings Window
+ show-turanic: false
  #Choose if spawning iron golem is allowed
  allow-iron-golem: false
  #Choose if spawning snow golem is allowed
