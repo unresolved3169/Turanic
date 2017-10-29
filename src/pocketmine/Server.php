@@ -1735,15 +1735,15 @@ class Server{
 				"enable-rcon" => false,
 				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
 				"auto-save" => true,
-				"online-mode" => false,
+				"xbox-auth" => false,
 				"view-distance" => 8
 			]);
 
-			$onlineMode = $this->getConfigBoolean("online-mode", false);
+			$onlineMode = $this->getConfigBoolean("xbox-auth", false);
 			if(!extension_loaded("openssl")){
 				$this->logger->warning("OpenSSL extension not found");
 				$this->logger->warning("Please configure OpenSSL extension for PHP if you want to use Xbox Live authentication or global resource pack.");
-				$this->setConfigBool("online-mode", false);
+				$this->setConfigBool("xbox-auth", false);
 			}elseif(!$onlineMode){
 				$this->logger->warning("Online mode has been turned off in server.properties");
 				$this->logger->warning("Xbox Live authentication is disabled.");
