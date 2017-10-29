@@ -48,4 +48,12 @@ class VirtualInventory extends CustomInventory {
     public function getNetworkType() : int{
     	return WindowTypes::CONTAINER;
     }
+
+    public function getName(): string{
+        return "VirtualHolder";
+    }
+
+    public function getDefaultSize(): int{
+        return 27;
+    }
 }
