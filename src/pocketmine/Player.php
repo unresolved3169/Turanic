@@ -2586,6 +2586,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$actions[] = $action;
 		}
+
+		if($packet->isCrafting){
+		    return true; // Normal transaction failed
+        }
 		
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
@@ -2879,6 +2883,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->inventory->sendContents($this);
 			return false;
 		}
+		$this->inventory->removeItem(...$event->getInput());
 		$this->inventory->addItem(...$event->getOutput());
 		return true;
 	}

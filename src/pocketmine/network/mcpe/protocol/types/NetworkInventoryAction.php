@@ -106,7 +106,6 @@ class NetworkInventoryAction{
 
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
-			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
 				break;
 			case self::SOURCE_WORLD:
@@ -114,6 +113,15 @@ class NetworkInventoryAction{
 				break;
 			case self::SOURCE_CREATIVE:
 				break;
+            case self::SOURCE_TODO:
+                $this->windowId = $packet->getVarInt();
+                switch($this->windowId){
+                    case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+                    case self::SOURCE_TYPE_CRAFTING_RESULT:
+                        $packet->isCrafting = true;
+                        break;
+                }
+                break;
 		}
 
 		$this->inventorySlot = $packet->getUnsignedVarInt();

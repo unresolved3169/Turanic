@@ -49,6 +49,11 @@ class InventoryTransactionPacket extends DataPacket{
 	/** @var int */
 	public $transactionType;
 
+	/*
+	 * Crafting Check
+	 * */
+	public $isCrafting = false;
+
 	/** @var NetworkInventoryAction[] */
 	public $actions = [];
 
