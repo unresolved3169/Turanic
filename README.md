@@ -3,11 +3,9 @@
 Fast server software for Minecraft: Bedrock/PE Edition and W10 Edition - v1.2.x.
 Turanic is a fork of GenisysPro
 
-| Travis CI | Discord |
-| :---: | :---: |
-[![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) |
-
-### Supported MC:BE Version: 1.2.x
+| Status | Travis CI | Discord |
+| :---: | :---: | :---: |
+ Near to be Stable | [![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) |
 
 -------------
 ## Can I test this before I download it?
@@ -20,10 +18,6 @@ IP: **play.fylkat.cz**
 Port: **19132**
 
 -------------
-
-## Status: Near to be Stable
-
-Joinable, playable.. but have some bugs in game (not much)
 
 ## Known Bugs in 1.2:
 
