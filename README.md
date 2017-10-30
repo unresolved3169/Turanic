@@ -9,6 +9,9 @@ Turanic is a fork of GenisysPro
 
 ### Supported MC:BE Version: 1.2.x
 
+## Servers using Turanic SoftWare:
+ - play.fylkat.cz:19132
+
 ## Status: Near to be Stable
 
 Joinable, playable.. but have some bugs in game (not much)
