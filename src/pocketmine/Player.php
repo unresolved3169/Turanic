@@ -153,7 +153,7 @@ use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\item\{
-    Elytra, WrittenBook, WritableBook
+ Elytra, WrittenBook, WritableBook
 };
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -304,13 +304,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public $boundingBox;
 	protected $uuid;
 	protected $rawUUID;
-	protected $modalWindowId = 0;
-	protected $modalWindows = [];
+	protected $modalFormCnt = 0;
+	protected $modalForms = [];
 	protected $xuid = "";
 	/** @var CustomForm */
 	protected $defaultServerSettings;
 	protected $portalStatus = self::PORTAL_STATUS_OUT;
-    private $elytraIsActivated = false;
+ private $elytraIsActivated = false;
 	
 	const PORTAL_STATUS_OUT = 0;
 	const PORTAL_STATUS_IN = 1;
@@ -1545,16 +1545,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return ($this->gamemode & 0x01) === 0;
 	}
 
-    /**
-     * @param bool $literal
-     * @return bool
-     */
+ /**
+  * @param bool $literal
+  * @return bool
+  */
 	public function isCreative(bool $literal = false): bool{
-        if($literal){
-            return $this->gamemode === Player::CREATIVE;
-        }else{
-            return ($this->gamemode & 0x01) === 1;
-        }
+  if($literal){
+   return $this->gamemode === Player::CREATIVE;
+  }else{
+   return ($this->gamemode & 0x01) === 1;
+  }
 	}
 
 	/**
@@ -1990,9 +1990,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					if ($this->inAirTicks !== 0) {
 						$this->startAirTicks = 5;
 					}
-                    if ($this->elytraIsActivated) {
-					    $this->elytraIsActivated = false;
-                    }
+     if ($this->elytraIsActivated) {
+					 $this->elytraIsActivated = false;
+     }
 					$this->inAirTicks = 0;
 				} else {
 					if (!$this->isUseElytra() and !$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
@@ -2028,16 +2028,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-    public function isUseElytra() {
-        return ($this->isHaveElytra() && $this->elytraIsActivated);
-    }
+ public function isUseElytra() {
+  return ($this->isHaveElytra() && $this->elytraIsActivated);
+ }
 
-    public function isHaveElytra() {
-        if ($this->getInventory()->getArmorItem(1) instanceof Elytra) {
-            return true;
-        }
-        return false;
-    }
+ public function isHaveElytra() {
+  if ($this->getInventory()->getArmorItem(1) instanceof Elytra) {
+   return true;
+  }
+  return false;
+ }
 
 	public function checkNetwork(){
 		if (!$this->isOnline()) {
@@ -2416,7 +2416,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 		if($packet->identityPublicKey !== null){
-            $this->processLogin();
+   $this->processLogin();
 		}
 
 		return true;
@@ -2588,8 +2588,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		if($packet->isCrafting){
-		    return true; // Normal transaction failed
-        }
+		 return true; // Normal transaction failed
+  }
 		
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
@@ -3102,12 +3102,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				return true;
 			case PlayerActionPacket::ACTION_START_GLIDE:
 			case PlayerActionPacket::ACTION_STOP_GLIDE:
-			    $glide = $packet->action == PlayerActionPacket::ACTION_START_GLIDE;
-			    if($glide && $this->isHaveElytra()){
-			        $this->elytraIsActivated = true;
-                }else{
-			        $this->elytraIsActivated = false;
-                }
+			 $glide = $packet->action == PlayerActionPacket::ACTION_START_GLIDE;
+			 if($glide && $this->isHaveElytra()){
+			  $this->elytraIsActivated = true;
+    }else{
+			  $this->elytraIsActivated = false;
+    }
 				break;
 			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
 				$block = $this->level->getBlock($pos);
@@ -3364,20 +3364,45 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
-		$this->checkModal($packet);
-		return true;
+		$id = $packet->formId;
+		$data = json_decode($packet->formData, true);
+		
+		if(isset($this->modalForms[$id])){
+			if($data === null){
+				$this->modalForms[$id]->close($this);
+				
+				$this->server->getPluginManager()->callEvent($ev = new UICloseEvent($this, $packet));
+				if($ev->isCancelled()){
+					$this->sendForm($this->getForm($id), $id);
+					return false;
+				}
+			}else{
+				$handleData = $this->modalForms[$id]->handle($data, $this);
+				
+			 $this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet, $handleData));
+			 if($ev->isCancelled()){
+				 $this->sendForm($this->getForm($id), $id);
+				 return false;
+			 }
+			}
+			
+			unset($this->modalForms[$id]);
+			
+			return true;
+		}
+		return false;
 	}
 
-    /**
-     * @param ServerSettingsRequestPacket $packet
-     * @return bool
-     */
-    public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
-        if ($this->server->getAdvancedProperty("server.show-turanic", false)) {
-            $this->sendServerSettings($this->getDefaultServerSettings());
-        }
-        return true;
-    }
+ /**
+  * @param ServerSettingsRequestPacket $packet
+  * @return bool
+  */
+ public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+  if ($this->server->getAdvancedProperty("server.show-turanic", false)) {
+   $this->sendServerSettings($this->getDefaultServerSettings());
+  }
+  return true;
+ }
 	
 	public function handleBatch(BatchPacket $packet) : bool{
 		foreach($packet->getPackets() as $buf){
@@ -3562,20 +3587,20 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function transfer(string $address, int $port){
-        $this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port, "transfer"));
-        if(!$ev->isCancelled()) {
-            $pk = new TransferPacket();
-            $pk->address = $address;
-            $pk->port = $port;
-            $this->directDataPacket($pk);
+  $this->server->getPluginManager()->callEvent($ev = new PlayerTransferEvent($this, $address, $port, "transfer"));
+  if(!$ev->isCancelled()) {
+   $pk = new TransferPacket();
+   $pk->address = $address;
+   $pk->port = $port;
+   $this->directDataPacket($pk);
 
-            return true;
-        }
-        return false;
+   return true;
+  }
+  return false;
 	}
 
 	/**
-     * Default Amount is 0
+  * Default Amount is 0
 	 * Change Player Movement Speed without effects
 	 *
 	 * @param $amount
@@ -3586,12 +3611,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-    /**
-     * @return float
-     */
-    public function getMovementSpeed(){
-	    return $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->getValue();
-    }
+ /**
+  * @return float
+  */
+ public function getMovementSpeed(){
+	 return $this->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED)->getValue();
+ }
 
 	/**
 	 * Sends a direct chat message to a player
@@ -4374,47 +4399,23 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		parent::addEffect($effect);
 	}
 	
-	public function sendModalForm(CustomUI $window){
+	public function sendForm(CustomUI $window, int $forceId = -1){
+		if($forceId < 0){
+			$forceId = $this->modalFormCnt++;
+		}
 		$pk = new ModalFormRequestPacket;
-		$pk->formId = $id = $this->modalWindowId++;
+		$pk->formId = $forceId;
 		$pk->formData = json_encode($window->jsonSerialize());
 		$this->dataPacket($pk);
-		$this->modalWindows[$id] = $window;
-	}
-	
-	protected function checkModal(ModalFormResponsePacket $packet){
-		$id = $packet->formId;
-		$data = json_decode($packet->formData, true);
-		if(isset($this->modalWindows[$id])){
-			$cancel = false;
-			if($data === null){
-				$this->server->getPluginManager()->callEvent($ev = new UICloseEvent($this, $packet));
-				if($ev->isCancelled()){
-					$this->sendModalForm($this->getModalForm($id));
-				}
-				$this->modalWindows[$id]->close($this);
-				return;
-			}
-			
-			$handleData = $this->modalWindows[$id]->handle($data, $this);
-			$this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet, $handleData));
-			if($ev->isCancelled()){
-				$this->sendModalForm($this->getModalForm($id));
-				$cancel = true;
-			}
-			
-			if(!$cancel){
-			 unset($this->modalWindows[$id]);
-			}
-		}
+		$this->modalForms[$forceId] = $window;
 	}
 		
 	public function sendServerSettings(CustomUI $window){
 		$pk = new ServerSettingsResponsePacket;
-		$pk->formId = $id = $this->modalWindowId++;
+		$pk->formId = $id = $this->modalFormCnt++;
 		$pk->formData = json_encode($window->jsonSerialize());
 		$this->dataPacket($pk);
-		$this->modalWindows[$id] = $window;
+		$this->modalForms[$id] = $window;
 	}
 	
 	public function getDefaultServerSettings() : CustomForm{
@@ -4425,16 +4426,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->defaultServerSettings = $form;
 	}
 		
-	public function getModalForm(int $id){
-		return $this->modalWindows[$id] ?? null;
+	public function getForm(int $id){
+		return $this->modalForms[$id] ?? null;
 	}
 	
-	public function getModalFormIndex(CustomUI $form) : int{
-		return (int) @array_search($form, $this->modalWindows);
+	public function getFormIndex(CustomUI $form) : int{
+		return (int) @array_search($form, $this->modalForms);
 	}
 	
-	public function getModalForms() : array{
-		return $this->modalWindows;
+	public function getForms() : array{
+		return $this->modalForms;
 	}
 	
 	public function getXUID() : string{
@@ -4469,17 +4470,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
-    /**
-     * @param $ping
-     */
-    public function setPing($ping){
+ /**
+  * @param $ping
+  */
+ public function setPing($ping){
 		$this->ping = $ping;
 	}
 
-    /**
-     * @return int
-     */
-    public function getPing(){
+ /**
+  * @return int
+  */
+ public function getPing(){
 		return $this->ping;
 	}
 	
@@ -4487,11 +4488,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->isTeleporting;
 	}
 
-    /**
-     * Returns Player name in lower case letter
-     * @return string
-     */
-    public function getLowerCaseName() : string{
+ /**
+  * Returns Player name in lower case letter
+  * @return string
+  */
+ public function getLowerCaseName() : string{
 		return strtolower($this->iusername);
 	}
 }
