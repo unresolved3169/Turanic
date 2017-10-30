@@ -263,45 +263,45 @@ class Enchantment {
 	public static function getEnchantWeight(int $enchantmentId){
 		switch($enchantmentId){
 			case self::TYPE_ARMOR_PROTECTION:
-				return 100;
+				return 10;
 			case self::TYPE_ARMOR_FIRE_PROTECTION:
-				return 50;
+				return 5;
 			case self::TYPE_ARMOR_FALL_PROTECTION:
-				return 20;
+				return 2;
 			case self::TYPE_ARMOR_EXPLOSION_PROTECTION:
-				return 50;
+				return 5;
 			case self::TYPE_WATER_BREATHING:
-				return 20;
+				return 2;
 			case self::TYPE_WATER_AFFINITY:
-				return 20;
+				return 2;
 			case self::TYPE_WEAPON_SHARPNESS:
-				return 100;
+				return 10;
 			case self::TYPE_WEAPON_SMITE:
-				return 50;
+				return 5;
 			case self::TYPE_WEAPON_ARTHROPODS:
-				return 50;
+				return 5;
 			case self::TYPE_WEAPON_KNOCKBACK:
-				return 50;
+				return 5;
 			case self::TYPE_WEAPON_FIRE_ASPECT:
-				return 20;
+				return 2;
 			case self::TYPE_WEAPON_LOOTING:
-				return 20;
+				return 2;
 			case self::TYPE_MINING_EFFICIENCY:
-				return 100;
+				return 10;
 			case self::TYPE_MINING_SILK_TOUCH:
-				return 10;
+				return 1;
 			case self::TYPE_MINING_DURABILITY:
-				return 50;
+				return 5;
 			case self::TYPE_MINING_FORTUNE:
-				return 20;
+				return 2;
 			case self::TYPE_BOW_POWER:
-				return 100;
-			case self::TYPE_BOW_KNOCKBACK:
-				return 20;
-			case self::TYPE_BOW_FLAME:
-				return 20;
-			case self::TYPE_BOW_INFINITY:
 				return 10;
+			case self::TYPE_BOW_KNOCKBACK:
+				return 2;
+			case self::TYPE_BOW_FLAME:
+				return 2;
+			case self::TYPE_BOW_INFINITY:
+				return 1;
 		}
 		return 0;
 	}
@@ -318,40 +318,40 @@ class Enchantment {
 			case self::TYPE_ARMOR_FALL_PROTECTION:
 			case self::TYPE_ARMOR_EXPLOSION_PROTECTION:
 			case self::TYPE_ARMOR_PROJECTILE_PROTECTION:
-				return 4;
+				return 25;
 			case self::TYPE_ARMOR_THORNS:
-				return 3;
+				return 35;
 			case self::TYPE_WATER_BREATHING:
 			case self::TYPE_WATER_SPEED:
-				return 3;
+				return 35;
 			case self::TYPE_WATER_AFFINITY:
-				return 1;
+				return 15;
 			case self::TYPE_WEAPON_SHARPNESS:
 			case self::TYPE_WEAPON_SMITE:
 			case self::TYPE_WEAPON_ARTHROPODS:
-				return 5;
+				return 55;
 			case self::TYPE_WEAPON_KNOCKBACK:
 			case self::TYPE_WEAPON_FIRE_ASPECT:
-				return 2;
+				return 25;
 			case self::TYPE_WEAPON_LOOTING:
-				return 3;
+				return 35;
 			case self::TYPE_MINING_EFFICIENCY:
-				return 5;
+				return 55;
 			case self::TYPE_MINING_SILK_TOUCH:
-				return 1;
+				return 15;
 			case self::TYPE_MINING_DURABILITY:
 			case self::TYPE_MINING_FORTUNE:
-				return 3;
+				return 35;
 			case self::TYPE_BOW_POWER:
-				return 5;
+				return 55;
 			case self::TYPE_BOW_KNOCKBACK:
-				return 2;
+				return 25;
 			case self::TYPE_BOW_FLAME:
 			case self::TYPE_BOW_INFINITY:
-				return 1;
+				return 15;
 			case self::TYPE_FISHING_FORTUNE:
 			case self::TYPE_FISHING_LURE:
-				return 3;
+				return 35;
 		}
 		return 999;
 	}
