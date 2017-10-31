@@ -48,7 +48,7 @@ class WhitelistCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.whitelist.reload;pocketmine.command.whitelist.enable;pocketmine.command.whitelist.disable;pocketmine.command.whitelist.list;pocketmine.command.whitelist.add;pocketmine.command.whitelist.remove");
 
 		$this->getOverload("default")->setParameter(0, new CommandParameter("option", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_VALID, CommandEnum::TYPE_CUSTOM, ["reload", "add", "remove", "off", "on", "list"]));
-		$this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, true));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("player", CommandParameter::TYPE_TARGET, true));
 	}
 
 	/**
