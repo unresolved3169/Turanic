@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 
@@ -44,6 +45,9 @@ class BanIpCommand extends VanillaCommand {
 			"%pocketmine.command.banip.usage"
 		);
 		$this->setPermission("pocketmine.command.ban.ip");
+
+        $this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
+        $this->getOverload("default")->setParameter(0, new CommandParameter("reason", CommandParameter::TYPE_STRING, true));
 	}
 
 	/**

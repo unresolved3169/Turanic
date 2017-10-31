@@ -12,7 +12,7 @@
 
 #配置檔案版本
 config:
- version: 28
+ version: 29
  
 level:
  #設定是否變換天氣
@@ -62,6 +62,8 @@ ender:
  level-name: "ender"
  
 server:
+ #Shows Turanic Information in Settings Window
+ show-turanic: false
  #是否允許生成鐵傀儡
  allow-iron-golem: false
  #是否允許生成雪傀儡
@@ -82,8 +84,6 @@ server:
  destroy-block-particle: true
  #是否允許噴濺型藥水
  allow-splash-potion: true
- #是否啟用進階指令選擇器
- advanced-command-selector: false
  #是否讀取ResourcePackManager
  enable-resource: false
  #是否開啟海綿的吸水功能

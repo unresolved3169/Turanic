@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
@@ -46,12 +47,8 @@ class KillCommand extends VanillaCommand {
 			["suicide"]
 		);
 		$this->setPermission("pocketmine.command.kill.self;pocketmine.command.kill.other");
-		/*  
-		fix in Player.php
-		/kill    is everybody can use
-		
-		*/
-		
+
+        $this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, true));
 	}
 
 	/**

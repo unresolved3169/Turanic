@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\entity\Effect;
 use pocketmine\entity\InstantEffect;
 use pocketmine\event\TranslationContainer;
@@ -45,6 +46,9 @@ class EffectCommand extends VanillaCommand {
 			"%pocketmine.command.effect.usage"
 		);
 		$this->setPermission("pocketmine.command.effect;pocketmine.command.effect.other");
+
+        $this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
+        $this->getOverload("default")->setParameter(1, new CommandParameter("id|clear"));
 	}
 
 	/**

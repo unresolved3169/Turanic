@@ -871,8 +871,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool
 	 */
-	public function hasAchievement($achievementId): bool
-	{
+	public function hasAchievement($achievementId): bool{
 		if (!isset(Achievement::$list[$achievementId]) or !isset($this->achievements)) {
 			$this->achievements = [];
 
@@ -909,20 +908,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	/**
-	 * Gets the player IP address
+	 * Returns Players IP address
 	 *
 	 * @return string
 	 */
-	public function getAddress(): string
-	{
+	public function getAddress(): string{
 		return $this->ip;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getPort(): int
-	{
+	public function getPort(): int{
 		return $this->port;
 	}
 
@@ -936,8 +933,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @return bool
 	 */
-	public function isSleeping(): bool
-	{
+	public function isSleeping(): bool{
 		return $this->sleeping !== null;
 	}
 
@@ -1329,8 +1325,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return boolean
 	 */
-	public function sleepOn(Vector3 $pos)
-	{
+	public function sleepOn(Vector3 $pos){
 		if (!$this->isOnline()) {
 			return false;
 		}
@@ -1367,8 +1362,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @param Vector3|Position $pos
 	 */
-	public function setSpawn(Vector3 $pos)
-	{
+	public function setSpawn(Vector3 $pos){
 		if (!($pos instanceof Position)) {
 			$level = $this->level;
 		} else {
@@ -1405,8 +1399,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool
 	 */
-	public function awardAchievement($achievementId)
-	{
+	public function awardAchievement($achievementId){
 		if (isset(Achievement::$list[$achievementId]) and !$this->hasAchievement($achievementId)) {
 			foreach (Achievement::$list[$achievementId]["requires"] as $requirementId) {
 				if (!$this->hasAchievement($requirementId)) {
@@ -1511,8 +1504,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @internal
 	 * Sends the player's gamemode to the client.
 	 */
-	public function sendGamemode()
-	{
+	public function sendGamemode(){
 		$pk = new SetPlayerGameTypePacket();
 		$pk->gamemode = Player::getClientFriendlyGamemode($this->gamemode);
 		$this->dataPacket($pk);
@@ -1523,7 +1515,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function sendSettings(){
 		$pk = new AdventureSettingsPacket();
-
 		$pk->setPlayerFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $this->isSpectator());
 		$pk->setPlayerFlag(AdventureSettingsPacket::NO_PVP, $this->isSpectator());
 		$pk->setPlayerFlag(AdventureSettingsPacket::AUTO_JUMP, $this->autoJump);
@@ -1545,17 +1536,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return ($this->gamemode & 0x01) === 0;
 	}
 
- /**
-  * @param bool $literal
-  * @return bool
-  */
-	public function isCreative(bool $literal = false): bool{
-  if($literal){
-   return $this->gamemode === Player::CREATIVE;
-  }else{
-   return ($this->gamemode & 0x01) === 1;
-  }
-	}
+    /**
+     * @param bool $literal
+     * @return bool
+     */
+    public function isCreative(bool $literal = false): bool{
+        if ($literal) {
+            return $this->gamemode === Player::CREATIVE;
+        } else {
+            return ($this->gamemode & 0x01) === 1;
+        }
+    }
 
 	/**
 	 * @return bool
@@ -1567,16 +1558,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @return bool
 	 */
-	public function isAdventure(): bool
-	{
+	public function isAdventure(): bool{
 		return ($this->gamemode & 0x02) > 0;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isFireProof(): bool
-	{
+	public function isFireProof(): bool{
 		return $this->isCreative();
 	}
 
@@ -1584,12 +1573,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return array
 	 */
 	public function getDrops() : array{
-		if (!$this->isCreative()) {
-			return parent::getDrops();
-		}
+        if (!$this->isCreative()) {
+            return parent::getDrops();
+        }
 
-		return [];
-	}
+        return [];
+    }
 
 	/**
 	 * @param int $id
@@ -1721,10 +1710,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	/**
-	 * @param $tickDiff
-	 */
-	protected function processMovement(int $tickDiff){
+    /**
+     * @param int $tickDiff
+     */
+    protected function processMovement(int $tickDiff){
 		if(!$this->isAlive() or !$this->spawned or $this->newPosition === null or $this->isSleeping()){
 			return;
 		}
@@ -1854,7 +1843,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function tryChangeMovement(){
-
 	}
 
 	/**
@@ -1876,9 +1864,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 
-	protected function updateMovement()
-	{
-
+	protected function updateMovement(){
 	}
 
 	public $foodTick = 0;
@@ -1892,16 +1878,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @param $moving
 	 */
-	public function setMoving($moving)
-	{
+	public function setMoving($moving){
 		$this->moving = $moving;
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function isMoving(): bool
-	{
+	public function isMoving(): bool{
 		return $this->moving;
 	}
 
@@ -1927,117 +1911,117 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return bool
 	 */
 	public function onUpdate($currentTick){
-		if (!$this->loggedIn or !$this->constructed) {
-			return false;
-		}
+        if (!$this->loggedIn or !$this->constructed) {
+            return false;
+        }
 
-		$tickDiff = $currentTick - $this->lastUpdate;
+        $tickDiff = $currentTick - $this->lastUpdate;
 
-		if ($tickDiff <= 0) {
-			return true;
-		}
-		
-		$this->sendAttributes();
+        if ($tickDiff <= 0) {
+            return true;
+        }
 
-		$this->messageCounter = 2;
+        $this->sendAttributes();
 
-		$this->lastUpdate = $currentTick;
+        $this->messageCounter = 2;
 
-		if (!$this->isAlive() and $this->spawned) {
-			++$this->deadTicks;
-			if ($this->deadTicks >= 20) {
-				$this->despawnFromAll();
-			}
-			return true;
-		}
+        $this->lastUpdate = $currentTick;
 
-		$this->timings->startTiming();
+        if (!$this->isAlive() and $this->spawned) {
+            ++$this->deadTicks;
+            if ($this->deadTicks >= 20) {
+                $this->despawnFromAll();
+            }
+            return true;
+        }
 
-		if ($this->spawned) {
-			$this->processMovement($tickDiff);
-			$this->entityBaseTick($tickDiff);
+        $this->timings->startTiming();
 
-			if ($this->isOnFire() or $this->lastUpdate % 10 == 0) {
-				if ($this->isCreative() and !$this->isInsideOfFire()) {
-					$this->extinguish();
-				} elseif ($this->getLevel()->getWeather()->isRainy()) {
-					if ($this->getLevel()->canBlockSeeSky($this)) {
-						$this->extinguish();
-					}
-				}
-			}
+        if ($this->spawned) {
+            $this->processMovement($tickDiff);
+            $this->entityBaseTick($tickDiff);
 
-			if (!$this->isSpectator() and $this->isAlive()) {
-				if($currentTick % 20 == 0){
-					if($portalType = $this->isInsideOfPortal()){
-						if($this->portalStatus === self::PORTAL_STATUS_OUT){
-							$to = $this->level->getFolderName() == $portalType ? $this->server->getDefaultLevel()->getFolderName() : $portalType;
-							if($targetLevel = $this->server->getLevelByName($to)){
-								$this->teleport($targetLevel->getSafeSpawn());
-							}
-							$this->portalStatus = self::PORTAL_STATUS_IN;
-						}
-					}else{
-						$this->portalStatus = self::PORTAL_STATUS_OUT;
-					}
-				}
-				
-				$this->checkNearEntities();
-				if ($this->hasEffect(Effect::LEVITATION)) {
-					$this->inAirTicks = 0;
-				}
-				if ($this->onGround) {
-					if ($this->inAirTicks !== 0) {
-						$this->startAirTicks = 5;
-					}
-     if ($this->elytraIsActivated) {
-					 $this->elytraIsActivated = false;
-     }
-					$this->inAirTicks = 0;
-				} else {
-					if (!$this->isUseElytra() and !$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
-						$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
-						$diff = ($this->speed->y - $expectedVelocity) ** 2;
+            if ($this->isOnFire() or $this->lastUpdate % 10 == 0) {
+                if ($this->isCreative() and !$this->isInsideOfFire()) {
+                    $this->extinguish();
+                } elseif ($this->getLevel()->getWeather()->isRainy()) {
+                    if ($this->getLevel()->canBlockSeeSky($this)) {
+                        $this->extinguish();
+                    }
+                }
+            }
 
-						if (!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()) {
-							if ($this->inAirTicks < 1000) {
-								$this->setMotion(new Vector3(0, $expectedVelocity, 0));
-							} elseif ($this->kick("Flying is not enabled on this server", false)) {
-								$this->timings->stopTiming();
+            if (!$this->isSpectator() and $this->isAlive()) {
+                if ($currentTick % 20 == 0) {
+                    if ($portalType = $this->isInsideOfPortal()) {
+                        if ($this->portalStatus === self::PORTAL_STATUS_OUT) {
+                            $to = $this->level->getFolderName() == $portalType ? $this->server->getDefaultLevel()->getFolderName() : $portalType;
+                            if ($targetLevel = $this->server->getLevelByName($to)) {
+                                $this->teleport($targetLevel->getSafeSpawn());
+                            }
+                            $this->portalStatus = self::PORTAL_STATUS_IN;
+                        }
+                    } else {
+                        $this->portalStatus = self::PORTAL_STATUS_OUT;
+                    }
+                }
 
-								return false;
-							}
-						}
-					}
+                $this->checkNearEntities();
+                if ($this->hasEffect(Effect::LEVITATION)) {
+                    $this->inAirTicks = 0;
+                }
+                if ($this->onGround) {
+                    if ($this->inAirTicks !== 0) {
+                        $this->startAirTicks = 5;
+                    }
+                    if ($this->elytraIsActivated) {
+                        $this->elytraIsActivated = false;
+                    }
+                    $this->inAirTicks = 0;
+                } else {
+                    if (!$this->isUseElytra() and !$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
+                        $expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
+                        $diff = ($this->speed->y - $expectedVelocity) ** 2;
 
-					$this->inAirTicks += $tickDiff;
-				}
-			}
-		}
+                        if (!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()) {
+                            if ($this->inAirTicks < 1000) {
+                                $this->setMotion(new Vector3(0, $expectedVelocity, 0));
+                            } elseif ($this->kick("Flying is not enabled on this server", false)) {
+                                $this->timings->stopTiming();
 
-		$this->timings->stopTiming();
+                                return false;
+                            }
+                        }
+                    }
 
-		if (count($this->messageQueue) > 0) {
-			$message = array_shift($this->messageQueue);
-			$pk = new TextPacket();
-			$pk->type = TextPacket::TYPE_RAW;
-			$pk->message = $message;
-			$this->dataPacket($pk);
-		}
+                    $this->inAirTicks += $tickDiff;
+                }
+            }
+        }
 
-		return true;
-	}
+        $this->timings->stopTiming();
 
- public function isUseElytra() {
-  return ($this->isHaveElytra() && $this->elytraIsActivated);
- }
+        if (count($this->messageQueue) > 0) {
+            $message = array_shift($this->messageQueue);
+            $pk = new TextPacket();
+            $pk->type = TextPacket::TYPE_RAW;
+            $pk->message = $message;
+            $this->dataPacket($pk);
+        }
 
- public function isHaveElytra() {
-  if ($this->getInventory()->getArmorItem(1) instanceof Elytra) {
-   return true;
-  }
-  return false;
- }
+        return true;
+    }
+
+    public function isUseElytra(){
+        return ($this->isHaveElytra() && $this->elytraIsActivated);
+    }
+
+    public function isHaveElytra(){
+        if ($this->getInventory()->getArmorItem(1) instanceof Elytra) {
+            return true;
+        }
+        return false;
+    }
 
 	public function checkNetwork(){
 		if (!$this->isOnline()) {
@@ -2335,92 +2319,92 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	public function handleLogin(LoginPacket $packet) : bool{
-		if($this->loggedIn){
-			return false;
-		}
+        if ($this->loggedIn) {
+            return false;
+        }
 
-		$this->protocol = $packet->protocol;
+        $this->protocol = $packet->protocol;
 
-		if(!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)){
-			if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
-				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
-			}else{
-				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_SERVER, true);
-			}
+        if (!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)) {
+            if ($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
+                $this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
+            } else {
+                $this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_SERVER, true);
+            }
 
-			//This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
-			$this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.incompatibleProtocol", [$packet->protocol]), false);
+            //This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
+            $this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.incompatibleProtocol", [$packet->protocol]), false);
 
-			return true;
-		}
+            return true;
+        }
 
-		$this->username = TextFormat::clean($packet->username);
-		$this->displayName = $this->username;
-		$this->iusername = strtolower($this->username);
+        $this->username = TextFormat::clean($packet->username);
+        $this->displayName = $this->username;
+        $this->iusername = strtolower($this->username);
 
-		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
-			return true;
-		}
+        if (count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)) {
+            return true;
+        }
 
-		$this->randomClientId = $packet->clientId;
+        $this->randomClientId = $packet->clientId;
 
-		$this->uuid = UUID::fromString($packet->clientUUID);
-		$this->rawUUID = $this->uuid->toBinary();
-		$this->xuid = $packet->xuid;
+        $this->uuid = UUID::fromString($packet->clientUUID);
+        $this->rawUUID = $this->uuid->toBinary();
+        $this->xuid = $packet->xuid;
 
-		if(!Player::isValidUserName($packet->username)){
-			$this->close("", "disconnectionScreen.invalidName");
-			return true;
-		}
+        if (!Player::isValidUserName($packet->username)) {
+            $this->close("", "disconnectionScreen.invalidName");
+            return true;
+        }
 
-		/* Mojang, some stupid reason, send every single model for every single skin in the selected skin-pack.
-		 * Not only that, they are pretty-printed. This decode/encode is to get rid of the pretty-print, which cuts down
-		 * significantly on the amount of wasted bytes.
-		 */
+        /* Mojang, some stupid reason, send every single model for every single skin in the selected skin-pack.
+         * Not only that, they are pretty-printed. This decode/encode is to get rid of the pretty-print, which cuts down
+         * significantly on the amount of wasted bytes.
+         */
 
-		$geometryJsonEncoded = base64_decode($packet->clientData["SkinGeometry"] ?? "");
-		if($geometryJsonEncoded !== ""){
-			$geometryJsonEncoded = json_encode(json_decode($geometryJsonEncoded));
-		}
+        $geometryJsonEncoded = base64_decode($packet->clientData["SkinGeometry"] ?? "");
+        if ($geometryJsonEncoded !== "") {
+            $geometryJsonEncoded = json_encode(json_decode($geometryJsonEncoded));
+        }
 
-		$skin = new Skin(
-			$packet->clientData["SkinId"],
-			base64_decode($packet->clientData["SkinData"] ?? ""),
-			base64_decode($packet->clientData["CapeData"] ?? ""),
-			$packet->clientData["SkinGeometryName"],
-			$geometryJsonEncoded
-		);
+        $skin = new Skin(
+            $packet->clientData["SkinId"],
+            base64_decode($packet->clientData["SkinData"] ?? ""),
+            base64_decode($packet->clientData["CapeData"] ?? ""),
+            $packet->clientData["SkinGeometryName"],
+            $geometryJsonEncoded
+        );
 
-		if(!$skin->isValid()){
-			$this->close("", "disconnectionScreen.invalidSkin");
-			return true;
-		}
+        if (!$skin->isValid()) {
+            $this->close("", "disconnectionScreen.invalidSkin");
+            return true;
+        }
 
-		$this->setSkin($skin);
+        $this->setSkin($skin);
 
-		if(!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)){
-			return true;
-		}
+        if (!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)) {
+            return true;
+        }
 
-		if(
-			($this->server->getNameBans()->isBanned($this->iusername) or $this->server->getIPBans()->isBanned($this->getAddress())) and
-			$this->kick("You are banned", false)
-		){
-			return true;
-		}
+        if (
+            ($this->server->getNameBans()->isBanned($this->iusername) or $this->server->getIPBans()->isBanned($this->getAddress())) and
+            $this->kick("You are banned", false)
+        ) {
+            return true;
+        }
 
-		$this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
-		if($ev->isCancelled()){
-			$this->close("", $ev->getKickMessage());
+        $this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
+        if ($ev->isCancelled()) {
+            $this->close("", $ev->getKickMessage());
 
-			return true;
-		}
-		if($packet->identityPublicKey !== null){
-   $this->processLogin();
-		}
+            return true;
+        }
+        if ($packet->identityPublicKey !== null) {
+            $this->processLogin();
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
@@ -2587,9 +2571,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$actions[] = $action;
 		}
 
-		if($packet->isCrafting){
-		 return true; // Normal transaction failed
-  }
+		if($packet->isCrafting) {
+            return true; // Normal transaction failed
+        }
 		
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
@@ -3393,17 +3377,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false;
 	}
 
- /**
-  * @param ServerSettingsRequestPacket $packet
-  * @return bool
-  */
- public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
-  if ($this->server->getAdvancedProperty("server.show-turanic", false)) {
-   $this->sendServerSettings($this->getDefaultServerSettings());
-  }
-  return true;
- }
-	
+    /**
+     * @param ServerSettingsRequestPacket $packet
+     * @return bool
+     */
+    public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+        if ($this->server->getAdvancedProperty("server.show-turanic", false)) {
+            $this->sendServerSettings($this->getDefaultServerSettings());
+        }
+        return true;
+    }
+
 	public function handleBatch(BatchPacket $packet) : bool{
 		foreach($packet->getPackets() as $buf){
 			$pk = $this->server->getNetwork()->getPacket(ord($buf[0]));
@@ -4470,29 +4454,32 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return true;
 	}
 
- /**
-  * @param $ping
-  */
- public function setPing($ping){
-		$this->ping = $ping;
-	}
+    /**
+     * @param $ping
+     */
+    public function setPing($ping){
+        $this->ping = $ping;
+    }
 
- /**
-  * @return int
-  */
- public function getPing(){
+    /**
+     * @return int
+     */
+    public function getPing(){
 		return $this->ping;
 	}
-	
-	public function isTeleporting() : bool{
+
+    /**
+     * @return bool
+     */
+    public function isTeleporting() : bool{
 		return $this->isTeleporting;
 	}
 
- /**
-  * Returns Player name in lower case letter
-  * @return string
-  */
- public function getLowerCaseName() : string{
+    /**
+     * Returns Player name in lower case letter
+     * @return string
+     */
+	public function getLowerCaseName() : string{
 		return strtolower($this->iusername);
 	}
 }

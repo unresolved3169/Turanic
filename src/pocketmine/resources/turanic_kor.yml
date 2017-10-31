@@ -12,7 +12,7 @@
 
 #Version of this file
 config:
- version: 28
+ version: 29
  
 level:
  #날씨 시스템을 켜는 경우 설정하세요
@@ -56,6 +56,8 @@ nether:
  level-name: "ender"
  
 server:
+ #Shows Turanic Information in Settings Window
+ show-turanic: false
  #철 골램을 생성하는 것이 허용된 경우 고르세요
  allow-iron-golem: false
  #눈 골렘을 생성하는 것이 허용된 경우 고르세요

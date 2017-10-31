@@ -25,6 +25,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\utils\TextFormat;
@@ -43,6 +44,10 @@ class EnchantCommand extends VanillaCommand {
 			"%pocketmine.command.enchant.usage"
 		);
 		$this->setPermission("pocketmine.command.enchant");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
+        $this->getOverload("default")->setParameter(1, new CommandParameter("id", CommandParameter::TYPE_MIXED, false));
+        $this->getOverload("default")->setParameter(2, new CommandParameter("level", CommandParameter::TYPE_INT, false));
 	}
 
 	/**

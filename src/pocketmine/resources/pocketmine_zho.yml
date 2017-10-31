@@ -25,8 +25,6 @@ settings:
  #將此值設定為大致與您 CPU 的核數相同。
  #當設定為 auto 時，將會嘗試自動檢測 CPU 核數（或自動設為 2）
  async-workers: auto
- #允許使用非出產的開發版本。警告：除非您知道自己在做什麼，否則請勿啟用此選項
- enable-testing: false
 
 memory:
  #全域非嚴格記憶體限制，以 MB 為單位。設定為 0 可停用

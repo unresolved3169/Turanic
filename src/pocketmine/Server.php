@@ -1559,7 +1559,6 @@ class Server{
 		$this->destroyBlockParticle = $this->getAdvancedProperty("server.destroy-block-particle", true);
 		$this->allowSplashPotion = $this->getAdvancedProperty("server.allow-splash-potion", true);
 		$this->fireSpread = $this->getAdvancedProperty("level.fire-spread", false);
-		$this->advancedCommandSelector = $this->getAdvancedProperty("server.advanced-command-selector", false);
 		$this->anvilEnabled = $this->getAdvancedProperty("enchantment.enable-anvil", true);
 		$this->enchantingTableEnabled = $this->getAdvancedProperty("enchantment.enable-enchanting-table", true);
 		$this->countBookshelf = $this->getAdvancedProperty("enchantment.count-bookshelf", false);

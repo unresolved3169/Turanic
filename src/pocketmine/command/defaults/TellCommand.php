@@ -25,6 +25,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -44,6 +45,9 @@ class TellCommand extends VanillaCommand {
 			["w", "whisper", "msg", "m"]
 		);
 		$this->setPermission("pocketmine.command.tell");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
+        $this->getOverload("default")->setParameter(1, new CommandParameter("msg", CommandParameter::TYPE_STRING, false));
 	}
 
 	/**

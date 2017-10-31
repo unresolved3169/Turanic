@@ -58,7 +58,7 @@ ender:
  level-name: "ender"
 
 server:
- #Show Turanic CustomUI in Player ServerSettings Window
+ #Shows Turanic in Settings Window
  show-turanic: false
  #Choose if spawning iron golem is allowed
  allow-iron-golem: false
@@ -77,8 +77,6 @@ server:
  destroy-block-particle: true
  #Set if splash potions are enabled
  allow-splash-potion: true
- #Set if Advanced Command Selector is enabled
- advanced-command-selector: false
  #Set if enable ResourcePackManager
  enable-resource: false
  #This parameter turns on or off the absorption of water by a sponge
@@ -98,6 +96,8 @@ redstone:
  ####Choose if the redstone system is enabled####
  ################################################
  #If it is false, the redstone system won't work#
+ ################################################
+ #############Doesn't work Currently#############
  ################################################
  enable: false
  #Choose if frequency pulses are enabled

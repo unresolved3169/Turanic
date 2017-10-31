@@ -22,7 +22,7 @@
 
 #Версия этого файла
 config:
- version: 28
+ version: 29
 
 level:
  #Выберите, включена ли погода (дождь может вызвать лаги на старых устройствах)
@@ -70,6 +70,8 @@ ender:
  level-name: "ender"
 
 server:
+ #Shows Turanic Information in Settings Window
+ show-turanic: false
  #Разрешает спавн железных големов
  allow-iron-golem: false
  #Разрешает спавн снежных големов
@@ -87,8 +89,6 @@ server:
  destroy-block-particle: true
  #Взрывающиеся зелья
  allow-splash-potion: true
- #Эта настройка решает, включен ли расширенный выбор команд
- advanced-command-selector: false
  #Выберите, разрешены ли ресурспаки
  enable-resource: false
  #Этот параметр включает или отключает поглощение воды губкой

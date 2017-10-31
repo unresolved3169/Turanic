@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandEnum;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\Server;
@@ -45,6 +47,8 @@ class DifficultyCommand extends VanillaCommand {
 			"%commands.difficulty.usage"
 		);
 		$this->setPermission("pocketmine.command.difficulty");
+
+        $this->getOverload("default")->setParameter(0, new CommandParameter("1|2|3", CommandParameter::TYPE_INT, false));
 	}
 
 	/**

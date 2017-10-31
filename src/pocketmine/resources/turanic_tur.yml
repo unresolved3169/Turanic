@@ -12,7 +12,7 @@
 
 #Dosya sürümü
 config:
- version: 28
+ version: 29
 
 level:
  #Aktif yaparsanız hava durumu aktifleşir (Eski cihazlarda laga sebep olabilir)
@@ -58,6 +58,8 @@ ender:
  level-name: "ender"
 
 server:
+ #Turanic Information güncelleme penceresinde
+ show-turanic: false
  #Eğer aktifse iron goleme izin verir
  allow-iron-golem: false
  #Eğer aktifse snow goleme izin verir
@@ -75,8 +77,6 @@ server:
  destroy-block-particle: true
  #Eğer aktif ise potion fırlatabilirsiniz
  allow-splash-potion: true
- #Eğer aktif ise gelişmiş komut seçimi kullanırsınız
- advanced-command-selector: false
  #Eğer aktifse resource packler aktifdir
  enable-resource: false
  #Eğer aktifse sünger suyu çeker

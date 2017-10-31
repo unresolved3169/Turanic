@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\sound\ExpPickupSound;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -46,6 +47,9 @@ class XpCommand extends VanillaCommand {
 			"%pocketmine.command.xp.usage"
 		);
 		$this->setPermission("pocketmine.command.xp");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("xp", CommandParameter::TYPE_INT, false));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
 	}
 
 	/**
