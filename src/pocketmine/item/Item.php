@@ -48,6 +48,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Config;
+use pocketmine\inventory\FurnaceFuel;
 
 class Item implements ItemIds, \JsonSerializable {
 
@@ -1072,7 +1073,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return int
 	 */
 	public function getFuelTime() : int{
-		return 0;
+		return FurnaceFuel::getFurnaceFuelTime($this->getId());
 	}
 
 	/**
