@@ -25,6 +25,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Server;
@@ -45,7 +46,7 @@ class BanListCommand extends VanillaCommand {
 		);
 		$this->setPermission("pocketmine.command.ban.list");
 
-        $this->getOverload("default")->setParameter(0, new CommandParameter("ips|cids|players"));
+        $this->getOverload("default")->setParameter(0, new CommandParameter("list", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("list", ["ips", "cids", "players"])));
 	}
 
 	/**

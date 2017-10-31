@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
+use pocketmine\command\overload\CommandEnum;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -45,6 +47,8 @@ class SayCommand extends VanillaCommand {
 			["broadcast", "announce"]
 		);
 		$this->setPermission("pocketmine.command.say");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("msg", CommandParameter::TYPE_STRING, false));
 	}
 
 	/**

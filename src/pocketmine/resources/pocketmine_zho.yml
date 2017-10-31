@@ -103,7 +103,7 @@ player:
  save-player-data: true
  anti-cheat:
   #當設定為 false 時，將會嘗試阻止疾跑和穿墻作弊。可能導致與某些尚未適配的方塊有關的問題。
-  allow-movement-cheats: true
+  allow-movement-cheats: false
   #當設定為 false 時，將會檢查玩家破壞方塊的時間，阻止相關作弊。可能導致與某些尚未適配的方塊有關的問題。
   allow-instabreak: false
 

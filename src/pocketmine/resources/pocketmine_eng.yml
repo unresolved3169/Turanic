@@ -108,7 +108,7 @@ player:
  save-player-data: true
  anti-cheat:
   #If false, will try to prevent speed and noclip cheats. May cause movement issues with some blocks which are not yet properly implemented.
-  allow-movement-cheats: true
+  allow-movement-cheats: false
   #If false, times block breaks to ensure players are not cheating. May cause issues with some blocks which are not yet properly implemented.
   allow-instabreak: false
 

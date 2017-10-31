@@ -50,7 +50,7 @@ class GiveCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.give");
 		
 		$this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
-		$this->getOverload("default")->setParameter(1, new CommandParameter("item name", CommandParameter::TYPE_STRING, false));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("item", CommandParameter::TYPE_STRING, false));
 		$this->getOverload("default")->setParameter(2, new CommandParameter("amount", CommandParameter::TYPE_INT, true));
 		$this->getOverload("default")->setParameter(3, new CommandParameter("tags", CommandParameter::TYPE_STRING, true));
 	}
