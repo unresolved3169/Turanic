@@ -48,7 +48,7 @@ class TimeCommand extends VanillaCommand {
 		);
 		$this->setPermission("pocketmine.command.time.add;pocketmine.command.time.set;pocketmine.command.time.start;pocketmine.command.time.stop");
 
-        $this->getOverload("default")->setParameter(0, new CommandParameter("args", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_VALID, CommandEnum::TYPE_CUSTOM, ["start", "stop", "query", "set", "add"]));
+        $this->getOverload("default")->setParameter(0, new CommandParameter("args", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("args", ["start", "stop", "query", "set", "add"])));
         $this->getOverload("default")->setParameter(1, new CommandParameter("time", CommandParameter::TYPE_MIXED, true, CommandParameter::FLAG_VALID, CommandEnum::TYPE_CUSTOM, ["day", "night"]));
 	}
 

@@ -46,7 +46,7 @@ class StopCommand extends VanillaCommand {
 		);
 		$this->setPermission("pocketmine.command.stop");
 
-		$this->getOverload("default")->setParameter(0, new CommandParameter("args", CommandParameter::TYPE_STRING, true, CommandParameter::FLAG_VALID, CommandEnum::TYPE_CUSTOM, ["force"]));
+		$this->getOverload("default")->setParameter(0, new CommandParameter("args", CommandParameter::TYPE_STRING, true, CommandParameter::FLAG_ENUM, new CommandEnum("args", ["force"])));
 	}
 
 	/**

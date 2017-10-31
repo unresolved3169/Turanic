@@ -52,7 +52,7 @@ class SummonCommand extends VanillaCommand {
 		);
 		$this->setPermission("pocketmine.command.summon");
 
-		$this->getOverload("default")->setParameter(0, new CommandParameter("mob", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_VALID, CommandEnum::TYPE_CUSTOM, ["Zombie", "Blaze", "Villager", "Chicken", "Bat", "Cow", "Creeper", "Ghast", "LavsSlime", "Horse", "CaveSpider", "Llama", "Pig", "Rabbit", "Sheep", "Wolf", "Witch", "Slime", "Squid"]));
+		$this->getOverload("default")->setParameter(0, new CommandParameter("mob", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("mob", ["Zombie", "Blaze", "Villager", "Chicken", "Bat", "Cow", "Creeper", "Ghast", "LavsSlime", "Horse", "CaveSpider", "Llama", "Pig", "Rabbit", "Sheep", "Wolf", "Witch", "Slime", "Squid"])));
 	}
 
 	/**
