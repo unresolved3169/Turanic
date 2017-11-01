@@ -149,7 +149,6 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
-use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\item\{
@@ -3378,10 +3377,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
     /**
-     * @param ServerSettingsRequestPacket $packet
      * @return bool
      */
-    public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+    public function handleServerSettingsRequest() : bool{
         if ($this->server->getAdvancedProperty("server.show-turanic", false)) {
             $this->sendServerSettings($this->getDefaultServerSettings());
         }
