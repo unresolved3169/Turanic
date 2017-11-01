@@ -17,7 +17,6 @@
  * @link   http://www.pocketmine.net/
  *
  *
-<<<<<<< HEAD
  */
 declare(strict_types=1);
 
