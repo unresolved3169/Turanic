@@ -25,6 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityArmorChangeEvent;
+use pocketmine\event\entity\EntityInventoryChangeEvent;
 use pocketmine\event\player\PlayerItemHeldEvent;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
@@ -37,11 +38,16 @@ use pocketmine\Server;
 
 class PlayerInventory extends EntityInventory{
 
+    const CURSOR_INDEX = -1;
+
 	/** @var Human */
 	protected $holder;
 
 	/** @var int */
 	protected $itemInHandIndex = 0;
+
+    /** @var Item */
+    protected $cursor = null;
 
 	/**
 	 * @param Human $player
@@ -49,6 +55,14 @@ class PlayerInventory extends EntityInventory{
 	public function __construct(Human $player){
 		parent::__construct($player);
 	}
+
+    public function sendCursor(){
+        $pk = new InventorySlotPacket();
+        $pk->inventorySlot = 0;
+        $pk->item = clone $this->cursor;
+        $pk->windowId = ContainerIds::CURSOR;
+        $this->getHolder()->dataPacket($pk);
+    }
 
 	public function getName() : string{
 		return "Player";
@@ -67,31 +81,41 @@ class PlayerInventory extends EntityInventory{
 		$this->sendContents($this->getViewers());
 	}
 
-	/**
-	 * Called when a client equips a hotbar slot. This method should not be used by plugins.
-	 * This method will call PlayerItemHeldEvent.
-	 *
-	 * @param int $hotbarSlot Number of the hotbar slot to equip.
-	 *
-	 * @return bool if the equipment change was successful, false if not.
-	 */
-	public function equipItem(int $hotbarSlot) : bool{
-		if(!$this->isHotbarSlot($hotbarSlot)){
-			$this->sendContents($this->getHolder());
-			return false;
-		}
-
-		$this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot));
-
-		if($ev->isCancelled()){
-			$this->sendHeldItem($this->getHolder());
-			return false;
-		}
-
-		$this->setHeldItemIndex($hotbarSlot, false);
-
-		return true;
-	}
+    /**
+     * Called when a client equips a hotbar slot. This method should not be used by plugins.
+     * This method will call PlayerItemHeldEvent.
+     *
+     * @param int $hotbarSlot Number of the hotbar slot to equip.
+     * @param int|null $inventorySlot Inventory slot to map to the specified hotbar slot. Supply null to make no change to the link.
+     *
+     * @return bool if the equipment change was successful, false if not.
+     */
+    public function equipItem(int $hotbarSlot, int $inventorySlot = null) : bool{
+        if($inventorySlot === null){
+            $inventorySlot = $this->isHotbarSlot($hotbarSlot) ? $hotbarSlot : -1;
+        }
+        if($hotbarSlot < 0 or $hotbarSlot >= $this->getHotbarSize() or $inventorySlot < -1 or $inventorySlot >= $this->getSize()){
+            $this->sendContents($this->getHolder());
+            return false;
+        }
+        if($inventorySlot === -1){
+            $item = Item::get(Item::AIR, 0, 0);
+        }else{
+            $item = $this->getItem($inventorySlot);
+        }
+        $this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $hotbarSlot));
+        if($ev->isCancelled()){
+            $this->sendContents($this->getHolder());
+            return false;
+        }
+        if (!($hotbarSlot == $inventorySlot || $inventorySlot < 0)) {
+            $tmp = $this->getItem($hotbarSlot);
+            $this->setItem($hotbarSlot, $this->getItem($inventorySlot));
+            $this->setItem($inventorySlot, $tmp);
+        }
+        $this->setHeldItemIndex($hotbarSlot, false);
+        return true;
+    }
 
 	private function isHotbarSlot(int $slot) : bool{
 		return $slot >= 0 and $slot <= $this->getHotbarSize();
@@ -177,7 +201,50 @@ class PlayerInventory extends EntityInventory{
 		return $this->setItem($this->getHeldItemIndex(), $item);
 	}
 
-	/**
+	public function setItem(int $index, Item $item, bool $send = true) : bool{
+        if($index >= 0){
+            if($item->isNull()){
+                $item = Item::get(Item::AIR, 0, 0);
+            }else{
+                $item = clone $item;
+            }
+            if($index >= $this->getSize()){ //Armor change
+                Server::getInstance()->getPluginManager()->callEvent($ev = new EntityArmorChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+                if($ev->isCancelled() and $this->getHolder() instanceof Human){
+                    $this->sendArmorSlot($index, $this->getViewers());
+                    return false;
+                }
+                $item = $ev->getNewItem();
+            }else{
+                Server::getInstance()->getPluginManager()->callEvent($ev = new EntityInventoryChangeEvent($this->getHolder(), $this->getItem($index), $item, $index));
+                if($ev->isCancelled()){
+                    $this->sendSlot($index, $this->getViewers());
+                    return false;
+                }
+                $item = $ev->getNewItem();
+            }
+            $old = $this->getItem($index);
+            $this->slots[$index] = $item;
+            $this->onSlotChange($index, $old, $send);
+            return true;
+        }elseif($index === self::CURSOR_INDEX){
+            $this->cursor = $item;
+            if($send)
+                $this->sendCursor();
+            return true;
+        }
+        return parent::setItem($index, $item, $send);
+    }
+
+    public function getItem(int $index): Item{
+        if($index === self::CURSOR_INDEX){
+            return $this->cursor === null ? Item::get(Item::AIR) : clone $this->cursor;
+        }else{
+            return parent::getItem($index);
+        }
+	}
+
+    /**
 	 * Sends the currently-held item to specified targets.
 	 * @param Player|Player[] $target
 	 */

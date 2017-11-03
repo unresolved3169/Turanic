@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
@@ -33,90 +32,104 @@ use pocketmine\Player;
  */
 class SlotChangeAction extends InventoryAction{
 
-	/** @var Inventory */
-	protected $inventory;
-	/** @var int */
-	private $inventorySlot;
+    /** @var Inventory|null */
+    protected $inventory;
+    /** @var int */
+    private $inventorySlot;
+    /** @var int */
+    private $containerId;
 
-	/**
-	 * @param Inventory $inventory
-	 * @param int       $inventorySlot
-	 * @param Item      $sourceItem
-	 * @param Item      $targetItem
-	 */
-	public function __construct(Inventory $inventory, int $inventorySlot, Item $sourceItem, Item $targetItem){
-		parent::__construct($sourceItem, $targetItem);
-		$this->inventory = $inventory;
-		$this->inventorySlot = $inventorySlot;
-	}
+    /**
+     * @param Item $sourceItem
+     * @param Item $targetItem
+     * @param int  $containerId
+     * @param int  $inventorySlot
+     */
+    public function __construct(Item $sourceItem, Item $targetItem, int $containerId, int $inventorySlot){
+        parent::__construct($sourceItem, $targetItem);
+        $this->inventorySlot = $inventorySlot;
+        $this->containerId = $containerId;
+    }
 
-	/**
-	 * Returns the inventory involved in this action.
-	 *
-	 * @return Inventory
-	 */
-	public function getInventory() : Inventory{
-		return $this->inventory;
-	}
+    public function getContainerId() : int{
+        return $this->containerId;
+    }
 
-	/**
-	 * Returns the slot in the inventory which this action modified.
-	 * @return int
-	 */
-	public function getSlot() : int{
-		return $this->inventorySlot;
-	}
+    /**
+     * Returns the inventory involved in this action. Will return null if the action has not yet been fully initialized.
+     *
+     * @return Inventory|null
+     */
+    public function getInventory(){
+        return $this->inventory;
+    }
 
-	/**
-	 * Checks if the item in the inventory at the specified slot is the same as this action's source item.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
-	 */
-	public function isValid(Player $source) : bool{
-		$check = $this->inventory->getItem($this->inventorySlot);
-		return $check->equalsExact($this->sourceItem);
-	}
+    public function setInventoryFrom(Player $player){
+        $inventory = $player->getWindow($this->containerId);
+        if($inventory === null){
+            throw new \InvalidStateException("Player " . $player->getName() . " has no open container with ID " . $this->containerId);
+        }
 
-	/**
-	 * Adds this action's target inventory to the transaction's inventory list.
-	 *
-	 * @param InventoryTransaction $transaction
-	 *
-	 */
-	public function onAddToTransaction(InventoryTransaction $transaction) {
-		$transaction->addInventory($this->inventory);
-	}
+        $this->inventory = $inventory;
+    }
 
-	/**
-	 * Sets the item into the target inventory.
-	 *
-	 * @param Player $source
-	 *
-	 * @return bool
-	 */
-	public function execute(Player $source) : bool{
-		return $this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
-	}
+    /**
+     * Returns the slot in the inventory which this action modified.
+     * @return int
+     */
+    public function getSlot() : int{
+        return $this->inventorySlot;
+    }
 
-	/**
-	 * Sends slot changes to other viewers of the inventory. This will not send any change back to the source Player.
-	 *
-	 * @param Player $source
-	 */
-	public function onExecuteSuccess(Player $source) {
-		$viewers = $this->inventory->getViewers();
-		unset($viewers[spl_object_hash($source)]);
-		$this->inventory->sendSlot($this->inventorySlot, $viewers);
-	}
+    /**
+     * Checks if the item in the inventory at the specified slot is the same as this action's source item.
+     *
+     * @param Player $source
+     *
+     * @return bool
+     */
+    public function isValid(Player $source) : bool{
+        $check = $this->inventory->getItem($this->inventorySlot);
+        return $check->equals($this->sourceItem) and $check->getCount() === $this->sourceItem->getCount();
+    }
 
-	/**
-	 * Sends the original slot contents to the source player to revert the action.
-	 *
-	 * @param Player $source
-	 */
-	public function onExecuteFail(Player $source) {
-		$this->inventory->sendSlot($this->inventorySlot, $source);
-	}
+    /**
+     * Checks if the item in the inventory at the specified slot is already the same as this action's target item.
+     * @return bool
+     */
+    public function isAlreadyDone(Player $source) : bool{
+        $check = $this->inventory->getItem($this->inventorySlot);
+        return $check->equals($this->targetItem) and $check->getCount() === $this->targetItem->getCount();
+    }
+
+    /**
+     * Sets the item into the target inventory.
+     *
+     * @param Player $source
+     *
+     * @return bool
+     */
+    public function execute(Player $source) : bool{
+        return $this->inventory->setItem($this->inventorySlot, $this->targetItem, false);
+    }
+
+    /**
+     * Sends slot changes to other viewers of the inventory. This will not send any change back to the source Player.
+     *
+     * @param Player $source
+     */
+    public function onExecuteSuccess(Player $source){
+        $viewers = $this->inventory->getViewers();
+        unset($viewers[spl_object_hash($source)]);
+        $this->inventory->sendSlot($this->inventorySlot, $viewers);
+    }
+
+    /**
+     * Sends the original slot contents to the source player to revert the action.
+     *
+     * @param Player $source
+     */
+    public function onExecuteFail(Player $source){
+        $this->inventory->sendSlot($this->inventorySlot, $source);
+    }
 }

@@ -23,31 +23,53 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\item\Item;
 use pocketmine\Player;
 
 class CraftingGrid extends BaseInventory{
 
-	public function __construct(Player $holder){
-		parent::__construct($holder);
-	}
+    const WINDOW_ID = -1;
 
-	public function getDefaultSize() : int{
-		return 4;
-	}
+    const RESULT_INDEX = -1;
 
-	public function setSize(int $size){
-		throw new \BadMethodCallException("Cannot change the size of a crafting grid");
-	}
+    protected $result = null;
 
-	public function getName() : string{
-		return "Crafting";
-	}
+    public function __construct(Player $holder){
+        parent::__construct($holder);
+    }
 
-	public function sendSlot(int $index, $target){
-		//we can't send a slot of a client-sided inventory window
-	}
+    public function getDefaultSize() : int{
+        return 4;
+    }
 
-	public function sendContents($target){
-		//no way to do this
-	}
+    public function getItem(int $slot) : Item{
+        if($slot === self::RESULT_INDEX){
+            return $this->result === null ? Item::get(Item::AIR) : clone $this->result;
+        }else{
+            return parent::getItem($slot);
+        }
+    }
+
+    public function setItem(int $slot, Item $item, bool $send = true) : bool{
+        if($slot === self::RESULT_INDEX){
+            $this->result = clone $item;
+            return true;
+        }else{
+            return parent::setItem($slot, $item, $send);
+        }
+    }
+
+    public function setSize(int $size){
+        throw new \BadMethodCallException("Cannot change the size of a crafting grid");
+    }
+
+    public function getName() : string{
+        return "Crafting";
+    }
+
+    public function sendSlot(int $index, $target){
+    }
+
+    public function sendContents($target){
+    }
 }

@@ -36,6 +36,9 @@ class CraftingManager{
 	/** @var CraftingRecipe[] */
 	public $recipes = [];
 
+    /** @var Recipe[][] */
+    protected $recipeLookup = [];
+
 	/** @var ShapedRecipe[][] */
 	protected $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
@@ -171,6 +174,20 @@ class CraftingManager{
 		return $this->recipes;
 	}
 
+    /**
+     * @param Item $item
+     * @return Recipe[]
+     */
+    public function getRecipesByResult(Item $item) : array{
+        $result = [];
+        foreach($this->recipeLookup[$item->getId() . ":" . $item->getDamage()] as $recipe){
+            if($recipe->getResult()->getCount() === $item->getCount()){
+                $result[] = $recipe;
+            }
+        }
+        return $result;
+    }
+
 	/**
 	 * @return ShapelessRecipe[][]
 	 */
@@ -196,7 +213,22 @@ class CraftingManager{
 	 * @param ShapedRecipe $recipe
 	 */
 	public function registerShapedRecipe(ShapedRecipe $recipe){
-		$this->shapedRecipes[json_encode($recipe->getResult())][json_encode($recipe->getIngredientMap())] = $recipe;
+        $this->shapedRecipes[json_encode($recipe->getResult())][json_encode($recipe->getIngredientMap())] = $recipe;
+        $result = $recipe->getResult();
+        $ingredients = $recipe->getIngredientMap();
+        $hash = "";
+        foreach($ingredients as $v){
+            foreach($v as $item){
+                if($item !== null){
+                    /** @var Item $item */
+                    $hash .= $item->getId() . ":" . ($item->hasAnyDamageValue() ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+                }
+            }
+
+            $hash .= ";";
+        }
+
+        $this->recipeLookup[$result->getId() . ":" . $result->getDamage()][$hash] = $recipe;
 		$this->craftingDataCache = null;
 	}
 
@@ -208,6 +240,13 @@ class CraftingManager{
 		usort($ingredients, [$this, "sort"]);
 		$this->shapelessRecipes[json_encode($recipe->getResult())][json_encode($ingredients)] = $recipe;
 		$this->craftingDataCache = null;
+
+        $result = $recipe->getResult();
+        $hash = "";
+        foreach($ingredients as $item){
+            $hash .= $item->getId() . ":" . ($item->hasAnyDamageValue() ? "?" : $item->getDamage()) . "x" . $item->getCount() . ",";
+        }
+        $this->recipeLookup[$result->getId() . ":" . $result->getDamage()][$hash] = $recipe;
 	}
 
 	/**

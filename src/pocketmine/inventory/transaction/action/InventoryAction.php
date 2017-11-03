@@ -66,6 +66,15 @@ abstract class InventoryAction{
 		return clone $this->targetItem;
 	}
 
+    /**
+     * @param Player $source
+     *
+     * @return bool
+     */
+    public function isAlreadyDone(Player $source) : bool{
+        return false;
+    }
+
 	/**
 	 * Returns whether this action is currently valid. This should perform any necessary sanity checks.
 	 *
