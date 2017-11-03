@@ -2963,7 +2963,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 				$target = $this->level->getBlock($pos);
 				$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
-                if(!$this->level->checkSpawnProtection($this, $target)){
+                if($this->level->checkSpawnProtection($this, $target)){
                     $ev->setCancelled();
                 }
 
