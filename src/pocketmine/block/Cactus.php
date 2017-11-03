@@ -70,7 +70,6 @@ class Cactus extends Transparent {
 	 * @return AxisAlignedBB
 	 */
 	protected function recalculateBoundingBox(){
-
 		return new AxisAlignedBB(
 			$this->x + 0.0625,
 			$this->y + 0.0625,
