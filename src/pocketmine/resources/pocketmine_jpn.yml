@@ -166,11 +166,6 @@ auto-report:
  send-phpinfo: false
  host: crash.pocketmine.net
 
-anonymous-statistics:
- #Sends anonymous statistics for data aggregation, plugin usage tracking
- enabled: true
- host: stats.pocketmine.net
-
 commands:
  #Here you can customize server commands
  #Specify command names to override the default set here.

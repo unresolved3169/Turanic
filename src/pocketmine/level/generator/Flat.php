@@ -38,6 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class Flat extends Generator {
+
 	/** @var ChunkManager */
 	private $level;
 	/** @var Chunk */

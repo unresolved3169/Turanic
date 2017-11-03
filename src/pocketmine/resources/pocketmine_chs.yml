@@ -166,11 +166,6 @@ auto-report:
  send-phpinfo: false
  host: crash.pocketmine.net
 
-anonymous-statistics:
- #发送用于数据收集和插件使用情况统计的匿名数据
- enabled: true
- host: stats.pocketmine.net
-
 commands:
  #您可以在此处自定义服务器的指令
  #在此处指定指令的名称，以覆盖默认值。

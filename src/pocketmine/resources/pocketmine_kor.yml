@@ -164,11 +164,6 @@ auto-report:
  send-phpinfo: false
  host: crash.pocketmine.net
 
-anonymous-statistics:
- #데이터 수집, 플러그인 사용 추적을위한 익명 통계 전송
- enabled: true
- host: stats.pocketmine.net
-
 auto-updater:
  enabled: true
  on-update:
