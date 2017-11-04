@@ -2599,14 +2599,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_BLOCK:
 						$this->setUsingItem(false);
 
+                        if(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
+                            $this->inventory->setItemInHand($packet->trData->itemInHand);
+                        }
+
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
 							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
 								return true;
 							}
-						}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
-							$this->inventory->setItemInHand($packet->trData->itemInHand);
 						}else{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
@@ -2969,6 +2971,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 return false;
             }
             $packet->inventorySlot -= 9;
+            $item = $this->inventory->getItem($packet->inventorySlot);
+            if(!$item->equals($packet->item)){
+                $this->inventory->setItem($packet->inventorySlot, $packet->item);
+                return false;
+            }
         }
         $this->inventory->equipItem($packet->hotbarSlot, $packet->inventorySlot);
 
