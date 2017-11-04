@@ -1981,7 +1981,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     }
                     $this->inAirTicks = 0;
                 } else {
-                    if (!$this->isUseElytra() and !$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
+                    if (!$this->isUseElytra() and !$this->flying and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
                         $expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
                         $diff = ($this->speed->y - $expectedVelocity) ** 2;
 
