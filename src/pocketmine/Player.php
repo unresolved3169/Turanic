@@ -2293,6 +2293,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$inventory->sendContents($this);
 			if($inventory instanceof PlayerInventory){
 				$inventory->sendArmorContents($this);
+				$inventory->sendCursor();
 			}
 		}
 	}
@@ -4307,6 +4308,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return Inventory|null
 	 */
 	public function getWindow(int $windowId){
+        if($windowId === CraftingGrid::WINDOW_ID)
+            return $this->craftingGrid;
 		return $this->windowIndex[$windowId] ?? null;
 	}
 

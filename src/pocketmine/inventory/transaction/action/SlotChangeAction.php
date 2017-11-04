@@ -95,6 +95,7 @@ class SlotChangeAction extends InventoryAction{
 
     /**
      * Checks if the item in the inventory at the specified slot is already the same as this action's target item.
+     * @param Player $source
      * @return bool
      */
     public function isAlreadyDone(Player $source) : bool{

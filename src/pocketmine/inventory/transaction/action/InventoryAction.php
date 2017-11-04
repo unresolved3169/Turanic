@@ -85,15 +85,6 @@ abstract class InventoryAction{
 	abstract public function isValid(Player $source) : bool;
 
 	/**
-	 * Called when the action is added to the specified InventoryTransaction.
-	 *
-	 * @param InventoryTransaction $transaction
-	 */
-	public function onAddToTransaction(InventoryTransaction $transaction) {
-
-	}
-
-	/**
 	 * Called by inventory transactions before any actions are processed. If this returns false, the transaction will
 	 * be cancelled.
 	 *
