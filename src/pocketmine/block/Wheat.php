@@ -62,4 +62,8 @@ class Wheat extends Crops {
 
 		return $drops;
 	}
+
+    public function getPickedItem(): Item{
+        return Item::get(Item::WHEAT_SEEDS);
+    }
 }

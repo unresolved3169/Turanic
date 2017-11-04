@@ -60,4 +60,8 @@ class Carrot extends Crops {
 		}
 		return $drops;
 	}
+
+    public function getPickedItem(): Item{
+        return Item::get(Item::CARROT);
+    }
 }

@@ -59,4 +59,8 @@ class Beetroot extends Crops {
 
 		return $drops;
 	}
+
+	public function getPickedItem(): Item{
+        return Item::get(Item::BEETROOT_SEEDS);
+    }
 }

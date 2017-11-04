@@ -174,6 +174,13 @@ class Color {
 		return ($this->red << 16 | $this->green << 8 | $this->blue) & 0xffffff;
 	}
 
+    /**
+     * @return int
+     */
+    public function toRGB() : int{
+        return ($this->red << 16) | ($this->green << 8) | $this->blue;
+ 	}
+
 	/**
 	 * @return string
 	 */

@@ -3011,7 +3011,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
 		$block = $this->level->getBlock($this->temporalVector->setComponents($packet->blockX, $packet->blockY, $packet->blockZ));
 
-		$item = Item::get($block->getId(), $block->getVariant());
+		$item = $block->getPickedItem();
 
 		if($packet->addUserData){
 			$tile = $this->getLevel()->getTile($block);
@@ -3423,7 +3423,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
-				$newBook->swapPage($packet->pageNumber, $packet->secondaryPageNumber);
+				$newBook->swapPages($packet->pageNumber, $packet->secondaryPageNumber);
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:

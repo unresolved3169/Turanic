@@ -22,9 +22,11 @@
 namespace pocketmine\level\particle;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Skin;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\utils\TextUtils;
 use pocketmine\utils\UUID;
@@ -113,7 +115,7 @@ class FloatingTextParticle extends Particle {
 		if(!$this->invisible){
 
 			$pk = new AddPlayerPacket();
-			$pk->uuid = UUID::fromRandom();
+			$pk->uuid = $uuid = UUID::fromRandom();
 			$pk->username = $this->title;
 			$pk->entityRuntimeId = $this->entityId;
 			$pk->position = $this->subtract(0,0.50,0);
@@ -126,10 +128,15 @@ class FloatingTextParticle extends Particle {
 			$pk->metadata = [
 				Entity::DATA_FLAGS => [Entity::DATA_TYPE_LONG, $flags],
 				Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $this->title . ($this->text !== "" ? "\n" . $this->text : "")],
-				Entity::DATA_SCALE => [Entity::DATA_TYPE_FLOAT, 0],
+				Entity::DATA_SCALE => [Entity::DATA_TYPE_FLOAT, 0.01],
 			];
 
 			$p[] = $pk;
+
+            $skinPk = new PlayerSkinPacket();
+            $skinPk->uuid = $uuid;
+            $skinPk->skin = new Skin("Standard_Custom", str_repeat("\x00", 8192));
+            $p[] = $skinPk;
 		}
 
 		return $p;

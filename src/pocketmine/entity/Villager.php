@@ -21,9 +21,6 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\level\Level;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
@@ -31,6 +28,12 @@ use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAt
 class Villager extends Animal {
 	
 	const NETWORK_ID = 15;
+
+    const PROFESSION_FARMER = 0;
+    const PROFESSION_LIBRARIAN = 1;
+    const PROFESSION_PRIEST = 2;
+    const PROFESSION_BLACKSMITH = 3;
+    const PROFESSION_BUTCHER = 4;
 
 	public $width = 0.6;
 	public $length = 0.6;
@@ -41,8 +44,15 @@ class Villager extends Animal {
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		
+
 		parent::initEntity();
+
+        /** @var int $profession */
+        $profession = $this->namedtag["Profession"] ?? self::PROFESSION_FARMER;
+        if($profession > 4 or $profession < 0){
+            $profession = self::PROFESSION_FARMER;
+        }
+        $this->setProfession($profession);
 	}
 
 	/**
@@ -67,4 +77,17 @@ class Villager extends Animal {
 
 		parent::spawnTo($player);
 	}
+
+    /**
+     * Sets the villager profession
+     *
+     * @param int $profession
+     */
+    public function setProfession(int $profession){
+        $this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $profession);
+    }
+
+    public function getProfession() : int{
+        return $this->getDataProperty(self::DATA_VARIANT);
+    }
 }
