@@ -2606,7 +2606,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 								return true;
 							}
 						}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
-							$this->inventory->sendHeldItem($this);
+							$this->inventory->setItemInHand($packet->trData->itemInHand);
 						}else{
 							$item = $this->inventory->getItemInHand();
 							$oldItem = clone $item;
@@ -2969,12 +2969,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 return false;
             }
             $packet->inventorySlot -= 9;
-            $item = $this->inventory->getItem($packet->inventorySlot);
-            if(!$item->equals($packet->item)){
-                $this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
-                $this->inventory->sendContents($this);
-                return false;
-            }
         }
         $this->inventory->equipItem($packet->hotbarSlot, $packet->inventorySlot);
 
