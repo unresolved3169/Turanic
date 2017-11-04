@@ -118,7 +118,7 @@ namespace pocketmine {
 	$autoloader->register(true);
 
 
-	set_time_limit(0); //Who set it to 30 seconds?!?!
+	set_time_limit(0);
 
 	gc_enable();
 	error_reporting(-1);

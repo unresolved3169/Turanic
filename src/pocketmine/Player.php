@@ -1981,7 +1981,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     }
                     $this->inAirTicks = 0;
                 } else {
-                    if (!$this->isUseElytra() and !$this->flying and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
+                    if (!$this->isUseElytra() and !$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
                         $expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
                         $diff = ($this->speed->y - $expectedVelocity) ** 2;
 
@@ -1989,7 +1989,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             if ($this->inAirTicks < 1000) {
                                 $this->setMotion(new Vector3(0, $expectedVelocity, 0));
                             } elseif (!$this->allowFlight) {
-                                $this->kick("Flying is not enabled on this server", false);
+                                $this->kick($this->server->getProperty("fly-kick-message"), false);
                                 $this->timings->stopTiming();
                                 return false;
                             }
@@ -2052,8 +2052,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool
 	 */
-	public function canInteract(Vector3 $pos, $maxDistance, float $maxDiff = 0.5)
-	{
+	public function canInteract(Vector3 $pos, $maxDistance, float $maxDiff = 0.5){
 		$eyePos = $this->getPosition()->add(0, $this->getEyeHeight(), 0);
 		if ($eyePos->distanceSquared($pos) > $maxDistance ** 2) {
 			return false;
@@ -2094,8 +2093,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @param Item $item
 	 */
-	public function removeCreativeItem(Item $item)
-	{
+	public function removeCreativeItem(Item $item){
 		$index = $this->getCreativeItemIndex($item);
 		if ($index !== -1) {
 			unset($this->personalCreativeItems[$index]);
@@ -2335,7 +2333,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_SERVER, true);
             }
 
-            //This pocketmine disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
+            //This turanic disconnect message will only be seen by the console (PlayStatusPacket causes the messages to be shown for the client)
             $this->close("", $this->server->getLanguage()->translateString("pocketmine.disconnect.incompatibleProtocol", [$packet->protocol]), false);
 
             return true;
