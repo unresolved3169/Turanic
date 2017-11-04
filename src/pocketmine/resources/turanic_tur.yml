@@ -58,8 +58,8 @@ ender:
  level-name: "ender"
 
 server:
- #Turanic Information güncelleme penceresinde
- show-turanic: false
+ #Ayarlarda Turanic Bilgi Bölümü
+ show-turanic: true
  #Eğer aktifse iron goleme izin verir
  allow-iron-golem: false
  #Eğer aktifse snow goleme izin verir

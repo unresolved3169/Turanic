@@ -59,7 +59,7 @@ ender:
 
 server:
  #Shows Turanic in Settings Window
- show-turanic: false
+ show-turanic: true
  #Choose if spawning iron golem is allowed
  allow-iron-golem: false
  #Choose if spawning snow golem is allowed

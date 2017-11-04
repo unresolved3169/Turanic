@@ -58,6 +58,8 @@ ender:
  level-name: "ender"
 
 server:
+ #Shows Turanic in Settings Window
+ show-turanic: true
  #Choisissez si le golem de génie est autorisé
  allow-iron-golem: false
  #Choisissez si le vent de neige qui frappe est autorisé

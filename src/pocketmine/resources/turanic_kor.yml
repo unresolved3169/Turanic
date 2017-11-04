@@ -57,7 +57,7 @@ nether:
  
 server:
  #Shows Turanic Information in Settings Window
- show-turanic: false
+ show-turanic: true
  #철 골램을 생성하는 것이 허용된 경우 고르세요
  allow-iron-golem: false
  #눈 골렘을 생성하는 것이 허용된 경우 고르세요

@@ -1605,8 +1605,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz){
 		$bb = clone $this->boundingBox;
-		$bb->minY = $this->y - 0.2;
-		$bb->maxY = $this->y + 0.2;
+		$bb->minY = $this->y - 0.1;
+		$bb->maxY = $this->y + 0.1;
 		if(count($this->level->getCollisionBlocks($bb, true)) > 0){
 			$this->onGround = true;
 		}else{
@@ -1981,16 +1981,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     }
                     $this->inAirTicks = 0;
                 } else {
-                    if (!$this->isUseElytra() and !$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
+                    if (!$this->isUseElytra() and !$this->flying and $this->inAirTicks > 10 and !$this->isSleeping() and $this->speed instanceof Vector3) {
                         $expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
                         $diff = ($this->speed->y - $expectedVelocity) ** 2;
 
                         if (!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()) {
                             if ($this->inAirTicks < 1000) {
                                 $this->setMotion(new Vector3(0, $expectedVelocity, 0));
-                            } elseif ($this->kick("Flying is not enabled on this server", false)) {
+                            } elseif (!$this->allowFlight) {
+                                $this->kick("Flying is not enabled on this server", false);
                                 $this->timings->stopTiming();
-
                                 return false;
                             }
                         }
@@ -2223,7 +2223,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->entityRuntimeId = $this->id;
 		$pk->playerGamemode = Player::getClientFriendlyGamemode($this->gamemode);
 
-		$pk->playerPosition = $this->getOffsetPosition($this);
+		$pk->playerPosition = $this->getOffsetPosition($this)->add(0,0.85,0);
 
 		$pk->pitch = $this->pitch;
 		$pk->yaw = $this->yaw;
@@ -3285,7 +3285,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		if($packet->entityUniqueId !== $this->getId()){
+		if($packet->entityUniqueId != $this->getId()){
 			return false;
 		}
 
@@ -3487,7 +3487,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @return bool
      */
     public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
-        if ($this->server->getAdvancedProperty("server.show-turanic", false)) {
+        if ($this->server->getAdvancedProperty("server.show-turanic", true)) {
             $this->sendServerSettings($this->getDefaultServerSettings());
         }
         return true;

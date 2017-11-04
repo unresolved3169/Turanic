@@ -61,7 +61,7 @@ ender:
 
 server:
  #Zeigt Turanic Information im Einstellungs Fenster.
- show-turanic: false
+ show-turanic: true
  #Eisen Golem erschaffung erlauben
  allow-iron-golem: false
  #Schnee Golem erschaffung erlauben

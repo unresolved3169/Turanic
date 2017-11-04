@@ -71,7 +71,7 @@ ender:
 
 server:
  #Shows Turanic Information in Settings Window
- show-turanic: false
+ show-turanic: true
  #Разрешает спавн железных големов
  allow-iron-golem: false
  #Разрешает спавн снежных големов
