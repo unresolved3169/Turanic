@@ -11,7 +11,6 @@ settings:
  force-language: false
  #サーバーのクローズ時に送るメッセージ
  shutdown-message: "サーバーは閉じられました"
- fly-kick-message: "飛行は有効ではありませんこのサーバー"
  #クエリ経由でプラグインのリスト表示を許可する
  query-plugins: true
  #プラグインが非推奨のAPIメソッドを使用しているときにコンソールメッセージを表示する

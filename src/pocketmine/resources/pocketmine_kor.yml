@@ -12,7 +12,6 @@ settings:
  force-language: false
  #서버가 종료되면 플레이어에게 뜨는 화면에 표시됩니다.
  shutdown-message: "Server closed"
- fly-kick-message: "Flying is not enabled on this server"
  #쿼리를 통해 플러그인 나오는거 허용
  query-plugins: true
  # 플러그인에서 사용되지 않는 API 메소드를 사용할 때 # 콘솔 메시지 표시

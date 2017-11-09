@@ -1989,7 +1989,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             if ($this->inAirTicks < 1000) {
                                 $this->setMotion(new Vector3(0, $expectedVelocity, 0));
                             } elseif (!$this->allowFlight) {
-                                (bool)$this->kick($this->server->getProperty("fly-kick-message"), false);
+                                (bool)$this->kick("Flying is not enabled on this server", false);
                                 $this->timings->stopTiming();
                                 return false;
                             }

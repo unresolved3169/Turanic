@@ -11,7 +11,6 @@ settings:
  force-language: false
  #When server shut down, the players will get kicked and this is what will show on there screen.
  shutdown-message: "Server closed"
- fly-kick-message: "Flying is not enabled on this server"
  #Allow listing plugins via Query
  query-plugins: true
  #Show a console message when a plugin uses deprecated API methods
