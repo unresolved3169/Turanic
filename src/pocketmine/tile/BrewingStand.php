@@ -52,7 +52,6 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		Item::GHAST_TEAR => 0,
 		Item::BLAZE_POWDER => 0,
 		Item::GOLDEN_CARROT => 0,
-		//Item::RAW_FISH => Fish::FISH_PUFFERFISH,
 		Item::PUFFER_FISH,
 		Item::RABBIT_FOOT => 0,
 
@@ -78,9 +77,6 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		for($i = 0; $i < $this->getSize(); ++$i){
 			$this->inventory->setItem($i, $this->getItem($i));
 		}
-		/*if($this->namedtag["CookTime"] < self::MAX_BREW_TIME){
-			$this->scheduleUpdate();
-		}*/
 	}
 
 	/**
