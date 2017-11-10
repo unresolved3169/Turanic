@@ -236,15 +236,27 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	}
 
     public function setName(string $name){
-        $info = $this->server->getQueryInformation();
+
+        if($this->server->isDServerEnabled()){
+            if($this->server->dserverConfig["motdMaxPlayers"] > 0) $pc = $this->server->dserverConfig["motdMaxPlayers"];
+            elseif($this->server->dserverConfig["motdAllPlayers"]) $pc = $this->server->getDServerMaxPlayers();
+            else $pc = $this->server->getMaxPlayers();
+            if($this->server->dserverConfig["motdPlayers"]) $poc = $this->server->getDServerOnlinePlayers();
+            else $poc = count($this->server->getOnlinePlayers());
+        }else{
+            $info = $this->server->getQueryInformation();
+            $pc = $info->getMaxPlayerCount();
+            $poc = $info->getPlayerCount();
+        }
+
         $this->interface->sendOption("name", implode(";",
                 [
                     "MCPE",
                     rtrim(addcslashes($name, ";"), '\\'),
                     ProtocolInfo::CURRENT_PROTOCOL,
                     ProtocolInfo::MINECRAFT_VERSION_NETWORK,
-                    $info->getPlayerCount(),
-                    $info->getMaxPlayerCount(),
+                    $poc,
+                    $pc,
                     $this->rakLib->getServerId(),
                     $this->server->getName(),
                     Server::getGamemodeString($this->server->getGamemode())
