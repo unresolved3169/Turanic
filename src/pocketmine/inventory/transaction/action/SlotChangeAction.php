@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
+use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
@@ -89,6 +90,11 @@ class SlotChangeAction extends InventoryAction{
      * @return bool
      */
     public function isValid(Player $source) : bool{
+        if($this->containerId === CraftingGrid::WINDOW_ID) { //TODO: Anti-cheat
+            if($this->inventorySlot === CraftingGrid::RESULT_INDEX) {
+                return $this->inventory->getItem(CraftingGrid::RESULT_INDEX)->equals($this->sourceItem) and $this->inventory->getItem(CraftingGrid::RESULT_INDEX)->getCount() === $this->sourceItem->getCount();
+            }
+        }
         $check = $this->inventory->getItem($this->inventorySlot);
         return $check->equals($this->sourceItem) and $check->getCount() === $this->sourceItem->getCount();
     }

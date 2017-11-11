@@ -73,7 +73,6 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
-use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
@@ -2524,7 +2523,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
 		}
-		$this->resetCraftingGridType(false);
+		$this->resetCraftingGridType();
 
 		switch($packet->event){
 			case EntityEventPacket::EATING_ITEM:
@@ -2857,6 +2856,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 	
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
+        if($this->spawned === false or !$this->isAlive()){
+            return true;
+        }
+
         $craftSlots = $this->craftingGrid->getContents();
         $recipe = null;
         $ingredients = [];
@@ -3250,7 +3253,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
-		$this->resetCraftingGridType(false);
+		$this->resetCraftingGridType();
 
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
@@ -4263,22 +4266,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function setCraftingGrid(CraftingGrid $grid){
 		$this->craftingGrid = $grid;
+		$this->craftingType = $grid->type;
 	}
 
-	public function resetCraftingGridType($dropItem = true){
-		$contents = $this->craftingGrid->getContents();
-		if($dropItem and count($contents) > 0){
-			foreach($contents as $drop){
-				$this->dropItem($drop);
-			}
-
-			$this->craftingGrid->clearAll();
-		}
-
-		if($this->craftingGrid instanceof BigCraftingGrid){
-			$this->craftingGrid = new CraftingGrid($this);
-			$this->craftingType = self::CRAFTING_SMALL;
-		}
+	public function resetCraftingGridType(){
+        $this->craftingGrid = new CraftingGrid($this);
+        $this->craftingType = self::CRAFTING_SMALL;
 	}
 
 
