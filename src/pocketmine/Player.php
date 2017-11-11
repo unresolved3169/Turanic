@@ -2524,7 +2524,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->spawned === false or !$this->isAlive()){
 			return true;
 		}
-		$this->resetCraftingGridType();
+		$this->resetCraftingGridType(false);
 
 		switch($packet->event){
 			case EntityEventPacket::EATING_ITEM:
@@ -3250,7 +3250,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return true;
 		}
 
-		$this->resetCraftingGridType();
+		$this->resetCraftingGridType(false);
 
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->server->getPluginManager()->callEvent(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this));
@@ -4265,12 +4265,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->craftingGrid = $grid;
 	}
 
-	public function resetCraftingGridType(){
-		$this->craftingType = self::CRAFTING_SMALL;
+	public function resetCraftingGridType($dropItem = true){
 		$contents = $this->craftingGrid->getContents();
-		if(count($contents) > 0){
-			$drops = $this->inventory->addItem(...$contents);
-			foreach($drops as $drop){
+		if($dropItem and count($contents) > 0){
+			foreach($contents as $drop){
 				$this->dropItem($drop);
 			}
 
@@ -4279,7 +4277,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		if($this->craftingGrid instanceof BigCraftingGrid){
 			$this->craftingGrid = new CraftingGrid($this);
-			$this->craftingType = 0;
+			$this->craftingType = self::CRAFTING_SMALL;
 		}
 	}
 
