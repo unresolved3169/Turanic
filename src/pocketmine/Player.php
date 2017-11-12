@@ -136,6 +136,7 @@ use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\PingPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -3452,6 +3453,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
 		return $this->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
+	}
+	
+	public function handlePing(PingPacket $packet) : bool{
+		// TODO: Add event
+		$this->setPing($packet->ping);
+		return true;
 	}
 	
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
