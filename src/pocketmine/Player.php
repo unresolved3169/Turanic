@@ -4140,6 +4140,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		parent::attack($source);
+		$source->useArmors();
 
 		if ($source->isCancelled()) {
 			return false;
