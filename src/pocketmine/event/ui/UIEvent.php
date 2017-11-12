@@ -27,7 +27,7 @@ abstract class UIEvent extends Event{
 	}
 
 	public function getForm(){
-		return $this->player->getModalForm($this->packet->formId);
+		return $this->player->getForm($this->packet->formId);
 	}
 	
 	public function getFormId() : int{
