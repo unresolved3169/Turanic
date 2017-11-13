@@ -12,7 +12,6 @@ settings:
  force-language: false
  #서버가 종료되면 플레이어에게 뜨는 화면에 표시됩니다.
  shutdown-message: "Server closed"
- fly-kick-message: "Flying is not enabled on this server"
  #쿼리를 통해 플러그인 나오는거 허용
  query-plugins: true
  # 플러그인에서 사용되지 않는 API 메소드를 사용할 때 # 콘솔 메시지 표시
@@ -26,8 +25,6 @@ settings:
  #대략 코어 수로 설정하십시오.
  #자동(auto)으로 설정하면 코어 수를 감지하려고 시도합니다 (또는 2 사용).
  async-workers: auto
- #비 생산, 개발 빌드의 사용을 가능하게합니다. 경고 : 당신이하고있는 일을 잘 알고 있지 않으면 이것을 사용하지 마십시오..
- enable-testing: false
  
  memory:
  #Global 소프트 메모리 한도 (메가 바이트). 비활성화하려면 0으로 설정하십시오.
@@ -165,11 +162,6 @@ auto-report:
  send-settings: true
  send-phpinfo: false
  host: crash.pocketmine.net
-
-anonymous-statistics:
- #데이터 수집, 플러그인 사용 추적을위한 익명 통계 전송
- enabled: true
- host: stats.pocketmine.net
 
 auto-updater:
  enabled: true

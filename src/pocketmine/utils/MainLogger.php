@@ -26,6 +26,7 @@ use pocketmine\Thread;
 use pocketmine\Worker;
 
 class MainLogger extends \AttachableThreadedLogger {
+
 	protected $logFile;
 	protected $logStream;
 	protected $shutdown;

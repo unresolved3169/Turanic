@@ -11,7 +11,6 @@ settings:
  force-language: false
  #当服务器关闭时，下列提示信息将在玩家客户端上显示。
  shutdown-message: "服务器已关闭"
- fly-kick-message: "飞行不是启用了在这个服务器"
  #允许通过 Query 查询插件列表
  query-plugins: true
  #当有插件使用已弃用的 API 方法时，在控制台显示信息
@@ -25,8 +24,6 @@ settings:
  #将此值设置为大致与您 CPU 的核数相同。
  #当设置为 auto 时，将会尝试自动检测 CPU 核数（或自动设为 2）
  async-workers: auto
- #允许使用非出产的开发版本。警告：除非您知道自己在做什么，否则请勿启用此选项
- enable-testing: false
 
 memory:
  #全局非严格内存限制，以 MB 为单位。设置为 0 可禁用
@@ -105,7 +102,7 @@ player:
  save-player-data: true
  anti-cheat:
   #当设置为 false 时，将会尝试阻止疾跑和穿墙作弊。可能导致与某些尚未适配的方块有关的问题。
-  allow-movement-cheats: true
+  allow-movement-cheats: false
   #当设置为 false 时，将会检查玩家破坏方块的时间，阻止相关作弊。可能导致与某些尚未适配的方块有关的问题。
   allow-instabreak: false
 
@@ -167,11 +164,6 @@ auto-report:
  send-settings: true
  send-phpinfo: false
  host: crash.pocketmine.net
-
-anonymous-statistics:
- #发送用于数据收集和插件使用情况统计的匿名数据
- enabled: true
- host: stats.pocketmine.net
 
 commands:
  #您可以在此处自定义服务器的指令

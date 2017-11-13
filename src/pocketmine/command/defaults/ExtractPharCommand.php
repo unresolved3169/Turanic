@@ -25,6 +25,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\utils\TextFormat;
 
 class ExtractPharCommand extends VanillaCommand {
@@ -41,6 +42,8 @@ class ExtractPharCommand extends VanillaCommand {
 			"/extractphar <Phar file Name>"
 		);
 		$this->setPermission("pocketmine.command.extractphar");
+
+        $this->getOverload("default")->setParameter(0, new CommandParameter("plugin", CommandParameter::TYPE_STRING, false));
 	}
 
 	/**

@@ -2,20 +2,21 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
 
@@ -28,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 
 class VoidGenerator extends Generator {
+
 	/** @var ChunkManager */
 	private $level;
 	/** @var Chunk */
@@ -108,19 +110,13 @@ class VoidGenerator extends Generator {
 		$this->level->setChunk($chunkX, $chunkZ, $chunk);
 	}
 
-	/**
-	 * @param $chunkX
-	 * @param $chunkZ
-	 *
-	 * @return mixed|void
-	 */
-	public function populateChunk($chunkX, $chunkZ){
+    public function populateChunk($chunkX, $chunkZ){
 	}
 
 	/**
 	 * @return Vector3
 	 */
 	public function getSpawn(){
-		return new Vector3(128, 72, 128);
+		return new Vector3(0, 68, 0);
 	}
 }

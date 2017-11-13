@@ -1797,7 +1797,7 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @return bool false if spawn protection cancelled the action, true if not.
 	 */
-	protected function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
+	public function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
 		if(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
 			$t = new Vector2($vector->x, $vector->z);
 			$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);

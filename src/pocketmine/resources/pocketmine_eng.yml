@@ -11,7 +11,6 @@ settings:
  force-language: false
  #When server shut down, the players will get kicked and this is what will show on there screen.
  shutdown-message: "Server closed"
- fly-kick-message: "Flying is not enabled on this server"
  #Allow listing plugins via Query
  query-plugins: true
  #Show a console message when a plugin uses deprecated API methods
@@ -25,8 +24,6 @@ settings:
  #Set this approximately to your number of cores.
  #If set to auto, it'll try to detect the number of cores (or use 2)
  async-workers: auto
- #Enables use of non-production, development builds. WARNING: DO NOT enable this unless you are sure you know what you are doing.
- enable-testing: false
 
 memory:
  #Global soft memory limit in megabytes. Set to 0 to disable
@@ -110,7 +107,7 @@ player:
  save-player-data: true
  anti-cheat:
   #If false, will try to prevent speed and noclip cheats. May cause movement issues with some blocks which are not yet properly implemented.
-  allow-movement-cheats: true
+  allow-movement-cheats: false
   #If false, times block breaks to ensure players are not cheating. May cause issues with some blocks which are not yet properly implemented.
   allow-instabreak: false
 
@@ -172,11 +169,6 @@ auto-report:
  send-settings: true
  send-phpinfo: false
  host: crash.pocketmine.net
-
-anonymous-statistics:
- #Sends anonymous statistics for data aggregation, plugin usage tracking
- enabled: true
- host: stats.pocketmine.net
 
 commands:
  #Here you can customize server commands

@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\Player;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
@@ -147,4 +148,27 @@ class Anvil extends Fallable {
 			return [];
 		}
 	}
+
+    public function recalculateBoundingBox() : AxisAlignedBB{
+        $inset = 0.125;
+        if ($this->meta & 0x01) { //east/west
+            return new AxisAlignedBB(
+                $this->x,
+                $this->y,
+                $this->z + $inset,
+                $this->x + 1,
+                $this->y + 1,
+                $this->z + 1 - $inset
+            );
+        } else {
+            return new AxisAlignedBB(
+                $this->x + $inset,
+                $this->y,
+                $this->z,
+                $this->x + 1 - $inset,
+                $this->y + 1,
+                $this->z + 1
+            );
+        }
+    }
 }

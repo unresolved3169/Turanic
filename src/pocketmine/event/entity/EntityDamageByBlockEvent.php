@@ -48,5 +48,4 @@ class EntityDamageByBlockEvent extends EntityDamageEvent {
 		return $this->damager;
 	}
 
-
 }

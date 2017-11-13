@@ -22,6 +22,7 @@
 namespace pocketmine\permission;
 
 interface ServerOperator {
+
 	/**
 	 * Checks if the current object has operator permissions
 	 *

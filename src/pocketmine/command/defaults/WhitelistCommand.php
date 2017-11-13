@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandEnum;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
@@ -44,6 +46,9 @@ class WhitelistCommand extends VanillaCommand {
 			["wl"]
 		);
 		$this->setPermission("pocketmine.command.whitelist.reload;pocketmine.command.whitelist.enable;pocketmine.command.whitelist.disable;pocketmine.command.whitelist.list;pocketmine.command.whitelist.add;pocketmine.command.whitelist.remove");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("option", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("option", ["reload", "add", "remove", "off", "on", "list"])));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("player", CommandParameter::TYPE_TARGET, true));
 	}
 
 	/**

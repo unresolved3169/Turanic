@@ -350,7 +350,7 @@ class Binary {
 			$value = "0";
 			for($i = 0; $i < 8; $i += 2){
 				$value = bcmul($value, "65536", 0);
-				$value = bcadd($value, self::readShort(substr($x, $i, 2)), 0);
+				$value = bcadd($value, (string) self::readShort(substr($x, $i, 2)), 0);
 			}
 
 			if(bccomp($value, "9223372036854775807") == 1){
@@ -371,15 +371,16 @@ class Binary {
 			return pack("NN", $value >> 32, $value & 0xFFFFFFFF);
 		}else{
 			$x = "";
+			$value = (string) $value;
 
 			if(bccomp($value, "0") == -1){
 				$value = bcadd($value, "18446744073709551616");
 			}
 
-			$x .= self::writeShort(bcmod(bcdiv($value, "281474976710656"), "65536"));
-			$x .= self::writeShort(bcmod(bcdiv($value, "4294967296"), "65536"));
-			$x .= self::writeShort(bcmod(bcdiv($value, "65536"), "65536"));
-			$x .= self::writeShort(bcmod($value, "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "281474976710656"), "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "4294967296"), "65536"));
+			$x .= self::writeShort((int) bcmod(bcdiv($value, "65536"), "65536"));
+			$x .= self::writeShort((int) bcmod($value, "65536"));
 
 			return $x;
 		}
@@ -414,9 +415,10 @@ class Binary {
      * @return int
      */
     public static function readVarInt(string $buffer, int &$offset) : int{
+        $shift = PHP_INT_SIZE === 8 ? 63 : 31;
         $raw = self::readUnsignedVarInt($buffer, $offset);
-        $temp = ((($raw << 63) >> 63) ^ $raw) >> 1;
-        return $temp ^ ($raw & (1 << 63));
+        $temp = ((($raw << $shift) >> $shift) ^ $raw) >> 1;
+        return $temp ^ ($raw & (1 << $shift));
     }
 
     /**
@@ -485,7 +487,7 @@ class Binary {
     }
 
     /**
-     * Reads a 64-bit zigzag-encoded variable-length integer.
+     * Reads a 32_64-bit zigzag-encoded variable-length integer.
      *
      * @param string $buffer
      * @param int    &$offset
@@ -493,13 +495,24 @@ class Binary {
      * @return int
      */
     public static function readVarLong(string $buffer, int &$offset) : int{
-        $raw = self::readUnsignedVarLong($buffer, $offset);
-        $temp = ((($raw << 63) >> 63) ^ $raw) >> 1;
-        return $temp ^ ($raw & (1 << 63));
+        if (PHP_INT_SIZE === 8) {
+            $raw = self::readUnsignedVarLong($buffer, $offset);
+            $temp = ((($raw << 63) >> 63) ^ $raw) >> 1;
+            return $temp ^ ($raw & (1 << 63));
+        } else {
+            /** @var string $raw */
+            $raw = self::readUnsignedVarLong($buffer, $offset);
+            $result = bcdiv($raw, "2");
+            if (bcmod($raw, "2") === "1") {
+                $result = bcsub(bcmul($result, "-1"), "1");
+            }
+
+            return $result;
+        }
     }
 
     /**
-     * Reads a 64-bit unsigned variable-length integer.
+     * Reads a 32_64-bit unsigned variable-length integer.
      *
      * @param string $buffer
      * @param int    &$offset
@@ -507,51 +520,95 @@ class Binary {
      * @return int
      */
     public static function readUnsignedVarLong(string $buffer, int &$offset) : int{
-        $value = 0;
-        for($i = 0; $i <= 63; $i += 7){
-            $b = ord($buffer{$offset++});
-            $value |= (($b & 0x7f) << $i);
-
-            if(($b & 0x80) === 0){
-                return $value;
-            }elseif(!isset($buffer{$offset})){
-                throw new \UnexpectedValueException("Expected more bytes, none left to read");
+        if (PHP_INT_SIZE === 8) {
+            $value = 0;
+            for($i = 0; $i <= 63; $i += 7){
+                $b = ord($buffer{$offset++});
+                $value |= (($b & 0x7f) << $i);
+                if(($b & 0x80) === 0){
+                    return $value;
+                }elseif(!isset($buffer{$offset})){
+                    throw new \UnexpectedValueException("Expected more bytes, none left to read");
+                }
             }
-        }
+            throw new \InvalidArgumentException("VarLong did not terminate after 10 bytes!");
+        } else {
+            $value = "0";
+            for ($i = 0; $i <= 63; $i += 7) {
+                $b = ord($buffer{$offset++});
+                $value = bcadd($value, bcmul((string)($b & 0x7f), bcpow("2", "$i")));
 
-        throw new \InvalidArgumentException("VarLong did not terminate after 10 bytes!");
+                if (($b & 0x80) === 0) {
+                    return $value;
+                } elseif (!isset($buffer{$offset})) {
+                    throw new \UnexpectedValueException("Expected more bytes, none left to read");
+                }
+            }
+
+            throw new \InvalidArgumentException("VarLong did not terminate after 10 bytes!");
+        }
     }
 
     /**
-     * Writes a 64-bit integer as a zigzag-encoded variable-length long.
+     * Writes a 32_64-bit integer as a zigzag-encoded variable-length long.
      *
      * @param int $v
      * @return string
      */
     public static function writeVarLong(int $v) : string{
-        return self::writeUnsignedVarLong(($v << 1) ^ ($v >> 63));
+        if (PHP_INT_SIZE === 8) {
+            return self::writeUnsignedVarLong(($v << 1) ^ ($v >> 63));
+        } else {
+            $v = (string) $v;
+            $v = bcmod(bcmul($v, "2"), "18446744073709551616");
+            if (bccomp($v, "0") == -1) {
+                $v = bcsub(bcmul($v, "-1"), "1");
+            }
+
+            return self::writeUnsignedVarLong($v);
+        }
     }
 
     /**
-     * Writes a 64-bit unsigned integer as a variable-length long.
+     * Writes a 32_64-bit unsigned integer as a variable-length long.
      * @param int $value
      *
      * @return string
      */
     public static function writeUnsignedVarLong(int $value) : string{
-        $buf = "";
-        for($i = 0; $i < 10; ++$i){
-            if(($value >> 7) !== 0){
-                $buf .= chr($value | 0x80); //Let chr() take the last byte of this, it's faster than adding another & 0x7f.
-            }else{
-                $buf .= chr($value & 0x7f);
-                return $buf;
+        if (PHP_INT_SIZE === 8) {
+            $buf = "";
+            for ($i = 0; $i < 10; ++$i) {
+                if (($value >> 7) !== 0) {
+                    $buf .= chr($value | 0x80); //Let chr() take the last byte of this, it's faster than adding another & 0x7f.
+                } else {
+                    $buf .= chr($value & 0x7f);
+                    return $buf;
+                }
+                $value = (($value >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
+            }
+            throw new \InvalidArgumentException("Value too large to be encoded as a VarLong");
+        } else {
+            $value = (string) $value;
+            $buf = "";
+
+            if (bccomp($value, "0") == -1) {
+                $value = bcadd($value, "18446744073709551616");
             }
 
-            $value = (($value >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
-        }
+            for ($i = 0; $i < 10; ++$i) {
+                $byte = (int)bcmod($value, "128");
+                $value = bcdiv($value, "128");
+                if ($value !== "0") {
+                    $buf .= chr($byte | 0x80);
+                } else {
+                    $buf .= chr($byte);
+                    return $buf;
+                }
+            }
 
-        throw new \InvalidArgumentException("Value too large to be encoded as a VarLong");
+            throw new \InvalidArgumentException("Value too large to be encoded as a VarLong");
+        }
     }
 
     public static function readRoundedLFloat(string $str, int $accuracy) : float{

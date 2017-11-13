@@ -124,4 +124,50 @@ class Fence extends Transparent {
 		return ($block instanceof Fence or $block instanceof FenceGate) ? true : $block->isSolid() and !$block->isTransparent();
 	}
 
+    protected function recalculateCollisionBoxes() : array{
+        $inset = 0.5 - 0.25 / 2;
+        /** @var AxisAlignedBB[] $bbs */
+        $bbs = [];
+        $connectWest = $this->canConnect($this->getSide(Vector3::SIDE_WEST));
+        $connectEast = $this->canConnect($this->getSide(Vector3::SIDE_EAST));
+        if($connectWest or $connectEast){
+            //X axis (west/east)
+            $bbs[] = new AxisAlignedBB(
+                $this->x + ($connectWest ? 0 : $inset),
+                $this->y,
+                $this->z + $inset,
+                $this->x + 1 - ($connectEast ? 0 : $inset),
+                $this->y + 1.5,
+                $this->z + 1 - $inset
+            );
+        }
+        $connectNorth = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
+        $connectSouth = $this->canConnect($this->getSide(Vector3::SIDE_SOUTH));
+        if($connectNorth or $connectSouth){
+            //Z axis (north/south)
+            $bbs[] = new AxisAlignedBB(
+                $this->x + $inset,
+                $this->y,
+                $this->z + ($connectNorth ? 0 : $inset),
+                $this->x + 1 - $inset,
+                $this->y + 1.5,
+                $this->z + 1 - ($connectSouth ? 0 : $inset)
+            );
+        }
+        if(empty($bbs)){
+            //centre post AABB (only needed if not connected on any axis - other BBs overlapping will do this if any connections are made)
+            return [
+                new AxisAlignedBB(
+                    $this->x + $inset,
+                    $this->y,
+                    $this->z + $inset,
+                    $this->x + 1 - $inset,
+                    $this->y + 1.5,
+                    $this->z + 1 - $inset
+                )
+            ];
+        }
+        return $bbs;
+    }
+
 }

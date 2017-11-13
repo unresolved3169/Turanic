@@ -32,3 +32,4 @@ Desktop.ini
 /docs/build/
 !/docs/requirements.txt
 .project
+*.php___jb_tmp___

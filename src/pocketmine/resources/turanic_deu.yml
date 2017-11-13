@@ -1,0 +1,141 @@
+#
+#  _______                    _
+# |__   __|                  (_)
+#    | |_   _ _ __ __ _ _ __  _  ___
+#    | | | | | '__/ _` | '_ \| |/ __|
+#    | | |_| | | | (_| | | | | | (__
+#    |_|\__,_|_|  \__,_|_| |_|_|\___|
+#
+#
+#
+#Turanic Advanced Configuration File
+
+#Version of this file
+config:
+ version: 29
+
+level:
+ #Wetter ein und ausschalten (Regen kann bei älteren geräten zum ruckeln führen)
+ weather: true
+ #Weather random duration
+ weather-random-duration-min: 6000
+ weather-random-duration-max: 12000
+ #Zufälliger Blitz interval，standard jede 10 sekunden, 0 = deaktivieren
+ lightning-time: 200
+ #Um feuer beim Blitz einschlag einzuschallten
+ lightning-fire: false
+ #Feuer ausbreitung (bäume, etc.)
+ fire-spread: false
+
+player:
+ #Hunger Funktion
+ hunger: true
+ #Level funktion
+ experience: true
+ #Wenn ein Spieler stirb sachen bei sich behalten
+ keep-inventory: false
+ #Inventar eines Spielers leeren nach Spielmodus wechsel
+ auto-clear-inventory : true
+ #Level bei behalten nach dem Tod
+ keep-experience: false
+
+developer:
+  #Ordner Plugins auch laden.
+  #Empfohlen "false"
+  folder-plugin-loader: true
+  #Dies lässt zu plugins mit älteren oder nicht kompatiblen api versionen zu laden.
+  #Empfohlen "false"
+  load-incompatible-api: true
+
+nether:
+ #Nether ein oder ausschalten
+ allow-nether: true
+ #Nether Welt Name
+ level-name: "nether"
+
+ender:
+ #End ein oder ausschalten
+ allow-ender: true
+ #End Welt Name
+ level-name: "ender"
+
+server:
+ #Zeigt Turanic Information im Einstellungs Fenster.
+ show-turanic: true
+ #Eisen Golem erschaffung erlauben
+ allow-iron-golem: false
+ #Schnee Golem erschaffung erlauben
+ allow-snow-golem: false
+ #server.log ausschalten
+ disable-log: false
+ #Andere Spieler benachrichtigungsart wenn ein Spieler dem Server beitritt
+ #0 = Nachricht, 1 = Tip, 2 = Popup
+ player-msg-type: 0
+ login-msg: "§3@player ist dem Spiel beigetreten"
+ logout-msg: "§3@player hat das Spiel verlassen"
+ #Limitierter KreativModus (Kann keine Items droppen, kann keine Truhen öffnen, etc.)
+ limited-creative: false
+ #BlockZerstörungs Partikel
+ destroy-block-particle: true
+ #Wurf tränke zulassen
+ allow-splash-potion: true
+ #Resourcepack Manager aktivieren
+ enable-resource: false
+ #Bringt Schwämme dazu wasser in einem bestimmten umkreis zu absorbieren
+ absorb-water: false
+
+enchantment:
+ #Ambösse aktivieren
+ enable-anvil: true
+ #Verzauberungstisch aktivieren
+ enable-enchanting-table: true
+ #Choose if to count bookshelves (kann ruckler verursachen)
+ #Wenn es auf gesetzt false wird, wird der Server zufällige zahlen wählen (0~15)
+ count-bookshelf: false
+
+redstone:
+ ################################################
+ ####      Redstone System einschalten      #####
+ ################################################
+ ###########Funktioniert derzeit nicht###########
+ ################################################
+ enable: false
+ #Pulse aktivieren
+ frequency-pulse: false
+ #Setzt die Pulse frequenz. Standard = 1s
+ pulse-frequency: 1
+
+dserver:
+ #Aktiviert die Query um andere Spieler auf anderen Server mit zu zählen
+ enable: false
+ #Query Automatisch aktualiesieren
+ query-auto-update: false
+ #Query nach Perioden aktualiesieren
+ query-tick-update: true
+ #Maximale Spieler in der MOTD
+ motd-max-players: 0
+ #Maximale Spieler in der Query. 0=Standard
+ query-max-players: 0
+ #Zeigt die Anzahl aller Spieler auf der MOTD
+ motd-all-players: false
+ #Zeigt die Anzahl aller Spieler auf der Query
+ query-all-players: false
+ #Zeigt die Anzahl der Online Spieler auf der MOTD
+ motd-players: false
+ #Zeigt die Anzahl der Online Spieler auf der Query
+ query-players: false
+ #Aktualiesierungs Zeit. 20=1sekunde
+ time: 40
+ #Wie viel mal soll der Server es erneut versuchen wenn die verbindung nicht klappt.
+ retry-times: 3
+ #Server Liste，Folgt mit ';'，z.b: 1.beispiel.com:19132;2.beispiel.com:19133
+ server-list: ""
+
+inventory:
+ #Setze dies auf true wenn du Probleme mit dem Amboss hast.
+ allow-cheats: false
+
+# MobAI für Tiere
+# Dieses Funktion ist in Arbeit(Funktioniert nicht correct)
+mob-ai:
+ enable: false

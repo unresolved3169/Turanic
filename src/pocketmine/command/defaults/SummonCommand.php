@@ -25,6 +25,8 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandEnum;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\nbt\NBT;
 use pocketmine\Player;
@@ -49,6 +51,8 @@ class SummonCommand extends VanillaCommand {
 			"%pocketmine.command.summon.usage"
 		);
 		$this->setPermission("pocketmine.command.summon");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("mob", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("mob", ["Zombie", "Blaze", "Villager", "Chicken", "Bat", "Cow", "Creeper", "Ghast", "LavsSlime", "Horse", "CaveSpider", "Llama", "Pig", "Rabbit", "Sheep", "Wolf", "Witch", "Slime", "Squid"])));
 	}
 
 	/**

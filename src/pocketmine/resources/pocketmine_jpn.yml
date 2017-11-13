@@ -11,7 +11,6 @@ settings:
  force-language: false
  #サーバーのクローズ時に送るメッセージ
  shutdown-message: "サーバーは閉じられました"
- fly-kick-message: "飛行は有効ではありませんこのサーバー"
  #クエリ経由でプラグインのリスト表示を許可する
  query-plugins: true
  #プラグインが非推奨のAPIメソッドを使用しているときにコンソールメッセージを表示する
@@ -25,8 +24,6 @@ settings:
  #これをあなたのコア数に合わせてください。
  #autoに設定すると、コアの数を検出しようとします(または2を使用します)
  async-workers: auto
- #開発ビルドの使用を可能にします。 警告：あなたが何をしているのか分からない限り、これを有効にしないでください。
- enable-testing: false
 
 memory:
  #Global soft memory limit in megabytes. Set to 0 to disable
@@ -105,7 +102,7 @@ player:
  save-player-data: true
  anti-cheat:
   #If false, will try to prevent speed and noclip cheats. May cause movement issues with some blocks which are not yet properly implemented.
-  allow-movement-cheats: true
+  allow-movement-cheats: false
   #If false, times block breaks to ensure players are not cheating. May cause issues with some blocks which are not yet properly implemented.
   allow-instabreak: false
 
@@ -167,11 +164,6 @@ auto-report:
  send-settings: true
  send-phpinfo: false
  host: crash.pocketmine.net
-
-anonymous-statistics:
- #Sends anonymous statistics for data aggregation, plugin usage tracking
- enabled: true
- host: stats.pocketmine.net
 
 commands:
  #Here you can customize server commands

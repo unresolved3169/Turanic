@@ -62,7 +62,8 @@ class MakeServerCommand extends VanillaCommand {
 			$sender->sendMessage("Phar file already exists, overwriting...");
 			@unlink($pharPath);
 		}
-		$phar = new \Phar($pharPath);
+        $sender->sendMessage($server->getName() . " Phar has begun to be created. This will take 4-5 minutes (may vary depending on your system).");
+        $phar = new \Phar($pharPath);
 		$phar->setMetadata([
 			"name" => $server->getName(),
 			"version" => $server->getPocketMineVersion(),

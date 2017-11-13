@@ -93,11 +93,11 @@ class BrewingRecipe implements Recipe {
 	/**
 	 * @return Item
 	 */
-	public function getResult(){
+	public function getResult() : Item{
 		return clone $this->output;
 	}
 
-	public function registerToCraftingManager(){
+	public function registerToCraftingManager(CraftingManager $manager){
 		Server::getInstance()->getCraftingManager()->registerBrewingRecipe($this);
 	}
 }

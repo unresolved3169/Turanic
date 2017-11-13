@@ -12,7 +12,7 @@
 
 #ファイルのバージョン
 config:
- version: 28
+ version: 29
 
 level:
  #有効にすると、天候要素が加わります（雨が降ると古い端末の動作が遅くなる場合があります）
@@ -60,6 +60,8 @@ ender:
  level-name: "ender"
 
 server:
+ #Shows Turanic Information in Settings Window
+ show-turanic: true
  #有効にするとアイアンゴーレムのスポーンを許可します
  allow-iron-golem: false
  #有効にするとスノーゴーレムのスポーンを許可します
@@ -77,8 +79,6 @@ server:
  destroy-block-particle: true
  #有効にするとスプラッシュポーションを許可します
  allow-splash-potion: true
- #有効にすると高度なコマンドセレクタを設定します
- advanced-command-selector: false
  #有効にするとResourcePackManagerを設定します
  enable-resource: false
  #この設定はスポンジブロックによる水の吸収機能を 有効 または 無効 の設定ができます。

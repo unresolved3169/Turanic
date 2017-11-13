@@ -90,5 +90,4 @@ class TransferServerCommand extends VanillaCommand {
 		$player->transfer($address, (int) ($args[2] ?? 19132));
 		return true;
 	}
-
 }

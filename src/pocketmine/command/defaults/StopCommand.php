@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandEnum;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 
 
@@ -43,6 +45,8 @@ class StopCommand extends VanillaCommand {
 			"%pocketmine.command.stop.usage"
 		);
 		$this->setPermission("pocketmine.command.stop");
+
+		$this->getOverload("default")->setParameter(0, new CommandParameter("args", CommandParameter::TYPE_STRING, true, CommandParameter::FLAG_ENUM, new CommandEnum("args", ["force"])));
 	}
 
 	/**

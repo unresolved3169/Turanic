@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandEnum;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\entity\Effect;
 use pocketmine\entity\InstantEffect;
 use pocketmine\event\TranslationContainer;
@@ -45,6 +47,9 @@ class EffectCommand extends VanillaCommand {
 			"%pocketmine.command.effect.usage"
 		);
 		$this->setPermission("pocketmine.command.effect;pocketmine.command.effect.other");
+
+        $this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
+        $this->getOverload("default")->setParameter(1, new CommandParameter("effect", CommandParameter::TYPE_MIXED, false, CommandParameter::FLAG_ENUM, new CommandEnum("effect", ["speed", "slowness", "haste", "fatigue", "strenght", "healing", "harming", "jump", "nausea", "regeneration", "damage_resistance", "fire_resistance", "water_breathing", "invisibility", "blindness", "night_vision", "hunger", "weakness", "poison", "wither", "health_boost", "absobtion", "saturation", "levitation", "clear"])));
 	}
 
 	/**
@@ -72,7 +77,7 @@ class EffectCommand extends VanillaCommand {
 		}
 
 		if($player->getName() != $sender->getName() && !$sender->hasPermission("pocketmine.command.effect.other")){
-			$sender->sendMessage("You don't have permission to give effect to other player .");
+			$sender->sendMessage("You don't have permission to give effect to other player.");
 			return true;
 		}
 

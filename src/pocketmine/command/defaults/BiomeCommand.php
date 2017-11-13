@@ -25,6 +25,7 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -43,6 +44,8 @@ class BiomeCommand extends VanillaCommand {
 			"/biome <pos1|pos2|get|set|color>"
 		);
 		$this->setPermission("pocketmine.command.biome");
+
+        $this->getOverload("default")->setParameter(0, new CommandParameter("set"));
 	}
 
 	/**
@@ -64,7 +67,7 @@ class BiomeCommand extends VanillaCommand {
 
 		if($sender instanceof Player){
 			if($args[0] == "set"){
-				$biome = isset($args[1]) ? $args[1] : 1;//默认改成草原
+				$biome = isset($args[1]) ? $args[1] : 1;
 				if(isset($sender->selectedPos[0]) and isset($sender->selectedPos[1])){
 					if(is_numeric($biome) === false){
 						$sender->sendMessage(TextFormat::RED . new TranslationContainer("pocketmine.command.biome.wrongBio"));

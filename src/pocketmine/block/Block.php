@@ -977,4 +977,11 @@ class Block extends Position implements BlockIds, Metadatable{
     public function getVariant() : int{
         return $this->meta & $this->getVariantBitmask();
     }
+
+    /**
+     * @return Item
+     */
+    public function getPickedItem() : Item{
+        return Item::get($this->getId(), $this->getVariant());
+    }
 }

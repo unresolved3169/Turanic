@@ -95,7 +95,6 @@ use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\CallbackTask;
 use pocketmine\scheduler\DServerTask;
 use pocketmine\scheduler\FileWriteTask;
-use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
@@ -167,8 +166,6 @@ class Server{
 	private $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	private $maxTick = 20;
 	private $maxUse = 0;
-
-	private $sendUsageTicker = 0;
 
 	private $dispatchSignals = false;
 
@@ -1559,7 +1556,6 @@ class Server{
 		$this->destroyBlockParticle = $this->getAdvancedProperty("server.destroy-block-particle", true);
 		$this->allowSplashPotion = $this->getAdvancedProperty("server.allow-splash-potion", true);
 		$this->fireSpread = $this->getAdvancedProperty("level.fire-spread", false);
-		$this->advancedCommandSelector = $this->getAdvancedProperty("server.advanced-command-selector", false);
 		$this->anvilEnabled = $this->getAdvancedProperty("enchantment.enable-anvil", true);
 		$this->enchantingTableEnabled = $this->getAdvancedProperty("enchantment.enable-enchanting-table", true);
 		$this->countBookshelf = $this->getAdvancedProperty("enchantment.count-bookshelf", false);
@@ -2293,10 +2289,6 @@ class Server{
 		}
 
 		try{
-			if(!$this->isRunning()){
-				$this->sendUsage(SendUsageTask::TYPE_CLOSE);
-			}
-
 			$this->hasStopped = true;
 
 			$this->shutdown();
@@ -2364,15 +2356,9 @@ class Server{
 			$this->queryHandler = new QueryHandler();
 		}
 
-		foreach($this->getIPBans()->getEntries() as $entry){
-			$this->network->blockAddress($entry->getName(), -1);
-		}
-
-		if($this->getProperty("settings.send-usage", true)){
-			$this->sendUsageTicker = 6000;
-			$this->sendUsage(SendUsageTask::TYPE_OPEN);
-		}
-
+		foreach($this->getIPBans()->getEntries() as $entry) {
+            $this->network->blockAddress($entry->getName(), -1);
+        }
 
 		if($this->getProperty("network.upnp-forwarding", false) == true){
 			$this->logger->info("[UPnP] Trying to port forward...");
@@ -2454,9 +2440,6 @@ class Server{
 		if($this->isRunning === false){
 			return;
 		}
-		if($this->sendUsageTicker > 0){
-			$this->sendUsage(SendUsageTask::TYPE_CLOSE);
-		}
 		$this->hasStopped = false;
 
 		ini_set("error_reporting", 0);
@@ -2528,9 +2511,7 @@ class Server{
 	}
 
 	public function onPlayerLogin(Player $player){
-		if($this->sendUsageTicker > 0){
-			$this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
-		}
+        $this->uniquePlayers[$player->getRawUniqueId()] = $player->getRawUniqueId();
 		$this->loggedInPlayers[$player->getRawUniqueId()] = $player;
 	}
 
@@ -2662,12 +2643,6 @@ class Server{
 			Timings::$worldSaveTimer->stopTiming();
 		}
 	}
-
-	public function sendUsage($type = SendUsageTask::TYPE_STATUS){
-		$this->scheduler->scheduleAsyncTask(new SendUsageTask($this, $type, $this->uniquePlayers));
-		$this->uniquePlayers = [];
-	}
-
 
 	/**
 	 * @return BaseLang

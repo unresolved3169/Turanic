@@ -12,7 +12,7 @@
 
 #Version de ce fichier
 config:
- version: 28
+ version: 29
 
 level:
  #Réglez si la météo est activée (la pluie peut provoquer un retard sur les périphériques plus anciens)
@@ -58,6 +58,8 @@ ender:
  level-name: "ender"
 
 server:
+ #Shows Turanic in Settings Window
+ show-turanic: true
  #Choisissez si le golem de génie est autorisé
  allow-iron-golem: false
  #Choisissez si le vent de neige qui frappe est autorisé
@@ -75,8 +77,6 @@ server:
  destroy-block-particle: true
  #Réglez si les potions d'éclaboussures sont activées
  allow-splash-potion: true
- # Réglez si les commande de selection sont activées
- advanced-command-selector: false
  #Définir si il faut activer ResourcePackManager
  enable-resource: false
  #This parameter turns on or off the absorption of water by a sponge //TODO: Translation for other languages

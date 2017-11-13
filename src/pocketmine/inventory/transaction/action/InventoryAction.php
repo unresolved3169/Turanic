@@ -66,6 +66,15 @@ abstract class InventoryAction{
 		return clone $this->targetItem;
 	}
 
+    /**
+     * @param Player $source
+     *
+     * @return bool
+     */
+    public function isAlreadyDone(Player $source) : bool{
+        return false;
+    }
+
 	/**
 	 * Returns whether this action is currently valid. This should perform any necessary sanity checks.
 	 *
@@ -74,15 +83,6 @@ abstract class InventoryAction{
 	 * @return bool
 	 */
 	abstract public function isValid(Player $source) : bool;
-
-	/**
-	 * Called when the action is added to the specified InventoryTransaction.
-	 *
-	 * @param InventoryTransaction $transaction
-	 */
-	public function onAddToTransaction(InventoryTransaction $transaction) {
-
-	}
 
 	/**
 	 * Called by inventory transactions before any actions are processed. If this returns false, the transaction will
