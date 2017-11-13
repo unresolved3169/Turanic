@@ -35,7 +35,7 @@ use pocketmine\utils\UUID;
 class CraftingManager{
 
 	/** @var CraftingRecipe[] */
-	public $recipes = [];
+	protected $recipes = [];
 
     /** @var Recipe[][] */
     protected $recipeLookup = [];
@@ -46,7 +46,7 @@ class CraftingManager{
 	protected $shapelessRecipes = [];
 
 	/** @var FurnaceRecipe[] */
-	public $furnaceRecipes = [];
+	protected $furnaceRecipes = [];
 
     /** @var BrewingRecipe[] */
     public $brewingRecipes = [];
@@ -414,7 +414,7 @@ class CraftingManager{
 		/** @var Item[] $row */
 		foreach($map as $y => $row){
 			foreach($row as $x => $item){
-				$item = clone $item;
+				$map[$y][$x] = clone $item;
 			}
 		}
 
