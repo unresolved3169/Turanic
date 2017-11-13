@@ -25,28 +25,42 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-class DisconnectPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
+class DisconnectPacket extends DataPacket
+{
+    const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
 
-	/** @var bool */
-	public $hideDisconnectionScreen = false;
-	/** @var string */
-	public $message;
+    /** @var bool */
+    public $hideDisconnectionScreen = false;
+    /** @var string */
+    public $message;
+    /** @var int */
+    public $protocol;
 
-	public function canBeSentBeforeLogin() : bool{
-		return true;
-	}
+    public function canBeSentBeforeLogin(): bool
+    {
+        return true;
+    }
 
-	protected function decodePayload(){
-		$this->hideDisconnectionScreen = $this->getBool();
-		$this->message = $this->getString();
-	}
+    protected function decodePayload()
+    {
+        $this->hideDisconnectionScreen = $this->getBool();
+        $this->message = $this->getString();
+    }
 
-	protected function encodePayload(){
-		$this->putBool($this->hideDisconnectionScreen);
-		if(!$this->hideDisconnectionScreen){
-			$this->putString($this->message);
-		}
-	}
+    protected function encodePayload()
+    {
+        $this->putBool($this->hideDisconnectionScreen);
+        if (!$this->hideDisconnectionScreen) {
+            $this->putString($this->message);
+        }
+    }
 
+    protected function encodeHeader()
+    {
+        if ($this->protocol < 130) {
+            $this->putByte(static::NETWORK_ID);
+        } else {
+            parent::encodeHeader();
+        }
+    }
 }

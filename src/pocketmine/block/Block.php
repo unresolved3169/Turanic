@@ -64,7 +64,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	protected $meta = 0;
 
 	/** @var AxisAlignedBB */
-	public $boundingBox = null;
+	protected $boundingBox = null;
 
 	public static function init(){
 		if(self::$list === null){
