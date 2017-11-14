@@ -25,6 +25,8 @@ namespace pocketmine\inventory;
 
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
@@ -409,6 +411,21 @@ abstract class BaseInventory implements Inventory{
 			$player->dataPacket($pk);
 		}
 	}
+
+    /**
+     * Drops the contents of the inventory into the specified Level at the specified position and clears the inventory
+     * contents.
+     *
+     * @param Level   $level
+     * @param Vector3 $position
+     */
+	public function dropContents(Level $level, Vector3 $position) : void{
+        foreach ($this->getContents() as $item) {
+            $level->dropItem($position, $item);
+        }
+
+        $this->clearAll();
+    }
 
 	/**
 	 * @param int             $index

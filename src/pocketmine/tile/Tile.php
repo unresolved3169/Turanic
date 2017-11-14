@@ -201,7 +201,7 @@ abstract class Tile extends Position {
 	 * @return \pocketmine\block\Block
 	 */
 	public function getBlock(){
-		return $this->level->getBlock($this);
+		return $this->level->getBlockAt($this->x, $this->y, $this->z);
 	}
 
 	/**

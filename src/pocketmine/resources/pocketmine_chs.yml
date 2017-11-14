@@ -123,9 +123,6 @@ chunk-sending:
  per-tick: 2
  #需要在玩家出生前发送的区块半径
  spawn-radius: 4
- #为提高区块发送速度，在内存中保存一份区块的序列副本
- #适合在几乎静止、但在同一时间有许多玩家加入的世界使用
- cache-chunks: true
  #使用异步任务排序要发送的区块。
  async-chunk-request: false
 
