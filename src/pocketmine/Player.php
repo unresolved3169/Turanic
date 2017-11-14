@@ -1986,7 +1986,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $diff = ($this->speed->y - $expectedVelocity) ** 2;
 
                         if (!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()) {
-                            if ($this->inAirTicks < 1000) {
+                            if (!(PHP_INT_SIZE === 8 && $this->allowFlight) && $this->inAirTicks < 1000) {
                                 $this->setMotion(new Vector3(0, $expectedVelocity, 0));
                             } elseif (!$this->allowFlight) {
                                 $this->kick("Flying is not enabled on this server", false);
