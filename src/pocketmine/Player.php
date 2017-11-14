@@ -220,7 +220,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected $randomClientId;
 
-	protected $protocol;
+	protected $protocol = ProtocolInfo::CURRENT_PROTOCOL;
 
 	protected $connected = true;
 	protected $ip;
@@ -1986,7 +1986,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $diff = ($this->speed->y - $expectedVelocity) ** 2;
 
                         if (!$this->hasEffect(Effect::JUMP) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()) {
-                            if ($this->inAirTicks < 1000) {
+                            if (!(PHP_INT_SIZE === 8 && $this->allowFlight) && $this->inAirTicks < 1000) {
                                 $this->setMotion(new Vector3(0, $expectedVelocity, 0));
                             } elseif (!$this->allowFlight) {
                                 $this->kick("Flying is not enabled on this server", false);
@@ -2973,10 +2973,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->inventory->sendContents($this);
                 return false;
             }
-            $packet->inventorySlot -= 9;
+            $packet->inventorySlot -= 9; //Get real inventory slot
             $item = $this->inventory->getItem($packet->inventorySlot);
             if(!$item->equals($packet->item)){
-                $this->inventory->setItem($packet->inventorySlot, $packet->item);
+                $this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
+                $this->inventory->sendContents($this);
                 return false;
             }
         }
@@ -3261,7 +3262,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			return true;
 		}elseif($packet->windowId === 255){
-			//Closed a fake window
+            $this->awardAchievement("openInventory");
 			return true;
 		}
 

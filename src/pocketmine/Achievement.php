@@ -37,13 +37,13 @@ abstract class Achievement {
 	 * @var array[]
 	 */
 	public static $list = [
-		/*"openInventory" => array(
+		"openInventory" => array(
 			"name" => "Taking Inventory",
 			"requires" => [],
-		),*/
+		),
 		"mineWood" => [
 			"name" => "Getting Wood",
-			"requires" => [ //"openInventory",
+			"requires" => [ "openInventory",
 			],
 		],
 		"buildWorkBench" => [
@@ -118,7 +118,7 @@ abstract class Achievement {
 	 */
 	public static function broadcast(Player $player, $achievementId){
 		if(isset(Achievement::$list[$achievementId])){
-			$translation = new TranslationContainer("chat.type.achievement", [$player->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"]]);
+			$translation = new TranslationContainer("chat.type.achievement", [$player->getDisplayName(), TextFormat::GREEN . Achievement::$list[$achievementId]["name"] . TextFormat::RESET]);
 			if(Server::getInstance()->getConfigString("announce-player-achievements", true) === true){
 				Server::getInstance()->broadcastMessage($translation);
 			}else{
