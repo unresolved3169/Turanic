@@ -843,8 +843,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->allowMovementCheats = (bool)$this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 		$this->allowInstaBreak = (bool)$this->server->getProperty("player.anti-cheat.allow-instabreak", false);
-
-		$this->protocol = ProtocolInfo::CURRENT_PROTOCOL;
+		
 		/**
 		 * A CustomForm about Turanic
 		 * You can edit this with Player::setDefaultServerSettings function
@@ -2014,11 +2013,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         return true;
     }
-    public function doFoodTick(int $tickDiff = 1){
-        if($this->isSurvival()){
-            parent::doFoodTick($tickDiff);
-        }
-    }
 
     public function isUseElytra(){
         return ($this->isHaveElytra() && $this->elytraIsActivated);
@@ -3057,14 +3051,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$packet->entityRuntimeId = $this->id;
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
 
-		switch($packet->action) {
-            case PlayerActionPacket::ACTION_START_BREAK:
-                if ($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000) {
-                    break;
-                }
-
+		switch($packet->action){
+			case PlayerActionPacket::ACTION_START_BREAK:
+				if($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000){
+					break;
+				}
 				$target = $this->level->getBlock($pos);
-
 				$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
                 if($this->level->checkSpawnProtection($this, $target)){
                     $ev->setCancelled();
@@ -3269,7 +3261,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			return true;
 		}elseif($packet->windowId === 255){
-			$this->awardAchievement("openInventory");
+			//Closed a fake window
 			return true;
 		}
 
@@ -3798,7 +3790,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->type = TextPacket::TYPE_WHISPER;
 		$pk->source = $sender;
 		$pk->message = $message;
-		$pk->protocol = $this->protocol;
 		$this->dataPacket($pk);
 	}
 
@@ -3923,12 +3914,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->chunk = null;
 
 		$this->server->removePlayer($this);
-		if($this->craftingGrid !== null){
-		    if(count($contents = $this->craftingGrid->getContents()) > 0){
-		        $this->inventory->addItem(...$contents);
-            }
-		}
-    }
+	}
 
 	/**
 	 * @return array
@@ -4183,7 +4169,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pitch = $pitch ?? $this->pitch;
 		$pk = new MovePlayerPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $pos->add(0, $this->baseOffset, 0);
+		$pk->position = $this->getOffsetPosition($pos);
 		$pk->bodyYaw = $yaw;
 		$pk->pitch = $pitch;
 		$pk->yaw = $yaw;

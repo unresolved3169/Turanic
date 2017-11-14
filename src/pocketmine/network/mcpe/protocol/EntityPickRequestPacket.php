@@ -29,17 +29,17 @@ class EntityPickRequestPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::ENTITY_PICK_REQUEST_PACKET;
 
 	/** @var int */
-	public $entityUniqueId;
+	public $entityTypeId;
 	/** @var int */
 	public $hotbarSlot;
 
 	protected function decodePayload(){
-		$this->entityUniqueId = $this->getLLong();
+		$this->entityTypeId = $this->getLLong();
 		$this->hotbarSlot = $this->getByte();
 	}
 
 	protected function encodePayload(){
-		$this->putLLong($this->entityUniqueId);
+		$this->putLLong($this->entityTypeId);
 		$this->putByte($this->hotbarSlot);
 	}
 }
