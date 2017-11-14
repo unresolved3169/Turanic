@@ -220,7 +220,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected $randomClientId;
 
-	protected $protocol;
+	protected $protocol = ProtocolInfo::CURRENT_PROTOCOL;
 
 	protected $connected = true;
 	protected $ip;
@@ -3261,7 +3261,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			return true;
 		}elseif($packet->windowId === 255){
-			//Closed a fake window
+            $this->awardAchievement("openInventory");
 			return true;
 		}
 
