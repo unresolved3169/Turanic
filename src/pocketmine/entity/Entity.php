@@ -1335,18 +1335,16 @@ abstract class Entity extends Location implements Metadatable {
 		}
 
 		if(count($this->effects) > 0){
-            foreach($this->effects as $effect){
-                if($effect->canTick()){
-                    $effect->applyEffect($this);
-                }
-                $duration = $effect->getDuration() - $tickDiff;
-                if($duration <= 0){
-                    $this->removeEffect($effect->getId());
-                }else{
-                    $effect->setDuration($duration);
-                }
-            }
-        }
+			foreach($this->effects as $effect){
+				if($effect->canTick()){
+					$effect->applyEffect($this);
+				}
+				$effect->setDuration($effect->getDuration() - $tickDiff);
+				if($effect->getDuration() <= 0){
+					$this->removeEffect($effect->getId());
+				}
+			}
+		}
 
 		$hasUpdate = false;
 

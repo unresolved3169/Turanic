@@ -128,6 +128,9 @@ chunk-sending:
  per-tick: 2
  #Radius of chunks that need to be sent before spawning the player
  spawn-radius: 4
+ #Save a serialized copy of the chunk in memory for faster sending
+ #Useful in mostly-static worlds where lots of players join at the same time
+ cache-chunks: true
  #Use AsyncTasks for serializing chunks for sending.
  async-chunk-request: false
 

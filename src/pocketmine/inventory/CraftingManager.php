@@ -26,7 +26,6 @@ namespace pocketmine\inventory;
 use pocketmine\event\Timings;
 use pocketmine\item\Potion;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -54,7 +53,7 @@ class CraftingManager{
 
 	private static $RECIPE_COUNT = 0;
 
-	/** @var BatchPacket */
+	/** @var CraftingDataPacket */
 	private $craftingDataCache;
 
 	public function __construct(){
@@ -122,23 +121,16 @@ class CraftingManager{
 
 		$pk->encode();
 
-        $batch = new BatchPacket();
-        $batch->addPacket($pk);
-        $batch->setCompressionLevel(Server::getInstance()->networkCompressionLevel);
-        $batch->encode();
-
-        $this->craftingDataCache = $batch;
-
 		$this->craftingDataCache = $pk;
 		Timings::$craftingDataCacheRebuildTimer->stopTiming();
 	}
 
 	/**
-	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
+	 * Returns a CraftingDataPacket for sending to players. Rebuilds the cache if it is outdated.
 	 *
-	 * @return BatchPacket
+	 * @return CraftingDataPacket
 	 */
-	public function getCraftingDataPacket() : BatchPacket{
+	public function getCraftingDataPacket() : CraftingDataPacket{
 		if($this->craftingDataCache === null){
 			$this->buildCraftingDataCache();
 		}
