@@ -102,7 +102,6 @@ class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
 	private static $chunkLoaderCounter = 1;
-	public static $COMPRESSION_LEVEL = 8;
 
 	const Y_MASK = 0xFF;
 	const Y_MAX = 0x100; //256
@@ -147,8 +146,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var DataPacket[] */
 	private $chunkCache = [];
-
-	private $cacheChunks = false;
 
 	private $sendTimeTicker = 0;
 
@@ -384,7 +381,6 @@ class Level implements ChunkManager, Metadatable{
 		$this->chunkPopulationQueueSize = (int)$this->server->getProperty("chunk-generation.population-queue-size", 2);
 		$this->chunkTickList = [];
 		$this->clearChunksOnTick = (bool)$this->server->getProperty("chunk-ticking.clear-tick-list", true);
-		$this->cacheChunks = (bool)$this->server->getProperty("chunk-sending.cache-chunks", false);
 
 		$this->timings = new LevelTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
@@ -939,15 +935,11 @@ class Level implements ChunkManager, Metadatable{
 		$this->server->batchPackets($target, $packets, false, false);
 	}
 
-	public function clearCache(bool $full = false) {
-		if ($full) {
+	public function clearCache(bool $force = false) {
+		if ($force) {
 			$this->chunkCache = [];
 			$this->blockCache = [];
 		} else {
-			if (count($this->chunkCache) > 768) {
-				$this->chunkCache = [];
-			}
-
 			if (count($this->blockCache) > 2048) {
 				$this->blockCache = [];
 			}
@@ -1585,11 +1577,9 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$above = $this->getBlock(new Vector3($target->x, $target->y + 1, $target->z));
-		if ($above !== null) {
-			if ($above->getId() === Item::FIRE) {
-				$this->setBlock($above, new Air(), true);
-			}
-		}
+        if ($above->getId() === Item::FIRE) {
+            $this->setBlock($above, new Air(), true);
+        }
 
 		$tag = $item->getNamedTagEntry("CanDestroy");
 		if ($tag instanceof ListTag) {
@@ -1632,9 +1622,6 @@ class Level implements ChunkManager, Metadatable{
 
 		if ($item !== null) {
 			$item->useOn($target);
-			if ($item->isTool() and $item->getDamage() >= $item->getMaxDurability()) {
-				$item = Item::get(Item::AIR, 0, 0);
-			}
 		}
 
 		if ($player === null or $player->isSurvival()) {
@@ -1713,30 +1700,24 @@ class Level implements ChunkManager, Metadatable{
 		if ($target->canBeReplaced() === true) {
 			$block = $target;
 			$hand->position($block);
-			//$face = -1;
 		}
 
 		if ($hand->isSolid() === true and $hand->getBoundingBox() !== null) {
 			$entities = $this->getCollidingEntities($hand->getBoundingBox());
-			$realCount = 0;
 			foreach ($entities as $e) {
 				if ($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())) {
 					continue;
 				}
-				++$realCount;
+				return false;
 			}
 
 			if ($player !== null) {
 				if (($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001) {
 					$bb = $player->getBoundingBox()->getOffsetBoundingBox($diff->x, $diff->y, $diff->z);
 					if ($hand->getBoundingBox()->intersectsWith($bb)) {
-						++$realCount;
+                        return false;
 					}
 				}
-			}
-
-			if ($realCount > 0) {
-				return false; //Entity in block
 			}
 		}
 
@@ -1780,10 +1761,6 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 		$item->setCount($item->getCount() - 1);
-
-		if ($item->getCount() <= 0) {
-			$item = Item::get(Item::AIR, 0, 0);
-		}
 
 		return true;
 	}
@@ -2496,7 +2473,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$index = Level::chunkHash($x, $z);
 
-		if (!isset($this->chunkCache[$index]) and $this->cacheChunks and $this->server->getMemoryManager()->canUseChunkCache()) {
+		if (!isset($this->chunkCache[$index]) and $this->server->getMemoryManager()->canUseChunkCache()) {
 			$this->chunkCache[$index] = Level::getChunkCacheFromData($x, $z, $payload);
 			$this->sendChunkFromCache($x, $z);
 			$this->timings->syncChunkSendTimer->stopTiming();
