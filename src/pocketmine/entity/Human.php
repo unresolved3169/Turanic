@@ -125,6 +125,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		if(!$skin->isValid()){
 			throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
 		}
+		$skin->debloatGeometryData();
 		$this->skin = $skin;
 	}
 
@@ -720,7 +721,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Inventory = new ListTag("Inventory", [], NBT::TAG_Compound);
+		$nbtinv = new ListTag("Inventory", []);
+		$nbtinv->setTagType(NBT::TAG_Compound);
+		$this->namedtag->Inventory = $nbtinv;
 		if($this->inventory !== null){
 			//Normal inventory
 			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();

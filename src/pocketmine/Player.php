@@ -110,6 +110,7 @@ use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -315,8 +316,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	private $ping = 0;
 	
-	public static function isValidUserName(string $name) : bool{
-		$lname = strtolower($name);
+	public static function isValidUserName($name) : bool{
+		if($name == null) return false;
+	    $lname = strtolower($name);
 		$len = strlen($lname);
 		return $lname !== "rcon" && $lname !== "console" && $len >= 1 && $len <= 16 && preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
@@ -1098,7 +1100,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected function doFirstSpawn(){
 		$this->spawned = true;
 
-		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
+        $this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
+
+        if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			$this->server->getPluginManager()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 		}
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
@@ -2193,8 +2197,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->loggedIn = true;
 		$this->server->onPlayerLogin($this);
-		
-		$this->completeLoginSequence();
+
+        $pk = new ResourcePacksInfoPacket();
+        $manager = $this->server->getResourceManager();
+        $pk->resourcePackEntries = $manager->getResourceStack();
+        $pk->mustAccept = $manager->resourcePacksRequired();
+        $this->dataPacket($pk);
 	}
 
 	protected function completeLoginSequence(){
@@ -2278,13 +2286,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->server->addOnlinePlayer($this);
 		$this->server->onPlayerCompleteLoginSequence($this);
-		
-		$pk = new ResourcePacksInfoPacket();
-		$manager = $this->server->getResourceManager();
-		$pk->resourcePackEntries = $manager->getResourceStack();
-		$pk->mustAccept = $manager->resourcePacksRequired();
-		$this->dataPacket($pk);
-	}
+    }
 	
 	protected function sendAllInventories(){
 		foreach($this->windowIndex as $id => $inventory){
@@ -2339,6 +2341,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return true;
         }
 
+        if(!self::isValidUserName($packet->username)){
+            $this->close("", "disconnectionScreen.invalidName");
+            return true;
+        }
+
         $this->username = TextFormat::clean($packet->username);
         $this->displayName = $this->username;
         $this->iusername = strtolower($this->username);
@@ -2353,28 +2360,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->rawUUID = $this->uuid->toBinary();
         $this->xuid = $packet->xuid;
 
-        if (!Player::isValidUserName($packet->username)) {
-            $this->close("", "disconnectionScreen.invalidName");
-            return true;
-        }
-
-        /* Mojang, some stupid reason, send every single model for every single skin in the selected skin-pack.
-         * Not only that, they are pretty-printed. This decode/encode is to get rid of the pretty-print, which cuts down
-         * significantly on the amount of wasted bytes.
-         */
-
-        $geometryJsonEncoded = base64_decode($packet->clientData["SkinGeometry"] ?? "");
-        if ($geometryJsonEncoded !== "") {
-            $geometryJsonEncoded = json_encode(json_decode($geometryJsonEncoded));
-        }
-
         $skin = new Skin(
             $packet->clientData["SkinId"],
             base64_decode($packet->clientData["SkinData"] ?? ""),
             base64_decode($packet->clientData["CapeData"] ?? ""),
             $packet->clientData["SkinGeometryName"],
-            $geometryJsonEncoded
+            base64_decode($packet->clientData["SkinGeometry"] ?? "")
         );
+        $skin->debloatGeometryData();
 
         if (!$skin->isValid()) {
             $this->close("", "disconnectionScreen.invalidSkin");
@@ -2441,7 +2434,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->dataPacket($pk);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
-				$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
+                $this->completeLoginSequence();
 				break;
 			default:
 				return false;

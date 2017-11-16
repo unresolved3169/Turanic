@@ -87,4 +87,10 @@ class Skin{
 		return $this->geometryData;
 	}
 
+    public function debloatGeometryData(){
+        if($this->geometryData !== ""){
+            $this->geometryData = (string) json_encode(json_decode($this->geometryData));
+        }
+    }
+
 }
