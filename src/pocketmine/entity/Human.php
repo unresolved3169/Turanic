@@ -29,12 +29,10 @@ use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\inventory\SimpleTransactionQueue;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Math;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
@@ -263,8 +261,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 			}else{
 				$food = $this->getFood();
 				if($food > 0){
-					$food--;
-					$this->setFood($food);
+				    $check = true;
+					if($this instanceof Player && $this->isCreative()){
+					    $check = false;
+                    }
+                    if($check){
+                        $food--;
+                        $this->setFood($food);
+                    }
 				}
 			}
 		}
