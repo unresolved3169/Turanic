@@ -1739,9 +1739,8 @@ class Server{
 			if(!extension_loaded("openssl")){
 				$this->logger->warning("OpenSSL extension not found");
 				$this->logger->warning("Please configure OpenSSL extension for PHP if you want to use Xbox Live authentication or global resource pack.");
-				$this->setConfigBool("xbox-auth", true);
+				$this->setConfigBool("xbox-auth", false);
 			}elseif(!$onlineMode){
-				$this->logger->warning("Online mode has been turned off in server.properties");
 				$this->logger->warning("Xbox Live authentication is disabled.");
 			}
 

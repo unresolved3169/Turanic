@@ -25,6 +25,9 @@
 
 namespace pocketmine\network;
 
+use pocketmine\event\server\NetworkInterfaceCrashEvent;
+use pocketmine\event\server\NetworkInterfaceRegisterEvent;
+use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
 use pocketmine\network\mcpe\protocol\AddBehaviorTreePacket;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AddHangingEntityPacket;
@@ -211,10 +214,10 @@ class Network {
 			}catch(\Throwable $e){
 				$logger = $this->server->getLogger();
 				if(\pocketmine\DEBUG > 1){
-					if($logger instanceof MainLogger){
-						$logger->logException($e);
-					}
+                    $logger->logException($e);
 				}
+
+                $this->server->getPluginManager()->callEvent(new NetworkInterfaceCrashEvent($interface, $e));
 
 				$interface->emergencyShutdown();
 				$this->unregisterInterface($interface);
@@ -227,21 +230,24 @@ class Network {
 	 * @param SourceInterface $interface
 	 */
 	public function registerInterface(SourceInterface $interface){
-        $interface->start();
-        $this->interfaces[$hash = spl_object_hash($interface)] = $interface;
-        if($interface instanceof AdvancedSourceInterface){
-			$this->advancedInterfaces[$hash] = $interface;
-			$interface->setNetwork($this);
-		}
-		$interface->setName($this->name);
+        $this->server->getPluginManager()->callEvent($ev = new NetworkInterfaceRegisterEvent($interface));
+        if(!$ev->isCancelled()){
+            $interface->start();
+            $this->interfaces[$hash = spl_object_hash($interface)] = $interface;
+            if($interface instanceof AdvancedSourceInterface){
+                $this->advancedInterfaces[$hash] = $interface;
+                $interface->setNetwork($this);
+            }
+            $interface->setName($this->name);
+        }
 	}
 
 	/**
 	 * @param SourceInterface $interface
 	 */
 	public function unregisterInterface(SourceInterface $interface){
-		unset($this->interfaces[$hash = spl_object_hash($interface)],
-			$this->advancedInterfaces[$hash]);
+        $this->server->getPluginManager()->callEvent(new NetworkInterfaceUnregisterEvent($interface));
+        unset($this->interfaces[$hash = spl_object_hash($interface)], $this->advancedInterfaces[$hash]);
 	}
 
 	/**
