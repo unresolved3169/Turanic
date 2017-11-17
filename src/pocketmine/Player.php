@@ -2037,7 +2037,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->orderChunks();
 		}
 
-		if (count($this->loadQueue) > 0 or !$this->spawned) {
+		if (count($this->loadQueue) > 0) {
 			$this->sendNextChunk();
 		}
 
@@ -2252,9 +2252,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->level->sendTime();
 
 		$this->sendAttributes(true);
-		$this->setNameTagVisible(true);
-		$this->setNameTagAlwaysVisible(true);
-		$this->setCanClimb(true);
+		$this->setNameTagVisible();
+		$this->setNameTagAlwaysVisible();
+		$this->setCanClimb();
 
 		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
@@ -4149,10 +4149,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$pk->entityRuntimeId = $this->id;
 			$pk->event = EntityEventPacket::HURT_ANIMATION;
 			$this->dataPacket($pk);
-
-			if ($this->isSurvival()) {
-				$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
-			}
+			$this->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
 		}
 		return true;
 	}

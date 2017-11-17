@@ -680,7 +680,7 @@ abstract class Entity extends Location implements Metadatable {
 	 *
 	 * @param bool $value
 	 */
-	public function setCanClimb(bool $value){
+	public function setCanClimb(bool $value = true){
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_CLIMB, $value);
 	}
 

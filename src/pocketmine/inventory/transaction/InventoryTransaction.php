@@ -108,6 +108,9 @@ class InventoryTransaction {
             if(!$action->isValid($this->source) || $action->isAlreadyDone($this->source)){
                 unset($actions[spl_object_hash($action)]);
             }
+            if(!$action->onPreExecute($this->source)){
+                return false;
+            }
         }
 
         foreach ($actions as $action) {
