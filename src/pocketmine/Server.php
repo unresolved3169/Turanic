@@ -73,6 +73,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\LongTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\CompressBatchedTask;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\Network;
 use pocketmine\network\mcpe\protocol\BatchPacket;
@@ -2094,7 +2095,7 @@ class Server{
 		$packet->encode();
 		$packet->isEncoded = true;
 		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
-			$this->batchPackets($players, [$packet->buffer], false);
+			$this->batchPackets($players, [$packet], false);
 			return;
 		}
 
@@ -2125,46 +2126,36 @@ class Server{
 		}
 
 		if(count($targets) > 0){
-			$pays = [];
-			foreach($packets as $pk){
-				if($pk instanceof DataPacket){
-					if(!$pk->isEncoded){
-						$pk->encode();
-					}
-					$pays[] = $pk->buffer;
-				}else{
-					$pays[] = $pk;
-				}
-			}
-			
-			$card = [
-			"compressionLevel" => $this->networkCompressionLevel,
-			"targets" => $targets,
-			"needACK" => false, // TODO
-			"immediate" => $immediate,
-			"packets" => $pays];
-			
-			$this->packetWorker->pushMainToThreadPacket(serialize($card));
+            $pk = new BatchPacket();
+            foreach($packets as $p){
+                $pk->addPacket($p);
+            }
+            if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
+                $pk->setCompressionLevel($this->networkCompressionLevel);
+            }else{
+                $pk->setCompressionLevel(0); //Do not compress packets under the threshold
+                $forceSync = true;
+            }
+            if(!$forceSync and !$immediate and $this->networkCompressionAsync){
+                $task = new CompressBatchedTask($pk, $targets);
+                $this->getScheduler()->scheduleAsyncTask($task);
+            }else{
+                $this->broadcastPacketsCallback($pk, $targets, $immediate);
+            }
 		}
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
-	public function broadcastPacketsCallback($data, array $identifiers, bool $immediate = false){
-		$pk = new BatchPacket();
-		$pk->payload = $data;
-		$pk->encode();
-		$pk->isEncoded = true;
-
-		foreach($identifiers as $i){
-			if(isset($this->players[$i])){
-				if($immediate){
-				 $this->players[$i]->directDataPacket($pk);
-				}else{
-					$this->players[$i]->dataPacket($pk);
-				}
-			}
-		}
+	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate = false){
+        if(!$pk->isEncoded){
+            $pk->encode();
+        }
+        foreach($identifiers as $i){
+            if(isset($this->players[$i])){
+                $this->players[$i]->sendDataPacket($pk, false, $immediate);
+            }
+        }
 	}
 
 
@@ -2529,7 +2520,7 @@ class Server{
 	}
 
 	public function addOnlinePlayer(Player $player){
-        $this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin());
+        $this->updatePlayerListData($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXUID());
 
         $this->playerList[$player->getRawUniqueId()] = $player;
     }
@@ -2548,11 +2539,11 @@ class Server{
 	 * @param Skin          $skin
 	 * @param Player[]|null $players
 	 */
-	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, array $players = null){
+	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
 
-		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin);
+		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin, $xboxUserId);
 		$this->broadcastPacket($players ?? $this->playerList, $pk);
 	}
 
@@ -2572,12 +2563,13 @@ class Server{
 	 */
 	public function sendFullPlayerListData(Player $p){
 		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_ADD;
-		foreach($this->playerList as $player){
-			$pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin());
-		}
+        $pk->type = PlayerListPacket::TYPE_ADD;
+        foreach($this->playerList as $player){
+            if($player->getName() == $p->getName()) continue;
+            $pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXUID());
+        }
 
-		$p->dataPacket($pk);
+        $p->dataPacket($pk);
 	}
 
 	private function checkTickUpdates($currentTick, $tickTime){

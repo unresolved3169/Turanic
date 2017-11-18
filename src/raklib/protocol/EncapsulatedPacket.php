@@ -57,19 +57,20 @@ class EncapsulatedPacket{
 	 * @return EncapsulatedPacket
 	 */
 	public static function fromBinary($binary, $internal = false, &$offset = null){
+        $offset = $offset == null ? 0 : $offset;
 
 		$packet = new EncapsulatedPacket();
 
-		$flags = ord($binary{0});
+		$flags = ord($binary{$offset});
 		$packet->reliability = $reliability = ($flags & 0b11100000) >> 5;
 		$packet->hasSplit = $hasSplit = ($flags & 0b00010000) > 0;
 		if($internal){
-			$length = Binary::readInt(substr($binary, 1, 4));
-			$packet->identifierACK = Binary::readInt(substr($binary, 5, 4));
-			$offset = 9;
+			$length = Binary::readInt(substr($binary, $offset + 1, 4));
+			$packet->identifierACK = Binary::readInt(substr($binary, $offset + 5, 4));
+			$offset += 9;
 		}else{
-			$length = (int) ceil(Binary::readShort(substr($binary, 1, 2)) / 8);
-			$offset = 3;
+			$length = (int) ceil(Binary::readShort(substr($binary, $offset + 1, 2)) / 8);
+			$offset += 3;
 			$packet->identifierACK = null;
 		}
 
