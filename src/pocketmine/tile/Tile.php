@@ -92,6 +92,7 @@ abstract class Tile extends Position {
 		self::registerTile(DLDetector::class);
 		self::registerTile(Dropper::class);
 		self::registerTile(EnchantTable::class);
+		self::registerTile(EnderChest::class);
 		self::registerTile(FlowerPot::class);
 		self::registerTile(Furnace::class);
 		self::registerTile(ItemFrame::class);

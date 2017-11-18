@@ -138,7 +138,7 @@ class EnderChest extends Transparent {
 			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
 		}
 
-		Tile::createTile("EnderChest", $this->getLevel(), $nbt);
+		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), $nbt);
 
 		return true;
 	}
