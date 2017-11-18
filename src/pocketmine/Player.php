@@ -834,7 +834,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->spawnThreshold = (int)(($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel());
-		$this->newPosition = new Vector3(0, 0, 0);
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
 		$this->uuid = null;
@@ -1837,6 +1836,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->lastYaw = $from->yaw;
 			$this->lastPitch = $from->pitch;
 
+            $this->setPosition($from);
 			$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
 		}else{
 			if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
@@ -3255,25 +3255,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		return false;
-	}
-
-	public function handlePlayerHotbar(PlayerHotbarPacket $packet){
-        if($packet->windowId !== ContainerIds::INVENTORY){
-            return false; //In PE this should never happen
-        }
-
-        foreach($packet->slots as $hotbarSlot => $slotLink){
-            $inventorySlot = $slotLink === -1 ? $slotLink : $slotLink - 9;
-            if (!($hotbarSlot == $inventorySlot || $inventorySlot < 0)) {
-                $tmp = $this->inventory->getItem($hotbarSlot);
-                $this->inventory->setItem($hotbarSlot, $this->inventory->getItem($inventorySlot));
-                $this->inventory->setItem($inventorySlot, $tmp);
-            }
-        }
-
-        $this->inventory->equipItem($packet->selectedHotbarSlot);
-
-		return true;
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
