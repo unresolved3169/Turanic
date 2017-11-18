@@ -2590,10 +2590,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_BLOCK:
 						$this->setUsingItem(false);
 
-                        if(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
-                            $this->inventory->setItemInHand($packet->trData->itemInHand);
-                        }
-
 						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
