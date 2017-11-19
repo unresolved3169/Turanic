@@ -314,8 +314,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	const PORTAL_STATUS_IN = 1;
 
 	private $ping = 0;
-	
-	public static function isValidUserName($name) : bool{
+
+    public $dropContents = [];
+
+    public static function isValidUserName($name) : bool{
 		if($name == null) return false;
 	    $lname = strtolower($name);
 		$len = strlen($lname);
@@ -1659,13 +1661,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	protected function checkNearEntities(){
-		foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
-			$entity->scheduleUpdate();
-			if(!$entity->isAlive()){
-				continue;
-			}
+        $pickup = false;
+        foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
+            $entity->scheduleUpdate();
+            if(!$entity->isAlive()){
+                continue;
+            }
 			if($entity instanceof Arrow and $entity->hadCollision){
-				$item = Item::get(Item::ARROW, 0, 1);
+                $pickup = true;
+                $item = Item::get(Item::ARROW, 0, 1);
 				if($this->isSurvival() and !$this->inventory->canAddItem($item)){
 					continue;
 				}
@@ -1680,6 +1684,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->inventory->addItem(clone $item);
 				$entity->kill();
 			}elseif($entity instanceof DroppedItem){
+			    $pickup = true;
 				if($entity->getPickupDelay() <= 0){
 					$item = $entity->getItem();
 					if($item instanceof Item){
@@ -1708,6 +1713,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}
 		}
+
+        if(!$pickup){
+            foreach($this->dropContents as $item){
+                $this->dropItem($item);
+            }
+            $this->dropContents = [];
+        }
 	}
 
     /**

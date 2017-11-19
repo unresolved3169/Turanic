@@ -47,7 +47,6 @@ class DropItemAction extends InventoryAction{
 		if($ev->isCancelled()){
 			return false;
 		}
-
 		return true;
 	}
 
@@ -58,7 +57,8 @@ class DropItemAction extends InventoryAction{
 	 * @return bool
 	 */
 	public function execute(Player $source) : bool{
-		return $source->dropItem($this->targetItem);
+        $source->dropContents[] = $this->targetItem;
+        return true;
 	}
 
 	public function onExecuteSuccess(Player $source) {
