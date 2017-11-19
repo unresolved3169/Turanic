@@ -56,10 +56,17 @@ class DropItemAction extends InventoryAction{
 	 * @param Player $source
 	 * @return bool
 	 */
-	public function execute(Player $source) : bool{
-        $source->dropContents[] = $this->targetItem;
+    public function execute(Player $source) : bool{
+        $droppedItem = $this->getTargetItem();
+        if(!$source->getServer()->allowInventoryCheats and !$source->isCreative()){
+            if(!$source->getInventory()->contains($droppedItem)){
+                return false;
+            }
+            $source->getInventory()->removeItem($droppedItem);
+        }
+        $source->dropItem($droppedItem);
         return true;
-	}
+    }
 
 	public function onExecuteSuccess(Player $source) {
 
