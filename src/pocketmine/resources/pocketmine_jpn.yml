@@ -26,22 +26,23 @@ settings:
  async-workers: auto
 
 memory:
- #Global soft memory limit in megabytes. Set to 0 to disable
- #This will trigger low-memory-triggers and fire an event to free memory when the usage goes over this
+ #グローバルソフトメモリの上限（メガバイト単位）。 無効にするには0に設定して下さい
+ #この機能は、メモリ不足のトリガをトリガし、メモリを解放するイベントを発生させます
  global-limit: 0
 
- #Main thread soft memory limit in megabytes. Set to 0 to disable
- #This will trigger low-memory-triggers and fire an event to free memory when the usage goes over this
+ #メインスレッドのソフトメモリの制限値（メガバイト）。 無効にするには0に設定して下さい
+ #これにより、メモリー使用量が少ないトリガーがトリガーされ、使用量がこれを超えるとメモリーを解放するイベントが発生します
  main-limit: 0
 
- #Main thread hard memory limit in megabytes. Set to 0 to disable
- #This will stop the server when the limit is surpassed
+ #メインスレッドのソフトメモリの制限値（メガバイト）。 無効にするには0に設定して下さい
+ #これにより、メモリー使用量が少ないトリガーがトリガーされ、使用量がこれを超えるとメモリーを解放するイベントが発生します
  main-hard-limit: 1024
 
- #Period in ticks to check memory (default 1 second)
+ #メモリ不足時に低メモリトリガとイベントの発射を続ける
+ #20 = 1
  check-rate: 20
 
- #Continue firing low-memory-triggers and event while on low memory
+ #memory.continuous-triggerが有効な場合のみ。 メモリのレートを指定します。チェックレートのステップ（デフォルトは30秒）
  continuous-trigger: true
 
  #Only if memory.continuous-trigger is enabled. Specifies the rate in memory.check-rate steps (default 30 seconds)
