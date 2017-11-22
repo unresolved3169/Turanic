@@ -2115,7 +2115,7 @@ class Server{
 	 * @param bool $forceSync
 	 * @param bool $immediate
 	 */
-	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
+	public function batchPackets(array $players, array $packets, bool $immediate = false, bool $needACK = false){
 		Timings::$playerNetworkTimer->startTiming();
 
 		$targets = [];
@@ -2126,36 +2126,23 @@ class Server{
 		}
 
 		if(count($targets) > 0){
-            $pk = new BatchPacket();
-            foreach($packets as $p){
-                $pk->addPacket($p);
-            }
-            if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
-                $pk->setCompressionLevel($this->networkCompressionLevel);
-            }else{
-                $pk->setCompressionLevel(0); //Do not compress packets under the threshold
-                $forceSync = true;
-            }
-            if(!$forceSync and !$immediate and $this->networkCompressionAsync){
-                $task = new CompressBatchedTask($pk, $targets);
-                $this->getScheduler()->scheduleAsyncTask($task);
-            }else{
-                $this->broadcastPacketsCallback($pk, $targets, $immediate);
-            }
+			$packs = [];
+			foreach($packets as $pk){
+				$packs[] = $pk->buffer;
+			}
+			
+			$identifier = [
+				"compressionLevel" => $this->networkCompressionLevel,
+				"packets" => $packs,
+				"targets" => $targets,
+				"immediate" => $immediate,
+				"needACK" => $needACK
+			];
+			
+			$this->packetWorker->pushMainToThreadPacket(serialize($identifier));
 		}
 
 		Timings::$playerNetworkTimer->stopTiming();
-	}
-
-	public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate = false){
-        if(!$pk->isEncoded){
-            $pk->encode();
-        }
-        foreach($identifiers as $i){
-            if(isset($this->players[$i])){
-                $this->players[$i]->sendDataPacket($pk, false, $immediate);
-            }
-        }
 	}
 
 
