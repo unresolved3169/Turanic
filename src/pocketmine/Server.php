@@ -2095,7 +2095,7 @@ class Server{
 		$packet->encode();
 		$packet->isEncoded = true;
 		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
-			$this->batchPackets($players, [$packet], false);
+			$this->batchPackets($players, [$packet->buffer], false);
 			return;
 		}
 
@@ -2112,7 +2112,7 @@ class Server{
 	 *
 	 * @param Player[] $players
 	 * @param DataPacket[]|string $packets
-	 * @param bool $forceSync
+	 * @param bool $needACK
 	 * @param bool $immediate
 	 */
 	public function batchPackets(array $players, array $packets, bool $immediate = false, bool $needACK = false){
@@ -2125,22 +2125,28 @@ class Server{
 			}
 		}
 
-		if(count($targets) > 0){
-			$packs = [];
-			foreach($packets as $pk){
-				$packs[] = $pk->buffer;
-			}
-			
-			$identifier = [
-				"compressionLevel" => $this->networkCompressionLevel,
-				"packets" => $packs,
-				"targets" => $targets,
-				"immediate" => $immediate,
-				"needACK" => $needACK
-			];
-			
-			$this->packetWorker->pushMainToThreadPacket(serialize($identifier));
-		}
+		if(count($targets) > 0) {
+            $pays = [];
+            foreach ($packets as $pk) {
+                if ($pk instanceof DataPacket) {
+                    if (!$pk->isEncoded) {
+                        $pk->encode();
+                    }
+                    $pays[] = $pk->buffer;
+                } else {
+                    $pays[] = $pk;
+                }
+            }
+
+            $card = [
+                "compressionLevel" => $this->networkCompressionLevel,
+                "targets" => $targets,
+                "needACK" => $needACK, // TODO
+                "immediate" => $immediate,
+                "packets" => $pays];
+
+            $this->packetWorker->pushMainToThreadPacket(serialize($card));
+        }
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}

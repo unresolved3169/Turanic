@@ -110,6 +110,7 @@ use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
+use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -2331,7 +2332,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		
 		return true;
 	}
-	
+
+	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
+	    return true;
+    }
+
+    public function handleEntityFall(EntityFallPacket $packet) : bool{
+        return true;
+    }
+
 	public function handleLogin(LoginPacket $packet) : bool{
         if ($this->loggedIn) {
             return false;
