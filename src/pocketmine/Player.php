@@ -3448,6 +3448,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	
 	public function handlePing(PingPacket $packet) : bool{
 		// TODO: Add event
+        $this->server->getLogger()->info("player handlePing: §a".$packet->ping);
 		$this->setPing($packet->ping);
 		return true;
 	}

@@ -54,6 +54,7 @@ use pocketmine\command\defaults\PardonCidCommand;
 use pocketmine\command\defaults\PardonCommand;
 use pocketmine\command\defaults\PardonIpCommand;
 use pocketmine\command\defaults\ParticleCommand;
+use pocketmine\command\defaults\PingCommand;
 use pocketmine\command\defaults\PluginsCommand;
 use pocketmine\command\defaults\ReloadCommand;
 use pocketmine\command\defaults\SaveCommand;
@@ -165,6 +166,7 @@ class SimpleCommandMap implements CommandMap {
 		$this->register("pocketmine", new EffectCommand("effect"));
 		$this->register("pocketmine", new EnchantCommand("enchant"));
 		$this->register("pocketmine", new ParticleCommand("particle"));
+		$this->register("pocketmine", new PingCommand("ping"));
 		$this->register("pocketmine", new GamemodeCommand("gamemode"));
 		$this->register("pocketmine", new KillCommand("kill"));
 		$this->register("pocketmine", new SpawnpointCommand("spawnpoint"));

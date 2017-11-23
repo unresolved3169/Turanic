@@ -47,6 +47,13 @@ interface ServerInstance{
 	 */
 	public function handleRaw($address, $port, $payload);
 
+    /**
+     * @param $identifier
+     * @param $ping
+     * @return mixed
+     */
+    public function handlePing($identifier, $ping);
+
 	/**
 	 * @param string $identifier
 	 * @param int    $identifierACK

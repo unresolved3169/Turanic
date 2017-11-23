@@ -166,6 +166,8 @@ abstract class RakLib{
 	 */
 	const PACKET_EMERGENCY_SHUTDOWN = 0x7f;
 
+    const PACKET_PING = 0x0a;
+
 	public static function bootstrap(\ClassLoader $loader){
 		$loader->addPath(dirname(__FILE__) . DIRECTORY_SEPARATOR . "..");
 	}
