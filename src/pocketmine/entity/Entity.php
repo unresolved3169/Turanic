@@ -1334,17 +1334,15 @@ abstract class Entity extends Location implements Metadatable {
 			return false;
 		}
 
-        if(count($this->effects) > 0){
-            foreach($this->effects as $effect){
-                if($effect->canTick()){
-                    $effect->applyEffect($this);
-                }
-                $duration = $effect->getDuration() - $tickDiff;
-                if($duration <= 0){
-                    $this->removeEffect($effect->getId());
-                }else{
-                    $effect->setDuration($duration);
-                }
+        foreach($this->effects as $effect){
+            if($effect->canTick()){
+                $effect->applyEffect($this);
+            }
+            $duration = $effect->getDuration() - $tickDiff;
+            if($duration <= 0){
+                $this->removeEffect($effect->getId());
+            }else{
+                $effect->setDuration($duration);
             }
         }
 
@@ -1478,7 +1476,7 @@ abstract class Entity extends Location implements Metadatable {
 
 		if(!$this->isAlive()){
 			++$this->deadTicks;
-			if($this->deadTicks >= 20){
+			if($this->deadTicks >= 25){
 				$this->despawnFromAll();
 				if(!$this->isPlayer){
 					$this->close();
@@ -1609,7 +1607,7 @@ abstract class Entity extends Location implements Metadatable {
 		if($this->isInsideOfWater()){
 			return;
 		}
-		$damage = floor($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getAmplifier() + 1 : 0));
+		$damage = ceil($fallDistance - 3 - ($this->hasEffect(Effect::JUMP) ? $this->getEffect(Effect::JUMP)->getAmplifier() + 1 : 0));
 
 		//Get the block directly beneath the player's feet, check if it is a slime block
 		if($this->getLevel()->getBlock($this->floor()->subtract(0, 1, 0)) instanceof SlimeBlock){
@@ -1643,10 +1641,10 @@ abstract class Entity extends Location implements Metadatable {
 	}
 
 	/**
-	 * @param Human $entityPlayer
+	 * @param Player $player
 	 */
-	public function onCollideWithPlayer(Human $entityPlayer){
-
+	public function onCollideWithPlayer(Player $player) : bool{
+        return false;
 	}
 
 	/**
@@ -1798,17 +1796,16 @@ abstract class Entity extends Location implements Metadatable {
         if($dx == 0 and $dz == 0 and $dy == 0){
             return true;
         }
+        Timings::$entityMoveTimer->startTiming();
+
+        $movX = $dx;
+        $movY = $dy;
+        $movZ = $dz;
         if($this->keepMovement){
             $this->boundingBox->offset($dx, $dy, $dz);
-            $this->setPosition($this->temporalVector->setComponents(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
-            $this->onGround = $this->isPlayer ? true : false;
             return true;
         }else{
-            Timings::$entityMoveTimer->startTiming();
             $this->ySize *= 0.4;
-            $movX = $dx;
-            $movY = $dy;
-            $movZ = $dz;
             $axisalignedbb = clone $this->boundingBox;
             assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
             $list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);

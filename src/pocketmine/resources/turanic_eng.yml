@@ -34,8 +34,6 @@ player:
  experience: true
  #Choose if to keep a player's inventory after they die
  keep-inventory: false
- #Clear the inventory of a player upon them changing their gamemode
- auto-clear-inventory : true
  #Choose if to keep a player's experience after they die
  keep-experience: false
 

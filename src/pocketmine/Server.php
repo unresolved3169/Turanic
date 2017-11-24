@@ -289,7 +289,6 @@ class Server{
 	public $version;
 	public $allowSnowGolem;
 	public $allowIronGolem;
-	public $autoClearInv = true;
 	public $dserverConfig = [];
 	public $dserverPlayers = 0;
 	public $dserverAllPlayers = 0;
@@ -1533,7 +1532,6 @@ class Server{
 		$this->lightningFire = $this->getAdvancedProperty("level.lightning-fire", false);
 		$this->allowSnowGolem = $this->getAdvancedProperty("server.allow-snow-golem", false);
 		$this->allowIronGolem = $this->getAdvancedProperty("server.allow-iron-golem", false);
-		$this->autoClearInv = $this->getAdvancedProperty("player.auto-clear-inventory", true);
 		$this->dserverConfig = [
 			"enable" => $this->getAdvancedProperty("dserver.enable", false),
 			"queryAutoUpdate" => $this->getAdvancedProperty("dserver.query-auto-update", false),
@@ -2204,7 +2202,7 @@ class Server{
 		}
 
 
-		$sender->sendMessage(new TranslationContainer(TextFormat::GOLD . "%commands.generic.notFound"));
+		$sender->sendMessage($this->getLanguage()->translateString(TextFormat::RED . "%commands.generic.notFound"));
 
 		return false;
 	}

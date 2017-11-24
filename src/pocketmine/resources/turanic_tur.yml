@@ -34,8 +34,6 @@ player:
  experience: true
  #Eğer aktifse oyuncu öldükten sonra envanteri silinmez
  keep-inventory: false
- #Eğer aktifse oyun modunu değişince envanter siler
- auto-clear-inventory : true
  #Eğer aktifse öldükten sonra xp kaydeder
  keep-experience: false
 
