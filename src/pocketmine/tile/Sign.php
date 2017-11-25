@@ -113,7 +113,7 @@ class Sign extends Spawnable{
 	 *
 	 * @return string
 	 */
-	public function getLine(int $index) : string{
+	public function getLine(int $index){
 		if($index < 0 or $index > 3){
 			throw new \InvalidArgumentException("Index must be in the range 0-3!");
 		}
