@@ -53,7 +53,7 @@ class ModalForm implements CustomUI, \JsonSerializable{
 	 * @param Player $player
 	 * @return boolean depending on which button was clicked
 	 */
-	final public function handle($response, Player $player){
+	public function handle($response, Player $player){
 		return $response[0];
 	}
 
