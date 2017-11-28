@@ -68,7 +68,7 @@ class GiveCommand extends VanillaCommand {
 		}
 
 		if(count($args) < 2){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 
 			return true;
 		}

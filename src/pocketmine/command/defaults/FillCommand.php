@@ -98,11 +98,11 @@ class FillCommand extends VanillaCommand {
 					return false;
 				}
 				$sender->sendMessage(TextFormat::RED . new TranslationContainer($args[$a] . " is not a valid coordinate.", []));
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 			$sender->sendMessage(TextFormat::RED . new TranslationContainer("pocketmine.command.fill.missingParameter", []));
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 			return false;
 		}
 

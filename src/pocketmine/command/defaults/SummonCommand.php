@@ -68,7 +68,7 @@ class SummonCommand extends VanillaCommand {
 		}
 
 		if(count($args) != 1 and count($args) != 4 and count($args) != 5){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 			return true;
 		}
 

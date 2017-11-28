@@ -61,7 +61,7 @@ class BiomeCommand extends VanillaCommand {
 		}
 
 		if(count($args) === 0){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 			return false;
 		}
 
@@ -112,7 +112,7 @@ class BiomeCommand extends VanillaCommand {
 				$biome = $sender->getLevel()->getBiomeId($x, $z);
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.biome.get", [$biome]));
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return true;
 			}
 		}else{

@@ -63,7 +63,7 @@ class KickCommand extends VanillaCommand {
 		}
 
 		if(count($args) === 0){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 
 			return false;
 		}

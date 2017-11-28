@@ -76,7 +76,7 @@ class XpCommand extends VanillaCommand {
 		if($player instanceof Player){
 			$name = $player->getName();
 			if(count($args) < 1){
-				$player->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $player->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 			if(strcasecmp(substr($args[0], -1), "L") == 0){
@@ -103,7 +103,7 @@ class XpCommand extends VanillaCommand {
 				}
 			}
 
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 			return false;
 		}else{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));

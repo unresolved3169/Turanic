@@ -60,15 +60,15 @@ class PluginCommand extends Command implements PluginIdentifiableCommand {
 			return false;
 		}
 
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return false;
 		}
 
 		$success = $this->executor->onCommand($sender, $this, $commandLabel, $args);
 
 		if(!$success and $this->usageMessage !== ""){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-		}
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
+        }
 
 		return $success;
 	}

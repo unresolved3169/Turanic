@@ -61,7 +61,7 @@ class TimeCommand extends VanillaCommand {
 	 */
 	public function execute(CommandSender $sender, $currentAlias, array $args){
 		if(count($args) < 1){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 
 			return false;
 		}
@@ -109,7 +109,7 @@ class TimeCommand extends VanillaCommand {
 
 
 		if(count($args) < 2){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 
 			return false;
 		}
@@ -150,7 +150,7 @@ class TimeCommand extends VanillaCommand {
 			}
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.added", [$value]));
 		}else{
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 		}
 
 		return true;

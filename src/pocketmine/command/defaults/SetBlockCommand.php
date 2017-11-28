@@ -63,7 +63,7 @@ class SetBlockCommand extends VanillaCommand {
 		}
 
 		if(count($args) < 4 or count($args) > 5){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 			return false;
 		}
 
@@ -81,7 +81,7 @@ class SetBlockCommand extends VanillaCommand {
 			}elseif(is_numeric($x)){
 				$x = (int) round($x);
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 			if($y{0} === "~"){
@@ -90,7 +90,7 @@ class SetBlockCommand extends VanillaCommand {
 			}elseif(is_numeric($y)){
 				$y = (int) round($y);
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 			if($z{0} === "~"){
@@ -98,11 +98,11 @@ class SetBlockCommand extends VanillaCommand {
 			}elseif(is_numeric($z)){
 				$z = (int) round($z);
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 			if(!(is_integer($x) and is_integer($y) and is_integer($z))){
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 

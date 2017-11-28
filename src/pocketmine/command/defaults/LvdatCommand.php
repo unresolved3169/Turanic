@@ -59,7 +59,7 @@ class LvdatCommand extends VanillaCommand {
 		}
 		$levname = array_shift($args);
 		if($levname == ""){
-			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 			return false;
 		}
 		if(!$this->autoLoad($sender, $levname)){
@@ -81,7 +81,7 @@ class LvdatCommand extends VanillaCommand {
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.lvdat.fixname", [$level->getFolderName()]));
 				break;
 			case "help":
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				$sender->sendMessage("/lvdat %commands.generic.level fixname");
 				$sender->sendMessage("/lvdat %commands.generic.level seed %commands.generic.seed");
 				$sender->sendMessage("/lvdat %commands.generic.level name %commands.generic.name");
@@ -121,7 +121,7 @@ class LvdatCommand extends VanillaCommand {
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.lvdat.changed", [$level->getFolderName(), $o]));
 				break;
 			default:
-				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
+                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				return false;
 		}
 		$provider->saveLevelData();
