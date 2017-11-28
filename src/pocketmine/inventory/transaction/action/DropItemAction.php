@@ -31,41 +31,41 @@ use pocketmine\Player;
  */
 class DropItemAction extends InventoryAction{
 
-	/**
-	 * Verifies that the source item of a drop-item action must be air. This is not strictly necessary, just a sanity
-	 * check.
-	 *
-	 * @param Player $source
-	 * @return bool
-	 */
-	public function isValid(Player $source) : bool{
-		return $this->sourceItem->isNull();
-	}
+    /**
+     * Verifies that the source item of a drop-item action must be air. This is not strictly necessary, just a sanity
+     * check.
+     *
+     * @param Player $source
+     * @return bool
+     */
+    public function isValid(Player $source) : bool{
+        return $this->sourceItem->isNull();
+    }
 
-	public function onPreExecute(Player $source) : bool{
-		$source->getServer()->getPluginManager()->callEvent($ev = new PlayerDropItemEvent($source, $this->targetItem));
-		if($ev->isCancelled()){
-			return false;
-		}
-		return true;
-	}
+    public function onPreExecute(Player $source) : bool{
+        $source->getServer()->getPluginManager()->callEvent($ev = new PlayerDropItemEvent($source, $this->targetItem));
+        if($ev->isCancelled()){
+            return false;
+        }
 
-	/**
-	 * Drops the target item in front of the player.
-	 *
-	 * @param Player $source
-	 * @return bool
-	 */
-	public function execute(Player $source) : bool{
-        $source->dropContents[] = $this->targetItem;
         return true;
-	}
+    }
 
-	public function onExecuteSuccess(Player $source) {
+    /**
+     * Drops the target item in front of the player.
+     *
+     * @param Player $source
+     * @return bool
+     */
+    public function execute(Player $source) : bool{
+        return $source->dropItem($this->targetItem);
+    }
 
-	}
+    public function onExecuteSuccess(Player $source){
 
-	public function onExecuteFail(Player $source) {
+    }
 
-	}
+    public function onExecuteFail(Player $source){
+
+    }
 }

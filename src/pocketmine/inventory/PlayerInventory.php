@@ -38,16 +38,11 @@ use pocketmine\Server;
 
 class PlayerInventory extends EntityInventory{
 
-    const CURSOR_INDEX = -1;
-
 	/** @var Human */
 	protected $holder;
 
 	/** @var int */
 	protected $itemInHandIndex = 0;
-
-    /** @var Item */
-    protected $cursor = null;
 
 	/**
 	 * @param Human $player
@@ -55,14 +50,6 @@ class PlayerInventory extends EntityInventory{
 	public function __construct(Human $player){
 		parent::__construct($player);
 	}
-
-    public function sendCursor(){
-        $pk = new InventorySlotPacket();
-        $pk->inventorySlot = 0;
-        $pk->item = clone $this->cursor;
-        $pk->windowId = ContainerIds::CURSOR;
-        $this->getHolder()->dataPacket($pk);
-    }
 
 	public function getName() : string{
 		return "Player";
@@ -227,22 +214,9 @@ class PlayerInventory extends EntityInventory{
             $this->slots[$index] = $item;
             $this->onSlotChange($index, $old, $send);
             return true;
-        }elseif($index === self::CURSOR_INDEX){
-            $this->cursor = $item;
-            if($send)
-                $this->sendCursor();
-            return true;
         }
         return parent::setItem($index, $item, $send);
     }
-
-    public function getItem(int $index): Item{
-        if($index === self::CURSOR_INDEX){
-            return $this->cursor === null ? Item::get(Item::AIR) : clone $this->cursor;
-        }else{
-            return parent::getItem($index);
-        }
-	}
 
     /**
 	 * Sends the currently-held item to specified targets.

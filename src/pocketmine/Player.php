@@ -72,6 +72,7 @@ use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\CraftingGrid;
+use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\Inventory;
@@ -289,6 +290,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public $lastEnderPearlUse = 0;
 	/** @var  CraftingGrid */
 	protected $craftingGrid;
+    /** @var  PlayerCursorInventory */
+	protected $cursorInventory;
 	public $namedtag;
 	public $server;
 	public $boundingBox;
@@ -2257,7 +2260,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$inventory->sendContents($this);
 			if($inventory instanceof PlayerInventory){
 				$inventory->sendArmorContents($this);
-				$inventory->sendCursor();
 			}
 		}
 	}
@@ -2522,28 +2524,29 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->sendAllInventories();
 			return true;
 		}
-		
+
+        /** @var InventoryAction[] $actions */
+        $actions = [];
+        foreach($packet->actions as $networkInventoryAction){
+            $action = $networkInventoryAction->createInventoryAction($this);
+
+            if($action === null){
+                $this->server->getLogger()->debug("Unmatched inventory action from " . $this->getName() . ": " . json_encode($networkInventoryAction));
+                $this->sendAllInventories();
+                return false;
+            }
+
+            $actions[] = $action;
+        }
+
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
-				$transaction = new InventoryTransaction($this);
+                $transaction = new InventoryTransaction($this, $actions);
 
-                foreach($packet->actions as $action){
-                    try{
-                        $transaction->addAction($action);
-                    }catch(\InvalidStateException $e){
-                        $this->server->getLogger()->debug($e->getMessage());
-                        $this->sendAllInventories();
-                        return false;
-                    }
-                }
                 if(!$transaction->execute()){
-                    foreach($transaction->getInventories() as $inventory){
-                        $inventory->sendContents($this);
-                        if($inventory instanceof PlayerInventory){
-                            $inventory->sendArmorContents($this);
-                        }
-                    }
-                    return false;
+                    $this->server->getLogger()->debug("Failed to execute inventory transaction from " . $this->getName() . " with actions: " . json_encode($packet->actions));
+
+                    return false; //oops!
                 }
 
 				return true;
@@ -3833,6 +3836,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->removeAllWindows(true);
 			$this->windows = new \SplObjectStorage();
 			$this->windowIndex = [];
+			$this->cursorInventory = null;
 			$this->craftingGrid = null;
 			$this->usedChunks = [];
 			$this->loadQueue = [];
@@ -4209,8 +4213,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected function addDefaultWindows(){
 		$this->addWindow($this->getInventory(), ContainerIds::INVENTORY, true);
+        $this->cursorInventory = new PlayerCursorInventory($this);
+        $this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
 		$this->craftingGrid = new CraftingGrid($this);
 	}
+
+	public function getCursorInventory(){
+	    return $this->cursorInventory;
+    }
 
 	public function getCraftingGrid() : CraftingGrid{
 		return $this->craftingGrid;

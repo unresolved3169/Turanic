@@ -25,6 +25,7 @@ namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
@@ -33,45 +34,30 @@ use pocketmine\Player;
  */
 class SlotChangeAction extends InventoryAction{
 
-    /** @var Inventory|null */
+    /** @var Inventory */
     protected $inventory;
     /** @var int */
     private $inventorySlot;
-    /** @var int */
-    private $containerId;
 
     /**
-     * @param Item $sourceItem
-     * @param Item $targetItem
-     * @param int  $containerId
-     * @param int  $inventorySlot
+     * @param Inventory $inventory
+     * @param int       $inventorySlot
+     * @param Item      $sourceItem
+     * @param Item      $targetItem
      */
-    public function __construct(Item $sourceItem, Item $targetItem, int $containerId, int $inventorySlot){
+    public function __construct(Inventory $inventory, int $inventorySlot, Item $sourceItem, Item $targetItem){
         parent::__construct($sourceItem, $targetItem);
+        $this->inventory = $inventory;
         $this->inventorySlot = $inventorySlot;
-        $this->containerId = $containerId;
-    }
-
-    public function getContainerId() : int{
-        return $this->containerId;
     }
 
     /**
-     * Returns the inventory involved in this action. Will return null if the action has not yet been fully initialized.
+     * Returns the inventory involved in this action.
      *
-     * @return Inventory|null
+     * @return Inventory
      */
-    public function getInventory(){
+    public function getInventory() : Inventory{
         return $this->inventory;
-    }
-
-    public function setInventoryFrom(Player $player){
-        $inventory = $player->getWindow($this->containerId);
-        if($inventory === null){
-            throw new \InvalidStateException("Player " . $player->getName() . " has no open container with ID " . $this->containerId);
-        }
-
-        $this->inventory = $inventory;
     }
 
     /**
@@ -90,23 +76,22 @@ class SlotChangeAction extends InventoryAction{
      * @return bool
      */
     public function isValid(Player $source) : bool{
-        if($this->containerId === CraftingGrid::WINDOW_ID) { //TODO: Anti-cheat
-            if($this->inventorySlot === CraftingGrid::RESULT_INDEX) {
-                return $this->inventory->getItem(CraftingGrid::RESULT_INDEX)->equals($this->sourceItem) and $this->inventory->getItem(CraftingGrid::RESULT_INDEX)->getCount() === $this->sourceItem->getCount();
-            }
-        }
         $check = $this->inventory->getItem($this->inventorySlot);
-        return $check->equals($this->sourceItem) and $check->getCount() === $this->sourceItem->getCount();
+        if(!$check->equalsExact($this->sourceItem)){
+            if($this->inventory instanceof CraftingGrid) return true;
+            return false;
+        }
+        return true;
     }
 
     /**
-     * Checks if the item in the inventory at the specified slot is already the same as this action's target item.
-     * @param Player $source
-     * @return bool
+     * Adds this action's target inventory to the transaction's inventory list.
+     *
+     * @param InventoryTransaction $transaction
+     *
      */
-    public function isAlreadyDone(Player $source) : bool{
-        $check = $this->inventory->getItem($this->inventorySlot);
-        return $check->equals($this->targetItem) and $check->getCount() === $this->targetItem->getCount();
+    public function onAddToTransaction(InventoryTransaction $transaction){
+        $transaction->addInventory($this->inventory);
     }
 
     /**
