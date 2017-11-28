@@ -1796,16 +1796,18 @@ abstract class Entity extends Location implements Metadatable {
         if($dx == 0 and $dz == 0 and $dy == 0){
             return true;
         }
-        Timings::$entityMoveTimer->startTiming();
 
-        $movX = $dx;
-        $movY = $dy;
-        $movZ = $dz;
         if($this->keepMovement){
             $this->boundingBox->offset($dx, $dy, $dz);
+            $this->setPosition($this->temporalVector->setComponents(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
+            $this->onGround = $this->isPlayer ? true : false;
             return true;
         }else{
+            Timings::$entityMoveTimer->startTiming();
             $this->ySize *= 0.4;
+            $movX = $dx;
+            $movY = $dy;
+            $movZ = $dz;
             $axisalignedbb = clone $this->boundingBox;
             assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
             $list = $this->level->getCollisionCubes($this, $this->level->getTickRate() > 1 ? $this->boundingBox->getOffsetBoundingBox($dx, $dy, $dz) : $this->boundingBox->addCoord($dx, $dy, $dz), false);

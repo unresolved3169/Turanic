@@ -1478,10 +1478,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->allowFlight = $this->isCreative();
 		if($this->isSpectator()){
 			$this->flying = true;
-			$this->keepMovement = true;
 			$this->despawnFromAll();
 		}else{
-		    $this->keepMovement = $this->allowMovementCheats;
 			if($this->isSurvival()){
 				$this->flying = false;
 			}
@@ -1626,7 +1624,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
 			$this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
-			$this->onGround = $this->isPlayer ? true : false;
+			$this->onGround = true;
 			return true;
 		}else{
 			$pos = new Vector3($this->x + $dx, $this->y + $dy, $this->z + $dz);
@@ -2136,7 +2134,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		$this->allowFlight = $this->isCreative();
-        $this->keepMovement = $this->isSpectator() || $this->allowMovementCheats();
 
 		if(($level = $this->server->getLevelByName((string) $this->namedtag["Level"])) === null){
 			$this->setLevel($this->server->getDefaultLevel());
