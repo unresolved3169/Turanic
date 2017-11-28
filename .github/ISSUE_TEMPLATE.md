@@ -1,15 +1,21 @@
 #### Issue description
-<!-- Write a short description about the issue, and if applicable, include detailed steps to reproduce this issue -->
+<!--- Write a short description about the issue -->
 
-#### System information
-<!-- Please provide your PHP binary, e.g. 7.0.22 -->
-* PHP binary version:
+#### Steps to reproduce the issue
+<!--- Help us find the problem by adding steps to reproduce the issue -->
 
-<!-- Please provide information of the OS on your server, e.g. Windows 10 1709 (64-bit), Windows Server 2016, Debian 9.1 (64-bit) -->
+#### OS and versions
+<!---
+Valid version must contain build number or git hash, "latest" is invalid.
+If the version is invalid, the issue will be CLOSED
+Game versions include Bedrock Engine, Windows 10 Edition version
+-->
+* Turanic:
+* PHP:
 * Server OS:
+* Game version: 
 
-#### Crash dump or plugin list
-<!-- If you have any of them, please paste them in the block below -->
+#### Crashdump, backtrace, memory dumps, plugins list or other files
+<!--- Paste in the below block -->
 ```
-
 ```
