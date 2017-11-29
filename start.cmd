@@ -1,5 +1,5 @@
 @echo off
-TITLE Turanic server software for Minecraft: Pocket Edition
+TITLE Turanic server software for Minecraft: Bedrock Edition
 cd /d %~dp0
 
 if exist bin\php\php.exe (
