@@ -37,16 +37,18 @@ class CommandRequestPacket extends DataPacket{
 	public $command;
 	/** @var int */
 	public $type;
-	
 	/** @var string */
 	public $requestId;
-	/** @var int */
-	public $playerId;
 
 	protected function decodePayload(){
 		$this->command = $this->getString();
 		$this->type = $this->getUnsignedVarInt();
 		$this->requestId = $this->getString();
-		$this->playerId = $this->getEntityRuntimeId();
 	}
+
+    protected function encodePayload(){
+        $this->putString($this->command);
+        $this->putUnsignedVarInt($this->type);
+        $this->putString($this->requestId);
+    }
 }
