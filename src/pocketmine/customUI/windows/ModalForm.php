@@ -54,7 +54,11 @@ class ModalForm implements CustomUI, \JsonSerializable{
 	 * @return boolean depending on which button was clicked
 	 */
 	public function handle($response, Player $player){
-		return $response[0];
+		if($response === true){
+			return $this->trueButtonText;
+		}else{
+			return $this->falseButtonText;
+		}
 	}
 
 	final public function getTitle(){
