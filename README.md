@@ -3,14 +3,13 @@
 Fast server software for Minecraft: Bedrock/PE Edition and W10 Edition - v1.2.x.
 Turanic is a fork of GenisysPro
 
-| Status | Travis CI | Discord |
+| Twitter | Travis CI | Discord |
 | :---: | :---: | :---: |
- Near to be Stable | [![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) |
+ [![Twitter](https://i.hizliresim.com/vJ2594.jpg)](https://twitter.com/TuranicTeam) | [![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) |
 
 -------------
 ## Can I test this before I download it?
 Yes, you can. There are our member who already use it, and at times there are dev servers running and you might be lucky enough to get in..<br>
-
 
 IP: **play.fylkat.cz**  
 Port: **19132**
