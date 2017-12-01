@@ -75,6 +75,7 @@ use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
+use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -2588,7 +2589,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 							return true;
 						}
 
-						$target = $this->level->getBlock($blockVector);
+						$target = $this->level->getBlockAt($blockVector->x, $blockVector->y, $blockVector->z);
 						$block = $target->getSide($face);
 
 						/** @var Block[] $blocks */
@@ -2618,7 +2619,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						$this->inventory->sendContents($this);
 						$this->inventory->sendHeldItem($this);
 
-						$target = $this->level->getBlock($blockVector);
+						$target = $this->level->getBlockAt($blockVector->x, $blockVector->y, $blockVector->z);
 						/** @var Block[] $blocks */
 						$blocks = $target->getAllSides();
 						$blocks[] = $target;
@@ -2975,7 +2976,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		$block = $this->level->getBlock($this->temporalVector->setComponents($packet->blockX, $packet->blockY, $packet->blockZ));
+		$block = $this->level->getBlockAt($packet->blockX, $packet->blockY, $packet->blockZ);
 
 		$item = $block->getPickedItem();
 
@@ -3006,167 +3007,167 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		if($this->spawned === false or (!$this->isAlive() and $packet->action !== PlayerActionPacket::ACTION_RESPAWN and $packet->action !== PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST)){
-			return true;
-		}
+        if ($this->spawned === false or (!$this->isAlive() and $packet->action !== PlayerActionPacket::ACTION_RESPAWN and $packet->action !== PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST)) {
+            return true;
+        }
 
-		$packet->entityRuntimeId = $this->id;
-		$pos = new Vector3($packet->x, $packet->y, $packet->z);
+        $packet->entityRuntimeId = $this->id;
+        $pos = new Vector3($packet->x, $packet->y, $packet->z);
 
-		switch($packet->action){
-			case PlayerActionPacket::ACTION_START_BREAK:
-				if($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000){
-					break;
-				}
-				$target = $this->level->getBlock($pos);
-				$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
-                if($this->level->checkSpawnProtection($this, $target)){
+        switch ($packet->action) {
+            case PlayerActionPacket::ACTION_START_BREAK:
+                if ($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000) {
+                    break;
+                }
+                $target = $this->level->getBlockAt($pos->x, $pos->y, $pos->z);
+                $ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
+                if ($this->level->checkSpawnProtection($this, $target)) {
                     $ev->setCancelled();
                 }
 
-				$this->getServer()->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
-					$this->inventory->sendHeldItem($this);
-					break;
-				}
-				$block = $target->getSide($packet->face);
-				if($block->getId() === Block::FIRE){
-					$this->level->setBlock($block, Block::get(Block::AIR));
-					break;
-				}
+                $this->getServer()->getPluginManager()->callEvent($ev);
+                if ($ev->isCancelled()) {
+                    $this->inventory->sendHeldItem($this);
+                    break;
+                }
+                $block = $target->getSide($packet->face);
+                if ($block->getId() === Block::FIRE) {
+                    $this->level->setBlock($block, Block::get(Block::AIR));
+                    break;
+                }
 
-				if(!$this->isCreative()){
-					$breakTime = ceil($target->getBreakTime($this->inventory->getItemInHand()) * 20);
-					if($breakTime > 0){
-						$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
-					}
-				}
-				$this->lastBreak = microtime(true);
-				break;
+                if (!$this->isCreative()) {
+                    $breakTime = ceil($target->getBreakTime($this->inventory->getItemInHand()) * 20);
+                    if ($breakTime > 0) {
+                        $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int)(65535 / $breakTime));
+                    }
+                }
+                $this->lastBreak = microtime(true);
+                break;
 
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case PlayerActionPacket::ACTION_ABORT_BREAK:
-				$this->lastBreak = PHP_INT_MAX;
-			case PlayerActionPacket::ACTION_STOP_BREAK:
-				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
-				break;
-			case PlayerActionPacket::ACTION_STOP_SLEEPING:
-				$this->stopSleep();
-				break;
-			case PlayerActionPacket::ACTION_RESPAWN:
-				if($this->spawned === false or $this->isAlive() or !$this->isOnline()){
-					break;
-				}
+            /** @noinspection PhpMissingBreakStatementInspection */
+            case PlayerActionPacket::ACTION_ABORT_BREAK:
+                $this->lastBreak = PHP_INT_MAX;
+            case PlayerActionPacket::ACTION_STOP_BREAK:
+                $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
+                break;
+            case PlayerActionPacket::ACTION_STOP_SLEEPING:
+                $this->stopSleep();
+                break;
+            case PlayerActionPacket::ACTION_RESPAWN:
+                if ($this->spawned === false or $this->isAlive() or !$this->isOnline()) {
+                    break;
+                }
 
-				if($this->server->isHardcore()){
-					$this->setBanned(true);
-					break;
-				}
+                if ($this->server->isHardcore()) {
+                    $this->setBanned(true);
+                    break;
+                }
 
-				$this->resetCraftingGridType();
+                $this->resetCraftingGridType();
 
-				$this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
+                $this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
-				$realSpawn = $ev->getRespawnPosition()->add(0.5, 0, 0.5);
+                $realSpawn = $ev->getRespawnPosition()->add(0.5, 0, 0.5);
 
-				if($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01){
-					$this->teleport($realSpawn); //If the destination was modified by plugins
-				}else{
-					$this->setPosition($realSpawn); //The client will move to the position of its own accord once chunks are sent
-					$this->nextChunkOrderRun = 0;
-					$this->isTeleporting = true;
-					$this->newPosition = null;
-				}
+                if ($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01) {
+                    $this->teleport($realSpawn); //If the destination was modified by plugins
+                } else {
+                    $this->setPosition($realSpawn); //The client will move to the position of its own accord once chunks are sent
+                    $this->nextChunkOrderRun = 0;
+                    $this->isTeleporting = true;
+                    $this->newPosition = null;
+                }
 
-				$this->resetLastMovements();
-				$this->resetFallDistance();
+                $this->resetLastMovements();
+                $this->resetFallDistance();
 
-				$this->setSprinting(false);
-				$this->setSneaking(false);
+                $this->setSprinting(false);
+                $this->setSneaking(false);
 
-				$this->extinguish();
-				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
-				$this->deadTicks = 0;
-				$this->noDamageTicks = 60;
+                $this->extinguish();
+                $this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
+                $this->deadTicks = 0;
+                $this->noDamageTicks = 60;
 
-				$this->removeAllEffects();
-				$this->setHealth($this->getMaxHealth());
+                $this->removeAllEffects();
+                $this->setHealth($this->getMaxHealth());
 
-				/** @var Attribute $attr */
-				foreach($this->attributeMap->getAll() as $attr){
-					$attr->resetToDefault();
-				}
+                /** @var Attribute $attr */
+                foreach ($this->attributeMap->getAll() as $attr) {
+                    $attr->resetToDefault();
+                }
 
-				$this->sendData($this);
+                $this->sendData($this);
 
-				$this->sendSettings();
-				$this->inventory->sendContents($this);
-				$this->inventory->sendArmorContents($this);
+                $this->sendSettings();
+                $this->inventory->sendContents($this);
+                $this->inventory->sendArmorContents($this);
 
-				$this->spawnToAll();
-				$this->scheduleUpdate();
-				break;
-			case PlayerActionPacket::ACTION_JUMP:
-				$this->jump();
-				return true;
-			case PlayerActionPacket::ACTION_START_SPRINT:
-				$ev = new PlayerToggleSprintEvent($this, true);
-				$this->server->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
-					$this->sendData($this);
-				}else{
-					$this->setSprinting(true);
-				}
-				return true;
-			case PlayerActionPacket::ACTION_STOP_SPRINT:
-				$ev = new PlayerToggleSprintEvent($this, false);
-				$this->server->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
-					$this->sendData($this);
-				}else{
-					$this->setSprinting(false);
-				}
-				return true;
-			case PlayerActionPacket::ACTION_START_SNEAK:
-				$ev = new PlayerToggleSneakEvent($this, true);
-				$this->server->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
-					$this->sendData($this);
-				}else{
-					$this->setSneaking(true);
-				}
-				return true;
-			case PlayerActionPacket::ACTION_STOP_SNEAK:
-				$ev = new PlayerToggleSneakEvent($this, false);
-				$this->server->getPluginManager()->callEvent($ev);
-				if($ev->isCancelled()){
-					$this->sendData($this);
-				}else{
-					$this->setSneaking(false);
-				}
-				return true;
-			case PlayerActionPacket::ACTION_START_GLIDE:
-			case PlayerActionPacket::ACTION_STOP_GLIDE:
-			 $glide = $packet->action == PlayerActionPacket::ACTION_START_GLIDE;
-			 if($glide && $this->isHaveElytra()){
-			  $this->elytraIsActivated = true;
-    }else{
-			  $this->elytraIsActivated = false;
+                $this->spawnToAll();
+                $this->scheduleUpdate();
+                break;
+            case PlayerActionPacket::ACTION_JUMP:
+                $this->jump();
+                return true;
+            case PlayerActionPacket::ACTION_START_SPRINT:
+                $ev = new PlayerToggleSprintEvent($this, true);
+                $this->server->getPluginManager()->callEvent($ev);
+                if ($ev->isCancelled()) {
+                    $this->sendData($this);
+                } else {
+                    $this->setSprinting(true);
+                }
+                return true;
+            case PlayerActionPacket::ACTION_STOP_SPRINT:
+                $ev = new PlayerToggleSprintEvent($this, false);
+                $this->server->getPluginManager()->callEvent($ev);
+                if ($ev->isCancelled()) {
+                    $this->sendData($this);
+                } else {
+                    $this->setSprinting(false);
+                }
+                return true;
+            case PlayerActionPacket::ACTION_START_SNEAK:
+                $ev = new PlayerToggleSneakEvent($this, true);
+                $this->server->getPluginManager()->callEvent($ev);
+                if ($ev->isCancelled()) {
+                    $this->sendData($this);
+                } else {
+                    $this->setSneaking(true);
+                }
+                return true;
+            case PlayerActionPacket::ACTION_STOP_SNEAK:
+                $ev = new PlayerToggleSneakEvent($this, false);
+                $this->server->getPluginManager()->callEvent($ev);
+                if ($ev->isCancelled()) {
+                    $this->sendData($this);
+                } else {
+                    $this->setSneaking(false);
+                }
+                return true;
+            case PlayerActionPacket::ACTION_START_GLIDE:
+            case PlayerActionPacket::ACTION_STOP_GLIDE:
+                $glide = $packet->action == PlayerActionPacket::ACTION_START_GLIDE;
+                if ($glide && $this->isHaveElytra()) {
+                    $this->elytraIsActivated = true;
+                } else {
+                    $this->elytraIsActivated = false;
+                }
+                break;
+            case PlayerActionPacket::ACTION_CONTINUE_BREAK:
+                $block = $this->level->getBlockAt($pos->x, $pos->y, $pos->z);
+                $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
+                break;
+            default:
+                $this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
+                return false;
+        }
+
+        $this->setUsingItem(false);
+
+        return true;
     }
-				break;
-			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
-				$block = $this->level->getBlock($pos);
-				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
-				break;
-			default:
-				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
-				return false;
-		}
-
-		$this->setUsingItem(false);
-
-		return true;
-	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
 		if($this->spawned === false or !$this->isAlive()){

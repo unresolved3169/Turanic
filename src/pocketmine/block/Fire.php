@@ -188,7 +188,7 @@ class Fire extends Flowable {
 										$k += ($y - ($this->y + 1)) * 100;
 									}
 
-									$chance = $this->getChanceOfNeighborsEncouragingFire($this->getLevel()->getBlock($this->temporalVector->setComponents($x, $y, $z)));
+									$chance = $this->getChanceOfNeighborsEncouragingFire($this->getLevel()->getBlockAt($x, $y, $z));
 
 									if($chance > 0){
 										$t = ($chance + 40 + $this->getLevel()->getServer()->getDifficulty() * 7);

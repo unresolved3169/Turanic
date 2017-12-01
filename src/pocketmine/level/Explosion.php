@@ -220,7 +220,7 @@ class Explosion {
 			for($side = 0; $side < 5; $side++){
 				$sideBlock = $pos->getSide($side);
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
-					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlock($sideBlock)));
+					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z)));
 					if(!$ev->isCancelled()){
 						$ev->getBlock()->onUpdate(Level::BLOCK_UPDATE_NORMAL);
 					}

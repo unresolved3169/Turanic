@@ -1712,7 +1712,7 @@ abstract class Entity extends Location implements Metadatable {
 	 * @return bool
 	 */
 	public function isInsideOfWater(){
-		$block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
+		$block = $this->level->getBlockAt(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z));
 
 		if($block instanceof Water){
 			$f = ($block->y + 1) - ($block->getFluidHeightPercent() - 0.1111111);
@@ -1727,7 +1727,7 @@ abstract class Entity extends Location implements Metadatable {
 	 * @return bool
 	 */
 	public function isInsideOfSolid(){
-		$block = $this->level->getBlock($this->temporalVector->setComponents(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z)));
+		$block = $this->level->getBlockAt(Math::floorFloat($this->x), Math::floorFloat($y = ($this->y + $this->getEyeHeight())), Math::floorFloat($this->z));
 
 		$bb = $block->getBoundingBox();
 
@@ -1908,7 +1908,7 @@ abstract class Entity extends Location implements Metadatable {
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->level->getBlock($this->temporalVector->setComponents($x, $y, $z));
+						$block = $this->level->getBlockAt($x, $y, $z);
 						if($block->hasEntityCollision()){
 							$this->blocksAround[Level::blockHash($block->x, $block->y, $block->z)] = $block;
 						}
