@@ -101,6 +101,7 @@ abstract class Tile extends Position {
 		self::registerTile(Skull::class);
 		self::registerTile(VirtualHolder::class);
 		self::registerTile(Jukebox::class);
+		self::registerTile(Hopper::class);
 	}
 
 	/**
