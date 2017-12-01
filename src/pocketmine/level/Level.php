@@ -267,6 +267,8 @@ class Level implements ChunkManager, Metadatable{
 
 	private $dimension = self::DIMENSION_NORMAL;
 
+	private $worldHeight;
+
 	/**
 	 * This method is internal use only. Do not use this in plugins
 	 *
@@ -367,6 +369,9 @@ class Level implements ChunkManager, Metadatable{
 		} else {
 			throw new LevelException("Provider is not a subclass of LevelProvider");
 		}
+
+        $this->worldHeight = $this->provider->getWorldHeight();
+
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->provider->getName()]));
 		$this->generator = Generator::getGenerator($this->provider->getGenerator());
 
@@ -1269,7 +1274,7 @@ class Level implements ChunkManager, Metadatable{
         $fullState = 0;
         $index = null;
 
-        if($y < $this->provider->getWorldHeight() and $y >= 0){
+        if($y < $this->worldHeight and $y >= 0){
             $index = Level::blockHash($x, $y, $z);
             if($cached and isset($this->blockCache[$index])){
                 return $this->blockCache[$index];
@@ -1407,7 +1412,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function setBlock(Vector3 $pos, Block $block, bool $direct = false, bool $update = true): bool {
 		$pos = $pos->floor();
-		if ($pos->y < 0 or $pos->y >= $this->provider->getWorldHeight()) {
+		if ($pos->y < 0 or $pos->y >= $this->worldHeight) {
 			return false;
 		}
 
@@ -3036,4 +3041,8 @@ class Level implements ChunkManager, Metadatable{
 	public function getEntityManager() : EntityManager{
 		return $this->entityManager;
 	}
+
+	public function getWorldHeight(){
+	    return $this->worldHeight;
+    }
 }
