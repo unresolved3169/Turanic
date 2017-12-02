@@ -33,6 +33,7 @@ use pocketmine\command\defaults\BanListCommand;
 use pocketmine\command\defaults\BiomeCommand;
 use pocketmine\command\defaults\CaveCommand;
 use pocketmine\command\defaults\ChunkInfoCommand;
+use pocketmine\command\defaults\ClearInventoryCommand;
 use pocketmine\command\defaults\DefaultGamemodeCommand;
 use pocketmine\command\defaults\DeopCommand;
 use pocketmine\command\defaults\DifficultyCommand;
@@ -130,6 +131,7 @@ class SimpleCommandMap implements CommandMap {
             new BiomeCommand("biome"),
             new CaveCommand("cave"),
             new ChunkInfoCommand("chunkinfo"),
+            new ClearInventoryCommand("clearinv"),
             new DefaultGamemodeCommand("defaultgamemode"),
             new DeopCommand("deop"),
             new DifficultyCommand("difficulty"),
