@@ -721,6 +721,19 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 
 	public function saveNBT(){
 		parent::saveNBT();
+
+        //Food
+        $this->namedtag->foodLevel = new IntTag("foodLevel", $this->getFood());
+        $this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
+        $this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
+        $this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
+
+        //Xp
+        $this->namedtag->XpLevel = new IntTag("XpLevel", $this->getXpLevel());
+        $this->namedtag->XpTotal = new IntTag("XpTotal", $this->getTotalXp());
+        $this->namedtag->XpP = new FloatTag("XpP", $this->getXpProgress());
+        $this->namedtag->XpSeed = new IntTag("XpSeed", $this->getXpSeed());
+
 		$nbtinv = new ListTag("Inventory", []);
 		$nbtinv->setTagType(NBT::TAG_Compound);
 		$this->namedtag->Inventory = $nbtinv;
@@ -764,18 +777,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 				"GeometryData" => new StringTag("GeometryData", $this->skin->getGeometryData())
 			]);
 		}
-
-		//Xp
-		$this->namedtag->XpLevel = new IntTag("XpLevel", $this->getXpLevel());
-		$this->namedtag->XpTotal = new IntTag("XpTotal", $this->getTotalXp());
-		$this->namedtag->XpP = new FloatTag("XpP", $this->getXpProgress());
-		$this->namedtag->XpSeed = new IntTag("XpSeed", $this->getXpSeed());
-
-		//Food
-		$this->namedtag->foodLevel = new IntTag("foodLevel", $this->getFood());
-		$this->namedtag->foodExhaustionLevel = new FloatTag("foodExhaustionLevel", $this->getExhaustion());
-		$this->namedtag->foodSaturationLevel = new FloatTag("foodSaturationLevel", $this->getSaturation());
-		$this->namedtag->foodTickTimer = new IntTag("foodTickTimer", $this->foodTickTimer);
 	}
 
 	/**
@@ -811,7 +812,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 
 	public function close(){
 		if(!$this->closed){
-			if(!($this instanceof Player) or $this->loggedIn){
+			if(!($this instanceof Player) or $this->spawned){
 				foreach($this->inventory->getViewers() as $viewer){
 					$viewer->removeWindow($this->inventory);
 				}
