@@ -375,7 +375,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
         try{
             if(self::$fullList !== null){
-                $block = clone self::$list[$id];
+                $block = clone self::$fullList[($id << 4) | $meta];
                 $block->setDamage($meta);
             }else{
                 $block = new UnknownBlock($id, $meta);
