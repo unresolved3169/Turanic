@@ -54,7 +54,7 @@ class RedstoneLamp extends Solid {
 	 * @return bool
 	 */
 	public function turnOn(){
-		$this->getLevel()->setBlock($this, new LitRedstoneLamp(), true, true);
+		$this->getLevel()->setBlock($this, new ActiveRedstoneLamp(), true, true);
 		return true;
 	}
 }

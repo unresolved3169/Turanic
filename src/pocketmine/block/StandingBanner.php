@@ -62,34 +62,34 @@ class StandingBanner extends Transparent{
 	}
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($face !== Vector3::SIDE_DOWN){
-			$nbt = new Compound("", [
-				new StringTag("id", Tile::BANNER),
-				new IntTag("x", $blockReplace->x),
-				new IntTag("y", $blockReplace->y),
-				new IntTag("z", $blockReplace->z),
-				$item->getNamedTag()->Base ?? new IntTag("Base", $item->getDamage() & 0x0f),
-			]);
+        if ($face !== Vector3::SIDE_DOWN) {
+            $nbt = new CompoundTag("", [
+                new StringTag("id", Tile::BANNER),
+                new IntTag("x", $block->x),
+                new IntTag("y", $block->y),
+                new IntTag("z", $block->z),
+                $item->getNamedTag()->Base ?? new IntTag("Base", $item->getDamage() & 0x0f),
+            ]);
 
-			if($face === Vector3::SIDE_UP){
-				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
-				$this->getLevel()->setBlock($blockReplace, $this, true);
-			}else{
-				$this->meta = $face;
-				$this->getLevel()->setBlock($blockReplace, new WallBanner($this->meta), true);
-			}
-			
-			if(isset($item->getNamedTag()->Patterns) and ($item->getNamedTag()->Patterns instanceof Enum)){
-				$nbt->Patterns = $item->getNamedTag()->Patterns;
-			}
-			
-			Tile::createTile(Tile::BANNER, $this->getLevel(), $nbt);
-			
-			return true;
-		}
+            if ($face === Vector3::SIDE_UP) {
+                $this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
+                $this->getLevel()->setBlock($block, $this, true);
+            } else {
+                $this->meta = $face;
+                $this->getLevel()->setBlock($block, new WallBanner($this->meta), true);
+            }
 
-		return false;
-	}
+            if (isset($item->getNamedTag()->Patterns) and ($item->getNamedTag()->Patterns instanceof ListTag)) {
+                $nbt->Patterns = $item->getNamedTag()->Patterns;
+            }
+
+            Tile::createTile(Tile::BANNER, $this->getLevel(), $nbt);
+
+            return true;
+        }
+
+        return false;
+    }
 
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
@@ -114,11 +114,11 @@ class StandingBanner extends Transparent{
 		return [];
 	}
 
-	public function onBreak(Item $item, Player $player = null) : bool{
+	public function onBreak(Item $item, Player $player = null){
 		if(($tile = $this->level->getTile($this)) !== null) {
-			$this->level->dropItem($this, ItemFactory::get(Item::BANNER)->setNamedTag($tile->getCleanedNBT()));
+			$this->level->dropItem($this, Item::get(Item::BANNER)->setNamedTag($tile->getCleanedNBT()));
 		}
 		
-		return parent::onBreak($item, $player);
+		return parent::onBreak($item);
 	}
 }

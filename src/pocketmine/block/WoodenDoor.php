@@ -21,15 +21,18 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\item\Tool;
 
-class FenceGateJungle extends FenceGate {
+class WoodenDoor extends Door {
 
-	protected $id = self::FENCE_GATE_JUNGLE;
+	protected $id = self::WOOD_DOOR_BLOCK;
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Jungle Fence Gate";
-	}
+    public function getHardness() : float{
+        return 3;
+    }
+
+    public function getToolType() : int{
+        return Tool::TYPE_AXE;
+    }
 }

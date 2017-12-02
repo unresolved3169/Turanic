@@ -350,4 +350,8 @@ abstract class Door extends Transparent implements ElectricalAppliance {
 
 		return true;
 	}
+
+	public function getVariantBitmask(): int{
+        return 0;
+    }
 }

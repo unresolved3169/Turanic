@@ -26,7 +26,9 @@ use pocketmine\math\Vector3;
 
 class MovingObjectPosition {
 
-	/** 0 = block, 1 = entity */
+    const TYPE_BLOCK_COLLISION = 0;
+    const TYPE_ENTITY_COLLISION = 1;
+
 	public $typeOfHit;
 
 	public $blockX;
@@ -52,34 +54,36 @@ class MovingObjectPosition {
 
 	}
 
-	/**
-	 * @param int     $x
-	 * @param int     $y
-	 * @param int     $z
-	 * @param Vector3 $hitVector
-	 *
-	 * @return MovingObjectPosition
-	 */
-	public static function fromBlock($x, $y, $z, Vector3 $hitVector){
-		$ob = new MovingObjectPosition;
-		$ob->typeOfHit = 0;
-		$ob->blockX = $x;
-		$ob->blockY = $y;
-		$ob->blockZ = $z;
-		$ob->hitVector = new Vector3($hitVector->x, $hitVector->y, $hitVector->z);
-		return $ob;
-	}
+    /**
+     * @param int $x
+     * @param int $y
+     * @param int $z
+     * @param int $side
+     * @param Vector3 $hitVector
+     *
+     * @return MovingObjectPosition
+     */
+    public static function fromBlock(int $x, int $y, int $z, int $side, Vector3 $hitVector) : MovingObjectPosition{
+        $ob = new MovingObjectPosition;
+        $ob->typeOfHit = self::TYPE_BLOCK_COLLISION;
+        $ob->blockX = $x;
+        $ob->blockY = $y;
+        $ob->blockZ = $z;
+        $ob->sideHit = $side;
+        $ob->hitVector = new Vector3($hitVector->x, $hitVector->y, $hitVector->z);
+        return $ob;
+    }
 
-	/**
-	 * @param Entity $entity
-	 *
-	 * @return MovingObjectPosition
-	 */
-	public static function fromEntity(Entity $entity){
-		$ob = new MovingObjectPosition;
-		$ob->typeOfHit = 1;
-		$ob->entityHit = $entity;
-		$ob->hitVector = new Vector3($entity->x, $entity->y, $entity->z);
-		return $ob;
-	}
+    /**
+     * @param Entity $entity
+     *
+     * @return MovingObjectPosition
+     */
+    public static function fromEntity(Entity $entity) : MovingObjectPosition{
+        $ob = new MovingObjectPosition;
+        $ob->typeOfHit = self::TYPE_ENTITY_COLLISION;
+        $ob->entityHit = $entity;
+        $ob->hitVector = new Vector3($entity->x, $entity->y, $entity->z);
+        return $ob;
+    }
 }

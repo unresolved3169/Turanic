@@ -28,9 +28,10 @@ class Clay extends Solid {
 
 	protected $id = self::CLAY_BLOCK;
 
-	/**
-	 * Clay constructor.
-	 */
+    /**
+     * Clay constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}

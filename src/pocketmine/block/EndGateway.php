@@ -29,6 +29,8 @@ use pocketmine\utils\Color;
 
 class EndGateway extends Transparent {
 
+    protected $id = self::END_GATEWAY;
+
     public function __construct($meta = 0){
         $this->meta = $meta;
     }

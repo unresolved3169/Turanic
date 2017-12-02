@@ -3,7 +3,7 @@
 namespace pocketmine\level\generator\normal\biome;
 
 use pocketmine\block\Block;
-use pocketmine\block\StainedTerracotta;
+use pocketmine\block\StainedClay;
 use pocketmine\level\generator\populator\Cactus;
 use pocketmine\level\generator\populator\DeadBush;
 
@@ -31,23 +31,23 @@ class MesaBiome extends SandyBiome {
 		$this->rainfall = 0.8;
 		$this->setGroundCover([
 			Block::get(Block::TERRACOTTA, 0),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::PINK),
+			Block::get(Block::STAINED_CLAY, StainedClay::PINK),
 			Block::get(Block::TERRACOTTA, 0),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::ORANGE),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::BLACK),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::GRAY),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::WHITE),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::ORANGE),
-			Block::get(Block::TERRACOTTA, 0),
-			Block::get(Block::TERRACOTTA, 0),
+			Block::get(Block::STAINED_CLAY, StainedClay::ORANGE),
+			Block::get(Block::STAINED_CLAY, StainedClay::BLACK),
+			Block::get(Block::STAINED_CLAY, StainedClay::GRAY),
+			Block::get(Block::STAINED_CLAY, StainedClay::WHITE),
+			Block::get(Block::STAINED_CLAY, StainedClay::ORANGE),
 			Block::get(Block::TERRACOTTA, 0),
 			Block::get(Block::TERRACOTTA, 0),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::YELLOW),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::BLACK),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::PINK),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::PINK),
+			Block::get(Block::TERRACOTTA, 0),
+			Block::get(Block::TERRACOTTA, 0),
+			Block::get(Block::STAINED_CLAY, StainedClay::YELLOW),
+			Block::get(Block::STAINED_CLAY, StainedClay::BLACK),
+			Block::get(Block::STAINED_CLAY, StainedClay::PINK),
+			Block::get(Block::STAINED_CLAY, StainedClay::PINK),
 			Block::get(Block::RED_SANDSTONE, 0),
-			Block::get(Block::STAINED_TERRACOTTA, StainedTerracotta::WHITE),
+			Block::get(Block::STAINED_CLAY, StainedClay::WHITE),
 			Block::get(Block::RED_SANDSTONE, 0),
 			Block::get(Block::RED_SANDSTONE, 0),
 			Block::get(Block::RED_SANDSTONE, 0),

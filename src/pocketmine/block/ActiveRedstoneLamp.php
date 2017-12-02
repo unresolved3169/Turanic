@@ -77,7 +77,7 @@ class ActiveRedstoneLamp extends Solid implements ElectricalAppliance, SolidLigh
 	public function lightAround(){
 		$sides = [Vector3::SIDE_EAST, Vector3::SIDE_WEST, Vector3::SIDE_SOUTH, Vector3::SIDE_NORTH, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
 		foreach($sides as $side){
-			/** @var InactiveRedstoneLamp $block */
+			/** @var RedstoneLamp $block */
 			$block = $this->getSide($side);
 			if($block->getId() == self::INACTIVE_REDSTONE_LAMP){
 				$block->turnOn();
@@ -104,19 +104,13 @@ class ActiveRedstoneLamp extends Solid implements ElectricalAppliance, SolidLigh
 	}
 
 	public function turnOn(){
-		/*if($this->isLightedByAround()){
-			$this->meta = 0;
-			$this->getLevel()->setBlock($this, $this, true, false);
-			$this->lightAround();
-		}*/
 		$this->meta = 0;
 		$this->getLevel()->setBlock($this, $this, true, false);
 		return true;
 	}
 
 	public function turnOff(){
-		$this->getLevel()->setBlock($this, new InactiveRedstoneLamp(), true, true);
-		//$this->turnAroundOff();
+		$this->getLevel()->setBlock($this, new RedstoneLamp(), true, true);
 		return true;
 	}
 }

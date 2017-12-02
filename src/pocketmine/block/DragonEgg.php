@@ -29,9 +29,10 @@ use pocketmine\item\Item;
 class DragonEgg extends Fallable {
 	protected $id = self::DRAGON_EGG;
 
-	/**
-	 * DragonEgg constructor.
-	 */
+    /**
+     * DragonEgg constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}

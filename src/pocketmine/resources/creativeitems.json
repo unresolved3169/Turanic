@@ -5093,11 +5093,11 @@
     "count": 1,
     "nbt": ""
   },{
-    "id": 241,
-    "damage": 12,
-    "count": 1,
-    "nbt": ""
-  },
+  "id": 241,
+  "damage": 12,
+  "count": 1,
+  "nbt": ""
+},
   {
     "id": 241,
     "damage": 13,

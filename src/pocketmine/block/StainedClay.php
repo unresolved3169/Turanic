@@ -24,13 +24,12 @@
 
 namespace pocketmine\block;
 
-
 use pocketmine\item\Tool;
 use pocketmine\item\Item;
 
-class StainedTerracotta extends Solid {
+class StainedClay extends Solid {
 
-	protected $id = self::STAINED_TERRACOTTA;
+	protected $id = self::STAINED_CLAY;
 
 	const WHITE = 0;
 	const ORANGE = 1;
@@ -104,7 +103,7 @@ class StainedTerracotta extends Solid {
     public function getDrops(Item $item): array{
         if($item->isPickaxe() >= 1){
             return [
-                [Item::STAINED_TERRACOTTA, 0, 1],
+                [Item::STAINED_CLAY, 0, 1],
             ];
         }
         return [];

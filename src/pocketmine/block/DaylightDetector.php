@@ -30,9 +30,8 @@ use pocketmine\tile\DLDetector;
 use pocketmine\tile\Tile;
 
 class DaylightDetector extends RedstoneSource {
-	protected $id = self::DAYLIGHT_SENSOR;
 
-	//protected $hasStartedUpdate = false;
+	protected $id = self::DAYLIGHT_DETECTOR;
 
 	/**
 	 * @return string
@@ -66,7 +65,7 @@ class DaylightDetector extends RedstoneSource {
 	}
 
 	/**
-	 * @return DLDetector
+	 * @return DLDetector|null
 	 */
 	protected function getTile(){
 		$t = $this->getLevel()->getTile($this);
@@ -79,7 +78,9 @@ class DaylightDetector extends RedstoneSource {
 				new IntTag("y", $this->y),
 				new IntTag("z", $this->z)
 			]);
-			return Tile::createTile(Tile::DL_DETECTOR, $this->getLevel(), $nbt);
+			$t = Tile::createTile(Tile::DL_DETECTOR, $this->getLevel(), $nbt);
+            if($t instanceof DLDetector) return $t;
+            return null;
 		}
 	}
 

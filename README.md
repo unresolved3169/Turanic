@@ -14,7 +14,7 @@ Yes, you can. There are our member who already use it, and at times there are de
 IP: **play.fylkat.cz**  
 Port: **19132**
 
-IP: **kitpvp.pkpvp.cf**
+IP: **kitpvp.pkpvp.cf**  
 Port: **19172**
 
 -------------

@@ -397,12 +397,12 @@ class Item implements ItemIds, \JsonSerializable {
 			if($class === null){
 				return (new Item($id, $meta, $count))->setCompoundTag($tags);
 			}elseif($id < 256){
-				return (new ItemBlock(new $class($meta), $meta, $count))->setCompoundTag($tags);
+                return (new ItemBlock($id, $meta, $count))->setCompoundTag($tags);
 			}else{
-				return (new $class($meta, $count))->setCompoundTag($tags);
+                return (new $class($meta, $count))->setCompoundTag($tags);
 			}
 		}catch(\RuntimeException $e){
-			return (new Item($id, $meta, $count))->setCompoundTag($tags);
+            return (new Item($id, $meta, $count))->setCompoundTag($tags);
 		}
 	}
 

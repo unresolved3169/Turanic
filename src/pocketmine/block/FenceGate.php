@@ -29,24 +29,6 @@ use pocketmine\Player;
 
 class FenceGate extends Transparent implements ElectricalAppliance {
 
-	protected $id = self::FENCE_GATE;
-
-	/**
-	 * FenceGate constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Oak Fence Gate";
-	}
-
 	/**
 	 * @return int
 	 */
@@ -73,7 +55,6 @@ class FenceGate extends Transparent implements ElectricalAppliance {
 	 * @return null|AxisAlignedBB
 	 */
 	protected function recalculateBoundingBox(){
-
 		if(($this->getDamage() & 0x04) > 0){
 			return null;
 		}
@@ -119,7 +100,11 @@ class FenceGate extends Transparent implements ElectricalAppliance {
 		return true;
 	}
 
-	/**
+	public function getVariantBitmask(): int{
+	    return 0;
+    }
+
+    /**
 	 * @return bool
 	 */
 	public function isOpened(){

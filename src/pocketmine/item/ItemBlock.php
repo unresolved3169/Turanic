@@ -30,15 +30,15 @@ use pocketmine\block\Block;
  * Class used for Items that can be Blocks
  */
 class ItemBlock extends Item {
-	/**
-	 * ItemBlock constructor.
-	 *
-	 * @param Block $block
-	 * @param int   $meta
-	 * @param int   $count
-	 */
-	public function __construct(Block $block, $meta = 0, int $count = 1){
-		$this->block = $block;
+    /**
+     * ItemBlock constructor.
+     *
+     * @param int $id
+     * @param int $meta
+     * @param int $count
+     */
+	public function __construct(int $id, $meta = 0, int $count = 1){
+		$this->block = $block = Block::get($id, $meta & 0xf);
 		parent::__construct($block->getId(), $block->getDamage(), $count, $block->getName());
 	}
 

@@ -28,9 +28,9 @@ use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\Server;
 
-class NetherWart extends Flowable {
+class NetherWartPlant extends Flowable {
 
-	protected $id = self::NETHER_WART_BLOCK;
+	protected $id = self::NETHER_WART_PLANT;
 
 	/**
 	 * NetherWart constructor.
@@ -45,7 +45,7 @@ class NetherWart extends Flowable {
 	 * @return string
 	 */
 	public function getName() : string{
-		return "Nether Wart Block";
+		return "Nether Wart";
 	}
 
 	/**
@@ -110,10 +110,14 @@ class NetherWart extends Flowable {
 		if($this->meta >= 0x03){
 			$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
 			$fortunel = $fortunel > 3 ? 3 : $fortunel;
-			$drops[] = [Item::NETHER_WART, 0, mt_rand(2, 4 + $fortunel)];
+			$drops[] = [$this->getItemId(), 0, mt_rand(2, 4 + $fortunel)];
 		}else{
-			$drops[] = [Item::NETHER_WART, 0, 1];
+			$drops[] = [$this->getItemId(), 0, 1];
 		}
 		return $drops;
 	}
+
+	public function getItemId(): int{
+        return Item::NETHER_WART;
+    }
 }
