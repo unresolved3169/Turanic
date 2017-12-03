@@ -22,6 +22,8 @@
 
 namespace pocketmine;
 
+use pocketmine\block\CommandBlock;
+use pocketmine\tile\CommandBlock as TileCommandBlock;
 use pocketmine\customUI\CustomUI;
 use pocketmine\block\Block;
 use pocketmine\block\PressurePlate;
@@ -106,6 +108,7 @@ use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
+use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
@@ -964,6 +967,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected function switchLevel(Level $targetLevel) : bool{
 		$oldLevel = $this->level;
 		if(parent::switchLevel($targetLevel)){
+		    $X = $Z = 0;
 			foreach($this->usedChunks as $index => $d){
 				Level::getXZ($index, $X, $Z);
 				$this->unloadChunk($X, $Z, $oldLevel);
@@ -1125,6 +1129,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->noDamageTicks = 60;
 
+        $chunkX = $chunkZ = 0;
 		foreach($this->usedChunks as $index => $c){
 			Level::getXZ($index, $chunkX, $chunkZ);
 			foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
@@ -1229,6 +1234,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			}
 		}
 
+		$X = $Z = 0;
 		foreach ($unloadChunks as $index => $bool) {
 			Level::getXZ($index, $X, $Z);
 			$this->unloadChunk($X, $Z);
@@ -3765,7 +3771,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if ($this->connected and !$this->closed) {
 			if ($notify and strlen($reason) > 0) {
 				$pk = new DisconnectPacket();
-				$pk->hideDisconnectionScreen = null;
+				$pk->hideDisconnectionScreen = false;
 				$pk->message = $reason;
 				$this->directDataPacket($pk);
 			}
@@ -3794,6 +3800,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$this->removeAllWindows(true);
 
+			$chunkX = $chunkZ = 0;
 			foreach ($this->usedChunks as $index => $d) {
 				Level::getXZ($index, $chunkX, $chunkZ);
 				$this->level->unregisterChunkLoader($this, $chunkX, $chunkZ);
@@ -4544,5 +4551,42 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $return = parent::getOffsetPosition($vector3);
         $return->y += 0.001;
         return $return;
+    }
+    
+    public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
+        if(!$this->isOp() or !$this->isCreative()){
+            return false;
+        }
+        var_dump($packet);
+        if($packet->isBlock){
+            $block = $this->level->getBlockAt($packet->x, $packet->y, $packet->z);
+            var_dump($block);
+            if($block instanceof CommandBlock){
+                $tile = $this->level->getTile($block);
+                if(!$tile instanceof TileCommandBlock) return false;
+                $replace = Block::get($tile->getIdByBlockType($packet->commandBlockMode), $block->getDamage());
+                if($packet->isConditional){
+                    if($replace->getDamage() < 8){
+                        $replace->setDamage($replace->getDamage() + 8);
+                    }
+                }else{
+                    if($replace->getDamage() > 8){
+                        $replace->setDamage($replace->getDamage() - 8);
+                    }
+                }
+                $this->level->setBlock($block, $replace, false, false);
+                $tile->setName($packet->name);
+                $tile->setBlockType($packet->commandBlockMode);
+                $tile->setCommand($packet->command);
+                $tile->setLastOutput($packet->lastOutput);
+                $tile->setTrackOutput($packet->shouldTrackOutput);
+                $tile->setAuto(!$packet->isRedstoneMode);
+                $tile->setConditional($packet->isConditional);
+                $tile->spawnToAll();
+            }
+        }else{
+            // Minecart
+        }
+        return true;
     }
 }

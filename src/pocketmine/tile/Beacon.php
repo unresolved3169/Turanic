@@ -96,10 +96,10 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 		return isset($this->namedtag->CustomName);
 	}
 
-	/**
-	 * @param void $str
-	 */
-	public function setName($str){
+    /**
+     * @param string $str
+     */
+	public function setName(string $str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
 			return;

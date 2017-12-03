@@ -53,9 +53,9 @@ class EnchantTable extends Spawnable implements Nameable {
 	}
 
 	/**
-	 * @param void $str
+	 * @param string $str
 	 */
-	public function setName($str){
+	public function setName(string $str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
 			return;

@@ -30,9 +30,9 @@ interface Nameable {
 	public function getName();
 
 	/**
-	 * @param void $str
+	 * @param string $str
 	 */
-	public function setName($str);
+	public function setName(string $str);
 
 	/**
 	 * @return bool

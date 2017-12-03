@@ -89,7 +89,7 @@ abstract class Tile extends Position {
 		self::registerTile(BrewingStand::class);
 		self::registerTile(Cauldron::class);
 		self::registerTile(Chest::class);
-		//self::registerTile(CommandBlock::class); TODO
+		self::registerTile(CommandBlock::class);
 		self::registerTile(Dispenser::class);
 		self::registerTile(DLDetector::class);
 		self::registerTile(Dropper::class);

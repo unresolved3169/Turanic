@@ -44,7 +44,7 @@ class EnderChest extends Spawnable implements Nameable {
 	/**
 	 * @param void $str
 	 */
-	public function setName($str){
+	public function setName(string $str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
 			return;

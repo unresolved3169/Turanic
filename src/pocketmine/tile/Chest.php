@@ -212,10 +212,10 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable {
 		return isset($this->namedtag->CustomName);
 	}
 
-	/**
-	 * @param void $str
-	 */
-	public function setName($str){
+    /**
+     * @param string $str
+     */
+	public function setName(string $str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
 			return;

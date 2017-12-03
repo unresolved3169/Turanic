@@ -111,6 +111,7 @@ class Level implements ChunkManager, Metadatable{
 	const BLOCK_UPDATE_SCHEDULED = 3;
 	const BLOCK_UPDATE_WEAK = 4;
 	const BLOCK_UPDATE_TOUCH = 5;
+	const BLOCK_UPDATE_REDSTONE = 6;
 
 	const TIME_DAY = 0;
 	const TIME_SUNSET = 12000;
