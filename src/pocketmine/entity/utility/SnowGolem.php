@@ -19,37 +19,36 @@
  *
  */
 
-
 namespace pocketmine\entity;
 
-use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class Skeleton extends Monster implements ProjectileSource {
-	const NETWORK_ID = 34;
 
-	public $dropExp = [5, 5];
+class SnowGolem extends Animal {
+	const NETWORK_ID = 21;
+
+	public $width = 0.3;
+	public $length = 0.9;
+	public $height = 1.8;
 	public $drag = 0.2;
 	public $gravity = 0.3;
-	
+
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-                $this->setMaxHealth(20);
+		$this->setMaxHealth(20);
 		parent::initEntity();
 	}
+
 	/**
 	 * @return string
 	 */
-	public function getName() : string{
-		return "Skeleton";
+	public function getName(){
+		return "Snow Golem";
 	}
 
 	/**
@@ -58,7 +57,7 @@ class Skeleton extends Monster implements ProjectileSource {
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->type = Skeleton::NETWORK_ID;
+		$pk->type = self::NETWORK_ID;
         $pk->position = $this->getPosition();
         $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
@@ -67,25 +66,5 @@ class Skeleton extends Monster implements ProjectileSource {
 		$player->dataPacket($pk);
 
 		parent::spawnTo($player);
-
-		$pk = new MobEquipmentPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->item = new ItemItem(ItemItem::BOW);
-		$pk->slot = 0;
-		$pk->selectedSlot = 0;
-
-		$player->dataPacket($pk);
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
-		$drops = [
-			ItemItem::get(ItemItem::ARROW, 0, mt_rand(0, 2))
-		];
-		$drops[] = ItemItem::get(ItemItem::BONE, 0, mt_rand(0, 2));
-
-		return $drops;
 	}
 }

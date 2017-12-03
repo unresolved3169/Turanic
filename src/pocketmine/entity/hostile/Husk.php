@@ -2,59 +2,55 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *  _____   _____   __   _   _   _____  __    __  _____
+ * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
+ * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
+ * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
+ * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
+ * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
+ * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
- *
+ * @author iTX Technologies
+ * @link https://itxtech.org
  *
  */
 
 namespace pocketmine\entity;
 
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class Vindicator extends Monster {
-	const NETWORK_ID = 57;
 
+class Husk extends Zombie {
+	const NETWORK_ID = 47;
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 0;
-
+	
 	public $dropExp = [5, 5];
-
-
-	/**
-	 * @return string
-	 */
-	public function getName(){
-		return "Vindicator";
-	}
-
+	
+	public $drag = 0.2;
+	public $gravity = 0.3;
+	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		$this->setMaxHealth(24);
+		
 		parent::initEntity();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName() : string{
+		return "Husk";
 	}
 
 	/**
@@ -63,7 +59,7 @@ class Vindicator extends Monster {
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
         $pk->entityRuntimeId = $this->getId();
-		$pk->type = Vindicator::NETWORK_ID;
+		$pk->type = Husk::NETWORK_ID;
         $pk->position = $this->getPosition();
         $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
@@ -71,17 +67,6 @@ class Vindicator extends Monster {
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 
-		parent::spawnTo($player);
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
-		$drops = [
-			ItemItem::get(ItemItem::EMERALD, 0, mt_rand(0, 1))
-		];
-
-		return $drops;
+		Entity::spawnTo($player);
 	}
 }

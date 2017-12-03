@@ -184,7 +184,6 @@ class Squid extends WaterAnimal implements Ageable {
 	 * @return array
 	 */
 	public function getDrops(){
-		$lootingL = 0;
 		$cause = $this->lastDamageCause;
 		if($cause instanceof EntityDamageByEntityEvent and $cause->getDamager() instanceof Player){
 			$damager = $cause->getDamager();

@@ -165,7 +165,7 @@ class FallingSand extends Entity {
 									$damage = ($height - 1) * 2;
 									if($damage > 40) $damage = 40;
 									$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageByEntityEvent::CAUSE_FALL, $damage, 0.1);
-									$entity->attack($damage, $ev);
+									$entity->attack($ev);
 								}
 							}
 
