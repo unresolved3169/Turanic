@@ -1,27 +1,10 @@
 <?php
 
-/*
- *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author iTX Technologies
- * @link https://itxtech.org
- *
- */
-
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
 use pocketmine\block\Liquid;
+use pocketmine\entity\hostile\Creeper;
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
@@ -29,7 +12,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
 use pocketmine\Player;
 
-class Lightning extends Animal {
+class Lightning extends Entity {
 	const NETWORK_ID = 93;
 
 	public $width = 0.3;

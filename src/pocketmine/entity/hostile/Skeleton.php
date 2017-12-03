@@ -19,9 +19,10 @@
  *
  */
 
+namespace pocketmine\entity\hostile;
 
-namespace pocketmine\entity;
-
+use pocketmine\entity\Monster;
+use pocketmine\entity\ProjectileSource;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;

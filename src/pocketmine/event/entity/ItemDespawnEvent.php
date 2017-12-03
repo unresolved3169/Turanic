@@ -21,7 +21,7 @@
 
 namespace pocketmine\event\entity;
 
-use pocketmine\entity\Item;
+use pocketmine\entity\object\Item;
 use pocketmine\event\Cancellable;
 
 class ItemDespawnEvent extends EntityEvent implements Cancellable {

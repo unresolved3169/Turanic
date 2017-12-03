@@ -19,9 +19,11 @@
  *
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
 
+use pocketmine\entity\Entity;
+use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;

@@ -20,8 +20,10 @@
  *
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
+use pocketmine\entity\Entity;
+use pocketmine\entity\Projectile;
 use pocketmine\level\Level;
 use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\nbt\tag\CompoundTag;

@@ -19,12 +19,12 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\hostile;
 
+use pocketmine\entity\Entity;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
-
 
 class Husk extends Zombie {
 	const NETWORK_ID = 47;

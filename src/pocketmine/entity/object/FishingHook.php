@@ -19,8 +19,10 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
+use pocketmine\entity\Entity;
+use pocketmine\entity\Projectile;
 use pocketmine\event\player\PlayerFishEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
@@ -28,7 +30,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
-
 
 class FishingHook extends Projectile {
 	const NETWORK_ID = 77;

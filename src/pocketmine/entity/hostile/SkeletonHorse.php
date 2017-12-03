@@ -22,8 +22,9 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\hostile;
 
+use pocketmine\entity\Animal;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};

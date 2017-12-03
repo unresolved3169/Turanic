@@ -22,8 +22,9 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\hostile;
 
+use pocketmine\entity\Monster;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;

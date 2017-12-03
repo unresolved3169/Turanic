@@ -1,14 +1,9 @@
 <?php
-/*
- * This file is translated from the Nukkit Project
- * which is written by MagicDroidX
- * @link https://github.com/Nukkit/Nukkit
-*/
 
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Painting as PaintingEntity;
+use pocketmine\entity\object\Painting as PaintingEntity;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;

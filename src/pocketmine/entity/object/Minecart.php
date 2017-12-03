@@ -19,10 +19,12 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
 use pocketmine\block\Block;
 use pocketmine\block\Rail;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Vehicle;
 use pocketmine\math\Math;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;

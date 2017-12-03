@@ -5,9 +5,10 @@
  * @link https://github.com/Nukkit/Nukkit
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
 use pocketmine\block\Block;
+use pocketmine\entity\Hanging;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\particle\DestroyBlockParticle;

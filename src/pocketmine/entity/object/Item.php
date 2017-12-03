@@ -19,8 +19,9 @@
  *
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
+use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;

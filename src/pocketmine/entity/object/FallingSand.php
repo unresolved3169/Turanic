@@ -19,12 +19,14 @@
  *
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
 use pocketmine\block\Anvil;
 use pocketmine\block\Block;
 use pocketmine\block\Liquid;
 use pocketmine\block\SnowLayer;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;

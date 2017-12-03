@@ -19,9 +19,9 @@
  *
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\hostile;
 
-
+use pocketmine\entity\Monster;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;

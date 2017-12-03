@@ -19,9 +19,9 @@
  *
  */
 
+namespace pocketmine\entity\hostile;
 
-namespace pocketmine\entity;
-
+use pocketmine\entity\Entity;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;

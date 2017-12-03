@@ -19,8 +19,9 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
+use pocketmine\entity\Entity;
 use pocketmine\event\player\PlayerPickupExpOrbEvent;
 use pocketmine\level\sound\ExpPickupSound;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;

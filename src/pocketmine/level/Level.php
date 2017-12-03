@@ -28,12 +28,12 @@ namespace pocketmine\level;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
-use pocketmine\entity\Arrow;
+use pocketmine\entity\object\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Item as DroppedItem;
-use pocketmine\entity\Lightning;
-use pocketmine\entity\XPOrb;
+use pocketmine\entity\object\Item as DroppedItem;
+use pocketmine\entity\object\Lightning;
+use pocketmine\entity\object\XPOrb;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;

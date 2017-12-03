@@ -23,7 +23,7 @@ namespace pocketmine\tile;
 
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Item as ItemEntity;
+use pocketmine\entity\object\Item as ItemEntity;
 use pocketmine\inventory\DispenserInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;

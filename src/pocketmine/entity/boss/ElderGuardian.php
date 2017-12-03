@@ -22,8 +22,10 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\boss;
 
+use pocketmine\entity\Animal;
+use pocketmine\entity\Entity;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;

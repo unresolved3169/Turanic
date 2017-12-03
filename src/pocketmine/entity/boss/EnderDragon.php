@@ -21,8 +21,9 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\boss;
 
+use pocketmine\entity\Monster;
 use pocketmine\Player;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 

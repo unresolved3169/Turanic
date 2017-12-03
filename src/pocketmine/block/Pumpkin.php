@@ -21,8 +21,8 @@
 
 namespace pocketmine\block;
 
-use pocketmine\entity\IronGolem;
-use pocketmine\entity\SnowGolem;
+use pocketmine\entity\utility\IronGolem;
+use pocketmine\entity\utility\SnowGolem;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\nbt\tag\CompoundTag;

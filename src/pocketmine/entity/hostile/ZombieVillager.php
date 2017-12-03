@@ -19,7 +19,7 @@
  *
  */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\hostile;
 
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;

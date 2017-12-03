@@ -19,8 +19,10 @@
  *
 */
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\object;
 
+use pocketmine\entity\Entity;
+use pocketmine\entity\Projectile;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
