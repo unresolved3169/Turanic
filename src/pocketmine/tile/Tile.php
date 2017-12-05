@@ -38,7 +38,7 @@ abstract class Tile extends Position {
 	const BREWING_STAND = "BrewingStand";
 	const CHEST = "Chest";
 	const COMMAND_BLOCK = "CommandBlock";
-	const DL_DETECTOR = "DayLightDetector";
+	const DL_DETECTOR = "DLDetector";
 	const ENCHANT_TABLE = "EnchantTable";
 	const FLOWER_POT = "FlowerPot";
 	const FURNACE = "Furnace";

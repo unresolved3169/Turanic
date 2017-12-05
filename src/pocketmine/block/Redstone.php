@@ -27,7 +27,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-class Redstone extends RedstoneSource {
+class Redstone extends Solid {
 
 	protected $id = self::REDSTONE_BLOCK;
 
@@ -40,7 +40,26 @@ class Redstone extends RedstoneSource {
 		$this->meta = $meta;
 	}
 
-	/**
+	public function getResistance(){
+        return 10;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHardness(){
+        return 5;
+    }
+
+    public function isRedstoneSource(){
+        return true;
+    }
+
+    public function getWeakPower(int $side): int{
+        return 15;
+    }
+
+    /**
 	 * @return \pocketmine\math\AxisAlignedBB
 	 */
 	public function getBoundingBox(){
@@ -59,22 +78,6 @@ class Redstone extends RedstoneSource {
 	 */
 	public function isSolid(){
 		return true;
-	}
-
-	/**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
-	public function isActivated(Block $from = null){
-		return true;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
-		return 5;
 	}
 
 	/**

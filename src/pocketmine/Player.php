@@ -4557,10 +4557,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         if(!$this->isOp() or !$this->isCreative()){
             return false;
         }
-        var_dump($packet);
+        // TODO : Control
         if($packet->isBlock){
             $block = $this->level->getBlockAt($packet->x, $packet->y, $packet->z);
-            var_dump($block);
             if($block instanceof CommandBlock){
                 $tile = $this->level->getTile($block);
                 if(!$tile instanceof TileCommandBlock) return false;

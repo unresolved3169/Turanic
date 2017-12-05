@@ -38,4 +38,12 @@ class DaylightDetectorInverted extends DaylightDetector {
 		$this->getTile()->onUpdate();
 		return true;
 	}
+
+	public function isRedstoneSource(){
+        return false;
+    }
+
+    public function getWeakPower(int $side): int{
+        return 0;
+    }
 }

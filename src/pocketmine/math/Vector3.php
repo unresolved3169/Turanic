@@ -480,4 +480,34 @@ class Vector3 {
 	public static function createRandomDirection(Random $random){
 		return VectorMath::getDirection3D($random->nextFloat() * 2 * pi(), $random->nextFloat() * 2 * pi());
 	}
+
+    public static function rotateYCCW(int $side) : int{
+        switch($side){
+            case Vector3::SIDE_NORTH:
+                return Vector3::SIDE_WEST;
+            case Vector3::SIDE_EAST:
+                return Vector3::SIDE_NORTH;
+            case Vector3::SIDE_SOUTH:
+                return Vector3::SIDE_EAST;
+            case Vector3::SIDE_WEST:
+                return Vector3::SIDE_SOUTH;
+            default:
+                throw new \RuntimeException("Unable to get counter-clockwise Y-rotated face of $side");
+        }
+    }
+
+    public static function rotateY(int $side) : int{
+        switch($side){
+            case Vector3::SIDE_NORTH:
+                return Vector3::SIDE_EAST;
+            case Vector3::SIDE_EAST:
+                return Vector3::SIDE_SOUTH;
+            case Vector3::SIDE_SOUTH:
+                return Vector3::SIDE_WEST;
+            case Vector3::SIDE_WEST:
+                return Vector3::SIDE_NORTH;
+            default:
+                throw new \RuntimeException("Unable to get Y-rotated face of $side");
+        }
+    }
 }

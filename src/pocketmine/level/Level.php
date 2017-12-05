@@ -1148,77 +1148,29 @@ class Level implements ChunkManager, Metadatable{
 		return $collides;
 	}
 
-	/*
-	public function rayTraceBlocks(Vector3 $pos1, Vector3 $pos2, $flag = false, $flag1 = false, $flag2 = false){
-		if(!is_nan($pos1->x) and !is_nan($pos1->y) and !is_nan($pos1->z)){
-			if(!is_nan($pos2->x) and !is_nan($pos2->y) and !is_nan($pos2->z)){
-				$x1 = (int) $pos1->x;
-				$y1 = (int) $pos1->y;
-				$z1 = (int) $pos1->z;
-				$x2 = (int) $pos2->x;
-				$y2 = (int) $pos2->y;
-				$z2 = (int) $pos2->z;
+	public function getRedstonePower(Vector3 $pos, int $face) : int{
+        $block = $this->getBlockAt($pos->x, $pos->y, $pos->z);
+        return $block->getWeakPower($face);
+    }
 
-				$block = $this->getBlock(Vector3::createVector($x1, $y1, $z1));
+	public function isBlockPowered(Vector3 $pos) : bool{
+        $sides = [Vector3::SIDE_NORTH, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_EAST, Vector3::SIDE_DOWN, Vector3::SIDE_UP];
+        foreach($sides as $side){
+            if($this->getRedstonePower($pos->getSide($side), $side) > 0){
+                return true;
+            }
+        }
 
-				if(!$flag1 or $block->getBoundingBox() !== null){
-					$ob = $block->calculateIntercept($pos1, $pos2);
-					if($ob !== null){
-						return $ob;
-					}
-				}
+        return false;
+    }
 
-				$movingObjectPosition = null;
-
-				$k = 200;
-
-				while($k-- >= 0){
-					if(is_nan($pos1->x) or is_nan($pos1->y) or is_nan($pos1->z)){
-						return null;
-					}
-
-					if($x1 === $x2 and $y1 === $y2 and $z1 === $z2){
-						return $flag2 ? $movingObjectPosition : null;
-					}
-
-					$flag3 = true;
-					$flag4 = true;
-					$flag5 = true;
-
-					$i = 999;
-					$j = 999;
-					$k = 999;
-
-					if($x1 > $x2){
-						$i = $x2 + 1;
-					}elseif($x1 < $x2){
-						$i = $x2;
-					}else{
-						$flag3 = false;
-					}
-
-					if($y1 > $y2){
-						$j = $y2 + 1;
-					}elseif($y1 < $y2){
-						$j = $y2;
-					}else{
-						$flag4 = false;
-					}
-
-					if($z1 > $z2){
-						$k = $z2 + 1;
-					}elseif($z1 < $z2){
-						$k = $z2;
-					}else{
-						$flag5 = false;
-					}
-
-					//TODO
-				}
-			}
-		}
+    public function updateAroundRedstone(Vector3 $pos, array $sides = null){
+        if($sides == null) $sides = [Vector3::SIDE_DOWN, Vector3::SIDE_UP, Vector3::SIDE_NORTH, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_EAST];
+	    foreach($sides as $side){
+            $block = $this->getBlock($pos->getSide($side));
+	        $block->onUpdate(self::BLOCK_UPDATE_REDSTONE);
+        }
 	}
-	*/
 
 	public function getFullLight(Vector3 $pos): int {
 		$chunk = $this->getChunk($pos->x >> 4, $pos->z >> 4, false);
@@ -1353,45 +1305,6 @@ class Level implements ChunkManager, Metadatable{
 		$update->execute();
 		$this->timings->doBlockLightUpdates->stopTiming();
 	}
-
-	//unused!
-	/*private function computeRemoveBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, \SplQueue $spreadQueue, array &$visited, array &$spreadVisited) {
-		if ($y < 0) return;
-		$current = $this->getBlockLightAt($x, $y, $z);
-
-		if ($current !== 0 and $current < $currentLight) {
-			$this->setBlockLightAt($x, $y, $z, 0);
-
-			if (!isset($visited[$index = Level::blockHash($x, $y, $z)])) {
-				$visited[$index] = true;
-				if ($current > 1) {
-					$queue->enqueue([new Vector3($x, $y, $z), $current]);
-				}
-			}
-		} elseif ($current >= $currentLight) {
-			if (!isset($spreadVisited[$index = Level::blockHash($x, $y, $z)])) {
-				$spreadVisited[$index] = true;
-				$spreadQueue->enqueue(new Vector3($x, $y, $z));
-			}
-		}
-	}
-
-	private function computeSpreadBlockLight(int $x, int $y, int $z, int $currentLight, \SplQueue $queue, array &$visited) {
-		if ($y < 0) return;
-		$current = $this->getBlockLightAt($x, $y, $z);
-		$currentLight -= Block::$lightFilter[$this->getBlockIdAt($x, $y, $z)];
-
-		if ($current < $currentLight) {
-			$this->setBlockLightAt($x, $y, $z, $currentLight);
-
-			if (!isset($visited[$index = Level::blockHash($x, $y, $z)])) {
-				$visited[$index] = true;
-				if ($currentLight > 1) {
-					$queue->enqueue(new Vector3($x, $y, $z));
-				}
-			}
-		}
-	}*/
 
 	/**
 	 * Sets on Vector3 the data from a Block object,

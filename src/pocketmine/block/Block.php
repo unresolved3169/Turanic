@@ -206,7 +206,7 @@ class Block extends Position implements BlockIds, Metadatable{
             self::registerBlock(new EndStone());
             self::registerBlock(new DragonEgg());
             self::registerBlock(new RedstoneLamp());
-            self::registerBlock(new ActiveRedstoneLamp());
+            self::registerBlock(new LitRedstoneLamp());
             self::registerBlock(new Dropper());
             self::registerBlock(new ActivatorRail());
             self::registerBlock(new CocoaBlock());
@@ -607,6 +607,18 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
+	public function isNormal(){
+	    return !$this->isTransparent() && $this->isSolid() && !$this->isRedstoneSource();
+    }
+
+    public function isRedstoneSource(){
+	    return false;
+    }
+
+    public function getWeakPower(int $side) : int{
+        return 0;
+    }
+
 	/**
 	 * AKA: Block->isFlowable
 	 *
@@ -621,7 +633,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBeActivated() : bool{
+	public function canBeActivated() : bool{ // TODO : REMOVE
 		return false;
 	}
 

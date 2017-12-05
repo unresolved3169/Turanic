@@ -40,9 +40,10 @@ class TNT extends Solid implements ElectricalAppliance {
 
 	protected $id = self::TNT;
 
-	/**
-	 * TNT constructor.
-	 */
+    /**
+     * TNT constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
@@ -61,7 +62,7 @@ class TNT extends Solid implements ElectricalAppliance {
 		return 0;
 	}
 
-	/**
+    /**
 	 * @return bool
 	 */
 	public function canBeActivated() : bool{
@@ -82,16 +83,13 @@ class TNT extends Solid implements ElectricalAppliance {
 		return 100;
 	}
 
-	/**
-	 * @param Player|null $player
-	 */
-	public function prime(Player $player = null, $fuse = 80){
+    /**
+     * @param Player|null $player
+     * @param int $fuse
+     */
+	public function prime(Player $player = null, int $fuse = 80){
 		$this->meta = 1;
-		if($player != null and $player->isCreative()){
-			$dropItem = false;
-		}else{
-			$dropItem = true;
-		}
+		$dropItem = $player != null and $player->isCreative() ? false : true;
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
 		$tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), new CompoundTag("", [
 			"Pos" => new ListTag("Pos", [
@@ -117,41 +115,12 @@ class TNT extends Solid implements ElectricalAppliance {
 
 	/**
 	 * @param int $type
-	 *
-	 * @return bool|int
 	 */
 	public function onUpdate($type){
-		if($type == Level::BLOCK_UPDATE_SCHEDULED){
-			$sides = [0, 1, 2, 3, 4, 5];
-			foreach($sides as $side){
-				$block = $this->getSide($side);
-				if($block instanceof RedstoneSource and $block->isActivated($this)){
-					$this->prime();
-					$this->getLevel()->setBlock($this, new Air(), true);
-					break;
-				}
-			}
-			return Level::BLOCK_UPDATE_SCHEDULED;
+		if(($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE) || $this->level->isBlockPowered($this)){
+            $this->prime();
+            $this->getLevel()->setBlock($this, new Air(), true);
 		}
-		return false;
-	}
-
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool|void
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$this->getLevel()->setBlock($this, $this, true, false);
-
-		$this->getLevel()->scheduleUpdate($this, 40);
 	}
 
 	/**

@@ -25,6 +25,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
@@ -124,17 +125,9 @@ class CommandBlock extends Solid {
         return true;
     }
 
-    public function activate(){
-        $tile = $this->getTile();
-        if($tile instanceof TileCB){
-            $tile->setPowered(true);
-        }
-    }
-
-    public function deactivate(){
-        $tile = $this->getTile();
-        if($tile instanceof TileCB){
-            $tile->setPowered(false);
+    public function setPowered(bool $powered){
+        if(($tile = $this->getTile()) != null){
+            $tile->setPowered($powered);
         }
     }
 
@@ -142,11 +135,20 @@ class CommandBlock extends Solid {
         return TileCB::NORMAL;
     }
 
+    /**
+     * @return TileCB|Tile|null
+     */
     public function getTile(){
         return $this->level->getTile($this);
     }
 
     public function getResistance(){
         return 18000000;
+    }
+
+    public function onUpdate($type){
+        if ($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE) {
+            $this->setPowered($this->level->isBlockPowered($this));
+        }
     }
 }

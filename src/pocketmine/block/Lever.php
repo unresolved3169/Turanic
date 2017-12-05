@@ -24,10 +24,9 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\sound\ButtonClickSound;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Lever extends RedstoneSource {
+class Lever extends Flowable {
 	protected $id = self::LEVER;
 
 	/**
@@ -60,8 +59,7 @@ class Lever extends RedstoneSource {
 	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$side = $this->getDamage();
-			if($this->isActivated()) $side ^= 0x08;
+            $side = $this->isActivated() ? $this->meta ^ 0x08 : $this->meta;
 			$faces = [
 				5 => 0,
 				6 => 0,
@@ -74,7 +72,7 @@ class Lever extends RedstoneSource {
 			];
 
 			$block = $this->getSide($faces[$side]);
-			if($block->isTransparent()){
+			if(!$block->isSolid()){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -96,7 +94,7 @@ class Lever extends RedstoneSource {
 	 * @return bool
 	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target->isTransparent() === false){
+		if(!$target->isTransparent() && $target->isSolid()){
 			$faces = [
 				3 => 3,
 				2 => 4,
@@ -112,66 +110,10 @@ class Lever extends RedstoneSource {
 			}else{
 				$this->meta = $faces[$face];
 			}
-			$this->getLevel()->setBlock($block, $this, true, false);
+			$this->getLevel()->setBlock($block, $this, true, true);
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * @param array $ignore
-	 *
-	 * @return bool|void
-	 */
-	public function activate(array $ignore = []){
-		parent::activate($ignore);
-		$side = $this->meta;
-		if($this->isActivated()) $side ^= 0x08;
-		$faces = [
-			5 => 0,
-			6 => 0,
-			3 => 2,
-			1 => 4,
-			4 => 3,
-			2 => 5,
-			0 => 1,
-			7 => 1,
-		];
-
-		$block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
-		if(!$this->equals($block)){
-			$this->activateBlock($block);
-		}
-
-		$this->checkTorchOn($this->getSide($faces[$side]), [static::getOppositeSide($faces[$side])]);
-	}
-
-	/**
-	 * @param array $ignore
-	 *
-	 * @return bool|void
-	 */
-	public function deactivate(array $ignore = []){
-		parent::deactivate($ignore);
-		$side = $this->meta;
-		if($this->isActivated()) $side ^= 0x08;
-		$faces = [
-			5 => 0,
-			6 => 0,
-			3 => 2,
-			1 => 4,
-			4 => 3,
-			2 => 5,
-			0 => 1,
-			7 => 1,
-		];
-
-		$block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
-		if(!$this->equals($block)){
-			$this->deactivateBlock($block);
-		}
-
-		$this->checkTorchOff($this->getSide($faces[$side]), [static::getOppositeSide($faces[$side])]);
 	}
 
 	/**
@@ -182,10 +124,9 @@ class Lever extends RedstoneSource {
 	 */
 	public function onActivate(Item $item, Player $player = null){
 		$this->meta ^= 0x08;
-		$this->getLevel()->setBlock($this, $this, true, false);
+		$this->getLevel()->setBlock($this, $this, false, true);
 		$this->getLevel()->addSound(new ButtonClickSound($this));
-		if($this->isActivated()) $this->activate();
-		else $this->deactivate();
+        $this->level->updateAroundRedstone($this);
 		return true;
 	}
 
@@ -198,8 +139,8 @@ class Lever extends RedstoneSource {
 		if($this->isActivated()){
 			$this->meta ^= 0x08;
 			$this->getLevel()->setBlock($this, $this, true, false);
-			$this->deactivate();
-		}
+            $this->level->updateAroundRedstone($this);
+        }
 		$this->getLevel()->setBlock($this, new Air(), true, false);
 	}
 
@@ -209,7 +150,7 @@ class Lever extends RedstoneSource {
 	 * @return bool
 	 */
 	public function isActivated(Block $from = null){
-		return (($this->meta & 0x08) === 0x08);
+        return ($this->meta & 0x08) > 0;
 	}
 
 	/**
@@ -236,4 +177,12 @@ class Lever extends RedstoneSource {
 			[$this->id, 0, 1],
 		];
 	}
+
+	public function isRedstoneSource(){
+        return true;
+    }
+
+    public function getWeakPower(int $side): int{
+        return $this->isActivated() ? 15 : 0;
+    }
 }

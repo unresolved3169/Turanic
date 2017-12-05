@@ -135,7 +135,6 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
     }
 
     public function setBlockType(int $blockType){
-        // TODO hata verme ve setBlock
         return $this->namedtag->blockType = new IntTag("blockType", $blockType > 2 or $blockType < 0 ? self::NORMAL : $blockType);
     }
 

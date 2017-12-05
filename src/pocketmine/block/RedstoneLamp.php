@@ -2,27 +2,30 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  *
 */
 
 namespace pocketmine\block;
+
+use pocketmine\item\Tool;
+use pocketmine\level\Level;
 
 class RedstoneLamp extends Solid {
 	protected $id = self::REDSTONE_LAMP;
@@ -43,18 +46,30 @@ class RedstoneLamp extends Solid {
 		return 0;
 	}
 
-	/**
+	public function getResistance(){
+        return 1.5;
+    }
+
+    public function getHardness(){
+        return 0.3;
+    }
+
+    public function getToolType(){
+        return Tool::TYPE_PICKAXE;
+    }
+
+    /**
 	 * @return string
 	 */
 	public function getName() : string{
 		return "Redstone Lamp";
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function turnOn(){
-		$this->getLevel()->setBlock($this, new ActiveRedstoneLamp(), true, true);
-		return true;
+    public function onUpdate($type){
+        if($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE){
+            if($this->level->isBlockPowered($this)){
+                $this->level->setBlock($this, new LitRedstoneLamp(), false, false);
+            }
+        }
 	}
 }

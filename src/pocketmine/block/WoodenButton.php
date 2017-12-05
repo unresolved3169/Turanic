@@ -2,20 +2,21 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
 
@@ -27,7 +28,7 @@ use pocketmine\level\sound\ButtonClickSound;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class WoodenButton extends RedstoneSource {
+class WoodenButton extends Flowable {
 	protected $id = self::WOODEN_BUTTON;
 
 	/**
@@ -39,102 +40,43 @@ class WoodenButton extends RedstoneSource {
 		$this->meta = $meta;
 	}
 
-	/**
+	public function getResistance(){
+        return 2.5;
+    }
+
+    public function getHardness(){
+        return 0.5;
+    }
+
+    /**
 	 * @param int $type
 	 *
 	 * @return bool|int
 	 */
 	public function onUpdate($type){
+	    switch($type){
+            case Level::BLOCK_UPDATE_NORMAL:
+                if($this->getSide($this->getOpposite())->isTransparent()){
+                    $this->getLevel()->useBreakOn($this);
+
+                    return Level::BLOCK_UPDATE_NORMAL;
+                }
+                break;
+            case Level::BLOCK_UPDATE_SCHEDULED:
+
+                break;
+        }
 		if($type == Level::BLOCK_UPDATE_SCHEDULED){
 			if($this->isActivated()){
 				$this->meta ^= 0x08;
 				$this->getLevel()->setBlock($this, $this, true, false);
 				$this->getLevel()->addSound(new ButtonClickSound($this));
-				$this->deactivate();
+                $this->level->updateAroundRedstone($this);
+                $this->level->updateAroundRedstone($this->getSide($this->getOpposite()));
 			}
 			return Level::BLOCK_UPDATE_SCHEDULED;
 		}
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$side = $this->getDamage();
-			if($this->isActivated()) $side ^= 0x08;
-			$faces = [
-				0 => 1,
-				1 => 0,
-				2 => 3,
-				3 => 2,
-				4 => 5,
-				5 => 4,
-			];
-
-			if($this->getSide($faces[$side]) instanceof Transparent){
-				$this->getLevel()->useBreakOn($this);
-
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
 		return false;
-	}
-
-	/**
-	 * @param array $ignore
-	 *
-	 * @return bool|void
-	 */
-	public function deactivate(array $ignore = []){
-		parent::deactivate($ignore = []);
-		$faces = [
-			0 => 1,
-			1 => 0,
-			2 => 3,
-			3 => 2,
-			4 => 5,
-			5 => 4,
-		];
-		$side = $this->meta;
-		if($this->isActivated()) $side ^= 0x08;
-
-		$block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
-		if(!$this->equals($block)){
-			$this->deactivateBlock($block);
-		}
-
-		if($side != 1){
-			$this->deactivateBlock($this->getSide($faces[$side], 2));
-		}
-
-		$this->checkTorchOff($this->getSide($faces[$side]), [static::getOppositeSide($faces[$side])]);
-	}
-
-	/**
-	 * @param array $ignore
-	 *
-	 * @return bool|void
-	 */
-	public function activate(array $ignore = []){
-		parent::activate($ignore = []);
-		$faces = [
-			0 => 1,
-			1 => 0,
-			2 => 3,
-			3 => 2,
-			4 => 5,
-			5 => 4,
-		];
-
-		$side = $this->meta;
-		if($this->isActivated()) $side ^= 0x08;
-
-		$block = $this->getSide($faces[$side])->getSide(Vector3::SIDE_UP);
-		if(!$this->equals($block)){
-			$this->activateBlock($block);
-		}
-
-		if($side != 1){
-			$block = $this->getSide($faces[$side], 2);
-			$this->activateBlock($block);
-		}
-
-		$this->checkTorchOn($this->getSide($faces[$side]), [static::getOppositeSide($faces[$side])]);
 	}
 
 	/**
@@ -142,27 +84,6 @@ class WoodenButton extends RedstoneSource {
 	 */
 	public function getName() : string{
 		return "Wooden Button";
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
-		return 0.5;
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
-	public function onBreak(Item $item){
-		if($this->isActivated()){
-			$this->meta ^= 0x08;
-			$this->getLevel()->setBlock($this, $this, true, false);
-			$this->deactivate();
-		}
-		$this->getLevel()->setBlock($this, new Air(), true, false);
 	}
 
 	/**
@@ -211,11 +132,25 @@ class WoodenButton extends RedstoneSource {
 	public function onActivate(Item $item, Player $player = null){
 		if(!$this->isActivated()){
 			$this->meta ^= 0x08;
-			$this->getLevel()->setBlock($this, $this, true, false);
-			$this->getLevel()->addSound(new ButtonClickSound($this));
-			$this->activate();
-			$this->getLevel()->scheduleUpdate($this, 30);
+			$this->level->setBlock($this, $this, true, false);
+			$this->level->addSound(new ButtonClickSound($this));
+			$this->level->scheduleUpdate($this, 30);
+			$this->level->updateAroundRedstone($this);
+			$this->level->updateAroundRedstone($this->getSide($this->getOpposite()));
 		}
 		return true;
 	}
+
+	public function getOpposite() : int{
+	    $side = $this->isActivated() ? $this->meta ^ 0x08 : $this->meta;
+	    return self::getOppositeSide($side);
+    }
+
+    public function getWeakPower(int $side): int{
+        return $this->isActivated() ? 15 : 0;
+    }
+
+    public function isRedstoneSource(){
+        return true;
+    }
 }
