@@ -121,7 +121,7 @@ abstract class Command {
 	 *
 	 * @return mixed
 	 */
-	public abstract function execute(CommandSender $sender, $commandLabel, array $args);
+	public abstract function execute(CommandSender $sender, string $commandLabel, array $args);
 
 	/**
 	 * @return string

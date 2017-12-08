@@ -57,7 +57,7 @@ class FillCommand extends VanillaCommand {
 	 *
 	 * @return bool
 	 */
-	public function execute(CommandSender $sender, $label, array $args){
+	public function execute(CommandSender $sender, string $label, array $args){
 		if(!$this->testPermission($sender)){
 			return true;
 		}

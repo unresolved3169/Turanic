@@ -54,7 +54,7 @@ class TransferServerCommand extends VanillaCommand {
 	 *
 	 * @return bool
 	 */
-	public function execute(CommandSender $sender, $currentAlias, array $args){
+	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if($sender instanceof Player){
 			if(!$this->canExecute($sender)){
 				return true;

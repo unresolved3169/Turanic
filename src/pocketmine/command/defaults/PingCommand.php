@@ -20,7 +20,7 @@ class PingCommand extends VanillaCommand {
         $this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, true));
     }
 
-    public function execute(CommandSender $sender, $commandLabel, array $args){
+    public function execute(CommandSender $sender, string $commandLabel, array $args){
         if(!$this->canExecute($sender)){
             return true;
         }

@@ -84,7 +84,7 @@ class ParticleCommand extends VanillaCommand {
 	 *
 	 * @return bool
 	 */
-	public function execute(CommandSender $sender, $currentAlias, array $args){
+	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->testPermission($sender)){
 			return true;
 		}
