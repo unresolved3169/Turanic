@@ -26,22 +26,19 @@ class UUID {
 	private $parts = [0, 0, 0, 0];
 	private $version = null;
 
-	/**
-	 * UUID constructor.
-	 *
-	 * @param int  $part1
-	 * @param int  $part2
-	 * @param int  $part3
-	 * @param int  $part4
-	 * @param null $version
-	 */
-	public function __construct($part1 = 0, $part2 = 0, $part3 = 0, $part4 = 0, $version = null){
-		$this->parts[0] = (int) $part1;
-		$this->parts[1] = (int) $part2;
-		$this->parts[2] = (int) $part3;
-		$this->parts[3] = (int) $part4;
+    /**
+     * UUID constructor.
+     *
+     * @param int $part1
+     * @param int $part2
+     * @param int $part3
+     * @param int $part4
+     * @param int|null $version
+     */
+	public function __construct(int $part1 = 0, int $part2 = 0, int $part3 = 0, int $part4 = 0, int $version = null){
+        $this->parts = [$part1, $part2, $part3, $part4];
 
-		$this->version = $version === null ? ($this->parts[1] & 0xf000) >> 12 : (int) $version;
+		$this->version = $version ?? ($this->parts[1] & 0xf000) >> 12;
 	}
 
 	/**
@@ -56,8 +53,8 @@ class UUID {
 	 *
 	 * @return bool
 	 */
-	public function equals(UUID $uuid){
-		return $uuid->parts[0] === $this->parts[0] and $uuid->parts[1] === $this->parts[1] and $uuid->parts[2] === $this->parts[2] and $uuid->parts[3] === $this->parts[3];
+	public function equals(UUID $uuid):bool{
+		return $uuid->parts === $this->parts;
 	}
 
 	/**

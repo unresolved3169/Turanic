@@ -38,7 +38,6 @@ use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\event\Timings;
 use pocketmine\event\TimingsHandler;
-use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
@@ -1495,17 +1494,7 @@ class Server{
 	}
 
 	public function about(){
-		$string = TextFormat::BOLD.TextFormat::AQUA."
-  _______                    _      
- |__   __|                  (_)     
-    | |_   _ _ __ __ _ _ __  _  ___ 
-    | | | | | '__/ _` | '_ \| |/ __|
-    | | |_| | | | (_| | | | | | (__ 
-    |_|\__,_|_|  \__,_|_| |_|_|\___|
-	
-   §r§bGithub§8: §fhttps://github.com/TuranicTeam§f
-   §9Discord§8: §fhttps://discord.gg/DyPYdYT§f
-	";
+		$string = TextFormat::BOLD.TextFormat::AQUA.base64_decode("DQogIF9fX19fX18gICAgICAgICAgICAgICAgICAgIF8gICAgICANCiB8X18gICBfX3wgICAgICAgICAgICAgICAgICAoXykgICAgIA0KICAgIHwgfF8gICBfIF8gX18gX18gXyBfIF9fICBfICBfX18gDQogICAgfCB8IHwgfCB8ICdfXy8gX2AgfCAnXyBcfCB8LyBfX3wNCiAgICB8IHwgfF98IHwgfCB8IChffCB8IHwgfCB8IHwgKF9fIA0KICAgIHxffFxfXyxffF98ICBcX18sX3xffCB8X3xffFxfX198DQoJDQogICDCp3LCp2JHaXRodWLCpzg6IMKnZmh0dHBzOi8vZ2l0aHViLmNvbS9UdXJhbmljVGVhbcKnZg0KICAgwqc5RGlzY29yZMKnODogwqdmaHR0cHM6Ly9kaXNjb3JkLmdnL0R5UFlkWVTCp2YNCgk=");
 		$this->getLogger()->directSend($string);
 	}
 
@@ -2550,7 +2539,7 @@ class Server{
 		$pk = new PlayerListPacket();
         $pk->type = PlayerListPacket::TYPE_ADD;
         foreach($this->playerList as $player){
-            if($player->getName() == $p->getName()) continue;
+            if($player === $p) continue;
             $pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXUID());
         }
 

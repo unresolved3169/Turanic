@@ -232,7 +232,7 @@ class Binary {
 	 */
 	public static function readLInt($str){
 		if(PHP_INT_SIZE === 8){
-			return unpack("V", $str)[1] << 32 >> 32;
+            return self::signInt(unpack("V", $str)[1]);
 		}else{
 			return unpack("V", $str)[1];
 		}

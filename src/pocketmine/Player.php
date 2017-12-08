@@ -172,7 +172,7 @@ use pocketmine\customUI\windows\CustomForm;
 use pocketmine\customUI\elements\Label;
 
 class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
-	
+
 
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
@@ -184,10 +184,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	const CRAFTING_BIG = 1;
 	const CRAFTING_ANVIL = 2;
 	const CRAFTING_ENCHANT = 3;
-	
+
 	/** @var SourceInterface */
 	protected $interface;
-	
+
 	/** @var bool */
 	protected $isTeleporting = false;
 
@@ -235,7 +235,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var Vector3 */
 	protected $sleeping = null;
 	protected $clientID = null;
-	
+
 	protected $deviceModel;
 	protected $deviceOS;
 
@@ -307,7 +307,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $defaultServerSettings;
 	protected $portalStatus = self::PORTAL_STATUS_OUT;
     private $elytraIsActivated = false;
-	
+
 	const PORTAL_STATUS_OUT = 0;
 	const PORTAL_STATUS_IN = 1;
 
@@ -843,7 +843,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->allowMovementCheats = (bool)$this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
 		$this->allowInstaBreak = (bool)$this->server->getProperty("player.anti-cheat.allow-instabreak", false);
-		
+
 		/**
 		 * A CustomForm about Turanic
 		 * You can edit this with Player::setDefaultServerSettings function
@@ -851,7 +851,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$form = new CustomForm("Turanic Server Software");
 		$form->setIconUrl("https://avatars2.githubusercontent.com/u/31800317?s=400&v=4"); // turanic logo
 		$form->addElement(new Label("Turanic is a MC:BE Server Software\nYou can download from github: https://github.com/TuranicTeam/Turanic"));
-		
+
 		$this->defaultServerSettings = $form;
 	}
 
@@ -971,14 +971,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				Level::getXZ($index, $X, $Z);
 				$this->unloadChunk($X, $Z, $oldLevel);
 			}
-			
+
 			if($oldLevel->getDimension() != $targetLevel->getDimension()){
 				$pk = new ChangeDimensionPacket;
 				$pk->dimension = $targetLevel->getDimension();
 				$pk->position = $targetLevel->getSafeSpawn();
-				
+
 				$this->dataPacket($pk);
-				
+
 				$this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 			}
 
@@ -1144,7 +1144,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->sendRespawnPacket($this->getSpawn());
 		}
 	}
-	
+
 	protected function sendRespawnPacket(Vector3 $pos){
 		$pk = new RespawnPacket();
 		$pk->position = $pos->add(0, $this->getEyeHeight(), 0);
@@ -2234,7 +2234,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->sendSettings();
 		$this->sendPotionEffects($this);
 		$this->sendData($this);
-		
+
 		$this->doFirstSpawn();
 
 		$this->inventory->sendContents($this);
@@ -2245,7 +2245,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->server->addOnlinePlayer($this);
 		$this->server->onPlayerCompleteLoginSequence($this);
     }
-	
+
 	protected function sendAllInventories(){
 		foreach($this->windowIndex as $id => $inventory){
 			$inventory->sendContents($this);
@@ -2261,7 +2261,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function getProtocol(){
 		return $this->protocol;
 	}
-	
+
 	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
 		$cmd = $packet->command;
 		if($cmd{0} != '/'){
@@ -2272,9 +2272,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if($event->isCancelled()){
 			return false;
 		}
-		
+
 		$this->server->dispatchCommand($this, $line);
-		
+
 		return true;
 	}
 
@@ -2407,7 +2407,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		return true;
 	}
-	
+
 	public function handleText(TextPacket $packet) : bool{
 		if($packet->type == TextPacket::TYPE_CHAT){
 			return $this->chat($packet->message);
@@ -2519,16 +2519,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         /** @var InventoryAction[] $actions */
         $actions = [];
         foreach($packet->actions as $networkInventoryAction){
-            try{
-                $action = $networkInventoryAction->createInventoryAction($this);
-                if($action !== null){
-                    $actions[] = $action;
-                }
-            }catch(\Throwable $e){
-                $this->server->getLogger()->debug("Unhandled inventory action from " . $this->getName() . ": " . $e->getMessage());
+            $action = $networkInventoryAction->createInventoryAction($this);
+
+            if($action === null){
+                $this->server->getLogger()->debug("Unmatched inventory action from " . $this->getName() . ": " . json_encode($networkInventoryAction));
                 $this->sendAllInventories();
                 return false;
             }
+            $actions[] = $action;
         }
 
 		switch($packet->transactionType){
@@ -2811,7 +2809,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		return false;
 	}
-	
+
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
         if(!$this->spawned or !$this->isAlive()){
             return true;
@@ -3388,25 +3386,25 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		return true;
 	}
-	
+
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
 		return $this->changeSkin($packet->skin, $packet->newSkinName, $packet->oldSkinName);
 	}
-	
+
 	public function handlePing(PingPacket $packet) : bool{
 		// TODO: Add event
 		$this->setPing($packet->ping);
 		return true;
 	}
-	
+
 	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
 		$id = $packet->formId;
 		$data = json_decode($packet->formData, true);
-		
+
 		if(isset($this->modalForms[$id])){
 			if($data === null){
 				$this->modalForms[$id]->close($this);
-				
+
 				$this->server->getPluginManager()->callEvent($ev = new UICloseEvent($this, $packet));
 				if($ev->isCancelled()){
 					$this->sendForm($this->getForm($id), $id);
@@ -3414,16 +3412,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}
 			}else{
 				$handleData = $this->modalForms[$id]->handle($data, $this);
-				
+
 			 $this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet, $handleData));
 			 if($ev->isCancelled()){
 				 $this->sendForm($this->getForm($id), $id);
 				 return false;
 			 }
 			}
-			
+
 			unset($this->modalForms[$id]);
-			
+
 			return true;
 		}
 		return false;
@@ -4055,7 +4053,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		if ($ev->getDeathMessage() != "") {
 			$this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
 		}
-		
+
 		parent::kill();
 
 		$this->sendRespawnPacket($this->getSpawn());
@@ -4426,7 +4424,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		parent::addEffect($effect);
 	}
-	
+
 	public function sendForm(CustomUI $window, int $forceId = -1){
 		if($forceId < 0){
 			$forceId = $this->modalFormCnt++;
@@ -4437,7 +4435,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 		$this->modalForms[$forceId] = $window;
 	}
-		
+
 	public function sendServerSettings(CustomUI $window){
 		$pk = new ServerSettingsResponsePacket;
 		$pk->formId = $id = $this->modalFormCnt++;
@@ -4445,31 +4443,31 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 		$this->modalForms[$id] = $window;
 	}
-	
+
 	public function getDefaultServerSettings() : CustomForm{
 		return $this->defaultServerSettings;
 	}
-	
+
 	public function setDefaultServerSettings(CustomForm $form){
 		$this->defaultServerSettings = $form;
 	}
-		
+
 	public function getForm(int $id){
 		return $this->modalForms[$id] ?? null;
 	}
-	
+
 	public function getFormIndex(CustomUI $form) : int{
 		return (int) @array_search($form, $this->modalForms);
 	}
-	
+
 	public function getForms() : array{
 		return $this->modalForms;
 	}
-	
+
 	public function getXUID() : string{
 		return $this->xuid;
 	}
-		
+
 	/**
 	 * Called when a player changes their skin.
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
@@ -4539,7 +4537,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $return->y += 0.001;
         return $return;
     }
-    
+
     public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
         if(!$this->isOp() or !$this->isCreative()){
             return false;

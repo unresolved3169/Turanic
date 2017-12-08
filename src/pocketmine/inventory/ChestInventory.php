@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\TrappedChest;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
@@ -73,7 +74,8 @@ class ChestInventory extends ContainerInventory{
 	}
 
 	public function onClose(Player $who) {
-		if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
+        if($this->getHolder()->getBlock() instanceof TrappedChest) $this->holder->getLevel()->updateAroundRedstone($this->holder, [Vector3::SIDE_DOWN, Vector3::SIDE_NORTH, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_EAST]);
+        if(count($this->getViewers()) === 1 and ($level = $this->getHolder()->getLevel()) instanceof Level){
 			$this->broadcastBlockEventPacket($this->getHolder(), false);
 			$level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_CHEST_CLOSED);
 		}

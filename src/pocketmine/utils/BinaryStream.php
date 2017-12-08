@@ -287,14 +287,21 @@ class BinaryStream extends \stdClass {
 	 * @return UUID
 	 */
 	public function getUUID(){
-		return UUID::fromBinary($this->get(16));
+        $part1 = $this->getLInt();
+        $part0 = $this->getLInt();
+        $part3 = $this->getLInt();
+        $part2 = $this->getLInt();
+        return new UUID($part0, $part1, $part2, $part3);
 	}
 
 	/**
 	 * @param UUID $uuid
 	 */
 	public function putUUID(UUID $uuid){
-		$this->put($uuid->toBinary());
+        $this->putLInt($uuid->getPart(1));
+        $this->putLInt($uuid->getPart(0));
+        $this->putLInt($uuid->getPart(3));
+        $this->putLInt($uuid->getPart(2));
 	}
 
 	/**
