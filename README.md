@@ -5,7 +5,7 @@ Turanic is a fork of GenisysPro
 
 | Phar | Twitter | Travis CI | Discord |
 | :---: | :---: | :---: | :---: |
- [![Download](https://img.shields.io/badge/download-latest-blue.svg)](https://jenkins.zxda.net/job/Turanic/lastSuccessfulBuild/artifact/plugins/FServerPacker/Turanic_1.2.5_3.0.1.phar) | [![Twitter](https://i.hizliresim.com/vJ2594.jpg)](https://twitter.com/TuranicTeam) | [![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) |
+ [![Download](https://img.shields.io/badge/download-latest-blue.svg)](https://jenkins.zxda.net/job/Turanic/) | [![Twitter](https://i.hizliresim.com/vJ2594.jpg)](https://twitter.com/TuranicTeam) | [![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) |
 
 -------------
 ## Can I test this before I download it?
