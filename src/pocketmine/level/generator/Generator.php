@@ -280,7 +280,7 @@ abstract class Generator {
 	 *
 	 * @return mixed
 	 */
-	public abstract function generateChunk($chunkX, $chunkZ);
+	public abstract function generateChunk(int $chunkX, int $chunkZ);
 
 	/**
 	 * @param $chunkX
@@ -288,7 +288,7 @@ abstract class Generator {
 	 *
 	 * @return mixed
 	 */
-	public abstract function populateChunk($chunkX, $chunkZ);
+	public abstract function populateChunk(int $chunkX, int $chunkZ);
 
 	public abstract function getSettings();
 
