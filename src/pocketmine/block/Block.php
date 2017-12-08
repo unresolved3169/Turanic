@@ -633,11 +633,11 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @return bool
 	 */
-	public function canBeActivated() : bool{ // TODO : REMOVE
+	public function canBeActivated() : bool{
 		return false;
 	}
 
-	public function activate(){
+	public function activate(){ // TODO : remove
 		return false;
 	}
 

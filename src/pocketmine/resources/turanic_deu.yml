@@ -12,7 +12,7 @@
 
 #Version of this file
 config:
- version: 29
+ version: 30
 
 level:
  #Wetter ein und ausschalten (Regen kann bei älteren geräten zum ruckeln führen)
@@ -92,18 +92,6 @@ enchantment:
  #Choose if to count bookshelves (kann ruckler verursachen)
  #Wenn es auf gesetzt false wird, wird der Server zufällige zahlen wählen (0~15)
  count-bookshelf: false
-
-redstone:
- ################################################
- ####      Redstone System einschalten      #####
- ################################################
- ###########Funktioniert derzeit nicht###########
- ################################################
- enable: false
- #Pulse aktivieren
- frequency-pulse: false
- #Setzt die Pulse frequenz. Standard = 1s
- pulse-frequency: 1
 
 dserver:
  #Aktiviert die Query um andere Spieler auf anderen Server mit zu zählen

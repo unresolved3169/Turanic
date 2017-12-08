@@ -12,7 +12,7 @@
 
 #Dosya sürümü
 config:
- version: 29
+ version: 30
 
 level:
  #Aktif yaparsanız hava durumu aktifleşir (Eski cihazlarda laga sebep olabilir)
@@ -88,18 +88,6 @@ enchantment:
  #Eğer aktifse kitaplıkları sayar (Laga sebep olur)
  #Eğer aktif değilse karışık bir sayı belirler (0~15)
  count-bookshelf: false
-
-redstone:
- #########################################################
- ####Eğer aktif edersen kızıltaş sistemleri aktif olur####
- #########################################################
- ####Eğer aktif değilse kızıltaş sistemleri çalışmaz######
- #########################################################
- enable: false
- #Sinyal frekansları aktif eder
- frequency-pulse: false
- #Sinyal frekanslarını ayarlar. Standart = 1s
- pulse-frequency: 1
 
 dserver:
  #Tüm çoklu sunucuları birleştirir

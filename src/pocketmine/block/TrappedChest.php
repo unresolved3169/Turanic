@@ -244,6 +244,7 @@ class TrappedChest extends RedstoneSource {
 				return true;
 			}
 			$player->addWindow($chest->getInventory());
+			$this->level->updateAroundRedstone($this, [self::SIDE_DOWN, self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST]);
 		}
 
 		return true;
@@ -259,4 +260,20 @@ class TrappedChest extends RedstoneSource {
 			[$this->id, 0, 1],
 		];
 	}
+
+	public function getWeakPower(int $side): int{
+        $playerCount = 0;
+
+        $t = $this->getLevel()->getTile($this);
+
+        if($t instanceof TileChest){
+            $playerCount = count($t->getInventory()->getViewers());
+        }
+
+        return $playerCount < 0 ? 0 : $playerCount > 15 ? 15 : $playerCount;
+    }
+
+    public function isRedstoneSource(){
+        return true;
+    }
 }

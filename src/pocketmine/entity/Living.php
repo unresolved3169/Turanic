@@ -23,6 +23,7 @@ namespace pocketmine\entity;
 
 
 use pocketmine\block\Block;
+use pocketmine\entity\hostile\Husk;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -377,4 +378,8 @@ abstract class Living extends Entity implements Damageable {
 
 		return null;
 	}
+
+    public function doesTriggerPressurePlate() : bool{
+        return true;
+    }
 }

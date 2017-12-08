@@ -117,7 +117,7 @@ class TNT extends Solid implements ElectricalAppliance {
 	 * @param int $type
 	 */
 	public function onUpdate($type){
-		if(($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE) || $this->level->isBlockPowered($this)){
+		if(($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE) && $this->level->isBlockPowered($this)){
             $this->prime();
             $this->getLevel()->setBlock($this, new Air(), true);
 		}

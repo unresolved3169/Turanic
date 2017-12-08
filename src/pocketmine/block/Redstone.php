@@ -26,12 +26,35 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\Player;
 
 class Redstone extends Solid {
 
 	protected $id = self::REDSTONE_BLOCK;
 
-	/**
+	public function isActivated(Block $from = null){
+        return true;
+    }
+
+    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+        parent::place($item, $block, $target, $face, $fx, $fy, $fz, $player);
+        $kontrol = false;
+        foreach ([self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST] as $side) {
+            /** @var RedstoneWire $wire */
+            $wire = $this->getSide($side);
+            if($wire->getId() == $this->id){
+                if($wire->isActivated()){
+                    $kontrol = true; // found redstone wire
+                    break;
+                }
+            }
+        }
+        if(!$kontrol)
+            $this->level->updateAroundRedstone($this);
+
+    }
+
+    /**
 	 * Redstone constructor.
 	 *
 	 * @param int $meta

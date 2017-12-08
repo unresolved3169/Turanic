@@ -475,9 +475,6 @@ abstract class Entity extends Location implements Metadatable {
 
 	protected $riding = null;
 
-	/** @var PressurePlate */
-	protected $activatedPressurePlates = [];
-
 	public $dropExp = [0, 0];
 
 
@@ -2240,8 +2237,6 @@ abstract class Entity extends Location implements Metadatable {
 			$this->namedtag = null;
 		}
 
-		$this->activatedPressurePlates = [];
-
 		if($this->attributeMap != null){
 			$this->attributeMap = null;
 		}
@@ -2475,4 +2470,7 @@ abstract class Entity extends Location implements Metadatable {
 		list($this->lastMotionX, $this->lastMotionY, $this->lastMotionZ) = [$this->motionX, $this->motionY, $this->motionZ];
 	}
 
+	public function doesTriggerPressurePlate() : bool{
+	    return false;
+    }
 }

@@ -2953,4 +2953,8 @@ class Level implements ChunkManager, Metadatable{
 	public function getWorldHeight(){
 	    return $this->worldHeight;
     }
+
+    public function isUpdateScheduled(Vector3 $pos, Block $block){
+	    return isset($this->updateQueueIndex[$index = Level::blockHash($pos->x, $pos->y, $pos->z)]);
+    }
 }

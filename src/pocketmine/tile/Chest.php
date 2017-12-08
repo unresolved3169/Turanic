@@ -21,6 +21,7 @@
 
 namespace pocketmine\tile;
 
+use pocketmine\block\TrappedChest;
 use pocketmine\inventory\ChestInventory;
 use pocketmine\inventory\DoubleChestInventory;
 use pocketmine\inventory\InventoryHolder;
@@ -59,6 +60,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable {
 	}
 
 	public function close(){
+	    if($this->getBlock() instanceof TrappedChest) $this->level->updateAroundRedstone($this, [self::SIDE_DOWN, self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST]);
 		if($this->closed === false){
 			foreach($this->getInventory()->getViewers() as $player){
 				$player->removeWindow($this->getInventory());

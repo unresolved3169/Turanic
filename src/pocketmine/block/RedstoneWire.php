@@ -1,334 +1,406 @@
 <?php
 
-/*
- *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author iTX Technologies
- * @link https://itxtech.org
- *
- */
-
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class RedstoneWire extends Flowable {
 
-	const ON = 1;
-	const OFF = 2;
-	const PLACE = 3;
-	const DESTROY = 4;
+    const ON = 1;
+    const OFF = 2;
+    const PLACE = 3;
+    const DESTROY = 4;
 
-	protected $id = self::REDSTONE_WIRE;
+    protected $id = self::REDSTONE_WIRE;
 
-	/** @var bool */
-	protected $canProvidePower = true;
+    /**
+     * RedstoneWire constructor.
+     *
+     * @param int $meta
+     */
+    public function __construct($meta = 0){
+        $this->meta = $meta;
+    }
 
-	/**
-	 * RedstoneWire constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
+    /**
+     * @return string
+     */
+    public function getName() : string{
+        return "Redstone Wire";
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Redstone Wire";
-	}
+    /**
+     * @return int
+     */
+    public function getStrength(){
+        return $this->meta;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getStrength(){
-		return $this->meta;
-	}
+    /**
+     * @param Block|null $from
+     *
+     * @return bool
+     */
+    public function isActivated(Block $from = null){
+        return ($this->meta > 0);
+    }
 
-	/**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
-	public function isActivated(Block $from = null){
-		return ($this->meta > 0);
-	}
-
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate($type){
-        if ($type != Level::BLOCK_UPDATE_NORMAL && $type != Level::BLOCK_UPDATE_REDSTONE) {
-            return 0;
-        }
-
-        if ($type == Level::BLOCK_UPDATE_NORMAL && !$this->canBePlacedOn($this->getSide(Vector3::SIDE_DOWN))) {
-            $this->level->useBreakOn($this);
-            return Level::BLOCK_UPDATE_NORMAL;
-        }
-
-        $this->calculateCurrentChanges(false);
-
-        return Level::BLOCK_UPDATE_NORMAL;
-	}
-
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-        if ($face != Vector3::SIDE_UP || !$this->canBePlacedOn($target)) {
-            return false;
-        }
-
-        $this->level->setBlock($block, $this, true, false);
-        $this->calculateCurrentChanges(true);
-
-        $horizontal = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST];
-        $vertical = [Vector3::SIDE_UP, Vector3::SIDE_DOWN];
-
-        foreach ($vertical as $face) {
-            $this->level->updateAroundRedstone($this->getSide($face), [static::getOppositeSide($face)]);
-        }
-
-        foreach ($vertical as $face) {
-            $this->updateAround($this->getSide($face), static::getOppositeSide($face));
-        }
-
-        foreach ($horizontal as $face) {
-            $v = $this->getSide($face);
-
-            if ($this->level->getBlock($v)->isNormal()) {
-                $this->updateAround($v->getSide(Vector3::SIDE_UP), Vector3::SIDE_DOWN);
-            } else {
-                $this->updateAround($v->getSide(Vector3::SIDE_DOWN), Vector3::SIDE_UP);
-            }
+    /**
+     * @param int $type
+     *
+     * @return bool|int
+     */
+    public function onUpdate($type){
+        switch($type){
+            case Level::BLOCK_UPDATE_NORMAL:
+                if($this->cantBePlacedOn()){
+                    $this->getLevel()->useBreakOn($this);
+                    return Level::BLOCK_UPDATE_NORMAL;
+                }
+                break;
+            case Level::BLOCK_UPDATE_REDSTONE:
+                $kontrol = false;
+                if(!$this->isActivated()){
+                    foreach ([self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST] as $side) {
+                        /** @var RedstoneWire $wire */
+                        $wire = $this->getSide($side);
+                        if($wire->getId() == $this->id){
+                            if($wire->isActivated()){
+                                $kontrol = true; // check connect
+                                break;
+                            }
+                        }
+                    }
+                }
+                if(!$kontrol)
+                    $this->calcSignal($this->isActivated() ? 0 : 15, $this->isActivated() ? self::OFF : self::ON);
+                break;
         }
         return true;
-	}
+    }
 
-	private function calculateCurrentChanges(bool $force){
-	    $meta = $this->meta;
-        $maxStrength = $meta;
-        $this->canProvidePower = false;
-        $power = $this->getIndirectPower();
-
-        $this->canProvidePower = true;
-
-        if ($power > 0 && $power > $maxStrength - 1) {
-            $maxStrength = $power;
+    /**
+     * @param Item $item
+     * @param Block $block
+     * @param Block $target
+     * @param int $face
+     * @param float $fx
+     * @param float $fy
+     * @param float $fz
+     * @param Player|null $player
+     *
+     * @return bool|void
+     */
+    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+        if(!$this->cantBePlacedOn()){
+            $this->getLevel()->setBlock($block, $this, true, false);
+            $this->calcSignal(15, self::PLACE);
         }
+    }
 
-        $strength = 0;
-
-        $horizontal = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST];
-        foreach ($horizontal as $face) {
-            $v = $this->getSide($face);
-            $flag = $v->getX() != $this->getX() || $v->getZ() != $this->getZ();
-
-            if ($flag) {
-                $strength = $this->getMaxCurrentStrength($v, $strength);
+    public function updateNormalWire(Block $block, $strength, $type, array $hasUpdated){
+        /** @var RedstoneWire $block */
+        if($block->getId() == Block::REDSTONE_WIRE){
+            if($block->getStrength() < $strength){
+                return $block->calcSignal($strength, $type, $hasUpdated);
             }
+        }
+        return $hasUpdated;
+    }
 
-            if ($this->level->getBlock($v)->isNormal() && !$this->level->getBlock($this->getSide(Vector3::SIDE_UP))->isNormal()) {
-                if ($flag) {
-                    $strength = $this->getMaxCurrentStrength($v->getSide(Vector3::SIDE_UP), $strength);
+    public function getPowerSources(RedstoneWire $wire, array $powers = [], array $hasUpdated = [], $isStart = false){
+        if(!$isStart){
+            $wire->meta = 0;
+            $wire->getLevel()->setBlock($wire, $wire, true, false);
+            $wire->updateAround();
+        }
+        $hasChecked = [
+            self::SIDE_WEST => false,
+            self::SIDE_EAST => false,
+            self::SIDE_NORTH => false,
+            self::SIDE_SOUTH => false
+        ];
+        $hash = Level::blockHash($wire->x, $wire->y, $wire->z);
+        if(!isset($hasUpdated[$hash])) $hasUpdated[$hash] = true;
+        else return [$powers, $hasUpdated];
+        //check blocks around
+        foreach($hasChecked as $side => $bool){
+            /** @var RedstoneWire $block */
+            $block = $wire->getSide($side);
+            if($block->isRedstoneSource()){
+                if($block->isActivated($wire)){
+                    if($block->getId() != $this->id){
+                        $powers[] = $block;
+                    }else{
+                        $result = $this->getPowerSources($block, $powers, $hasUpdated);
+                        $powers = $result[0];
+                        $hasUpdated = $result[1];
+                    }
+                    $hasChecked[$side] = true;
                 }
-            } else if ($flag && !$this->level->getBlock($v)->isNormal()) {
-                $strength = $this->getMaxCurrentStrength($v->getSide(Vector3::SIDE_DOWN), $strength);
             }
         }
-
-        if ($strength > $maxStrength) {
-            $maxStrength = $strength - 1;
-        } else if ($maxStrength > 0) {
-            --$maxStrength;
-        } else {
-            $maxStrength = 0;
-        }
-
-        if ($power > $maxStrength - 1) {
-            $maxStrength = $power;
-        }
-
-        $faces = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
-        if ($meta != $maxStrength) {
-            $this->meta = $maxStrength;
-            $this->level->setBlock($this, $this, false, false);
-
-            $this->level->updateAroundRedstone($this);
-            foreach ($faces as $face) {
-                $this->level->updateAroundRedstone($this->getSide($face), [static::getOppositeSide($face)]);
+        //check blocks above
+        $baseBlock = $wire->add(0, 1, 0);
+        foreach($hasChecked as $side => $bool){
+            if(!$bool){
+                $block = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                if($block->isRedstoneSource()){
+                    if($block->isActivated($wire)){
+                        if($block->getId() == $this->id){
+                            $result = $this->getPowerSources($block, $powers, $hasUpdated);
+                            $powers = $result[0];
+                            $hasUpdated = $result[1];
+                            $hasChecked[$side] = true;
+                        }
+                    }
+                }
             }
-        } else if ($force) {
-            foreach ($faces as $face) {
-                $this->level->updateAroundRedstone($this->getSide($face), [static::getOppositeSide($face)]);
+        }
+        //check blocks below
+        $baseBlock = $wire->add(0, -1, 0);
+        foreach($hasChecked as $side => $bool){
+            if(!$bool){
+                $block = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                if($block->isRedstoneSource()){
+                    if($block->isActivated($wire)){
+                        if($block->getId() == $this->id){
+                            $result = $this->getPowerSources($block, $powers, $hasUpdated);
+                            $powers = $result[0];
+                            $hasUpdated = $result[1];
+                            $hasChecked[$side] = true;
+                        }
+                    }
+                }
+            }
+        }
+        return [$powers, $hasUpdated];
+    }
+
+    public function getHighestStrengthAround(){
+        $strength = 0;
+        $hasChecked = [
+            self::SIDE_WEST => false,
+            self::SIDE_EAST => false,
+            self::SIDE_NORTH => false,
+            self::SIDE_SOUTH => false
+        ];
+        //check blocks around
+        foreach($hasChecked as $side => $bool){
+            $block = $this->getSide($side);
+            if($block->isRedstoneSource()){
+                if(($block->getWeakPower($side) > $strength) and $block->isActivated($this)) $strength = $block->getWeakPower($side);
+                $hasChecked[$side] = true;
+            }
+        }
+        //check blocks above
+        $baseBlock = $this->add(0, 1, 0);
+        foreach($hasChecked as $side => $bool){
+            if(!$bool){
+                $block = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                if($block->getId() == $this->id){
+                    if($block->getWeakPower($side) > $strength) $strength = $block->getWeakPower($side);
+                    $hasChecked[$side] = true;
+                }
+            }
+        }
+        //check blocks below
+        $baseBlock = $this->add(0, -1, 0);
+        foreach($hasChecked as $side => $bool){
+            if(!$bool){
+                $block = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                if($block->getId() == $this->id){
+                    if($block->getWeakPower($side) > $strength) $strength = $block->getWeakPower($side);
+                    $hasChecked[$side] = true;
+                }
+            }
+        }
+        unset($block);
+        unset($hasChecked);
+        return $strength;
+    }
+
+    public function updateAround(){
+        $side = $this->getUnconnectedSide();
+        $sides = [self::SIDE_WEST, self::SIDE_EAST, self::SIDE_SOUTH, self::SIDE_NORTH];
+        $this->level->updateAroundRedstone($this->getSide(self::SIDE_DOWN), $sides);
+        $this->getSide($side[0])->onUpdate(Level::BLOCK_UPDATE_REDSTONE);
+        if($side[0] != false) {
+            $block = $this->getSide($side[0]);
+            if(!$block->isTransparent()){
+                $sides = [self::SIDE_WEST, self::SIDE_EAST, self::SIDE_SOUTH, self::SIDE_NORTH, self::SIDE_UP, self::SIDE_DOWN];
+                unset($sides[array_search(static::getOppositeSide($side[0]), $sides)]);
+                $this->level->updateAroundRedstone($this, $sides);
             }
         }
     }
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
-	public function onBreak(Item $item){
-        $this->level->setBlock($this, new Air(), true, true);
-
-        $this->calculateCurrentChanges(false);
-
-        $faces = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
-        foreach ($faces as $face) {
-            $this->level->updateAroundRedstone($this->getSide($face));
-        }
-
-        $horizontal = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST];
-        foreach ($horizontal as $face) {
-            $v = $this->getSide($face);
-
-            if ($this->level->getBlock($v)->isNormal()) {
-                $this->updateAround($v->getSide(Vector3::SIDE_UP), Vector3::SIDE_DOWN);
-            } else {
-                $this->updateAround($v->getSide(Vector3::SIDE_DOWN), Vector3::SIDE_UP);
+    public function calcSignal($strength = 15, $type = self::ON, array $hasUpdated = []){
+        $hash = Level::blockHash($this->x, $this->y, $this->z);
+        if(!in_array($hash, $hasUpdated)){
+            $hasUpdated[] = $hash;
+            if($type == self::DESTROY or $type == self::OFF){
+                $this->meta = $strength;
+                $this->getLevel()->setBlock($this, $this, true, false);
+                if($type == self::DESTROY) $this->getLevel()->setBlock($this, new Air(), true, false);
+                if($strength <= 0) $this->updateAround();
+                $powers = $this->getPowerSources($this, [], [], true);
+                /** @var Block $power */
+                foreach($powers[0] as $power) {
+                    foreach ([self::SIDE_DOWN, self::SIDE_UP, self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST] as $side) {
+                        /** @var RedstoneWire $wire */
+                        $wire = $power->getSide($side);
+                        if($wire->getId() == $this->id){
+                            $wire->calcSignal(15, self::ON);
+                        }
+                    }
+                }
+            }else{
+                if($strength <= 0) return $hasUpdated;
+                if($type == self::PLACE) $strength = $this->getHighestStrengthAround() - 1;
+                if($type == self::ON) $type = self::PLACE;
+                if($this->getStrength() < $strength){
+                    $this->meta = $strength;
+                    $this->getLevel()->setBlock($this, $this, true, false);
+                    $this->updateAround();
+                    $hasChecked = [
+                        self::SIDE_WEST => false,
+                        self::SIDE_EAST => false,
+                        self::SIDE_NORTH => false,
+                        self::SIDE_SOUTH => false
+                    ];
+                    foreach($hasChecked as $side => $bool){
+                        $needUpdate = $this->getSide($side);
+                        if(!in_array(Level::blockHash($needUpdate->x, $needUpdate->y, $needUpdate->z), $hasUpdated)){
+                            $result = $this->updateNormalWire($needUpdate, $strength - 1, $type, $hasUpdated);
+                            if(count($result) != count($hasUpdated)){
+                                $hasUpdated = $result;
+                                $hasChecked[$side] = true;
+                            }
+                        }
+                    }
+                    $baseBlock = $this->add(0, 1, 0);
+                    foreach($hasChecked as $side => $bool){
+                        if(!$bool){
+                            $needUpdate = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                            if(!in_array(Level::blockHash($needUpdate->x, $needUpdate->y, $needUpdate->z), $hasUpdated)){
+                                $result = $this->updateNormalWire($needUpdate, $strength - 1, $type, $hasUpdated);
+                                if(count($result) != count($hasUpdated)){
+                                    $hasUpdated = $result;
+                                    $hasChecked[$side] = true;
+                                }
+                            }
+                        }
+                    }
+                    $baseBlock = $this->add(0, -1, 0);
+                    foreach($hasChecked as $side => $bool){
+                        if(!$bool){
+                            $needUpdate = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                            if(!in_array(Level::blockHash($needUpdate->x, $needUpdate->y, $needUpdate->z), $hasUpdated)){
+                                $result = $this->updateNormalWire($needUpdate, $strength - 1, $type, $hasUpdated);
+                                if(count($result) != count($hasUpdated)){
+                                    $hasUpdated = $result;
+                                    $hasChecked[$side] = true;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[Item::REDSTONE, 0, 1]
-		];
-	}
-
-    private function getIndirectPower() : int{
-        $power = 0;
-	    $faces = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
-
-	    foreach($faces as $face){
-	        $blockPower = $this->getSide($face)->getWeakPower($face);
-
-	        if($blockPower >= 15){
-                return 15;
-            }
-
-            if($blockPower > $power){
-                $power = $blockPower;
-            }
-        }
-
-        return $power;
+        return $hasUpdated;
     }
 
-    private function getMaxCurrentStrength(Vector3 $pos, int $maxStrength) : int{
-        if($this->level->getBlockIdAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()) != $this->getId()){
-            return $maxStrength;
-        }else{
-            $strength = $this->level->getBlockDataAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
-            return $strength > $maxStrength ? $strength : $maxStrength;
-        }
+    /**
+     * @param Item $item
+     *
+     * @return mixed|void
+     */
+    public function onBreak(Item $item){
+        $this->calcSignal(0, self::DESTROY);
     }
 
-    private function updateAround(Vector3 $pos, int $face){
-        if ($this->level->getBlock($pos)->getId() == Block::REDSTONE_WIRE) {
-            $this->level->updateAroundRedstone($pos, [$face]);
-
-            $faces = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_UP, Vector3::SIDE_DOWN];
-
-            foreach ($faces as $side) {
-                $this->level->updateAroundRedstone($pos->getSide($side), [static::getOppositeSide($side)]);
-            }
-        }
+    /**
+     * @param Item $item
+     *
+     * @return array
+     */
+    public function getDrops(Item $item) : array{
+        return [
+            [Item::REDSTONE, 0, 1]
+        ];
     }
 
-    private function canBePlacedOn(Vector3 $v){
-        $b = $this->level->getBlock($v);
-
-        return $b->isSolid() && !$b->isTransparent() && $b->getId() != Block::GLOWSTONE;
+    private function cantBePlacedOn($side = self::SIDE_DOWN){
+        $down = $this->getSide($side);
+        return $down instanceof Transparent and $down->getId() != Block::REDSTONE_LAMP and $down->getId() != Block::LIT_REDSTONE_LAMP;
     }
 
     public function isRedstoneSource(){
-        return $this->canProvidePower;
+        return ($this->meta > 0);
     }
 
-    public function getWeakPower(int $side): int{
-        if (!$this->canProvidePower) {
-            return 0;
-        } else {
-            $power = $this->meta;
+    public function getUnconnectedSide(){
+        $connected = [];
+        $notConnected = [];
+        foreach($this->getConnectedWires() as $key => $bool){
+            if($bool){
+                $connected[] = $key;
+            }else $notConnected[] = $key;
+        }
+        if(count($connected) == 1){
+            return [static::getOppositeSide($connected[0]), $connected];
+        }elseif(count($connected) == 3){
+            return [$notConnected[0], $connected];
+        }else return [false, $connected];
+    }
 
-            if ($power == 0) {
-                return 0;
-            } else if ($side == Vector3::SIDE_UP) {
-                return $power;
-            } else {
-                $horizontal = [Vector3::SIDE_NORTH, Vector3::SIDE_EAST, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST];
-                $list = [];
-
-                foreach ($horizontal as $face) {
-                    if ($this->isPowerSourceAt($face)) {
-                        $list[] = $face;
-                    }
-                }
-
-                if (in_array($side, $horizontal) && count($list) == 0) {
-                    return $power;
-                } else if (in_array($side, $list) && !in_array(Vector3::rotateYCCW($side), $list) && !in_array(Vector3::rotateY($side), $list)) {
-                    return $power;
-                } else {
-                    return 0;
+    public function getConnectedWires(){
+        $hasChecked = [
+            self::SIDE_WEST => false,
+            self::SIDE_EAST => false,
+            self::SIDE_NORTH => false,
+            self::SIDE_SOUTH => false
+        ];
+        //check blocks around
+        foreach($hasChecked as $side => $bool){
+            $block = $this->getSide($side);
+            if($block->isRedstoneSource() and !$block instanceof PoweredRepeater){
+                $hasChecked[$side] = true;
+            }
+            if($block instanceof PoweredRepeater){
+                if($this->equals($block->getSide($block->getOppositeDirection()))){
+                    $hasChecked[$side] = true;
                 }
             }
         }
-    }
-
-    private function isPowerSourceAt(int $side){
-        $v = $this->getSide($side);
-        $block = $this->level->getBlock($v);
-        $flag = $block->isNormal();
-        $flag1 = $this->level->getBlock($this->getSide(Vector3::SIDE_UP))->isNormal();
-        return !$flag1 && $flag && $this->canConnectTo($this->level->getBlock($v->getSide(Vector3::SIDE_UP)), null) || ($this->canConnectTo($block, $side) || !$flag && $this->canConnectTo($this->level->getBlock($block->getSide(Vector3::SIDE_DOWN)), null));
-    }
-
-    protected function canConnectTo(Block $block, $side) : bool{
-        if($block->getId() == Block::REDSTONE_WIRE){
-            return true;
-        }elseif($block instanceof RedstoneDiode){
-            $face = $block->getFacing();
-            return $face == $side || static::getOppositeSide($face) == $side;
-        }else{
-            return $block->isRedstoneSource() && $side != null;
+        //check blocks above
+        $baseBlock = $this->add(0, 1, 0);
+        foreach($hasChecked as $side => $bool){
+            if(!$bool){
+                $block = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                if($block->getId() == $this->id){
+                    $hasChecked[$side] = true;
+                }
+            }
         }
+        //check blocks below
+        $baseBlock = $this->add(0, -1, 0);
+        foreach($hasChecked as $side => $bool){
+            if(!$bool){
+                $block = $this->getLevel()->getBlock($baseBlock->getSide($side));
+                if($block->getId() == $this->id){
+                    $hasChecked[$side] = true;
+                }
+            }
+        }
+        unset($block);
+        return $hasChecked;
     }
 
+    public function getWeakPower(int $side): int{
+        return $this->getStrength();
+    }
 }

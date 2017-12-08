@@ -12,7 +12,7 @@
 
 #Version de ce fichier
 config:
- version: 29
+ version: 30
 
 level:
  #Réglez si la météo est activée (la pluie peut provoquer un retard sur les périphériques plus anciens)
@@ -90,18 +90,6 @@ enchantment:
  #Choisissez de compter les étagères (peut causer un retard de serveur)
  #Si cette option est fausse, le serveur utilisera un compte aléatoire (0 à 15)
  count-bookshelf: false
-
-redstone:
- ##########################################################
- #     Choisissez si le système redstone est activé       #
- ##########################################################
- # Si c'est faux, le système Redstone ne fonctionnera pas #
- ##########################################################
- enable: false
- #Choisissez si les impulsions de fréquence sont activées
- frequency-pulse: false
- #Si il et activé, réglez la fréquence des impulsions. Par défaut = 1s
- pulse-frequency: 1
 
 dserver:
  #Le nombre de tous les serveurs multi-serveurs unifiés

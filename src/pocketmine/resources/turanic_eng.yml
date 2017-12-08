@@ -12,7 +12,7 @@
 
 #Version of this file
 config:
- version: 29
+ version: 30
 
 level:
  #Set if weather is enabled (rain may cause lag to older devices)
@@ -88,20 +88,6 @@ enchantment:
  #Choose if to count bookshelves (may cause server lag)
  #If this option is false, the server will use a random count (0~15)
  count-bookshelf: false
-
-redstone:
- ################################################
- ####Choose if the redstone system is enabled####
- ################################################
- #If it is false, the redstone system won't work#
- ################################################
- #############Doesn't work Currently#############
- ################################################
- enable: false
- #Choose if frequency pulses are enabled
- frequency-pulse: false
- #Set the frequency of pulse. Default = 1s
- pulse-frequency: 1
 
 dserver:
  #The count of all multi-server unified

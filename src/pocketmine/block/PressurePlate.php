@@ -27,13 +27,15 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\level\sound\GenericSound;
+use pocketmine\level\sound\ClickSound;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class PressurePlate extends RedstoneSource {
-	protected $activateTime = 0;
-	protected $canActivate = true;
+abstract class PressurePlate extends Flowable {
+
+    protected $onPitch;
+    protected $offPitch;
 
 	/**
 	 * PressurePlate constructor.
@@ -44,7 +46,27 @@ class PressurePlate extends RedstoneSource {
 		$this->meta = $meta;
 	}
 
-	/**
+	public function canPassThrough(){
+        return true;
+    }
+
+    protected function recalculateBoundingBox(){
+        if ($this->isActivated()) {
+            return new AxisAlignedBB($this->x + 0.0625, $this->y, $this->z + 0.0625, $this->x + 0.9375, $this->y + 0.03125, $this->z + 0.9375);
+        } else {
+            return new AxisAlignedBB($this->x + 0.0625, $this->y, $this->z + 0.0625, $this->x + 0.9375, $this->y + 0.0625, $this->z + 0.9375);
+        }
+    }
+
+    protected function recalculateCollisionBoxes(): array{
+        return [new AxisAlignedBB($this->x + 0.125, $this->y, $this->z + 0.125, $this->x + 0.875, $this->y + 0.25, $this->z + 0.875)];
+    }
+
+    public function isRedstoneSource(){
+        return true;
+    }
+
+    /**
 	 * @return bool
 	 */
 	public function hasEntityCollision(){
@@ -55,16 +77,11 @@ class PressurePlate extends RedstoneSource {
 	 * @param Entity $entity
 	 */
 	public function onEntityCollide(Entity $entity){
-		if($this->getLevel()->getServer()->redstoneEnabled and $this->canActivate){
-			if(!$this->isActivated()){
-				$this->meta = 1;
-				$this->getLevel()->setBlock($this, $this, true, false);
-				$this->getLevel()->addSound(new GenericSound($this, 1000));
-			}
-			if(!$this->isActivated() or ($this->isActivated() and ($this->getLevel()->getServer()->getTick() % 30) == 0)){
-				$this->activate();
-			}
-		}
+        $power = $this->getDamage();
+
+        if($power == 0){
+            $this->updateState($power);
+        }
 	}
 
 	/**
@@ -73,7 +90,7 @@ class PressurePlate extends RedstoneSource {
 	 * @return bool
 	 */
 	public function isActivated(Block $from = null){
-		return ($this->meta == 0) ? false : true;
+		return ($this->meta != 0);
 	}
 
 	/**
@@ -82,43 +99,23 @@ class PressurePlate extends RedstoneSource {
 	 * @return bool|int
 	 */
 	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$below = $this->getSide(Vector3::SIDE_DOWN);
-			if($below instanceof Transparent){
-				$this->getLevel()->useBreakOn($this);
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
-		/*if($type == Level::BLOCK_UPDATE_SCHEDULED){
-			if($this->isActivated()){
-				if(!$this->isCollided()){
-					$this->meta = 0;
-					$this->getLevel()->setBlock($this, $this, true, false);
-					$this->deactivate();
-					return Level::BLOCK_UPDATE_SCHEDULED;
-				}
-			}
-		}*/
+	    switch($type){
+            case Level::BLOCK_UPDATE_NORMAL:
+                $below = $this->getSide(Vector3::SIDE_DOWN);
+                if($below->isTransparent()){
+                    $this->getLevel()->useBreakOn($this);
+                }
+                break;
+            case Level::BLOCK_UPDATE_SCHEDULED:
+                $power = $this->getDamage();
+
+                if($power > 0){
+                    $this->updateState($power);
+                }
+                break;
+        }
 		return true;
 	}
-
-	public function checkActivation(){
-		if($this->isActivated()){
-			if((($this->getLevel()->getServer()->getTick() - $this->activateTime)) >= 3){
-				$this->meta = 0;
-				$this->getLevel()->setBlock($this, $this, true, false);
-				$this->deactivate();
-			}
-		}
-	}
-
-	/*public function isCollided(){
-		foreach($this->getLevel()->getEntities() as $p){
-			$blocks = $p->getBlocksAround();
-			if(isset($blocks[Level::blockHash($this->x, $this->y, $this->z)])) return true;
-		}
-		return false;
-	}*/
 
 	/**
 	 * @param Item        $item
@@ -134,8 +131,8 @@ class PressurePlate extends RedstoneSource {
 	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$below = $this->getSide(Vector3::SIDE_DOWN);
-		if($below instanceof Transparent) return;
-		else $this->getLevel()->setBlock($block, $this, true, false);
+		if($below->isTransparent()) return;
+		$this->getLevel()->setBlock($block, $this, true, false);
 	}
 
 	/**
@@ -144,12 +141,12 @@ class PressurePlate extends RedstoneSource {
 	 * @return mixed|void
 	 */
 	public function onBreak(Item $item){
-		if($this->isActivated()){
-			$this->meta = 0;
-			$this->deactivate();
-		}
-		$this->canActivate = false;
-		$this->getLevel()->setBlock($this, new Air(), true);
+		$this->getLevel()->setBlock($this, new Air(), true, true);
+
+        if($this->getDamage() > 0){
+            $this->level->updateAroundRedstone($this);
+            $this->level->updateAroundRedstone($this->getSide(self::SIDE_DOWN));
+        }
 	}
 
 	/**
@@ -169,4 +166,33 @@ class PressurePlate extends RedstoneSource {
     public function canHarvestWithHand(): bool{
         return false;
     }
+
+    public function getWeakPower(int $side): int{
+        return $this->meta;
+    }
+
+    public function updateState(int $oldStrength){
+	    $strength = $this->computeRedstoneStrength();
+	    $wasPowered = $oldStrength > 0;
+	    $isPowered = $strength > 0;
+
+	    if($oldStrength != $strength){
+	        $this->meta = $strength;
+	        $this->level->setBlock($this, $this, false, false);
+            $this->level->updateAroundRedstone($this);
+            $this->level->updateAroundRedstone($this->getSide(self::SIDE_DOWN));
+
+            if(!$isPowered && $wasPowered){ // close
+                $this->level->addSound(new ClickSound($this, $this->offPitch));
+            }elseif($isPowered && !$wasPowered){
+                $this->level->addSound(new ClickSound($this, $this->onPitch));
+            }
+        }
+
+        if($isPowered){
+            $this->level->scheduleUpdate($this, 20);
+        }
+    }
+
+    protected abstract function computeRedstoneStrength() : int;
 }

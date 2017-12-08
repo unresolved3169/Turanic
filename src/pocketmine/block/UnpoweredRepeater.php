@@ -1,46 +1,31 @@
 <?php
 
-/*
- *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author iTX Technologies
- * @link https://itxtech.org
- *
- */
-
 namespace pocketmine\block;
-
-use pocketmine\item\Item;
 
 class UnpoweredRepeater extends PoweredRepeater {
 	protected $id = self::UNPOWERED_REPEATER_BLOCK;
 
-	/**
+	public function __construct($meta = 0){
+        parent::__construct($meta);
+        $this->isPowered = false;
+    }
+
+    /**
 	 * @return string
 	 */
 	public function getName() : string{
 		return "Unpowered Repeater";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getStrength(){
-		return 0;
-	}
+	protected function getUnpowered(): Block{
+        return $this;
+    }
 
-	/**
+    protected function getPowered(): Block{
+        return new PoweredRepeater($this->meta);
+    }
+
+    /**
 	 * @param Block|null $from
 	 *
 	 * @return bool
@@ -49,12 +34,7 @@ class UnpoweredRepeater extends PoweredRepeater {
 		return false;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
-	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new Air(), true);
-	}
+	public function getLightLevel(){
+        return 0;
+    }
 }

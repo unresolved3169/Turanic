@@ -30,4 +30,17 @@ class WoodenPressurePlate extends PressurePlate {
 	public function getName() : string{
 		return "Wooden Pressure Plate";
 	}
+
+    protected function computeRedstoneStrength(): int{
+        $bbs = $this->getCollisionBoxes();
+
+        foreach($bbs as $bb){
+            foreach($this->level->getCollidingEntities($bb) as $entity){
+                if($entity->doesTriggerPressurePlate()){
+                    return 15;
+                }
+            }
+        }
+        return 0;
+    }
 }

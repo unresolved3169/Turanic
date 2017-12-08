@@ -67,7 +67,7 @@ class RedstoneLamp extends Solid {
 
     public function onUpdate($type){
         if($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE){
-            if($this->level->isBlockPowered($this)){
+            if($this->level->isBlockPowered($this) or $this->level->isBlockPowered($this->getSide(self::SIDE_UP))){
                 $this->level->setBlock($this, new LitRedstoneLamp(), false, false);
             }
         }
