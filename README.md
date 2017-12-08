@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/jw0b3BH.png" border="0">
+[![image](https://i.hizliresim.com/1GAdvN.png)](https://github.com/TuranicTeam/Turanic)
 
 Fast server software for Minecraft: Bedrock/PE Edition and W10 Edition - v1.2.x.
 Turanic is a fork of GenisysPro
@@ -46,8 +46,8 @@ Port: **19172**
 - [x] **Command Parameters**
 - [ ] **Basic ChunkLoader System**
 - [ ] **Fast NBT Writer/reader**
-- [ ] **Basic Redstone system (without lag) (indev)**
-- [ ] **Add All New Blocks in 1.2(indev)**
+- [ ] **Basic Redstone system (without lag) (%80)**
+- [ ] **Add All New Blocks in 1.2 (%70)**
 
 # License:
 ```
