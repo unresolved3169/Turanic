@@ -13,6 +13,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\protocol;
 
 #ifndef COMPILE
@@ -32,7 +34,12 @@ abstract class Packet{
 	/** @var float|null */
 	public $sendTime;
 
-	protected function get($len){
+	public function __construct(string $buffer = "", int $offset = 0){
+        $this->buffer = $buffer;
+        $this->offset = $offset;
+    }
+
+    protected function get($len){
 		if($len < 0){
 			$this->offset = strlen($this->buffer) - 1;
 
@@ -145,11 +152,15 @@ abstract class Packet{
 	}
 
 	public function encode(){
-		$this->buffer = chr(static::$ID);
+		$this->reset();
+		$this->encodeHeader();
+		$this->encodePayload();
 	}
 
 	public function decode(){
-		$this->offset = 1;
+		$this->offset = 0;
+		$this->decodeHeader();
+		$this->decodePayload();
 	}
 
 	public function clean(){
@@ -159,4 +170,21 @@ abstract class Packet{
 
 		return $this;
 	}
+
+    protected function encodeHeader(){
+	    $this->putByte(static::$ID);
+    }
+
+    protected function decodeHeader(){
+        $this->getByte();
+    }
+
+    abstract protected function decodePayload();
+
+    abstract protected function encodePayload();
+
+    public function reset(){
+        $this->buffer = "";
+        $this->offset = 0;
+    }
 }

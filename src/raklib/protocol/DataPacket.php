@@ -13,6 +13,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\protocol;
 
 #include <rules/RakLibPacket.h>
@@ -25,9 +27,8 @@ abstract class DataPacket extends Packet{
 	/** @var int */
 	public $seqNumber;
 
-	public function encode(){
-		parent::encode();
-		$this->putLTriad($this->seqNumber);
+	protected function encodePayload(){
+        $this->putLTriad($this->seqNumber);
 		foreach($this->packets as $packet){
 			$this->put($packet instanceof EncapsulatedPacket ? $packet->toBinary() : (string) $packet);
 		}
@@ -42,8 +43,7 @@ abstract class DataPacket extends Packet{
 		return $length;
 	}
 
-	public function decode(){
-		parent::decode();
+    protected function decodePayload(){
 		$this->seqNumber = $this->getLTriad();
 
 		while(!$this->feof()){

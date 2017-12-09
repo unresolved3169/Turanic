@@ -2074,7 +2074,6 @@ class Server{
 	 */
 	public function broadcastPacket(array $players, DataPacket $packet){
 		$packet->encode();
-		$packet->isEncoded = true;
 		if(Network::$BATCH_THRESHOLD >= 0 and strlen($packet->buffer) >= Network::$BATCH_THRESHOLD){
 			$this->batchPackets($players, [$packet->buffer], false);
 			return;

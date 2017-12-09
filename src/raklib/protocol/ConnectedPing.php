@@ -13,6 +13,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\protocol;
 
 #include <rules/RakLibPacket.h>
@@ -20,16 +22,14 @@ namespace raklib\protocol;
 class ConnectedPing extends Packet{
 	public static $ID = MessageIdentifiers::ID_CONNECTED_PING;
 
-	/** @var int */
-	public $pingID;
+    /** @var int */
+    public $sendPingTime;
 
-	public function encode(){
-		parent::encode();
-		$this->putLong($this->pingID);
-	}
+    protected function decodePayload(){
+        $this->putLong($this->sendPingTime);
+    }
 
-	public function decode(){
-		parent::decode();
-		$this->pingID = $this->getLong();
-	}
+    protected function encodePayload(){
+        $this->sendPingTime = $this->getLong();
+    }
 }

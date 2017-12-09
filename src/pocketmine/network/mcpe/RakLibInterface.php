@@ -84,7 +84,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 * @return bool
 	 * @throws \Exception
 	 */
-	public function process(){
+	public function process() : bool{
 		$work = false;
 		if($this->interface->handlePacket()){
 			$work = true;
@@ -168,17 +168,19 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
      */
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
 		if(isset($this->players[$identifier])){
+            //get this now for blocking in case the player was closed before the exception was raised
+            $address = $this->players[$identifier]->getAddress();
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
-					if($pk !== null){
-						$pk->decode();
-						assert($pk->feof(), "Still " . strlen(substr($pk->buffer, $pk->offset)) . " bytes unread!");
-						$this->players[$identifier]->handleDataPacket($pk);
-					}
+					$pk->decode();
+                    $this->players[$identifier]->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
-				$this->server->getLogger()->debug("Unhandled Packet : " .$e->getMessage());
+                $logger = $this->server->getLogger();
+                $logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+                $logger->logException($e);
+                $this->interface->blockAddress($address, 5);
 			}
 		}
 	}
@@ -187,7 +189,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 * @param string $address
 	 * @param int    $timeout
 	 */
-	public function blockAddress($address, $timeout = 300){
+	public function blockAddress(string $address, int $timeout = 300){
 		$this->interface->blockAddress($address, $timeout);
 	}
 
@@ -205,7 +207,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	/**
 	 * @param $address
 	 */
-	public function unblockAddress($address){
+	public function unblockAddress(string $address){
 		$this->interface->unblockAddress($address);
 	}
 
@@ -290,24 +292,21 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 *
 	 * @return int|null
 	 */
-	public function putPacket(Player $player, DataPacket $packet, $needACK = false, $immediate = false){
+	public function putPacket(Player $player, DataPacket $packet, bool $needACK = false, bool $immediate = true){
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			$identifier = $this->identifiers[$h];
 			
 			if(!$packet->isEncoded){
-			 $packet->encode();
+			    $packet->encode();
 			}
 
 			if($packet instanceof BatchPacket){
 				if($needACK){
 					$pk = new EncapsulatedPacket();
+                    $pk->identifierACK = $this->identifiersACK[$identifier]++;
 					$pk->buffer = $packet->buffer;
 					$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 					$pk->orderChannel = 0;
-
-					if($needACK === true){
-						$pk->identifierACK = $this->identifiersACK[$identifier]++;
-					}
 				}else{
 					if(!isset($packet->__encapsulatedPacket)){
 						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
@@ -322,7 +321,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 				$this->interface->sendEncapsulated($identifier, $pk, ($needACK === true ? RakLib::FLAG_NEED_ACK : 0) | ($immediate === true ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 				return $pk->identifierACK;
 			}else{
-				$this->server->batchPackets([$player], [$packet], $immediate, $needACK);
+				$this->server->batchPackets([$player], [$packet], true, $immediate);
 				return null;
 			}
 		}

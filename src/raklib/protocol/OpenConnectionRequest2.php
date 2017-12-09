@@ -13,6 +13,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\protocol;
 
 #include <rules/RakLibPacket.h>
@@ -29,17 +31,15 @@ class OpenConnectionRequest2 extends OfflineMessage{
 	/** @var int */
 	public $mtuSize;
 
-	public function encode(){
-		parent::encode();
-		$this->writeMagic();
+	protected function encodePayload(){
+        $this->writeMagic();
 		$this->putAddress($this->serverAddress, $this->serverPort, 4);
 		$this->putShort($this->mtuSize);
 		$this->putLong($this->clientID);
 	}
 
-	public function decode(){
-		parent::decode();
-		$this->readMagic();
+	protected function decodePayload(){
+        $this->readMagic();
 		$this->getAddress($this->serverAddress, $this->serverPort);
 		$this->mtuSize = $this->getShort();
 		$this->clientID = $this->getLong();

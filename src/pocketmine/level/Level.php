@@ -2907,7 +2907,6 @@ class Level implements ChunkManager, Metadatable{
 		$batch->payload = Binary::writeUnsignedVarInt(strlen($pk->getBuffer())) . $pk->getBuffer();
 		$batch->setCompressionLevel(7);
 		$batch->encode();
-		$batch->isEncoded = true;
 		return $batch;
 	}
 

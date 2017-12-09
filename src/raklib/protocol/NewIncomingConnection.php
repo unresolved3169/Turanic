@@ -13,9 +13,13 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\protocol;
 
 #include <rules/RakLibPacket.h>
+
+use raklib\RakLib;
 
 class NewIncomingConnection extends Packet{
 	public static $ID = MessageIdentifiers::ID_NEW_INCOMING_CONNECTION;
@@ -33,17 +37,22 @@ class NewIncomingConnection extends Packet{
 	/** @var int */
 	public $sendPong;
 
-	public function encode(){
+	protected function encodePayload(){
 
 	}
 
-	public function decode(){
-		parent::decode();
+    protected function decodePayload(){
 		$this->getAddress($this->address, $this->port);
-		for($i = 0; $i < 10; ++$i){
-			$this->getAddress($addr, $port, $version);
-			$this->systemAddresses[$i] = [$addr, $port, $version];
-		}
+
+        $stopOffset = strlen($this->buffer) - 16; //buffer length - sizeof(sendPingTime) - sizeof(sendPongTime)
+		for($i = 0; $i < RakLib::$SYSTEM_ADDRESS_COUNT; ++$i) {
+            if($this->offset >= $stopOffset) {
+                $this->systemAddresses[$i] = ["0.0.0.0", 0, 4];
+            }else{
+                $this->getAddress($addr, $port, $version);
+                $this->systemAddresses[$i] = [$addr, $port, $version];
+            }
+        }
 
 		$this->sendPing = $this->getLong();
 		$this->sendPong = $this->getLong();

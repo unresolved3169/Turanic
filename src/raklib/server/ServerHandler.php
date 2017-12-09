@@ -13,6 +13,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\server;
 
 use raklib\Binary;
@@ -72,9 +74,8 @@ class ServerHandler{
 	}
 
 	public function emergencyShutdown(){
-        $buffer = chr(RakLib::PACKET_EMERGENCY_SHUTDOWN);
 		$this->server->shutdown();
-		$this->server->pushMainToThreadPacket($buffer);
+		$this->server->pushMainToThreadPacket(chr(RakLib::PACKET_EMERGENCY_SHUTDOWN));
 	}
 
 	protected function invalidSession($identifier){
@@ -86,7 +87,7 @@ class ServerHandler{
 	 * @return bool
 	 */
 	public function handlePacket(){
-		if(strlen($packet = $this->server->readThreadToMainPacket()) > 0){
+        if(($packet = $this->server->readThreadToMainPacket()) !== null){
 			$id = ord($packet{0});
 			$offset = 1;
 			switch($id){

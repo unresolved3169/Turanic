@@ -13,6 +13,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace raklib\server;
 
 use raklib\protocol\EncapsulatedPacket;
@@ -50,7 +52,6 @@ interface ServerInstance{
     /**
      * @param $identifier
      * @param $ping
-     * @return mixed
      */
     public function handlePing($identifier, $ping);
 
