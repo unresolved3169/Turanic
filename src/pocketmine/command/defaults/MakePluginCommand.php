@@ -121,17 +121,6 @@ class MakePluginCommand extends VanillaCommand {
 			}
 		}
 		$phar->stopBuffering();
-		$license = "
-  _____            _               _____           
- / ____|          (_)             |  __ \          
-| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
-| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
-| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
-                         __/ |                    
-                        |___/         
- ";
-		$sender->sendMessage($license);
 		$sender->sendMessage("Phar plugin " . $description->getName() . " v" . $description->getVersion() . " has been created on " . $pharPath);
 		return true;
 	}

@@ -44,6 +44,7 @@ abstract class Tile extends Position {
 	const FURNACE = "Furnace";
 	const MOB_SPAWNER = "MobSpawner";
 	const SIGN = "Sign";
+	const SHULKER_BOX = "ShulkerBox";
 	const SKULL = "Skull";
 	const ITEM_FRAME = "ItemFrame";
 	const BED = "Bed";
@@ -100,6 +101,7 @@ abstract class Tile extends Position {
 		self::registerTile(ItemFrame::class);
 		self::registerTile(MobSpawner::class);
 		self::registerTile(Sign::class);
+		self::registerTile(ShulkerBox::class);
 		self::registerTile(Skull::class);
 		self::registerTile(VirtualHolder::class);
 		self::registerTile(Jukebox::class);

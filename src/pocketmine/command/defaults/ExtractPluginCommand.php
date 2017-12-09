@@ -97,15 +97,6 @@ class ExtractPluginCommand extends VanillaCommand {
 			@mkdir(dirname($folderPath . str_replace($pharPath, "", $path)), 0755, true);
 			file_put_contents($folderPath . str_replace($pharPath, "", $path), file_get_contents($path));
 		}
-		$license = "
-		 _______                    _
-        |__   __|                  (_)
-           | |_   _ _ __ __ _ _ __  _  ___
-           | | | | | '__/ _` | '_ \| |/ __|
-           | | |_| | | | (_| | | | | | (__
-           |_|\__,_|_|  \__,_|_| |_|_|\___|
-		";
-		$sender->sendMessage($license);
 		$sender->sendMessage("Source plugin " . $description->getName() . " v" . $description->getVersion() . " has been created on " . $folderPath);
 		return true;
 	}

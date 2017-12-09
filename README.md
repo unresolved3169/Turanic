@@ -40,14 +40,14 @@ Port: **19172**
 ### TODO List (we will be continue after fully 1.2 update):
 - [x] **Optimization and Stability**
 - [x] **Virtual Inventory** 
+- [x] **Command Parameters**
+- [x] **Add All New Blocks in 1.2**
 - [ ] **Fully MobAI (indev)**
 - [ ] **Ultra Fast Chunk Load/Unload/Generate**
 - [ ] **More thread/worker**
-- [x] **Command Parameters**
 - [ ] **Basic ChunkLoader System**
 - [ ] **Fast NBT Writer/reader**
 - [ ] **Basic Redstone system (without lag) (%80)**
-- [ ] **Add All New Blocks in 1.2 (%70)**
 
 # License:
 ```

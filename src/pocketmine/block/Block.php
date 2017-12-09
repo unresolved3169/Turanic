@@ -281,16 +281,16 @@ class Block extends Position implements BlockIds, Metadatable{
             self::registerBlock(new ChorusFlower());
             self::registerBlock(new Purpur());
             self::registerBlock(new PurpurStairs());
-            // TODO : ADD UNDYED SHULKER BOX
+            self::registerBlock(new UndyedShulkerBox());
             self::registerBlock(new EndStoneBricks());
-            // TODO : ADD FROSTED ICE
+            self::registerBlock(new FrostedIce());
             self::registerBlock(new EndRod());
             self::registerBlock(new EndGateway());
             self::registerBlock(new Magma());
             self::registerBlock(new NetherWartBlock());
-            // TODO : ADD RED_NETHER_BRICK
+            self::registerBlock(new RedNetherBrick());
             self::registerBlock(new BoneBlock());
-            // TODO : ADD SHULKER_BOX
+            self::registerBlock(new ShulkerBox());
             self::registerBlock(new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA, 0, "Purple Glazed Terracotta"));
             self::registerBlock(new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA, 0, "White Glazed Terracotta"));
             self::registerBlock(new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA, 0, "Orange Glazed Terracotta"));
