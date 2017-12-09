@@ -2087,15 +2087,15 @@ class Server{
 		}
 	}
 
-	/**
-	 * Broadcasts a list of packets in a batch to a list of players
-	 *
-	 * @param Player[] $players
-	 * @param DataPacket[]|string $packets
-	 * @param bool $needACK
-	 * @param bool $immediate
-	 */
-	public function batchPackets(array $players, array $packets, bool $immediate = false, bool $needACK = false){
+    /**
+     * Broadcasts a list of packets in a batch to a list of players
+     *
+     * @param Player[] $players
+     * @param DataPacket[]|string $packets
+     * @param bool $forceSync
+     * @param bool $immediate
+     */
+	public function batchPackets(array $players, array $packets, bool $forceSync = false, bool $immediate = false){
 		Timings::$playerNetworkTimer->startTiming();
 
 		$targets = [];
@@ -2106,31 +2106,37 @@ class Server{
 		}
 
 		if(count($targets) > 0) {
-            $pays = [];
-            foreach ($packets as $pk) {
-                if ($pk instanceof DataPacket) {
-                    if (!$pk->isEncoded) {
-                        $pk->encode();
-                    }
-                    $pays[] = $pk->buffer;
-                } else {
-                    $pays[] = $pk;
-                }
+            $pk = new BatchPacket();
+            foreach($packets as $p){
+                $pk->addPacket($p);
             }
-
-            $card = [
-                "compressionLevel" => $this->networkCompressionLevel,
-                "targets" => $targets,
-                "needACK" => $needACK, // TODO
-                "immediate" => $immediate,
-                "packets" => $pays];
-
-            $this->packetWorker->pushMainToThreadPacket(serialize($card));
+            if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
+                $pk->setCompressionLevel($this->networkCompressionLevel);
+            }else{
+                $pk->setCompressionLevel(0); //Do not compress packets under the threshold
+                $forceSync = true;
+            }
+            if(!$forceSync and !$immediate and $this->networkCompressionAsync){
+                $task = new CompressBatchedTask($pk, $targets);
+                $this->getScheduler()->scheduleAsyncTask($task);
+            }else{
+                $this->broadcastPacketsCallback($pk, $targets, $immediate);
+            }
         }
 
 		Timings::$playerNetworkTimer->stopTiming();
 	}
 
+    public function broadcastPacketsCallback(BatchPacket $pk, array $identifiers, bool $immediate = false){
+        if(!$pk->isEncoded){
+            $pk->encode();
+        }
+        foreach($identifiers as $i){
+            if(isset($this->players[$i])){
+                $this->players[$i]->sendDataPacket($pk, false, $immediate);
+            }
+        }
+    }
 
 	/**
 	 * @param int $type
