@@ -24,7 +24,7 @@ namespace pocketmine;
 
 use pocketmine\block\CommandBlock;
 use pocketmine\tile\CommandBlock as TileCommandBlock;
-use pocketmine\customUI\CustomUI;
+use pocketmine\form\Form;
 use pocketmine\block\Block;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -80,7 +80,7 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\event\ui\{UICloseEvent, UIDataReceiveEvent};
+use pocketmine\event\form\{FormCloseEvent, FormDataReceiveEvent};
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
@@ -168,11 +168,10 @@ use pocketmine\tile\Spawnable;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use pocketmine\entity\Skin;
-use pocketmine\customUI\windows\CustomForm;
-use pocketmine\customUI\elements\Label;
+use pocketmine\form\CustomForm;
+use pocketmine\form\element\Label;
 
 class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
-
 
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
@@ -3402,22 +3401,22 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$data = json_decode($packet->formData, true);
 
 		if(isset($this->modalForms[$id])){
+			$form = $this->modalForms[$id];
 			if($data === null){
-				$this->modalForms[$id]->close($this);
+				$form->onClose($this);
 
-				$this->server->getPluginManager()->callEvent($ev = new UICloseEvent($this, $packet));
+				$this->server->getPluginManager()->callEvent($ev = new FormCloseEvent($this, $form));
 				if($ev->isCancelled()){
-					$this->sendForm($this->getForm($id), $id);
+					$this->sendForm($ev->getForm(), $id);
 					return false;
 				}
 			}else{
-				$handleData = $this->modalForms[$id]->handle($data, $this);
-
-			 $this->server->getPluginManager()->callEvent($ev = new UIDataReceiveEvent($this, $packet, $handleData));
-			 if($ev->isCancelled()){
-				 $this->sendForm($this->getForm($id), $id);
-				 return false;
-			 }
+               $handleData = $form->handleResponse($data, $this);
+               $this->server->getPluginManager()->callEvent($ev = new FormDataReceiveEvent($this, $form, $handleData));
+			   if($ev->isCancelled()){
+				   $this->sendForm($ev->getForm(), $id);
+				   return false;
+			   }
 			}
 
 			unset($this->modalForms[$id]);
@@ -4425,39 +4424,37 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		parent::addEffect($effect);
 	}
 
-	public function sendForm(CustomUI $window, int $forceId = -1){
+	public function sendForm(Form $form, int $forceId = -1){
 		if($forceId < 0){
 			$forceId = $this->modalFormCnt++;
 		}
 		$pk = new ModalFormRequestPacket;
 		$pk->formId = $forceId;
-		$pk->formData = json_encode($window->jsonSerialize());
+		$pk->formData = json_encode($form);
 		$this->dataPacket($pk);
-		$this->modalForms[$forceId] = $window;
+		$form->setId($forceId);
+		$this->modalForms[$forceId] = $form;
 	}
 
-	public function sendServerSettings(CustomUI $window){
+	public function sendServerSettings(Form $form){
 		$pk = new ServerSettingsResponsePacket;
 		$pk->formId = $id = $this->modalFormCnt++;
-		$pk->formData = json_encode($window->jsonSerialize());
+		$pk->formData = json_encode($form);
+		$form->setId($id);
 		$this->dataPacket($pk);
-		$this->modalForms[$id] = $window;
+		$this->modalForms[$id] = $form;
 	}
 
-	public function getDefaultServerSettings() : CustomForm{
+	public function getDefaultServerSettings() : Form{
 		return $this->defaultServerSettings;
 	}
 
-	public function setDefaultServerSettings(CustomForm $form){
+	public function setDefaultServerSettings(Form $form){
 		$this->defaultServerSettings = $form;
 	}
 
 	public function getForm(int $id){
 		return $this->modalForms[$id] ?? null;
-	}
-
-	public function getFormIndex(CustomUI $form) : int{
-		return (int) @array_search($form, $this->modalForms);
 	}
 
 	public function getForms() : array{
