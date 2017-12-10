@@ -437,7 +437,6 @@ abstract class Entity extends Location implements Metadatable {
 	public $fallDistance = 0;
 	public $ticksLived = 0;
 	public $lastUpdate;
-	public $maxFireTicks;
 	public $fireTicks = 0;
 	public $namedtag;
 	public $canCollide = true;
@@ -1615,6 +1614,20 @@ abstract class Entity extends Location implements Metadatable {
 			return null;
 		}
 	}
+
+    /**
+     * @return int
+     */
+    public function getFireTicks():int{
+        return $this->fireTicks;
+    }
+
+    /**
+     * @param int $fireTicks
+     */
+    public function setFireTicks(int $fireTicks){
+        $this->fireTicks = $fireTicks;
+    }
 
 	public function extinguish(){
 		$this->fireTicks = 0;
