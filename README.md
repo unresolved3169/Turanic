@@ -11,9 +11,6 @@ Turanic is a fork of GenisysPro
 ## Can I test this before I download it?
 Yes, you can. There are our member who already use it, and at times there are dev servers running and you might be lucky enough to get in..<br>
 
-IP: **play.fylkat.cz**  
-Port: **19132**
-
 IP: **kitpvp.pkpvp.cf**  
 Port: **19172**
 
@@ -48,6 +45,8 @@ Port: **19172**
 - [ ] **Basic ChunkLoader System**
 - [ ] **Fast NBT Writer/reader**
 - [ ] **Basic Redstone system (without lag) (%80)**
+- [ ] **Rewrite Creative Items**
+- [ ] **Update langs**
 
 # License:
 ```
