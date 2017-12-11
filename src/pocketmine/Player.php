@@ -1964,14 +1964,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         $this->timings->stopTiming();
 
-        if (count($this->messageQueue) > 0) {
-            $message = array_shift($this->messageQueue);
-            $pk = new TextPacket();
-            $pk->type = TextPacket::TYPE_RAW;
-            $pk->message = $message;
-            $this->dataPacket($pk);
-        }
-
         return true;
     }
 
@@ -3515,9 +3507,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return false;
 	}
 
-	/** @var string[] */
-	private $messageQueue = [];
-
 	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
@@ -3656,24 +3645,20 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @param string|TextContainer $message
 	 *
-	 * @return bool
 	 */
 	public function sendMessage($message){
 		if ($message instanceof TextContainer) {
 			if ($message instanceof TranslationContainer) {
 				$this->sendTranslation($message->getText(), $message->getParameters());
-				return false;
+				return;
 			}
 			$message = $message->getText();
 		}
 
-		$mes = explode("\n", $message);
-		foreach($mes as $m){
-			if($m !== ""){
-				$this->messageQueue[] = $m;
-			}
-		}
-		return true;
+        $pk = new TextPacket();
+        $pk->type = TextPacket::TYPE_RAW;
+        $pk->message = $this->server->getLanguage()->translateString($message);
+        $this->dataPacket($pk);
 	}
 
 	/**
