@@ -106,7 +106,6 @@ abstract class Achievement {
 				"acquireIron",
 			],
 		],
-
 	];
 
 
@@ -150,6 +149,5 @@ abstract class Achievement {
 
 		return false;
 	}
-
 
 }

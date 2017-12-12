@@ -34,8 +34,6 @@ player:
  experience: true
  #Wenn ein Spieler stirb sachen bei sich behalten
  keep-inventory: false
- #Inventar eines Spielers leeren nach Spielmodus wechsel
- auto-clear-inventory : true
  #Level bei behalten nach dem Tod
  keep-experience: false
 
@@ -123,7 +121,7 @@ inventory:
  #Setze dies auf true wenn du Probleme mit dem Amboss hast.
  allow-cheats: false
 
-# MobAI für Tiere
-# Dieses Funktion ist in Arbeit(Funktioniert nicht correct)
+# MobAI für Entitäten
+# Dieses Funktion ist in Arbeit(Funktioniert nicht korrekt)
 mob-ai:
  enable: false
