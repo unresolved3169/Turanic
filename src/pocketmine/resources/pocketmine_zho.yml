@@ -154,14 +154,6 @@ spawn-limits:
   water-animals: 5
   ambient: 15
 
-auto-report:
- #發送錯誤報告
- enabled: false
- send-code: true
- send-settings: true
- send-phpinfo: false
- host: crash.pocketmine.net
-
 commands:
  #您可以在此處自訂伺服器的指令
  #在此處指定指令的名稱，以覆蓋預設值。

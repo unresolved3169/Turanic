@@ -1119,17 +1119,20 @@ class Server{
 		return true;
 	}
 
-	/**
-	 * Generates a new level if it does not exists
-	 *
-	 * @param string $name
-	 * @param int	$seed
-	 * @param string $generator Class name that extends pocketmine\level\generator\Noise
-	 * @param array  $options
-	 *
-	 * @return bool
-	 */
-	public function generateLevel($name, $seed = null, $generator = null, $options = []){
+    /**
+     *
+     * Generates new level if it doesn't exist
+     *
+     * @param $name
+     * @param null $seed
+     * @param null $generator
+     * @param array $options
+     *
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    public function generateLevel($name, $seed = null, $generator = null, $options = []){
 		if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
@@ -1541,11 +1544,9 @@ class Server{
 		$this->anvilEnabled = $this->getAdvancedProperty("enchantment.enable-anvil", true);
 		$this->enchantingTableEnabled = $this->getAdvancedProperty("enchantment.enable-enchanting-table", true);
 		$this->countBookshelf = $this->getAdvancedProperty("enchantment.count-bookshelf", false);
-
 		$this->allowInventoryCheats = $this->getAdvancedProperty("inventory.allow-cheats", false);
 		$this->folderpluginloader = $this->getAdvancedProperty("developer.folder-plugin-loader", true);
 		$this->absorbWater = $this->getAdvancedProperty("server.absorb-water", false);
-
 	}
 
 	/**
@@ -2423,38 +2424,6 @@ class Server{
 
 		$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
 
-
-		if($this->getProperty("auto-report.enabled", true) !== false){
-			$report = true;
-			$plugin = $dump->getData()["plugin"];
-			if(is_string($plugin)){
-				$p = $this->pluginManager->getPlugin($plugin);
-				if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
-					$report = false;
-				}
-			}elseif(\Phar::running(true) == ""){
-				$report = false;
-			}
-			if($dump->getData()["error"]["type"] === "E_PARSE" or $dump->getData()["error"]["type"] === "E_COMPILE_ERROR"){
-				$report = false;
-			}
-
-			if($report){
-				$reply = Utils::postURL("http://" . $this->getProperty("auto-report.host", "crash.pocketmine.net") . "/submit/api", [
-					"report" => "yes",
-					"name" => $this->getName() . " " . $this->getPocketMineVersion(),
-					"email" => "crash@pocketmine.net",
-					"reportPaste" => base64_encode($dump->getEncodedData())
-				]);
-
-				if(($data = json_decode($reply)) !== false and isset($data->crashId)){
-					$reportId = $data->crashId;
-					$reportUrl = $data->crashUrl;
-					$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
-				}
-			}
-		}
-
 		//$this->checkMemory();
 		//$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
 
@@ -2521,7 +2490,6 @@ class Server{
 	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
 		$pk = new PlayerListPacket();
 		$pk->type = PlayerListPacket::TYPE_ADD;
-
 		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin, $xboxUserId);
 		$this->broadcastPacket($players ?? $this->playerList, $pk);
 	}
@@ -2791,13 +2759,12 @@ class Server{
 				}
 			}
 
-  if($this->dserverConfig["enable"] and $this->dserverConfig["motdPlayers"]){
-			 $max = $this->getDServerMaxPlayers();
-			 $online = $this->getDServerOnlinePlayers();
-			 $name = $this->getNetwork()->getName().'['.$online.'/'.$max.']';
-			 $this->getNetwork()->setName($name);
-			 //TODO: 检测是否爆满,不同状态颜色
-			}
+			if($this->dserverConfig["enable"] and $this->dserverConfig["motdPlayers"]) {
+                $max = $this->getDServerMaxPlayers();
+                $online = $this->getDServerOnlinePlayers();
+                $name = $this->getNetwork()->getName() . '[' . $online . '/' . $max . ']';
+                $this->getNetwork()->setName($name);
+            }
 			$this->getNetwork()->updateName();
 		}
 

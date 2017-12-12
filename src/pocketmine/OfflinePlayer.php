@@ -159,39 +159,41 @@ class OfflinePlayer implements IPlayer, Metadatable {
 		return $this->namedtag instanceof CompoundTag;
 	}
 
-	/**
-	 * @param string        $metadataKey
-	 * @param MetadataValue $metadataValue
-	 */
-	public function setMetadata(string $metadataKey, MetadataValue $metadataValue){
+
+    /**
+     * @param string $metadataKey
+     * @param MetadataValue $metadataValue
+     * @throws \Exception
+     */
+    public function setMetadata(string $metadataKey, MetadataValue $metadataValue){
 		$this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $metadataValue);
 	}
 
-	/**
-	 * @param string $metadataKey
-	 *
-	 * @return MetadataValue[]
-	 */
-	public function getMetadata(string $metadataKey){
+    /**
+     * @param string $metadataKey
+     * @return MetadataValue[]
+     * @throws \Exception
+     */
+    public function getMetadata(string $metadataKey){
 		return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
 	}
 
-	/**
-	 * @param string $metadataKey
-	 *
-	 * @return bool
-	 */
-	public function hasMetadata(string $metadataKey) : bool{
+    /**
+     * @param string $metadataKey
+     * @return bool
+     * @throws \Exception
+     */
+    public function hasMetadata(string $metadataKey) : bool{
 		return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
 	}
 
-	/**
-	 * @param string $metadataKey
-	 * @param Plugin $plugin
-	 */
-	public function removeMetadata(string $metadataKey, Plugin $plugin){
+    /**
+     * @param string $metadataKey
+     * @param Plugin $plugin
+     * @throws \Exception
+     */
+    public function removeMetadata(string $metadataKey, Plugin $plugin){
 		$this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $plugin);
 	}
-
 
 }
