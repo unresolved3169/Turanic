@@ -47,6 +47,7 @@ Port: **19172**
 - [ ] **Basic Redstone system (without lag) (%80)**
 - [ ] **Rewrite Creative Items**
 - [ ] **Update languages**
+- [ ] **Update langs**
 
 # License:
 ```
