@@ -270,7 +270,8 @@ class Item implements ItemIds, \JsonSerializable {
 			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
 			self::$list[self::PRISMARINE_SHARD] = PrismarineShard::class;
 			self::$list[self::FIRE_CHARGE] = FireCharge::class;
-			
+			self::$list[self::ARMOR_STAND] = ArmorStand::class;
+
 			self::$list[self::MUSIC_DISC_13] = MusicDisc13::class;
 			self::$list[self::MUSIC_DISC_CAT] = MusicDiscCat::class;
 			self::$list[self::MUSIC_DISC_BLOCKS] = MusicDiscBlocks::class;

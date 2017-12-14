@@ -61,6 +61,7 @@ use pocketmine\entity\neutral\Enderman;
 use pocketmine\entity\neutral\PigZombie;
 use pocketmine\entity\neutral\PolarBear;
 use pocketmine\entity\neutral\Spider;
+use pocketmine\entity\object\ArmorStand;
 use pocketmine\entity\object\Arrow;
 use pocketmine\entity\object\Boat;
 use pocketmine\entity\object\Egg;
@@ -107,6 +108,7 @@ use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Timings;
 use pocketmine\item\Elytra;
+use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Location;
@@ -294,6 +296,7 @@ abstract class Entity extends Location implements Metadatable {
     protected $constructed = false;
 
 	public static function init(){
+		Entity::registerEntity(ArmorStand::class);
 		Entity::registerEntity(Arrow::class);
 		Entity::registerEntity(Bat::class);
 		Entity::registerEntity(Blaze::class);
@@ -1135,6 +1138,10 @@ abstract class Entity extends Location implements Metadatable {
 			unset($this->hasSpawned[$player->getLoaderId()]);
 		}
 	}
+
+	public function onInteract(Player $player, Item $item){
+	    return false;
+    }
 
     /**
      * @param EntityDamageEvent $source

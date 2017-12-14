@@ -2660,6 +2660,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
+					    $target->onInteract($this, $this->getItemInHand());
 						break;
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_ATTACK:
 						if(!$target->isAlive()){
