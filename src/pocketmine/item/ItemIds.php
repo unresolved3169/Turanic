@@ -157,8 +157,7 @@ interface ItemIds extends BlockIds {
 	const ENDER_PEARL = 368;
 	const BLAZE_ROD = 369;
 	const GHAST_TEAR = 370;
-	const GOLD_NUGGET = 371;
-	const GOLDEN_NUGGET = 371;
+	const GOLD_NUGGET = 371, GOLDEN_NUGGET = 371;
 	const NETHER_WART = 372;
 	const POTION = 373;
 	const GLASS_BOTTLE = 374;
@@ -220,7 +219,7 @@ interface ItemIds extends BlockIds {
 	const PRISMARINE_CRYSTALS = 422;
 	const RAW_MUTTON = 423;
 	const COOKED_MUTTON = 424;
-	const BANNER = 425;
+	const ARMOR_STAND = 425;
 	const END_CRYSTAL = 426;
 	const SPRUCE_DOOR = 427;
 	const BIRCH_DOOR = 428;
@@ -231,10 +230,12 @@ interface ItemIds extends BlockIds {
 	const POPPED_CHORUS_FRUIT = 433;
 	const DRAGONS_BREATH = 437;
 	const SPLASH_POTION = 438;
-	const ELYTRA = 444;
-	const ELYTRA_WINGS = 444;
+	const LINGERING_POTION = 441;
+	const ELYTRA = 444, ELYTRA_WINGS = 444;
 	const SHULKER_SHELL = 445;
-	const TOTEM = 450;
+    const BANNER = 446;
+    const TOTEM = 450;
+    const IRON_NUGGET = 450;
 	const BEETROOT = 457;
 	const BEETROOT_SEEDS = 458;
 	const BEETROOT_SEED = 458;

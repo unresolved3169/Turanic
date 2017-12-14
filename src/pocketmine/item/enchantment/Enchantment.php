@@ -376,12 +376,12 @@ class Enchantment {
 	 * @param string $nickname
 	 * @param bool   $custom
 	 */
-	public function __construct($id, $name, $rarity, $activationType, $slot, $nickname = "", $custom = false){
-		$this->id = (int) $id;
-		$this->name = (string) $name;
-		$this->rarity = (int) $rarity;
-		$this->activationType = (int) $activationType;
-		$this->slot = (int) $slot;
+	public function __construct(int $id, string $name, int $rarity, int $activationType, int $slot, string $nickname = "", bool $custom = false){
+		$this->id = $id;
+		$this->name = $name;
+		$this->rarity = $rarity;
+		$this->activationType = $activationType;
+		$this->slot = $slot;
 		$this->nickname = $nickname;
 		$this->isCustomVar = $custom;
 	}
@@ -396,8 +396,8 @@ class Enchantment {
 	/**
 	 * @return bool
 	 */
-	public function isCustom(){
-		return (bool) $this->isCustomVar;
+	public function isCustom() : bool{
+		return $this->isCustomVar;
 	}
 
 	/**

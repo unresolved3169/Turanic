@@ -29,6 +29,7 @@ class Skull extends Item {
 	const ZOMBIE = 2;
 	const STEVE = 3;
 	const CREEPER = 4;
+	const DRAGON = 5;
 
 	/**
 	 * Skull constructor.

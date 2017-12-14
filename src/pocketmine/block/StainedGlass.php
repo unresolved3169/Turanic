@@ -30,9 +30,10 @@ class StainedGlass extends Transparent {
 
 	protected $id = self::STAINED_GLASS;
 
-	/**
-	 * StainedGlass constructor.
-	 */
+    /**
+     * StainedGlass constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}

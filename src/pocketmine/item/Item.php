@@ -28,7 +28,6 @@ namespace pocketmine\item;
 
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\Server;
 use pocketmine\block\Block;
 use pocketmine\entity\neutral\CaveSpider;
 use pocketmine\entity\Entity;
@@ -47,7 +46,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\utils\Config;
 use pocketmine\inventory\FurnaceFuel;
 
 class Item implements ItemIds, \JsonSerializable {
@@ -288,6 +286,11 @@ class Item implements ItemIds, \JsonSerializable {
 			self::$list[self::WRITABLE_BOOK] = WritableBook::class;
 			self::$list[self::WRITTEN_BOOK] = WrittenBook::class;
 
+            /**
+             * TODO
+             * Add Lingering Potion
+             */
+
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
 					self::$list[$i] = Block::$list[$i];
@@ -303,15 +306,24 @@ class Item implements ItemIds, \JsonSerializable {
 	private static function initCreativeItems(){
 		self::clearCreativeItems();
 
-		$creativeItems = new Config(Server::getInstance()->getFilePath() . "src/pocketmine/resources/creativeitems.json", Config::JSON, []);
-
-		foreach($creativeItems->getAll() as $data){
-			$item = Item::get($data["id"], $data["damage"], $data["count"], $data["nbt"]);
-			if($item->getName() === "Unknown"){
-				continue;
-			}
-			self::addCreativeItem($item);
-		}
+		$degerler = ["id" => 0, "meta" => 0, "count" => 1, "ench" => []];
+		foreach (CreativeItems::ITEMS as $itemdata){
+		    foreach ($degerler as $deger => $standart){
+		        if(empty($itemdata[$deger])){
+		            $itemdata[$deger] = $standart;
+                }
+            }
+            $item = Item::get($itemdata["id"], $itemdata["meta"], $itemdata["count"]);
+            if(is_array($itemdata["ench"]) && count($itemdata["ench"]) > 0){
+                foreach($itemdata["ench"] as $ench){
+                    $item->addEnchantment(Enchantment::getEnchantment($ench["id"])->setLevel($ench["lvl"]));
+                }
+            }
+            if($item->getName() === "Unknown"){
+                continue;
+            }
+            self::addCreativeItem($item);
+        }
 	}
 
 	public static function clearCreativeItems(){
@@ -888,7 +900,8 @@ class Item implements ItemIds, \JsonSerializable {
 		$tag = $this->getNamedTagEntry("display");
 		if($tag instanceof CompoundTag and isset($tag->Lore) and $tag->Lore instanceof ListTag){
 			$lines = [];
-			foreach($tag->Lore->getValue() as $line){
+			/** @var StringTag $line */
+            foreach($tag->Lore->getValue() as $line){
 				$lines[] = $line->getValue();
 			}
 			return $lines;

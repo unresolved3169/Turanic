@@ -23,6 +23,7 @@
 namespace pocketmine\entity;
 
 
+use pocketmine\entity\object\Arrow;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;

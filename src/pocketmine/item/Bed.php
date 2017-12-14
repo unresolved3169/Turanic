@@ -28,7 +28,7 @@ class Bed extends Item {
 	const WHITE_BED = 0;
 	const ORANGE_BED = 1;
 	const MAGENTA_BED = 2;
-	const LIGTH_BLUE_BED = 3;
+	const LIGHT_BLUE_BED = 3;
 	const YELLOW_BED = 4;
 	const LIME_BED = 5;
 	const PINK_BED = 6;

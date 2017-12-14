@@ -180,6 +180,7 @@ class Block extends Position implements BlockIds, Metadatable{
             self::registerBlock(new PoweredRepeater());
             self::registerBlock(new InvisibleBedrock());
             self::registerBlock(new Trapdoor());
+            self::registerBlock(new MonsterEggBlock());
             self::registerBlock(new StoneBricks());
             self::registerBlock(new BrownMushroomBlock());
             self::registerBlock(new RedMushroomBlock());
