@@ -102,7 +102,7 @@ class AvailableCommandsPacket extends DataPacket{
                     foreach ($params as $param) {
                         $commandStream->putString($param->getName());
 
-                        $type = $param->getFlag() | $param->getType();
+                        $type = $param->getType();
                         if ($param->getFlag() == $param::FLAG_ENUM and $param->getEnum() != null) {
                             $enum = $param->getEnum();
                             $realValues = [];
@@ -113,10 +113,10 @@ class AvailableCommandsPacket extends DataPacket{
                             }
                             $enums[] = new CommandEnum($cmd->getName() . $enum->getName(), $realValues);
                             $enumIndex = count($enums) - 1;
-                            $type = $param->getFlag() | $enum->getType() | $enumIndex;
+                            $type = $param::FLAG_ENUM | $param::FLAG_VALID | $enumIndex;
                         } elseif ($param->getFlag() == $param::FLAG_POSTFIX and strlen($param->getPostfix()) > 0) {
                             $postfixes[] = $param->getPostfix();
-                            $type = $param->getFlag() | count($postfixes) - 1;
+                            $type = $type << 24 | count($postfixes) - 1;
                         }
 
                         $commandStream->putLInt($type);
