@@ -2673,9 +2673,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						}
 
 						$cancelled = false;
-						if($target instanceof Player and $this->server->getConfigBoolean("pvp", true) === false){
-							$cancelled = true;
-						}
 
 						$heldItem = $this->inventory->getItemInHand();
 
@@ -2686,9 +2683,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if(!$this->canInteract($target, 8)){
 							$cancelled = true;
 						}elseif($target instanceof Player){
-							if(($target->getGamemode() & 0x01) > 0){
-								return true;
-							}elseif($this->server->getConfigBoolean("pvp") !== true){
+							if($this->server->getConfigBoolean("pvp") !== true){
 								$cancelled = true;
 							}
 

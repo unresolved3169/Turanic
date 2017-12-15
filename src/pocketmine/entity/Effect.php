@@ -56,6 +56,7 @@ class Effect {
 	const ABSORPTION = 22;
 	const SATURATION = 23;
     const LEVITATION = 24;
+    const FATAL_POISON = 25;
 
 	const MAX_DURATION = 2147483648;
 
@@ -93,6 +94,7 @@ class Effect {
 		self::$effects[Effect::SATURATION] = new Effect(Effect::SATURATION, "%potion.saturation", 255, 0, 255);
 
         self::$effects[Effect::LEVITATION] = new Effect(Effect::LEVITATION, "%potion.levitation", 206, 255, 255);
+        self::$effects[Effect::FATAL_POISON] = new Effect(Effect::FATAL_POISON, "%potion.poison", 206, 78, 147, true);
 	}
 
 	/**
@@ -245,6 +247,7 @@ class Effect {
 	public function canTick(){
 		if($this->amplifier < 0) $this->amplifier = 0;
 		switch($this->id){
+			case Effect::FATAL_POISON:
 			case Effect::POISON:
 				if(($interval = (25 >> $this->amplifier)) > 0){
 					return ($this->duration % $interval) === 0;
@@ -285,12 +288,15 @@ class Effect {
 	 */
 	public function applyEffect(Entity $entity){
 		switch($this->id){
+            /** @noinspection PhpMissingBreakStatementInspection */
 			case Effect::POISON:
-				if($entity->getHealth() > 1){
-					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
-					$entity->attack($ev);
-				}
-				break;
+				if($entity->getHealth() <= 1){
+                    break;
+                }
+            case Effect::FATAL_POISON:
+                $ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
+                $entity->attack($ev);
+            break;
 
 			case Effect::WITHER:
 				$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);

@@ -25,6 +25,7 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\sound\ItemFrameAddItemSound;
 use pocketmine\level\sound\ItemFrameRotateItemSound;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\{
 	ByteTag, CompoundTag, FloatTag, IntTag, StringTag
 };
@@ -74,6 +75,7 @@ class ItemFrame extends Flowable {
 				new FloatTag("ItemDropChance", 1.0),
 				new ByteTag("ItemRotation", 0)
 			]);
+			/** @var TileItemFrame $tile */
 			$tile = Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), $nbt);
 		}
 
@@ -105,6 +107,7 @@ class ItemFrame extends Flowable {
 	 * @return mixed
 	 */
 	public function onBreak(Item $item){
+	    /** @var TileItemFrame $tile */
 		if(($tile = $this->level->getTile($this)) instanceof TileItemFrame){
 			//TODO: add events
 			if(lcg_value() <= $tile->getItemDropChance() and $tile->getItem()->getId() !== Item::AIR){
@@ -148,7 +151,7 @@ class ItemFrame extends Flowable {
 	 * @return bool
 	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($face === 0 or $face === 1){
+		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP or !$target->isSolid()){
 			return false;
 		}
 

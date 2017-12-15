@@ -432,4 +432,8 @@ abstract class BaseInventory implements Inventory{
 			$player->dataPacket($pk);
 		}
 	}
+
+	public function slotExists(int $slot){
+        return $slot >= 0 and $slot < $this->slots->getSize(); //use actual slots size to allow PlayerInventory to lie
+    }
 }
