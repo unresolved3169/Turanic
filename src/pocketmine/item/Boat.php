@@ -22,7 +22,7 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Boat as BoatEntity;
+use pocketmine\entity\object\Boat as BoatEntity;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
