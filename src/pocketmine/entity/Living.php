@@ -28,6 +28,8 @@ use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
+use pocketmine\event\entity\EntityEffectAddEvent;
+use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
 use pocketmine\item\Item as ItemItem;
@@ -381,5 +383,42 @@ abstract class Living extends Entity implements Damageable {
 
     public function doesTriggerPressurePlate() : bool{
         return true;
+    }
+
+    public function addEffect(Effect $effect):bool{
+        $oldEffect = null;
+        $cancelled = false;
+        if(isset($this->effects[$effect->getId()])){
+            $oldEffect = $this->effects[$effect->getId()];
+            if(
+                abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
+                or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
+            ){
+                $cancelled = true;
+            }
+        }
+        $ev = new EntityEffectAddEvent($this, $effect);
+        $ev->setCancelled($cancelled);
+        $this->server->getPluginManager()->callEvent($ev);
+        if($ev->isCancelled()){
+            return false;
+        }
+        $effect->add($this, $oldEffect);
+        $this->effects[$effect->getId()] = $effect;
+        $this->recalculateEffectColor();
+        return true;
+    }
+
+    public function removeEffect($effectId){
+        if(isset($this->effects[$effectId])){
+            $effect = $this->effects[$effectId];
+            $this->server->getPluginManager()->callEvent($ev = new EntityEffectRemoveEvent($this, $effect));
+            if($ev->isCancelled()){
+                return;
+            }
+            unset($this->effects[$effectId]);
+            $effect->remove($this);
+            $this->recalculateEffectColor();
+        }
     }
 }

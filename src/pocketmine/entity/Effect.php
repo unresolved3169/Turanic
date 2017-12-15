@@ -354,78 +354,94 @@ class Effect {
 		$this->color = (($r & 0xff) << 16) + (($g & 0xff) << 8) + ($b & 0xff);
 	}
 
-	/**
-	 * @param Entity      $entity
-	 * @param bool        $modify
-	 * @param Effect|null $oldEffect
-	 */
-	public function add(Entity $entity, $modify = false, Effect $oldEffect = null){
-		if($entity instanceof Player){
-			$pk = new MobEffectPacket();
-			$pk->entityRuntimeId = $entity->getId();
-			$pk->effectId = $this->getId();
-			$pk->amplifier = $this->getAmplifier();
-			$pk->particles = $this->isVisible();
-			$pk->duration = $this->getDuration();
-			if($modify){
-				$pk->eventId = MobEffectPacket::EVENT_MODIFY;
-			}else{
-				$pk->eventId = MobEffectPacket::EVENT_ADD;
-			}
+    public function add(Entity $entity, Effect $oldEffect = null){
+        if($entity instanceof Player){
+            $pk = new MobEffectPacket();
+            $pk->entityRuntimeId = $entity->getId();
+            $pk->effectId = $this->getId();
+            $pk->amplifier = $this->getAmplifier();
+            $pk->particles = $this->isVisible();
+            $pk->duration = $this->getDuration();
+            if($oldEffect !== null){
+                $pk->eventId = MobEffectPacket::EVENT_MODIFY;
+            }else{
+                $pk->eventId = MobEffectPacket::EVENT_ADD;
+            }
+            $entity->dataPacket($pk);
+        }
+        if($oldEffect !== null){
+            $oldEffect->remove($entity, false);
+        }
+        switch($this->id){
+            case Effect::INVISIBILITY:
+                $entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
+                $entity->setNameTagVisible(false);
+                break;
+            case Effect::SPEED:
+                $attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+                $attr->setValue($attr->getValue() * (1 + 0.2 * $this->getEffectLevel()));
+                break;
+            case Effect::SLOWNESS:
+                $attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+                $attr->setValue($attr->getValue() * (1 - 0.15 * $this->getEffectLevel()), true);
+                break;
+            case Effect::HEALTH_BOOST:
+                $attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
+                $attr->setMaxValue($attr->getMaxValue() + 4 * $this->getEffectLevel());
+                break;
+            case Effect::ABSORPTION:
+                $new = (4 * $this->getEffectLevel());
+                if($new > $entity->getAbsorption()){
+                    $entity->setAbsorption($new);
+                }
+                break;
+        }
+    }
 
-			$entity->dataPacket($pk);
 
-			if($this->id === Effect::SPEED){
-				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				if($modify and $oldEffect !== null){
-					$speed = $attr->getValue() / (1 + 0.2 * ($oldEffect->getAmplifier() + 1));
-				}else{
-					$speed = $attr->getValue();
-				}
-				$speed *= (1 + 0.2 * ($this->amplifier + 1));
-				$attr->setValue($speed);
-			}elseif($this->id === Effect::SLOWNESS){
-				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				if($modify and $oldEffect !== null){
-					$speed = $attr->getValue() / (1 - 0.15 * ($oldEffect->getAmplifier() + 1));
-				}else{
-					$speed = $attr->getValue();
-				}
-				$speed *= (1 - (0.15 * $this->amplifier + 1));
-				$attr->setValue($speed);
-			}
-		}
+    /**
+     * Returns the level of this effect, which is always one higher than the amplifier.
+     *
+     * @return int
+     */
+    public function getEffectLevel() : int{
+        return $this->amplifier + 1;
+    }
 
-		if($this->id === Effect::INVISIBILITY){
-			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, true);
-			$entity->setNameTagVisible(false);
-		}
-	}
-
-	/**
-	 * @param Entity $entity
-	 */
-	public function remove(Entity $entity){
-		if($entity instanceof Player){
-			$pk = new MobEffectPacket();
-			$pk->entityRuntimeId = $entity->getId();
-			$pk->eventId = MobEffectPacket::EVENT_REMOVE;
-			$pk->effectId = $this->getId();
-
-			$entity->dataPacket($pk);
-
-			if($this->id === Effect::SPEED){
-				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				$attr->setValue($attr->getValue() / (1 + 0.2 * ($this->amplifier + 1)));
-			}elseif($this->id === Effect::SLOWNESS){
-				$attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
-				$attr->setValue($attr->getValue() / (1 - 0.15 * ($this->amplifier + 1)));
-			}
-		}
-
-		if($this->id === Effect::INVISIBILITY){
-			$entity->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_INVISIBLE, false);
-			$entity->setNameTagVisible(true);
-		}
-	}
+    /**
+     * Removes the effect from the entity, resetting any changed values back to their original defaults.
+     *
+     * @param Entity $entity
+     * @param bool   $send
+     */
+    public function remove(Entity $entity, bool $send = true){
+        if($send and $entity instanceof Player){
+            $pk = new MobEffectPacket();
+            $pk->entityRuntimeId = $entity->getId();
+            $pk->eventId = MobEffectPacket::EVENT_REMOVE;
+            $pk->effectId = $this->getId();
+            $entity->dataPacket($pk);
+        }
+        switch($this->id){
+            case Effect::INVISIBILITY:
+                $entity->setDataFlag(Entity::DATA_FLAGS,Entity::DATA_FLAG_INVISIBLE, false);
+                $entity->setNameTagVisible(true);
+                break;
+            case Effect::SPEED:
+                $attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+                $attr->setValue($attr->getValue() / (1 + 0.2 * $this->getEffectLevel()));
+                break;
+            case Effect::SLOWNESS:
+                $attr = $entity->getAttributeMap()->getAttribute(Attribute::MOVEMENT_SPEED);
+                $attr->setValue($attr->getValue() / (1 - 0.15 * $this->getEffectLevel()));
+                break;
+            case Effect::HEALTH_BOOST:
+                $attr = $entity->getAttributeMap()->getAttribute(Attribute::HEALTH);
+                $attr->setMaxValue($attr->getMaxValue() - 4 * $this->getEffectLevel());
+                break;
+            case Effect::ABSORPTION:
+                $entity->setAbsorption(0);
+                break;
+        }
+    }
 }

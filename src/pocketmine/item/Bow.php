@@ -46,12 +46,24 @@ class Bow extends Tool {
 	}
 
     public function onReleaseUsing(Player $player) : bool{
-        if($player->isSurvival() and !$player->getInventory()->contains(Item::get(Item::ARROW, 0, 1))){
+        if($player->isSurvival() and !$player->getInventory()->contains(Item::get(Item::ARROW, -1))){
             $player->getInventory()->sendContents($player);
             return false;
         }
 
         $directionVector = $player->getDirectionVector();
+
+        $arrow = null;
+        $index = $player->getInventory()->first(Item::get(Item::ARROW, -1));
+        if($index !== -1){
+            $arrow = $player->getInventory()->getItem($index);
+            $arrow->setCount(1);
+        }elseif($player->isCreative()){
+            $arrow = Item::get(Item::ARROW, 0, 1);
+        }else{
+            $player->getInventory()->sendContents($player);
+            return false;
+        }
 
         $nbt = new CompoundTag("", [
             new ListTag("Pos", [
@@ -68,7 +80,8 @@ class Bow extends Tool {
                 new FloatTag("", ($player->yaw > 180 ? 360 : 0) - $player->yaw), //arrow yaw must range from -180 to +180
                 new FloatTag("", -$player->pitch)
             ]),
-            new ShortTag("Fire", $player->isOnFire() ? 45 * 60 : 0)
+            new ShortTag("Fire", $player->isOnFire() ? 45 * 60 : 0),
+            new ShortTag("Potion", $arrow->getDamage())
         ]);
 
         $diff = $player->getItemUseDuration();
@@ -118,7 +131,6 @@ class Bow extends Tool {
         }else{
             $entity->spawnToAll();
         }
-
         return true;
     }
 }

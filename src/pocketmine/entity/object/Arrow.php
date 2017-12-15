@@ -61,8 +61,8 @@ class Arrow extends Projectile {
 	 * @param Entity|null $shootingEntity
 	 * @param bool        $critical
 	 */
-	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, $critical = false){
-		$this->isCritical = (bool) $critical;
+	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false){
+		$this->isCritical = $critical;
 		if(!isset($nbt->Potion)){
 			$nbt->Potion = new ShortTag("Potion", 0);
 		}

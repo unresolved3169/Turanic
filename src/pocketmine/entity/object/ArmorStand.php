@@ -73,6 +73,10 @@ class ArmorStand extends Entity {
         $this->setMaxHealth(2);
     }
 
+    public function canCollideWith(Entity $entity){
+        return false;
+    }
+
     public function onUpdate($currentTick){
         if(parent::onUpdate($currentTick)){
             $v = $this->getSide(self::SIDE_DOWN);

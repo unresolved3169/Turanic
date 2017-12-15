@@ -4401,15 +4401,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @param Effect $effect
 	 *
-	 * @return bool|void
+	 * @return bool
 	 * @internal param $Effect
 	 */
-	public function addEffect(Effect $effect){//Overwrite
+	public function addEffect(Effect $effect): bool{//Overwrite
 		if ($effect->isBad() && $this->isCreative()) {
-			return;
+			return false;
 		}
 
-		parent::addEffect($effect);
+		return parent::addEffect($effect);
 	}
 
 	public function sendForm(Form $form, int $forceId = -1){

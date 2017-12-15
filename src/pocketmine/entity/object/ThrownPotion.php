@@ -43,8 +43,6 @@ class ThrownPotion extends Projectile {
 	protected $gravity = 0.1;
 	protected $drag = 0.05;
 
-	private $hasSplashed = false;
-
 	/**
 	 * ThrownPotion constructor.
 	 *
@@ -70,42 +68,27 @@ class ThrownPotion extends Projectile {
 		return (int) $this->namedtag["PotionId"];
 	}
 
-	public function splash(){
-		if(!$this->hasSplashed){
-			$this->hasSplashed = true;
-			$color = Potion::getColor($this->getPotionId());
-			$this->getLevel()->addParticle(new SpellParticle($this, $color[0], $color[1], $color[2]));
-			$radius = 6;
- 			foreach ($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow($radius, $radius, $radius)) as $p) {
- 				foreach(Potion::getEffectsById($this->getPotionId()) as $effect){
- 					$p->addEffect($effect);
-				}
-			}
-
-			$this->kill();
-		}
-	}
-
 	/**
 	 * @param $currentTick
 	 *
 	 * @return bool
 	 */
 	public function onUpdate($currentTick){
-		if($this->closed){
-			return false;
-		}
-
 		$this->timings->startTiming();
 
-		$hasUpdate = parent::onUpdate($currentTick);
+        if($this->isCollided || $this->age > 1200){
+            $color = Potion::getColor($this->getPotionId());
+            $this->getLevel()->addParticle(new SpellParticle($this, $color[0], $color[1], $color[2]));
+            $radius = 6;
+            foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow($radius, $radius, $radius)) as $p){
+                foreach(Potion::getEffectsById($this->getPotionId()) as $effect){
+                    $p->addEffect($effect);
+                }
+            }
+            $this->kill();
+        }
 
-		$this->age++;
-
-		if($this->age > 1200 or $this->isCollided){
-			$this->splash();
-			$hasUpdate = true;
-		}
+        $hasUpdate =  parent::onUpdate($currentTick);
 
 		$this->timings->stopTiming();
 
@@ -126,4 +109,8 @@ class ThrownPotion extends Projectile {
 
 		parent::spawnTo($player);
 	}
+
+	public function onCollideWithPlayer(Player $player): bool{
+        return false;
+    }
 }
