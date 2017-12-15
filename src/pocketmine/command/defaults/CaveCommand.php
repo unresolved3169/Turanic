@@ -70,7 +70,7 @@ class CaveCommand extends VanillaCommand {
 			return true;
 		}
 
-		if($args[0] == "getmypos"){
+		if(isset($args[0]) && $args[0] == "getmypos"){
 			$sender->sendMessage("Your position: ({$sender->getX()}, {$sender->getY()}, {$sender->getZ()}, {$sender->getLevel()->getFolderName()})");
 			return true;
 		}
