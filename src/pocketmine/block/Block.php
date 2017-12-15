@@ -426,8 +426,9 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->getLevel()->setBlock($this, $this, true, true);
 	}
 
-	public function clearBoundingBoxes(){
+	public function clearCaches(){
 	    $this->boundingBox = null;
+	    $this->collisionBoxes = null;
     }
 
 	/**
@@ -439,10 +440,6 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function isBreakable(Item $item){
 		return true;
-	}
-
-	public function tickRate() : int{
-		return 10;
 	}
 
 	/**
@@ -766,7 +763,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 
 		if($item->isSword()){
-			$base *= 0.5;
+			$base /= 1.5;
 		}
 
 		return $base;

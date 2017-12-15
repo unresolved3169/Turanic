@@ -70,8 +70,8 @@ class LevelDB extends BaseLevelProvider{
 	const GENERATOR_INFINITE = 1;
 	const GENERATOR_FLAT = 2;
 
-	const CURRENT_STORAGE_VERSION = 5; //Current MCPE level format version
-	const CURRENT_LEVEL_CHUNK_VERSION = 4;
+	const CURRENT_STORAGE_VERSION = 6; //Current MCPE level format version
+	const CURRENT_LEVEL_CHUNK_VERSION = 7;
 	const CURRENT_LEVEL_SUBCHUNK_VERSION = 0;
 
 	/** @var Chunk[] */
@@ -95,8 +95,12 @@ class LevelDB extends BaseLevelProvider{
 			throw new LevelException("Invalid level.dat");
 		}
 
+        if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
+            throw new LevelException("Given version of php-leveldb doesn't support zlib raw compression");
+        }
+
 		$this->db = new \LevelDB($this->path . "/db", [
-			"compression" => LEVELDB_ZLIB_COMPRESSION
+			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION
 		]);
 
 		if(isset($this->levelData->StorageVersion) and $this->levelData->StorageVersion->getValue() > self::CURRENT_STORAGE_VERSION){
@@ -168,7 +172,7 @@ class LevelDB extends BaseLevelProvider{
 		$levelData = new CompoundTag("", [
 			//Vanilla fields
 			new IntTag("DayCycleStopTime", -1),
-			new IntTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
+			new IntTag("Difficulty", 2),
 			new ByteTag("ForceGameType", 0),
 			new IntTag("GameType", 0),
 			new IntTag("Generator", $generatorType),
@@ -321,6 +325,7 @@ class LevelDB extends BaseLevelProvider{
 			$binaryStream = new BinaryStream();
 
 			switch($chunkVersion){
+				case 7: //MCBE 1.2
 				case 4: //MCPE 1.1
 					//TODO: check beds
 				case 3: //MCPE 1.0

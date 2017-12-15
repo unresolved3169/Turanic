@@ -27,6 +27,8 @@ use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -56,6 +58,43 @@ class Lava extends Liquid {
 	public function getName() : string{
 		return "Lava";
 	}
+
+    public function tickRate() : int{
+        return 30;
+    }
+
+    public function getFlowDecayPerBlock() : int{
+	    if($this->level instanceof Level && $this->level->getDimension() == DimensionIds::NETHER){
+	        return 1;
+        }
+        return 2;
+    }
+
+    protected function checkForHarden(){
+        $colliding = null;
+        for($side = 1; $side <= 5; ++$side){ //don't check downwards side
+            $blockSide = $this->getSide($side);
+            if($blockSide instanceof Water){
+                $colliding = $blockSide;
+                break;
+            }
+        }
+        if($colliding !== null){
+            if($this->getDamage() === 0){
+                $this->liquidCollide($colliding, Block::get(Block::OBSIDIAN));
+            }elseif($this->getDamage() <= 4){
+                $this->liquidCollide($colliding, Block::get(Block::COBBLESTONE));
+            }
+        }
+    }
+
+    protected function flowIntoBlock(Block $block, int $newFlowDecay){
+        if($block instanceof Water){
+            $block->liquidCollide($this, Block::get(Block::STONE));
+        }else{
+            parent::flowIntoBlock($block, $newFlowDecay);
+        }
+    }
 
 	/**
 	 * @param Entity $entity

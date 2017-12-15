@@ -2759,8 +2759,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 								}
 
 								return true;
-							}elseif($this->inventory->getItemInHand()->getId() === Item::BUCKET and $this->inventory->getItemInHand()->getDamage() === 1){ //Milk!
-								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $this->inventory->getItemInHand()));
+							}elseif($slot->getId() === Item::BUCKET and $slot->getDamage() === 1){ //Milk!
+								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
 								if($ev->isCancelled()){
 									$this->inventory->sendContents($this);
 
@@ -2774,7 +2774,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 								$this->server->broadcastPacket($this->getViewers(), $pk);
 
 								if($this->isSurvival()){
-									$slot = $this->inventory->getItemInHand();
 									--$slot->count;
 									$this->inventory->setItemInHand($slot);
 									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
@@ -4065,7 +4064,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		if ($this->isCreative()
-			and $source->getCause() !== EntityDamageEvent::CAUSE_MAGIC
 			and $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE
 			and $source->getCause() !== EntityDamageEvent::CAUSE_VOID
 		) {
@@ -4092,11 +4090,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public function sendPosition(Vector3 $pos, float $yaw = null, float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, array $targets = null){
 		$yaw = $yaw ?? $this->yaw;
 		$pitch = $pitch ?? $this->pitch;
+
 		$pk = new MovePlayerPacket();
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->getOffsetPosition($pos);
-		$pk->bodyYaw = $yaw;
-		$pk->pitch = $pitch;
+        $pk->pitch = $pitch;
+        $pk->bodyYaw = $yaw;
 		$pk->yaw = $yaw;
 		$pk->mode = $mode;
 

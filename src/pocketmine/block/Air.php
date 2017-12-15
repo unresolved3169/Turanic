@@ -49,7 +49,11 @@ class Air extends Transparent {
 		return "Air";
 	}
 
-	/**
+	public function getDrops(Item $item): array{
+        return [];
+    }
+
+    /**
 	 * @return bool
 	 */
 	public function canPassThrough(){

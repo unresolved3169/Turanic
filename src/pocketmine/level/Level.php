@@ -1337,7 +1337,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 
 			$block->position($pos);
-			$block->clearBoundingBoxes();
+			$block->clearCaches();
 			unset($this->blockCache[Level::blockHash($pos->x, $pos->y, $pos->z)]);
 
 			$index = Level::chunkHash($pos->x >> 4, $pos->z >> 4);
@@ -1443,7 +1443,7 @@ class Level implements ChunkManager, Metadatable{
 		if ($player !== null) {
 			$ev = new BlockBreakEvent($player, $target, $item, ($player->isCreative() or $player->allowInstaBreak()));
 
-			if ($player->isAdventure() or $player->isSpectator() or ($player->isSurvival() and $item instanceof Item and !$target->isBreakable($item))) {
+			if ($player->isAdventure() or $player->isSpectator() or ($player->isSurvival() and !$target->isBreakable($item))) {
 				$ev->setCancelled();
 			} elseif (!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1) {
 				$t = new Vector2($target->x, $target->z);
@@ -1512,7 +1512,7 @@ class Level implements ChunkManager, Metadatable{
 				}
 			}
 
-		} elseif ($item !== null and !$target->isBreakable($item)) {
+		} elseif (!$target->isBreakable($item)) {
 			return false;
 		} else {
 			$drops = $target->getDrops($item); //Fixes tile entities being deleted before getting drops
@@ -1565,9 +1565,7 @@ class Level implements ChunkManager, Metadatable{
 			$tile->close();
 		}
 
-		if ($item !== null) {
-			$item->useOn($target);
-		}
+		$item->useOn($target);
 
 		if ($player === null or $player->isSurvival()) {
 			foreach ($drops as $drop) {

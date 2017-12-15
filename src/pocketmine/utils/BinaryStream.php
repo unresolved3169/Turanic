@@ -108,14 +108,14 @@ class BinaryStream extends \stdClass {
 	 * @return bool
 	 */
 	public function getBool() : bool{
-		return (bool) $this->getByte();
+		return $this->get(1) !== "\x00";
 	}
 
 	/**
 	 * @param $v
 	 */
 	public function putBool($v){
-		$this->putByte((bool) $v);
+        $this->buffer .= ($v ? "\x01" : "\x00");
 	}
 
 	/**
@@ -272,14 +272,14 @@ class BinaryStream extends \stdClass {
 	/**
 	 * @return int
 	 */
-	public function getByte(){
+	public function getByte() : int{
 		return ord($this->buffer{$this->offset++});
 	}
 
 	/**
 	 * @param $v
 	 */
-	public function putByte($v){
+	public function putByte(int $v){
 		$this->buffer .= chr($v);
 	}
 

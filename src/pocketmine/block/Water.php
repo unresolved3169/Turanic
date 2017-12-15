@@ -75,4 +75,11 @@ class Water extends Liquid {
 
 		return $ret;
 	}
+
+    /**
+     * @return int
+     */
+    public function tickRate(): int{
+        return 5;
+    }
 }

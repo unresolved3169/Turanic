@@ -214,31 +214,29 @@ class Leaves extends Transparent {
 		$this->getLevel()->setBlock($this, $this, true);
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		$drops = [];
-		if($item->isShears() or $item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			$drops[] = [$this->id, $this->meta & 0x03, 1];
-		}else{
-			$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
-			$fortunel = min(3, $fortunel);
-			$rates = [20, 16, 12, 10];
-			if(mt_rand(1, $rates[$fortunel]) === 1){ //Saplings
-				$drops[] = [Item::SAPLING, $this->meta & 0x03, 1];
-			}
-			$rates = [200, 180, 160, 120];
-			if(($this->meta & 0x03) === self::OAK and mt_rand(1, $rates[$fortunel]) === 1){ //Apples
-				$drops[] = [Item::APPLE, 0, 1];
-			}
-		}
-		return $drops;
-	}
+    public function getDrops(Item $item) : array{
+        if($item->isShears()){
+            return parent::getDrops($item);
+        }
+        $drops = [];
+        if(mt_rand(1, 20) === 1){ //Saplings
+            $drops[] = $this->getSaplingItem();
+        }
+        if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
+            $drops[] = Item::get(Item::APPLE, 0, 1);
+        }
+        return $drops;
+    }
 
     public function getVariantBitmask() : int{
         return 0x03;
+    }
+
+    public function getSaplingItem() : Item{
+        return Item::get(Item::SAPLING, $this->getVariant());
+    }
+
+    public function canDropApples() : int{
+        return $this->meta === self::OAK;
     }
 }
