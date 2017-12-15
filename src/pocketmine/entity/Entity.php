@@ -1675,9 +1675,10 @@ abstract class Entity extends Location implements Metadatable {
 
 	}
 
-	/**
-	 * @param Player $player
-	 */
+    /**
+     * @param Player $player
+     * @return bool
+     */
 	public function onCollideWithPlayer(Player $player) : bool{
         return false;
 	}
