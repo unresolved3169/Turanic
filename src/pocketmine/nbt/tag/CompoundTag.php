@@ -51,6 +51,351 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 
 		return $count;
 	}
+	
+	/**
+	 * @return NamedTag[]
+	 */
+	public function &getValue(){
+		$result = [];
+		foreach($this as $tag){
+			if($tag instanceof NamedTag){
+				$result[$tag->getName()] = $tag;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * @param NamedTag[] $value
+	 *
+	 * @throws \TypeError
+	 */
+	public function setValue($value){
+		if(is_array($value)){
+			foreach($value as $name => $tag){
+				if($tag instanceof NamedTag){
+					$this->{$tag->__name} = $tag;
+				}else{
+					throw new \TypeError("CompoundTag members must be NamedTags, got " . gettype($tag) . " in given array");
+				}
+			}
+		}else{
+			throw new \TypeError("CompoundTag value must be NamedTag[], " . gettype($value) . " given");
+		}
+	}
+
+	/*
+	 * Here follows many functions of misery for the sake of type safety. We really needs generics in PHP :(
+	 */
+
+	/**
+	 * Returns the tag with the specified name, or null if it does not exist.
+	 *
+	 * @param string      $name
+	 * @param string|null $expectedClass Class that extends NamedTag
+	 *
+	 * @return NamedTag|null
+	 * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
+	 */
+	public function getTag(string $name, string $expectedClass = NamedTag::class){
+		assert(is_a($expectedClass, NamedTag::class, true));
+		$tag = $this->{$name} ?? null;
+		if($tag !== null and !($tag instanceof $expectedClass)){
+			throw new \RuntimeException("Expected a tag of type $expectedClass, got " . get_class($tag));
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * Returns the ListTag with the specified name, or null if it does not exist. Triggers an exception if a tag exists
+	 * with that name and the tag is not a ListTag.
+	 *
+	 * @param string $name
+	 * @return ListTag|null
+	 */
+	public function getListTag(string $name){
+		return $this->getTag($name, ListTag::class);
+	}
+
+	/**
+	 * Returns the CompoundTag with the specified name, or null if it does not exist. Triggers an exception if a tag
+	 * exists with that name and the tag is not a CompoundTag.
+	 *
+	 * @param string $name
+	 * @return CompoundTag|null
+	 */
+	public function getCompoundTag(string $name){
+		return $this->getTag($name, CompoundTag::class);
+	}
+
+	/**
+	 * Sets the specified NamedTag as a child tag of the CompoundTag at the offset specified by the tag's name. If a tag
+	 * already exists at the offset, it will be overwritten with the new one.
+	 *
+	 * @param NamedTag $tag
+	 */
+	public function setTag(NamedTag $tag){
+		$this->{$tag->__name} = $tag;
+	}
+
+	/**
+	 * Removes the child tags with the specified names from the CompoundTag. This function accepts a variadic list of
+	 * strings.
+	 *
+	 * @param string[] ...$names
+	 */
+	public function removeTag(string ...$names){
+		foreach($names as $name){
+			unset($this->{$name});
+		}
+	}
+
+	/**
+	 * Returns whether the CompoundTag contains a child tag with the specified name.
+	 *
+	 * @param string $name
+	 * @param string $expectedClass
+	 *
+	 * @return bool
+	 */
+	public function hasTag(string $name, string $expectedClass = NamedTag::class) : bool{
+		assert(is_a($expectedClass, NamedTag::class, true));
+		return ($this->{$name} ?? null) instanceof $expectedClass;
+	}
+
+	/**
+	 * Returns the value of the child tag with the specified name, or $default if the tag doesn't exist. If the child
+	 * tag is not of type $expectedType, an exception will be thrown, unless a default is given and $badTagDefault is
+	 * true.
+	 *
+	 * @param string $name
+	 * @param string $expectedClass
+	 * @param mixed  $default
+	 * @param bool   $badTagDefault Return the specified default if the tag is not of the expected type.
+	 *
+	 * @return mixed
+	 */
+	public function getTagValue(string $name, string $expectedClass, $default = null, bool $badTagDefault = false){
+		$tag = $this->getTag($name, $badTagDefault ? NamedTag::class : $expectedClass);
+		if($tag instanceof $expectedClass){
+			return $tag->getValue();
+		}
+
+		if($default === null){
+			throw new \RuntimeException("Tag with name \"$name\" " . ($tag !== null ? "not of expected type" : "not found") . " and no valid default value given");
+		}
+
+		return $default;
+	}
+
+	/*
+	 * The following methods are wrappers around getTagValue() with type safety.
+	 */
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 * @param bool     $badTagDefault
+	 *
+	 * @return int
+	 */
+	public function getByte(string $name, $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, ByteTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 * @param bool     $badTagDefault
+	 *
+	 * @return int
+	 */
+	public function getShort(string $name, $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, ShortTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 * @param bool     $badTagDefault
+	 *
+	 * @return int
+	 */
+	public function getInt(string $name, $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, IntTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string   $name
+	 * @param int|null $default
+	 * @param bool     $badTagDefault
+	 *
+	 * @return int
+	 */
+	public function getLong(string $name, $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, LongTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string     $name
+	 * @param float|null $default
+	 * @param bool       $badTagDefault
+	 *
+	 * @return float
+	 */
+	public function getFloat(string $name, $default = null, bool $badTagDefault = false) : float{
+		return $this->getTagValue($name, FloatTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string     $name
+	 * @param float|null $default
+	 * @param bool       $badTagDefault
+	 *
+	 * @return float
+	 */
+	public function getDouble(string $name, $default = null, bool $badTagDefault = false) : float{
+		return $this->getTagValue($name, DoubleTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string      $name
+	 * @param string|null $default
+	 * @param bool        $badTagDefault
+	 *
+	 * @return string
+	 */
+	public function getByteArray(string $name, $default = null, bool $badTagDefault = false) : string{
+		return $this->getTagValue($name, ByteArrayTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string      $name
+	 * @param string|null $default
+	 * @param bool        $badTagDefault
+	 *
+	 * @return string
+	 */
+	public function getString(string $name, $default = null, bool $badTagDefault = false) : string{
+		return $this->getTagValue($name, StringTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * @param string     $name
+	 * @param int[]|null $default
+	 * @param bool       $badTagDefault
+	 *
+	 * @return int[]
+	 */
+	public function getIntArray(string $name, $default = null, bool $badTagDefault = false) : array{
+		return $this->getTagValue($name, IntArrayTag::class, $default, $badTagDefault);
+	}
+
+	/**
+	 * Sets the value of the child tag at the specified offset, creating it if it does not exist. If the child tag
+	 * exists and the value is of the wrong type, an exception will be thrown.
+	 *
+	 * @param string $name Name of the tag to set
+	 * @param string $tagClass Class that extends NamedTag
+	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
+	 * @param bool   $force Force set the value even if the existing tag is not the correct type (overwrite the old tag)
+	 */
+	public function setTagValue(string $name, string $tagClass, $value, bool $force){
+		assert(is_a($tagClass, NamedTag::class, true));
+		$tag = $this->getTag($name, $force ? NamedTag::class : $tagClass);
+		if($tag instanceof $tagClass){
+			$tag->setValue($value);
+		}else{
+			$this->setTag(new $tagClass($name, $value));
+		}
+	}
+
+	/*
+	 * The following methods are wrappers around setTagValue() with type safety.
+	 */
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 * @param bool   $force
+	 */
+	public function setByte(string $name, int $value, bool $force = false){
+		$this->setTagValue($name, ByteTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 * @param bool   $force
+	 */
+	public function setShort(string $name, int $value, bool $force = false){
+		$this->setTagValue($name, ShortTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 * @param bool   $force
+	 */
+	public function setInt(string $name, int $value, bool $force = false){
+		$this->setTagValue($name, IntTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int    $value
+	 * @param bool   $force
+	 */
+	public function setLong(string $name, int $value, bool $force = false){
+		$this->setTagValue($name, LongTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param float  $value
+	 * @param bool   $force
+	 */
+	public function setFloat(string $name, float $value, bool $force = false){
+		$this->setTagValue($name, FloatTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param float  $value
+	 * @param bool   $force
+	 */
+	public function setDouble(string $name, float $value, bool $force = false){
+		$this->setTagValue($name, DoubleTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $value
+	 * @param bool   $force
+	 */
+	public function setByteArray(string $name, string $value, bool $force = false){
+		$this->setTagValue($name, ByteArrayTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param string $value
+	 * @param bool   $force
+	 */
+	public function setString(string $name, string $value, bool $force = false){
+		$this->setTagValue($name, StringTag::class, $value, $force);
+	}
+
+	/**
+	 * @param string $name
+	 * @param int[]  $value
+	 * @param bool   $force
+	 */
+	public function setIntArray(string $name, array $value, bool $force = false){
+		$this->setTagValue($name, IntArrayTag::class, $value, $force);
+	}
 
 	/**
 	 * @param mixed $offset
