@@ -39,15 +39,14 @@ Port: **19172**
 - [x] **Virtual Inventory** 
 - [x] **Command Parameters**
 - [x] **Add All New Blocks in 1.2**
+- [x] **Rewrite Creative Items**
 - [ ] **Fully MobAI (indev)**
 - [ ] **Ultra Fast Chunk Load/Unload/Generate**
 - [ ] **More thread/worker**
 - [ ] **Basic ChunkLoader System**
 - [ ] **Fast NBT Writer/reader**
 - [ ] **Basic Redstone system (without lag) (%80)**
-- [ ] **Rewrite Creative Items**
 - [ ] **Update languages**
-- [ ] **Update langs**
 
 # License:
 ```
