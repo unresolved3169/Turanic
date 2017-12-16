@@ -295,6 +295,10 @@ abstract class Entity extends Location implements Metadatable {
     /** @var bool */
     protected $constructed = false;
 
+    public static function getEntityNames(){
+        return self::$shortNames;
+    }
+
 	public static function init(){
 		Entity::registerEntity(AreaEffectCloud::class);
 		Entity::registerEntity(ArmorStand::class);

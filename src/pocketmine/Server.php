@@ -1807,10 +1807,10 @@ class Server{
 			Timings::init();
 
 			$this->consoleSender = new ConsoleCommandSender();
-			$this->commandMap = new SimpleCommandMap($this);
+            Entity::init();
 
-			Entity::init();
-			Tile::init();
+            $this->commandMap = new SimpleCommandMap($this);
+            Tile::init();
 			Block::init();
 			Enchantment::init();
 			Item::init();
