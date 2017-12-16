@@ -26,6 +26,7 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\entity\object\AreaEffectCloud;
 use pocketmine\block\Block;
 use pocketmine\block\Fire;
 use pocketmine\block\Portal;
@@ -68,6 +69,7 @@ use pocketmine\entity\object\EnderPearl;
 use pocketmine\entity\object\FallingSand;
 use pocketmine\entity\object\FishingHook;
 use pocketmine\entity\object\Lightning;
+use pocketmine\entity\object\LingeringPotion;
 use pocketmine\entity\object\Minecart;
 use pocketmine\entity\object\MinecartChest;
 use pocketmine\entity\object\MinecartHopper;
@@ -293,6 +295,7 @@ abstract class Entity extends Location implements Metadatable {
     protected $constructed = false;
 
 	public static function init(){
+		Entity::registerEntity(AreaEffectCloud::class);
 		Entity::registerEntity(ArmorStand::class);
 		Entity::registerEntity(Arrow::class);
 		Entity::registerEntity(Bat::class);
@@ -320,6 +323,7 @@ abstract class Entity extends Location implements Metadatable {
 		Entity::registerEntity(IronGolem::class);
 		Entity::registerEntity(LavaSlime::class); //Magma Cube
 		Entity::registerEntity(Lightning::class);
+		Entity::registerEntity(LingeringPotion::class);
 		Entity::registerEntity(Llama::class);
 		Entity::registerEntity(Minecart::class);
 		Entity::registerEntity(MinecartChest::class);
@@ -2218,14 +2222,14 @@ abstract class Entity extends Location implements Metadatable {
 		}
 	}
 
-	/**
-	 * @param int   $id
-	 * @param int   $type
-	 * @param mixed $value
-	 *
-	 * @return bool
-	 */
-	public function setDataProperty($id, $type, $value, $send = true){
+    /**
+     * @param $id
+     * @param $type
+     * @param $value
+     * @param bool $send
+     * @return bool
+     */
+    public function setDataProperty($id, $type, $value, $send = true){
 		if($this->getDataProperty($id) !== $value){
 			$this->dataProperties[$id] = [$type, $value];
 
