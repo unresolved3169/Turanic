@@ -39,7 +39,7 @@ use pocketmine\Player;
 
 class LingeringPotion extends Projectile {
 
-    const NETWORK_ID = 101;
+    const NETWORK_ID = self::LINGERING_POTION;
 
     const DATA_POTION_ID = 16;
 

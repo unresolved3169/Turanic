@@ -15,7 +15,7 @@ use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Rabbit extends Animal {
-	const NETWORK_ID = 18;
+	const NETWORK_ID = self::RABBIT;
 
 	const DATA_RABBIT_TYPE = 18;
 	const DATA_JUMP_TYPE = 19;

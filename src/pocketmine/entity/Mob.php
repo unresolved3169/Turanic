@@ -18,7 +18,7 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
 
 namespace pocketmine\entity;
 
@@ -54,14 +54,14 @@ abstract class Mob extends Creature{
     }
 
     public function onUpdate($tick){
-        if($this->closed or !$this->isAlive()) return;
+        if($this->closed or !$this->isAlive()) return false;
         
-        if($this->behaviorsEnabled){
-         $this->currentBehavior = $this->checkBehavior();
+        if($this->behaviorsEnabled) {
+            $this->currentBehavior = $this->checkBehavior();
 
-         if($this->currentBehavior != null){
-             $this->currentBehavior->onTick();
-         }
+            if ($this->currentBehavior != null) {
+                $this->currentBehavior->onTick();
+            }
         }
 
         return parent::onUpdate($tick);

@@ -34,7 +34,7 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\Player;
 
 class Snowball extends Projectile {
-	const NETWORK_ID = 81;
+	const NETWORK_ID = self::SNOWBALL;
 
 	public $width = 0.25;
 	public $length = 0.25;

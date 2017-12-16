@@ -2,12 +2,12 @@
 
 /*
  *
- *    _______                                _
- *   |__   __|                              | |
- *      | | ___  ___ ___  ___ _ __ __ _  ___| |_
- *      | |/ _ \/ __/ __|/ _ \  __/ _` |/ __| __|
- *      | |  __/\__ \__ \  __/ | | (_| | (__| |_
- *      |_|\___||___/___/\___|_|  \__,_|\___|\__|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,8 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Tesseract Team
- * @link DEAD
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
 
@@ -29,7 +28,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 
 class EnderDragon extends Monster {
 
-	const NETWORK_ID = 53;
+	const NETWORK_ID = self::ENDER_DRAGON;
 
 	public $dropExp = [500, 12, 000];//TODO: Add death animation and exp drop.
 

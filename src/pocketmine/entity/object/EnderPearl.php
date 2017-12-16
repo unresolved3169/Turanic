@@ -18,7 +18,7 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
 
 namespace pocketmine\entity\object;
 
@@ -32,7 +32,7 @@ use pocketmine\Player;
 
 class EnderPearl extends Projectile {
 
-	const NETWORK_ID = 87;
+	const NETWORK_ID = self::ENDER_PEARL;
 
 	public $width = 0.25;
 	public $length = 0.25;

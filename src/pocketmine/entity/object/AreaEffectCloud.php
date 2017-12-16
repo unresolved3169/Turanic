@@ -35,7 +35,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class AreaEffectCloud extends Entity {
-    const NETWORK_ID = 95;
+    const NETWORK_ID = self::AREA_EFFECT_CLOUD;
 
     public $width = 5;
     public $length = 5;

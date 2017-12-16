@@ -32,6 +32,8 @@ use pocketmine\Player;
 
 class Parrot extends FlyingAnimal {
 
+    const NETWORK_ID = self::PARROT;
+
     const COLOR_RED = 1;
     const COLOR_BLUE = 2;
     const COLOR_CYAN = 3;
@@ -45,8 +47,6 @@ class Parrot extends FlyingAnimal {
 
     public $drag = 0.2;
     public $gravity = 0.3;
-
-    const NETWORK_ID = 30;
 
     public function __construct(Level $level, CompoundTag $nbt){
         if(!isset($nbt->Variant)){

@@ -18,7 +18,7 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
 
 namespace pocketmine\entity;
 

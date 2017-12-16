@@ -18,7 +18,7 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
 
 namespace pocketmine\entity\object;
 
@@ -33,7 +33,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class ThrownPotion extends Projectile {
-	const NETWORK_ID = 86;
+	const NETWORK_ID = self::SPLASH_POTION;
 
 	const DATA_POTION_ID = 37;
 

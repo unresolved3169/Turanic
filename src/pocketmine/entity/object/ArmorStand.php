@@ -34,14 +34,14 @@ use pocketmine\Player;
 
 class ArmorStand extends Entity {
 
+    const NETWORK_ID = self::ARMOR_STAND;
+
     /** @var ItemItem */
     protected $handItem;
     protected $helmet;
     protected $chestplate;
     protected $leggings;
     protected $boots;
-
-    const NETWORK_ID = 61;
 
     public function __construct(Level $level, CompoundTag $nbt){
         parent::__construct($level, $nbt);
