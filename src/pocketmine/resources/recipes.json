@@ -1975,6 +1975,114 @@
         "input": {
             "A": {
                 "id": 5,
+                "damage": 0
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 58
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 1
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 58
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 2
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 58
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 3
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 58
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 4
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 58
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 5
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 58
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
                 "damage": -1
             }
         }
@@ -15648,8 +15756,122 @@
             }
         ],
         "shape": [
-            "A",
-            "A"
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 0
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 280,
+                "count": 4
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 1
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 280,
+                "count": 4
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 2
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 280,
+                "count": 4
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 3
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 280,
+                "count": 4
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 4
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 280,
+                "count": 4
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
+        ],
+        "input": {
+            "A": {
+                "id": 5,
+                "damage": 5
+            }
+        }
+    },
+    {
+        "type": 1,
+        "output": [
+            {
+                "id": 280,
+                "count": 4
+            }
+        ],
+        "shape": [
+            "AA",
+            "AA"
         ],
         "input": {
             "A": {
