@@ -22,22 +22,20 @@
 
 namespace pocketmine\entity\hostile;
 
-use pocketmine\entity\Living;
+use pocketmine\entity\Monster;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class LavaSlime extends Living {
+class MagmaCube extends Slime {
 	const NETWORK_ID = self::MAGMA_CUBE;
-
-	const DATA_SLIME_SIZE = 16;
 
 	public $dropExp = [1, 4];
 
-	/**
+    /**
 	 * @return string
 	 */
 	public function getName() : string{
-		return "LavaSlime";
+		return "MagmaCube";
 	}
 
 	/**
@@ -46,7 +44,7 @@ class LavaSlime extends Living {
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
         $pk->entityRuntimeId = $this->getId();
-		$pk->type = LavaSlime::NETWORK_ID;
+		$pk->type = MagmaCube::NETWORK_ID;
         $pk->position = $this->getPosition();
         $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
@@ -54,6 +52,6 @@ class LavaSlime extends Living {
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 
-		parent::spawnTo($player);
+		Monster::spawnTo($player);
 	}
 }

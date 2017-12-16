@@ -42,7 +42,7 @@ use pocketmine\entity\hostile\Evoker;
 use pocketmine\entity\hostile\Ghast;
 use pocketmine\entity\hostile\Guardian;
 use pocketmine\entity\hostile\Husk;
-use pocketmine\entity\hostile\LavaSlime;
+use pocketmine\entity\hostile\MagmaCube;
 use pocketmine\entity\hostile\Shulker;
 use pocketmine\entity\hostile\Silverfish;
 use pocketmine\entity\hostile\Skeleton;
@@ -326,7 +326,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		Entity::registerEntity(Horse::class);
 		Entity::registerEntity(Husk::class);
 		Entity::registerEntity(IronGolem::class);
-		Entity::registerEntity(LavaSlime::class); //Magma Cube
+		Entity::registerEntity(MagmaCube::class);
 		Entity::registerEntity(Lightning::class);
 		Entity::registerEntity(LingeringPotion::class);
 		Entity::registerEntity(Llama::class);

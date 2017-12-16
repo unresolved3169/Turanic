@@ -23,12 +23,19 @@
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Monster;
+use pocketmine\level\Level;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Slime extends Monster {
 	const NETWORK_ID = self::SLIME;
+
+	const SIZE_TINY = 0;
+	const SIZE_SMALL = 1;
+	const SIZE_BIG = 3;
 
 	const DATA_SLIME_SIZE = 16;
 
@@ -41,7 +48,18 @@ class Slime extends Monster {
 	public $drag = 0.2;
 	public $gravity = 0.3;
 
-	/**
+	/** @var int */
+	private $slimeSize = 1;
+
+	public function __construct(Level $level, CompoundTag $nbt){
+        if(!isset($nbt->Size)){
+            $this->setSlimeSize();
+            $nbt->Size = new IntTag("Size", $this->slimeSize);
+        }
+        parent::__construct($level, $nbt);
+    }
+
+    /**
 	 * @return string
 	 */
 	public function getName() : string{
@@ -53,7 +71,7 @@ class Slime extends Monster {
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		$this->setMaxHealth(10);
+		$this->setMaxHealth($this->getHealthFromSize());
 		parent::initEntity();
 	}
 
@@ -72,4 +90,52 @@ class Slime extends Monster {
 		$player->dataPacket($pk);
 		parent::spawnTo($player);
 	}
+
+	public function getSlimeSize(){
+	    return $this->slimeSize;
+    }
+
+    /**
+     * @param int $size
+     */
+    public function setSlimeSize(int $size = null){
+        if($size == null){
+            $size = [0,1,3];
+            $size = $size[array_rand($size)];
+        }
+        $this->slimeSize = $size;
+        switch($size){
+            case self::SIZE_TINY:
+                $this->height = 0.51;
+                $this->width = 0.51;
+                break;
+            case self::SIZE_SMALL:
+                $this->height = 1.02;
+                $this->width = 1.02;
+                break;
+            case self::SIZE_BIG:
+                $this->height = 2.04;
+                $this->width = 2.04;
+                break;
+        }
+        $this->setMaxHealth($this->getHealthFromSize());
+        $this->setDataProperty(self::DATA_TYPE_INT,self::DATA_SLIME_SIZE, $this->slimeSize); // i am not sure
+    }
+
+    public function getHealthFromSize() : int{
+        switch($this->slimeSize){
+            case self::SIZE_TINY:
+                return 3;
+            case self::SIZE_SMALL:
+                return 4;
+            case self::SIZE_BIG:
+                return 6;
+        }
+        return 3;
+    }
+
+    public function saveNBT(){
+        parent::saveNBT();
+        $this->namedtag->Size = new IntTag("Size", $this->slimeSize);
+    }
 }
