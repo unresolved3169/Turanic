@@ -83,7 +83,7 @@ class Parrot extends FlyingAnimal {
 
     public function getDrops(){
         $drops = [
-            Item::get(Item::LEATHER, 0, mt_rand(1, 2))
+            Item::get(Item::FEATHER, 0, mt_rand(1, 2))
         ];
 
         return $drops;
