@@ -95,6 +95,7 @@ use pocketmine\entity\tameable\Horse;
 use pocketmine\entity\tameable\Llama;
 use pocketmine\entity\tameable\Mule;
 use pocketmine\entity\tameable\Ocelot;
+use pocketmine\entity\tameable\Parrot;
 use pocketmine\entity\tameable\Wolf;
 use pocketmine\entity\utility\SnowGolem;
 use pocketmine\entity\utility\IronGolem;
@@ -333,6 +334,7 @@ abstract class Entity extends Location implements Metadatable {
 		Entity::registerEntity(Mule::class);
 		Entity::registerEntity(Ocelot::class);
 		Entity::registerEntity(Painting::class);
+		Entity::registerEntity(Parrot::class);
 		Entity::registerEntity(Pig::class);
 		Entity::registerEntity(PigZombie::class);
 		Entity::registerEntity(PolarBear::class);
