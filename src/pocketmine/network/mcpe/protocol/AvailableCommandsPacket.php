@@ -117,7 +117,9 @@ class AvailableCommandsPacket extends DataPacket{
                         } elseif ($param->getFlag() == $param::FLAG_POSTFIX and strlen($param->getPostfix()) > 0) {
                             $postfixes[] = $param->getPostfix();
                             $type = $type << 24 | count($postfixes) - 1;
-                        }
+                        }else{
+			    $type |= $param::FLAG_VALID;
+			}
 
                         $commandStream->putLInt($type);
                         $commandStream->putBool($param->isOptional());
