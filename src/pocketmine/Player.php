@@ -173,6 +173,18 @@ use pocketmine\form\element\Label;
 
 class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
 
+    const OS_ANDROID = 1;
+    const OS_IOS = 2;
+    const OS_OSX = 3;
+    const OS_FIREOS = 4;
+    const OS_GEARVR = 5;
+    const OS_HOLOLENS = 6;
+    const OS_WIN10 = 7;
+    const OS_WIN32 = 8;
+    const OS_DEDICATED = 9;
+    const OS_ORBIS = 10;
+    const OS_NX = 11;
+
 	const SURVIVAL = 0;
 	const CREATIVE = 1;
 	const ADVENTURE = 2;
@@ -2315,6 +2327,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->uuid = UUID::fromString($packet->clientUUID);
         $this->rawUUID = $this->uuid->toBinary();
         $this->xuid = $packet->xuid;
+        $this->deviceOS = $packet->clientData["DeviceOS"];
+        $this->deviceModel = $packet->clientData["DeviceModel"];
 
         $skin = new Skin(
             $packet->clientData["SkinId"],
