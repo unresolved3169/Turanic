@@ -156,8 +156,7 @@ class ArmorStand extends Entity {
     public function sendHandItem(Player $player) {
         $pk = new MobEquipmentPacket();
         $pk->entityRuntimeId = $this->getId();
-        $pk->inventorySlot = 0;
-        $pk->hotbarSlot = 0;
+        $pk->inventorySlot = $pk->hotbarSlot = 0;
         $pk->item = $this->getHandItem();
         $player->dataPacket($pk);
     }
