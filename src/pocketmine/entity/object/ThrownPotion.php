@@ -33,7 +33,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class ThrownPotion extends Projectile {
-	const NETWORK_ID = self::SPLASH_POTION;
+	const NETWORK_ID = self::THROWN_POTION;
 
 	const DATA_POTION_ID = 37;
 
@@ -103,7 +103,7 @@ class ThrownPotion extends Projectile {
 		$pk = new AddEntityPacket();
 		$pk->type = ThrownPotion::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this;
+		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);

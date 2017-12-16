@@ -447,7 +447,7 @@ class AxisAlignedBB {
 			$f = 3;
 		}
 
-		return MovingObjectPosition::fromBlock(0, 0, 0, $vector, $f);
+		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
 	}
 
 	/**

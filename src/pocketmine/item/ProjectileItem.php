@@ -62,9 +62,11 @@ abstract class ProjectileItem extends Item{
         }
 
 		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
-        $projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
+        if($projectile !== null){
+            $projectile->setMotion($projectile->getMotion()->multiply($this->getThrowForce()));
+        }
 
-		$this->count--;
+        $this->count--;
 
 		if($projectile instanceof Projectile){
 			$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));

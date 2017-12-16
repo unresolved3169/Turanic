@@ -58,7 +58,7 @@ use pocketmine\entity\hostile\ZombieHorse;
 use pocketmine\entity\hostile\ZombieVillager;
 use pocketmine\entity\neutral\CaveSpider;
 use pocketmine\entity\neutral\Enderman;
-use pocketmine\entity\neutral\PigZombie;
+use pocketmine\entity\neutral\ZombiePigman;
 use pocketmine\entity\neutral\PolarBear;
 use pocketmine\entity\neutral\Spider;
 use pocketmine\entity\object\ArmorStand;
@@ -340,7 +340,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		Entity::registerEntity(Painting::class);
 		Entity::registerEntity(Parrot::class);
 		Entity::registerEntity(Pig::class);
-		Entity::registerEntity(PigZombie::class);
+		Entity::registerEntity(ZombiePigman::class);
 		Entity::registerEntity(PolarBear::class);
 		Entity::registerEntity(PrimedTNT::class);
 		Entity::registerEntity(Rabbit::class);

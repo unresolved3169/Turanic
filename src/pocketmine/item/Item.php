@@ -31,7 +31,7 @@ use pocketmine\Player;
 use pocketmine\block\Block;
 use pocketmine\entity\neutral\CaveSpider;
 use pocketmine\entity\Entity;
-use pocketmine\entity\neutral\PigZombie;
+use pocketmine\entity\neutral\ZombiePigman;
 use pocketmine\entity\hostile\Silverfish;
 use pocketmine\entity\hostile\Skeleton;
 use pocketmine\entity\neutral\Spider;
@@ -1215,7 +1215,7 @@ class Item implements ItemIds, \JsonSerializable {
 		}
 
 		if($target instanceof Skeleton or $target instanceof Zombie or
-			$target instanceof Witch or $target instanceof PigZombie
+			$target instanceof Witch or $target instanceof ZombiePigman
 		){
 			//SMITE    wither skeletons
 			$rec += 2.5 * $this->getEnchantmentLevel(Enchantment::TYPE_WEAPON_SMITE);

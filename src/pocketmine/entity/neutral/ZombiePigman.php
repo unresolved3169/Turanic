@@ -32,7 +32,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class PigZombie extends Monster {
+class ZombiePigman extends Monster {
 	const NETWORK_ID = self::ZOMBIE_PIGMAN;
 	public $width = 0.6;
 	public $length = 0.6;
@@ -63,7 +63,7 @@ class PigZombie extends Monster {
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->type = PigZombie::NETWORK_ID;
+		$pk->type = ZombiePigman::NETWORK_ID;
         $pk->position = $this->getPosition();
         $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;

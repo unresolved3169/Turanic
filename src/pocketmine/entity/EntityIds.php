@@ -98,7 +98,7 @@ interface EntityIds{
     const PAINTING = 83;
     const MINECART = 84;
     const LARGE_FIREBALL = 85;
-    const SPLASH_POTION = 86;
+    const SPLASH_POTION = 86, THROWN_POTION = 86;
     const ENDER_PEARL = 87;
     const LEASH_KNOT = 88;
     const WITHER_SKULL = 89;
