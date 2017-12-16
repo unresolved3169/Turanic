@@ -4058,6 +4058,35 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return false;
 		}
 
+		if($source->getDamage() >= $this->getHealth()){
+            if($this->getItemInHand()->getId() == Item::TOTEM && $source->getCause() != EntityDamageEvent::CAUSE_VOID && $source->getCause() != EntityDamageEvent::CAUSE_SUICIDE){
+                $totem = clone $this->getItemInHand();
+                $totem->count--;
+                if($totem->count <= 0){
+                    $totem = Item::get(Item::AIR);
+                }
+                $this->inventory->setItemInHand($totem);
+
+                $pk = new LevelEventPacket();
+                $pk->evid = LevelEventPacket::EVENT_SOUND_TOTEM;
+                $pk->data = 0;
+                $pk->position = $this->asVector3();
+                $this->dataPacket($pk);
+
+                $pk2 = new EntityEventPacket();
+                $pk2->entityRuntimeId = $this->getId();
+                $pk2->event = EntityEventPacket::CONSUME_TOTEM;
+                $this->dataPacket($pk2);
+
+                $this->removeAllEffects();
+                $this->setHealth(2);
+                $this->addEffect(Effect::getEffect(Effect::REGENERATION)->setDuration(40*20)->setAmplifier(2));
+                $this->addEffect(Effect::getEffect(Effect::ABSORPTION)->setDuration(5*20)->setAmplifier(2));
+                $this->addEffect(Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(40*20)->setAmplifier(2));
+                return false;
+            }
+        }
+
 		if ($this->isCreative()
 			and $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE
 			and $source->getCause() !== EntityDamageEvent::CAUSE_VOID

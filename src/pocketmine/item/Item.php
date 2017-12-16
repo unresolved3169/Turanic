@@ -288,6 +288,7 @@ class Item implements ItemIds, \JsonSerializable {
 			self::$list[self::WRITTEN_BOOK] = WrittenBook::class;
 
 			self::$list[self::LINGERING_POTION] = LingeringPotion::class;
+			self::$list[self::TOTEM] = TotemOfUndying::class;
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
