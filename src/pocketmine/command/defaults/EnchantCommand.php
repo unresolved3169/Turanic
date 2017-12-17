@@ -58,7 +58,7 @@ class EnchantCommand extends VanillaCommand {
 	 * @return bool
 	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -109,7 +109,7 @@ class EnchantCommand extends VanillaCommand {
 		$player->getInventory()->setItemInHand($item);
 
 
-		self::broadcastCommandMessage($sender, new TranslationContainer("%commands.enchant.success"));
+		self::broadcastCommandMessage($sender, new TranslationContainer("%commands.enchant.success", [$player->getName()]));
 		return true;
 	}
 }
