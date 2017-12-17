@@ -32,40 +32,56 @@ class MovePlayerPacket extends DataPacket{
 	const MODE_NORMAL = 0;
 	const MODE_RESET = 1;
 	const MODE_TELEPORT = 2;
-	const MODE_ROTATION = 3;
+	const MODE_ROTATION = 3, MODE_PITCH = 3;
 
     /** @var int */
     public $entityRuntimeId;
     /** @var Vector3 */
     public $position;
     /** @var float */
+    public $pitch;
+    /** @var float */
     public $yaw;
     /** @var float */
-    public $bodyYaw;
-    /** @var float */
-    public $pitch;
+    public $headYaw;
+    /** @var int */
+    public $mode = self::MODE_NORMAL;
     /** @var bool */
-    public $onGround = false;
-    /** @var bool */
-    public $teleported = false;
+    public $onGround = false; //TODO
+    /** @var int */
+    public $ridingEid = 0;
+    /** @var int */
+    public $int1 = 0;
+    /** @var int */
+    public $int2 = 0;
 
-	protected function decodePayload(){
+    protected function decodePayload(){
         $this->entityRuntimeId = $this->getEntityRuntimeId();
         $this->position = $this->getVector3Obj();
-        $this->pitch = $this->getByteRotation();
-        $this->bodyYaw = $this->getByteRotation();
-        $this->yaw = $this->getByteRotation();
+        $this->pitch = $this->getLFloat();
+        $this->yaw = $this->getLFloat();
+        $this->headYaw = $this->getLFloat();
+        $this->mode = $this->getByte();
         $this->onGround = $this->getBool();
-        $this->teleported = $this->getBool();
-	}
+        $this->ridingEid = $this->getEntityRuntimeId();
+        if($this->mode === MovePlayerPacket::MODE_TELEPORT){
+            $this->int1 = $this->getLInt();
+            $this->int2 = $this->getLInt();
+        }
+    }
 
 	protected function encodePayload(){
         $this->putEntityRuntimeId($this->entityRuntimeId);
         $this->putVector3Obj($this->position);
-        $this->putByteRotation($this->pitch);
-        $this->putByteRotation($this->bodyYaw);
-        $this->putByteRotation($this->yaw);
+        $this->putLFloat($this->pitch);
+        $this->putLFloat($this->yaw);
+        $this->putLFloat($this->headYaw);
+        $this->putByte($this->mode);
         $this->putBool($this->onGround);
-        $this->putBool($this->teleported);
+        $this->putEntityRuntimeId($this->ridingEid);
+        if($this->mode === MovePlayerPacket::MODE_TELEPORT){
+            $this->putLInt($this->int1);
+            $this->putLInt($this->int2);
+        }
 	}
 }

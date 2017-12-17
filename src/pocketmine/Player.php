@@ -4047,7 +4047,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->getOffsetPosition($pos);
         $pk->pitch = $pitch;
-        $pk->bodyYaw = $yaw;
+        $pk->headYaw = $yaw;
 		$pk->yaw = $yaw;
 		$pk->mode = $mode;
 
