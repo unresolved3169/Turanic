@@ -30,7 +30,12 @@ use pocketmine\nbt\tag\StringTag;
 
 class Banner extends Spawnable{
 
-	const PATTERN_BOTTOM_STRIPE = "bs";
+    const TAG_BASE = "Base";
+    const TAG_PATTERNS = "Patterns";
+    const TAG_PATTERN_COLOR = "Color";
+    const TAG_PATTERN_NAME = "Pattern";
+
+    const PATTERN_BOTTOM_STRIPE = "bs";
 	const PATTERN_TOP_STRIPE = "ts";
 	const PATTERN_LEFT_STRIPE = "ls";
 	const PATTERN_RIGHT_STRIPE = "rs";

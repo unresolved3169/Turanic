@@ -27,6 +27,7 @@
 namespace pocketmine\item;
 
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\NamedTag;
 use pocketmine\Player;
 use pocketmine\block\Block;
 use pocketmine\entity\neutral\CaveSpider;
@@ -247,7 +248,7 @@ class Item implements ItemIds, \JsonSerializable {
             self::registerItem(new Carrot());
             self::registerItem(new Potato());
             self::registerItem(new BakedPotato());
-            // TODO : POISONOUS_POTATO
+            self::registerItem(new PoisonousPotato());
             // TODO : EMPTY_MAP
             self::registerItem(new GoldenCarrot());
             self::registerItem(new Skull());
@@ -267,8 +268,8 @@ class Item implements ItemIds, \JsonSerializable {
             self::registerItem(new RawRabbit());
             self::registerItem(new CookedRabbit());
             self::registerItem(new RabbitStew());
-            // TODO : RABBIT_FOOT
-            // TODO : RABBIT_HIDE
+            self::registerItem(new Item(Item::RABBIT_FOOT, 0, 1, "Rabbit's Foot"));
+            self::registerItem(new Item(Item::RABBIT_HIDE, 0, 1, "Rabbit Hide"));
             // TODO : LEATHER_HORSE_ARMOR
             // TODO : IRON_HORSE_ARMOR
             // TODO : GOLD_HORSE_ARMOR
@@ -296,7 +297,7 @@ class Item implements ItemIds, \JsonSerializable {
             //TODO: COMMAND_BLOCK_MINECART
             self::registerItem(new Elytra());
             self::registerItem(new ShulkerShell());
-            // TODO : BANNER
+            self::registerItem(new Banner());
 
             self::registerItem(new TotemOfUndying());
 
@@ -1014,21 +1015,6 @@ class Item implements ItemIds, \JsonSerializable {
 		return $this;
 	}
 
-
-	/**
-	 * @param $name
-	 *
-	 * @return null
-	 */
-	public function getNamedTagEntry($name){
-		$tag = $this->getNamedTag();
-		if($tag !== null){
-			return isset($tag->{$name}) ? $tag->{$name} : null;
-		}
-
-		return null;
-	}
-
 	/**
 	 * @return null|CompoundTag
 	 */
@@ -1455,6 +1441,7 @@ class Item implements ItemIds, \JsonSerializable {
 		}
 
 		if(isset($tag->tag) and $tag->tag instanceof CompoundTag){
+		    /** @var CompoundTag $t */
             $t = clone $tag->tag;
             $t->setName("");
             $item->setNamedTag($t);
@@ -1526,5 +1513,21 @@ class Item implements ItemIds, \JsonSerializable {
 		return $item;
 	}
 
+    /**
+     * @param string $name
+     * @return NamedTag|null
+     */
+    public function getNamedTagEntry(string $name){
+        return $this->getNamedTag()->getTag($name);
+    }
+
+    /**
+     * @param NamedTag $new
+     */
+    public function setNamedTagEntry(NamedTag $new){
+        $tag = $this->getNamedTag();
+        $tag->setTag($new);
+        $this->setNamedTag($tag);
+    }
 
 }
