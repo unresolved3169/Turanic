@@ -202,7 +202,7 @@ class Item implements ItemIds, \JsonSerializable {
             self::registerItem(new FishingRod());
             self::registerItem(new Clock());
             self::registerItem(new GlowstoneDust());
-            self::registerItem(new Fish());
+            self::registerItem(new RawFish());
             self::registerItem(new CookedFish());
             self::registerItem(new Dye());
             self::registerItem(new Bone());
@@ -305,10 +305,10 @@ class Item implements ItemIds, \JsonSerializable {
             self::registerItem(new Beetroot());
             self::registerItem(new BeetrootSeeds());
             self::registerItem(new BeetrootSoup());
-            //TODO: RAW_SALMON
-            //TODO: CLOWN_FISH
-            //TODO: PUFFER_FISH
-            //TODO: COOKED_SALMON
+            self::registerItem(new RawSalmon());
+            self::registerItem(new Clownfish());
+            self::registerItem(new Pufferfish());
+            self::registerItem(new CookedSalmon());
 
             self::registerItem(new EnchantedGoldenApple());
 

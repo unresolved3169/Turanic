@@ -4008,9 +4008,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                 $this->removeAllEffects();
                 $this->setHealth(2);
-                $this->addEffect(Effect::getEffect(Effect::REGENERATION)->setDuration(40*20)->setAmplifier(2));
-                $this->addEffect(Effect::getEffect(Effect::ABSORPTION)->setDuration(5*20)->setAmplifier(2));
-                $this->addEffect(Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(40*20)->setAmplifier(2));
+                $this->addEffect(Effect::getEffect(Effect::REGENERATION)->setDuration(40*20)->setAmplifier(1));
+                $this->addEffect(Effect::getEffect(Effect::ABSORPTION)->setDuration(5*20)->setAmplifier(1));
+                $this->addEffect(Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(40*20)->setAmplifier(1));
                 return false;
             }
         }
