@@ -333,21 +333,36 @@ class Block extends Position implements BlockIds, Metadatable{
 
     public static function registerBlock(Block $block, bool $override = false){
         $id = $block->getId();
-        if(self::$list[$id] !== null and !(self::$list[$id] instanceof UnknownBlock) and !$override){
-            throw new \RuntimeException("Trying to overwrite an already registered block: ".$block->__toString());
+
+        if(!$override and self::isRegistered($id)){
+            throw new \RuntimeException("Trying to overwrite an already registered block");
         }
+
         self::$list[$id] = clone $block;
+
         for($meta = 0; $meta < 16; ++$meta){
             $variant = clone $block;
             $variant->setDamage($meta);
             self::$fullList[($id << 4) | $meta] = $variant;
         }
+
         self::$solid[$id] = $block->isSolid();
         self::$transparent[$id] = $block->isTransparent();
         self::$hardness[$id] = $block->getHardness();
         self::$light[$id] = $block->getLightLevel();
         self::$lightFilter[$id] = $block->getLightFilter() + 1; //opacity plus 1 standard light filter
         self::$diffusesSkyLight[$id] = $block->diffusesSkyLight();
+    }
+
+    /**
+     * Returns whether a specified block ID is already registered in the block.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public static function isRegistered(int $id) : bool{
+        $b = self::$list[$id];
+        return $b !== null and !($b instanceof UnknownBlock);
     }
 
     /**

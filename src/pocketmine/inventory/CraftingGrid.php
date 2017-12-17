@@ -41,7 +41,7 @@ class CraftingGrid extends BaseInventory{
     }
 
     public function getDefaultSize() : int{
-        return 4;
+        return $this->getGridWidth() ** 2;
     }
 
     public function getItem(int $slot) : Item{
@@ -69,9 +69,14 @@ class CraftingGrid extends BaseInventory{
         return "Crafting";
     }
 
+    public function getGridWidth() : int{
+        return 2;
+    }
+
     public function sendSlot(int $index, $target){
     }
 
     public function sendContents($target){
+        //no way to do this
     }
 }

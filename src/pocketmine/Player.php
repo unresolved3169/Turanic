@@ -23,6 +23,7 @@
 namespace pocketmine;
 
 use pocketmine\block\CommandBlock;
+use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\tile\CommandBlock as TileCommandBlock;
 use pocketmine\form\Form;
 use pocketmine\block\Block;
@@ -325,6 +326,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	private $ping = 0;
 
     public $dropContents = [];
+
+    /** @var CraftingTransaction|null */
+    public $craftingTransaction = null;
 
     public static function isValidUserName($name) : bool{
 		if($name == null) return false;
@@ -2534,6 +2538,25 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $actions[] = $action;
         }
 
+        if($packet->isCraftingPart){
+            if($this->craftingTransaction === null){
+                $this->craftingTransaction = new CraftingTransaction($this, $actions);
+            }else{
+                foreach ($actions as $action) {
+                    $this->craftingTransaction->addAction($action);
+                }
+            }
+
+            if($this->craftingTransaction->getPrimaryOutput() !== null){
+                //we get the actions for this in several packets, so we can't execute it until we get the result
+
+                $this->craftingTransaction->execute(); //if it can't execute, no inventories will be modified
+                $this->craftingTransaction = null;
+            }
+
+            return true;
+        }
+
 		switch($packet->transactionType){
 			case InventoryTransactionPacket::TYPE_NORMAL:
                 $transaction = new InventoryTransaction($this, $actions);
@@ -2811,106 +2834,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
-        if(!$this->spawned or !$this->isAlive()){
-            return true;
-        }
-
-        $craftSlots = $this->craftingGrid->getContents();
-        $recipe = null;
-        $ingredients = [];
-        foreach($this->server->getCraftingManager()->getRecipesByResult($packet->output[0]) as $r){
-            $resultSlots = $craftSlots;
-            if($r instanceof ShapedRecipe){
-                $ingredients = [];
-                $itemGrid = $r->getIngredientMap();
-                foreach($itemGrid as $line){
-                    foreach($line as $item){
-                        $ingredients[] = $item;
-                    }
-                }
-            }elseif($r instanceof ShapelessRecipe){
-                $ingredients = $r->getIngredientList();
-            }
-            $ingredientsCount = count($ingredients);
-            $firstIndex = 0;
-            foreach($resultSlots as &$item){
-                if($item === null or $item->getId() === Item::AIR){
-                    continue;
-                }
-                for($i = $firstIndex; $i < $ingredientsCount; $i++){
-                    $ingredient = $ingredients[$i];
-                    if($ingredient->getId() === Item::AIR){
-                        continue;
-                    }
-                    $isItemsNotEquals = $item->getId() !== $ingredient->getId() ||
-                        ($item->getDamage() !== $ingredient->getDamage() &&
-                            $ingredient->getDamage() !== -1 && $ingredient->getDamage() !== 32767) ||
-                        $item->getCount() < $ingredient->getCount();
-                    if($isItemsNotEquals){
-                        continue 3;
-                    }
-                    $firstIndex = $i + 1;
-                    $item->setCount($item->getCount() - $ingredient->getCount());
-                    if($item->getCount() === 0){
-                        $item = Item::get(Item::AIR, 0, 0);
-                    }
-                    break;
-                }
-            }
-            $craftSlots = $resultSlots;
-            $recipe = $r;
-            break;
-        }
-        if($recipe === null){
-            $this->server->getLogger()->debug("Received bad recipe from " . $this->username);
-            return true;
-        }
-        $this->server->getPluginManager()->callEvent($ev = new CraftItemEvent($this, $ingredients, [$recipe->getResult()], $recipe));
-        if($ev->isCancelled()){
-            $this->craftingGrid->clearAll();
-            $this->sendAllInventories();
-            return true;
-        }
-        $this->craftingGrid->setItem(CraftingGrid::RESULT_INDEX, $recipe->getResult());
-        foreach($craftSlots as $slot => $item){
-            if($item === null){
-                continue;
-            }
-            $this->craftingGrid->setItem($slot, $item);
-        }
-        switch($recipe->getResult()->getId()){
-            case Item::CRAFTING_TABLE:
-                $this->awardAchievement("buildWorkBench");
-                break;
-            case Item::WOODEN_PICKAXE:
-                $this->awardAchievement("buildPickaxe");
-                break;
-            case Item::FURNACE:
-                $this->awardAchievement("buildFurnace");
-                break;
-            case Item::WOODEN_HOE:
-                $this->awardAchievement("buildHoe");
-                break;
-            case Item::BREAD:
-                $this->awardAchievement("makeBread");
-                break;
-            case Item::CAKE:
-                $this->awardAchievement("bakeCake");
-                $this->inventory->addItem(Item::get(Item::BUCKET, 0, 3));
-                break;
-            case Item::STONE_PICKAXE:
-            case Item::GOLDEN_PICKAXE:
-            case Item::IRON_PICKAXE:
-            case Item::DIAMOND_PICKAXE:
-                $this->awardAchievement("buildBetterPickaxe");
-                break;
-            case Item::WOODEN_SWORD:
-                $this->awardAchievement("buildSword");
-                break;
-            case Item::DIAMOND:
-                $this->awardAchievement("diamond");
-                break;
-        }
 		return true;
 	}
 
@@ -4512,7 +4435,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /**
      * @param array|null $targets
      */
-    public function sendSkin(array $targets = null) : void{
+    public function sendSkin(array $targets = null){
         parent::sendSkin($targets ?? $this->server->getOnlinePlayers());
     }
 

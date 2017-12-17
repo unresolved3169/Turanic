@@ -33,31 +33,41 @@ use pocketmine\Player;
  * crafting.
  */
 class CraftingTransferMaterialAction extends InventoryAction{
-	/** @var int */
-	private $slot;
+    /** @var int */
+    private $slot;
 
-	public function __construct(Item $sourceItem, Item $targetItem, int $slot){
-		parent::__construct($sourceItem, $targetItem);
-		$this->slot = $slot;
-	}
+    public function __construct(Item $sourceItem, Item $targetItem, int $slot){
+        parent::__construct($sourceItem, $targetItem);
+        $this->slot = $slot;
+    }
 
-	public function onAddToTransaction(InventoryTransaction $transaction) {
-		
-	}
+    public function onAddToTransaction(InventoryTransaction $transaction){
+        if($transaction instanceof CraftingTransaction){
+            if($this->sourceItem->isNull()){
+                $transaction->setInput($this->slot, $this->targetItem);
+            }elseif($this->targetItem->isNull()){
+                $transaction->setExtraOutput($this->slot, $this->sourceItem);
+            }else{
+                throw new \InvalidStateException("Invalid " . get_class($this) . ", either source or target item must be air, got source: " . $this->sourceItem . ", target: " . $this->targetItem);
+            }
+        }else{
+            throw new \InvalidStateException(get_class($this) . " can only be added to CraftingTransactions");
+        }
+    }
 
-	public function isValid(Player $source) : bool{
-		return true;
-	}
+    public function isValid(Player $source) : bool{
+        return true;
+    }
 
-	public function execute(Player $source) : bool{
-		return true;
-	}
+    public function execute(Player $source) : bool{
+        return true;
+    }
 
-	public function onExecuteSuccess(Player $source) {
+    public function onExecuteSuccess(Player $source){
 
-	}
+    }
 
-	public function onExecuteFail(Player $source) {
+    public function onExecuteFail(Player $source){
 
-	}
+    }
 }

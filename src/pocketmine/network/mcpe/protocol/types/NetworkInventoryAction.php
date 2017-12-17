@@ -111,6 +111,12 @@ class NetworkInventoryAction{
                 break;
             case self::SOURCE_TODO:
                 $this->windowId = $packet->getVarInt();
+                switch($this->windowId){
+                    case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+                    case self::SOURCE_TYPE_CRAFTING_RESULT:
+                        $packet->isCraftingPart = true;
+                        break;
+                }
                 break;
         }
 
@@ -189,12 +195,15 @@ class NetworkInventoryAction{
             case self::SOURCE_TODO:
                 //These types need special handling.
                 switch($this->windowId){
+
                     case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
                     case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
                         $window = $player->getWindow(CraftingGrid::WINDOW_ID);
                         return new SlotChangeAction($window, $this->inventorySlot, $this->oldItem, $this->newItem);
+
                     case self::SOURCE_TYPE_CRAFTING_RESULT:
                         return new CraftingTakeResultAction($this->oldItem, $this->newItem);
+
                     case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
                         return new CraftingTransferMaterialAction($this->oldItem, $this->newItem, $this->inventorySlot);
 

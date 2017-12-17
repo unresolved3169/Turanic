@@ -26,49 +26,60 @@ namespace pocketmine\event\inventory;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\inventory\Recipe;
-use pocketmine\item\Item;
+use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\Player;
 
 class CraftItemEvent extends Event implements Cancellable{
 	
 	public static $handlerList = null;
+
+	/** @var  CraftingTransaction */
+	protected $transaction;
 	
-	protected $player, $input, $output, $recipe;
-	
-	public function __construct(Player $player, array $input, array $output, Recipe $recipe = null){
-		$this->player = $player;
-		$this->input = $input;
-		$this->output = $output;
-		$this->recipe = $recipe;
+	public function __construct(CraftingTransaction $transaction){
+		$this->transaction = $transaction;
 	}
 
-	public function getInput() : array{
-		return $this->input;
+    /**
+     * @return CraftingTransaction
+     */
+    public function getTransaction(): CraftingTransaction{
+        return $this->transaction;
+    }
+
+    /**
+     * @deprecated This returns a one-dimensional array of ingredients and does not account for the positioning of
+     * items in the crafting grid. Prefer getting the input map from the transaction instead.
+     * @return array
+     */
+    public function getInput() : array{
+        return $this->transaction->getInputMap();
 	}
-	
-	public function getOutput() : array{
-		return $this->output;
-	}
-	
-	public function setInput(array $input){
-		$this->input = $input;
-	}
-	
-	public function setOutput(array $output){
-		$this->output = $output;
+
+    /**
+     * @deprecated
+     * @return array
+     */
+    public function getOutput() : array{
+		return [$this->transaction->getPrimaryOutput()];
 	}
 
 	/**
-	 * @return Recipe|null
+	 * @return Recipe
 	 */
-	public function getRecipe(){
-		return $this->recipe;
+	public function getRecipe() : Recipe{
+        $recipe = $this->transaction->getRecipe();
+        if($recipe === null){
+            throw new \RuntimeException("This shouldn't be called if the transaction can't be executed");
+ 		}
+
+ 		return $recipe;
 	}
 
 	/**
 	 * @return Player
 	 */
 	public function getPlayer() : Player{
-		return $this->player;
+		return $this->transaction->getSource();
 	}
 }

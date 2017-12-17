@@ -32,24 +32,28 @@ use pocketmine\Player;
  */
 class CraftingTakeResultAction extends InventoryAction{
 
-	public function onAddToTransaction(InventoryTransaction $transaction) {
-		
-	}
+    public function onAddToTransaction(InventoryTransaction $transaction){
+        if($transaction instanceof CraftingTransaction){
+            $transaction->setPrimaryOutput($this->getSourceItem());
+        }else{
+            throw new \InvalidStateException(get_class($this) . " can only be added to CraftingTransactions");
+        }
+    }
 
-	public function isValid(Player $source) : bool{
-		return true;
-	}
+    public function isValid(Player $source) : bool{
+        return true;
+    }
 
-	public function execute(Player $source) : bool{
-		return true;
-	}
+    public function execute(Player $source) : bool{
+        return true;
+    }
 
-	public function onExecuteSuccess(Player $source) {
+    public function onExecuteSuccess(Player $source){
 
-	}
+    }
 
-	public function onExecuteFail(Player $source) {
+    public function onExecuteFail(Player $source){
 
-	}
+    }
 
 }

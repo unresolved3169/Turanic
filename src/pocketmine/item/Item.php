@@ -111,190 +111,221 @@ class Item implements ItemIds, \JsonSerializable {
 	 */
 	public static function init($readFromJson = false){
 		if(self::$list === null){
-			//TODO: Sort this mess into some kind of order
-			self::$list = new \SplFixedArray(65536);
-			self::$list[self::SUGARCANE] = Sugarcane::class;
-			self::$list[self::ENDER_PEARL] = EnderPearl::class;
-			self::$list[self::EYE_OF_ENDER] = EyeOfEnder::class;
-			self::$list[self::DRAGONS_BREATH] = DragonsBreath::class;
-			self::$list[self::SHULKER_SHELL] = ShulkerShell::class;
-			self::$list[self::POPPED_CHORUS_FRUIT] = PoppedChorusFruit::class;
-			self::$list[self::WHEAT_SEEDS] = WheatSeeds::class;
-			self::$list[self::PUMPKIN_SEEDS] = PumpkinSeeds::class;
-			self::$list[self::MELON_SEEDS] = MelonSeeds::class;
-			self::$list[self::MUSHROOM_STEW] = MushroomStew::class;
-			self::$list[self::RABBIT_STEW] = RabbitStew::class;
-			self::$list[self::BEETROOT_SOUP] = BeetrootSoup::class;
-			self::$list[self::BEETROOT_SEEDS] = BeetrootSeeds::class;
-			self::$list[self::SIGN] = Sign::class;
-			self::$list[self::WOODEN_DOOR] = WoodenDoor::class;
-			self::$list[self::SPRUCE_DOOR] = SpruceDoor::class;
-			self::$list[self::BIRCH_DOOR] = BirchDoor::class;
-			self::$list[self::JUNGLE_DOOR] = JungleDoor::class;
-			self::$list[self::ACACIA_DOOR] = AcaciaDoor::class;
-			self::$list[self::DARK_OAK_DOOR] = DarkOakDoor::class;
-			self::$list[self::BUCKET] = Bucket::class;
-			self::$list[self::IRON_DOOR] = IronDoor::class;
-			self::$list[self::CAKE] = Cake::class;
-			self::$list[self::BED] = Bed::class;
-			self::$list[self::PAINTING] = Painting::class;
-			self::$list[self::COAL] = Coal::class;
-			self::$list[self::APPLE] = Apple::class;
-			self::$list[self::SPAWN_EGG] = SpawnEgg::class;
-			self::$list[self::DIAMOND] = Diamond::class;
-			self::$list[self::STICK] = Stick::class;
-			self::$list[self::SNOWBALL] = Snowball::class;
-			self::$list[self::BOWL] = Bowl::class;
-			self::$list[self::FEATHER] = Feather::class;
-			self::$list[self::BRICK] = Brick::class;
-			self::$list[self::LEATHER_CAP] = LeatherCap::class;
-			self::$list[self::LEATHER_TUNIC] = LeatherTunic::class;
-			self::$list[self::LEATHER_PANTS] = LeatherPants::class;
-			self::$list[self::LEATHER_BOOTS] = LeatherBoots::class;
-			self::$list[self::CHAIN_HELMET] = ChainHelmet::class;
-			self::$list[self::CHAIN_CHESTPLATE] = ChainChestplate::class;
-			self::$list[self::CHAIN_LEGGINGS] = ChainLeggings::class;
-			self::$list[self::CHAIN_BOOTS] = ChainBoots::class;
-			self::$list[self::IRON_HELMET] = IronHelmet::class;
-			self::$list[self::IRON_CHESTPLATE] = IronChestplate::class;
-			self::$list[self::IRON_LEGGINGS] = IronLeggings::class;
-			self::$list[self::IRON_BOOTS] = IronBoots::class;
-			self::$list[self::GOLD_HELMET] = GoldHelmet::class;
-			self::$list[self::GOLD_CHESTPLATE] = GoldChestplate::class;
-			self::$list[self::GOLD_LEGGINGS] = GoldLeggings::class;
-			self::$list[self::GOLD_BOOTS] = GoldBoots::class;
-			self::$list[self::DIAMOND_HELMET] = DiamondHelmet::class;
-			self::$list[self::DIAMOND_CHESTPLATE] = DiamondChestplate::class;
-			self::$list[self::DIAMOND_LEGGINGS] = DiamondLeggings::class;
-			self::$list[self::DIAMOND_BOOTS] = DiamondBoots::class;
-			self::$list[self::IRON_SWORD] = IronSword::class;
-			self::$list[self::IRON_INGOT] = IronIngot::class;
-			self::$list[self::GOLD_INGOT] = GoldIngot::class;
-			self::$list[self::IRON_SHOVEL] = IronShovel::class;
-			self::$list[self::IRON_PICKAXE] = IronPickaxe::class;
-			self::$list[self::IRON_AXE] = IronAxe::class;
-			self::$list[self::IRON_HOE] = IronHoe::class;
-			self::$list[self::DIAMOND_SWORD] = DiamondSword::class;
-			self::$list[self::DIAMOND_SHOVEL] = DiamondShovel::class;
-			self::$list[self::DIAMOND_PICKAXE] = DiamondPickaxe::class;
-			self::$list[self::DIAMOND_AXE] = DiamondAxe::class;
-			self::$list[self::DIAMOND_HOE] = DiamondHoe::class;
-			self::$list[self::GOLD_SWORD] = GoldSword::class;
-			self::$list[self::GOLD_SHOVEL] = GoldShovel::class;
-			self::$list[self::GOLD_PICKAXE] = GoldPickaxe::class;
-			self::$list[self::GOLD_AXE] = GoldAxe::class;
-			self::$list[self::GOLD_HOE] = GoldHoe::class;
-			self::$list[self::STONE_SWORD] = StoneSword::class;
-			self::$list[self::STONE_SHOVEL] = StoneShovel::class;
-			self::$list[self::STONE_PICKAXE] = StonePickaxe::class;
-			self::$list[self::STONE_AXE] = StoneAxe::class;
-			self::$list[self::STONE_HOE] = StoneHoe::class;
-			self::$list[self::WOODEN_SWORD] = WoodenSword::class;
-			self::$list[self::WOODEN_SHOVEL] = WoodenShovel::class;
-			self::$list[self::WOODEN_PICKAXE] = WoodenPickaxe::class;
-			self::$list[self::WOODEN_AXE] = WoodenAxe::class;
-			self::$list[self::WOODEN_HOE] = WoodenHoe::class;
-			self::$list[self::FLINT_STEEL] = FlintSteel::class;
-			self::$list[self::SHEARS] = Shears::class;
-			self::$list[self::BOW] = Bow::class;
 
-			self::$list[self::RAW_FISH] = Fish::class;
-			self::$list[self::COOKED_FISH] = CookedFish::class;
+		    self::registerItem(new IronShovel());
+		    self::registerItem(new IronPickaxe());
+		    self::registerItem(new IronAxe());
+		    self::registerItem(new FlintSteel());
+		    self::registerItem(new Apple());
+		    self::registerItem(new Bow());
+		    self::registerItem(new Arrow());
+		    self::registerItem(new Coal());
+		    self::registerItem(new Diamond());
+		    self::registerItem(new IronIngot());
+		    self::registerItem(new GoldIngot());
+		    self::registerItem(new IronSword());
+		    self::registerItem(new WoodenSword());
+		    self::registerItem(new WoodenShovel());
+		    self::registerItem(new WoodenPickaxe());
+		    self::registerItem(new WoodenAxe());
+            self::registerItem(new StoneSword());
+            self::registerItem(new StoneShovel());
+            self::registerItem(new StonePickaxe());
+            self::registerItem(new StoneAxe());
+            self::registerItem(new DiamondSword());
+            self::registerItem(new DiamondShovel());
+            self::registerItem(new DiamondPickaxe());
+            self::registerItem(new DiamondAxe());
+            self::registerItem(new Stick());
+            self::registerItem(new Bowl());
+            self::registerItem(new GoldSword());
+            self::registerItem(new GoldShovel());
+            self::registerItem(new GoldPickaxe());
+            self::registerItem(new GoldAxe());
+            self::registerItem(new ItemString());
+            self::registerItem(new Feather());
+            self::registerItem(new Gunpowder());
+            self::registerItem(new WoodenHoe());
+            self::registerItem(new StoneHoe());
+            self::registerItem(new DiamondHoe());
+            self::registerItem(new GoldHoe());
+            self::registerItem(new WheatSeeds());
+            self::registerItem(new Wheat());
+            self::registerItem(new Bread());
+            self::registerItem(new LeatherCap());
+            self::registerItem(new LeatherTunic());
+            self::registerItem(new LeatherPants());
+            self::registerItem(new LeatherBoots());
+            self::registerItem(new ChainHelmet());
+            self::registerItem(new ChainChestplate());
+            self::registerItem(new ChainLeggings());
+            self::registerItem(new ChainBoots());
+            self::registerItem(new IronHelmet());
+            self::registerItem(new IronChestplate());
+            self::registerItem(new IronLeggings());
+            self::registerItem(new IronBoots());
+            self::registerItem(new DiamondHelmet());
+            self::registerItem(new DiamondChestplate());
+            self::registerItem(new DiamondLeggings());
+            self::registerItem(new DiamondBoots());
+            self::registerItem(new GoldHelmet());
+            self::registerItem(new GoldChestplate());
+            self::registerItem(new GoldLeggings());
+            self::registerItem(new GoldBoots());
+            self::registerItem(new Flint());
+            self::registerItem(new RawPorkchop());
+            self::registerItem(new CookedPorkchop());
+            self::registerItem(new Painting());
+            self::registerItem(new GoldenApple());
+            self::registerItem(new Sign());
+            self::registerItem(new WoodenDoor());
+            self::registerItem(new Bucket());
 
-			self::$list[self::NETHER_QUARTZ] = NetherQuartz::class;
-			self::$list[self::POTION] = Potion::class;
-			self::$list[self::GLASS_BOTTLE] = GlassBottle::class;
-			self::$list[self::SPLASH_POTION] = SplashPotion::class;
-			self::$list[self::ENCHANTING_BOTTLE] = EnchantingBottle::class;
-			self::$list[self::BOAT] = Boat::class;
-			self::$list[self::MINECART] = Minecart::class;
+            self::registerItem(new Minecart());
+            // TODO : SADDLE
+            self::registerItem(new IronDoor());
+            self::registerItem(new Redstone());
+            self::registerItem(new Snowball());
+            self::registerItem(new Boat());
+            self::registerItem(new Leather());
 
-			self::$list[self::ARROW] = Arrow::class;
-			self::$list[self::STRING] = ItemString::class;
-			self::$list[self::GUNPOWDER] = Gunpowder::class;
-			self::$list[self::WHEAT] = Wheat::class;
-			self::$list[self::BREAD] = Bread::class;
-			self::$list[self::FLINT] = Flint::class;
-			self::$list[self::FLINT] = Flint::class;
-			self::$list[self::RAW_PORKCHOP] = RawPorkchop::class;
-			self::$list[self::COOKED_PORKCHOP] = CookedPorkchop::class;
-			self::$list[self::GOLDEN_APPLE] = GoldenApple::class;
-			self::$list[self::MINECART] = Minecart::class;
-			self::$list[self::REDSTONE] = Redstone::class;
-			self::$list[self::LEATHER] = Leather::class;
-			self::$list[self::CLAY] = Clay::class;
-			self::$list[self::PAPER] = Paper::class;
-			self::$list[self::BOOK] = Book::class;
-			self::$list[self::SLIMEBALL] = Slimeball::class;
-			self::$list[self::EGG] = Egg::class;
-			self::$list[self::COMPASS] = Compass::class;
-			self::$list[self::CLOCK] = Clock::class;
-			self::$list[self::GLOWSTONE_DUST] = GlowstoneDust::class;
-			self::$list[self::DYE] = Dye::class;
-			self::$list[self::BONE] = Bone::class;
-			self::$list[self::SUGAR] = Sugar::class;
-			self::$list[self::COOKIE] = Cookie::class;
-			self::$list[self::MELON] = Melon::class;
-			self::$list[self::RAW_BEEF] = RawBeef::class;
-			self::$list[self::STEAK] = Steak::class;
-			self::$list[self::RAW_CHICKEN] = RawChicken::class;
-			self::$list[self::COOKED_CHICKEN] = CookedChicken::class;
-			self::$list[self::GOLD_NUGGET] = GoldNugget::class;
-			self::$list[self::EMERALD] = Emerald::class;
-			self::$list[self::ITEM_FRAME] = ItemFrame::class;
-			self::$list[self::FLOWER_POT] = FlowerPot::class;
-			self::$list[self::CARROT] = Carrot::class;
-			self::$list[self::POTATO] = Potato::class;
-			self::$list[self::BAKED_POTATO] = BakedPotato::class;
-			self::$list[self::PUMPKIN_PIE] = PumpkinPie::class;
-			self::$list[self::NETHER_BRICK] = NetherBrick::class;
-			self::$list[self::QUARTZ] = Quartz::class;
-			self::$list[self::BREWING_STAND] = BrewingStand::class;
-			self::$list[self::CAMERA] = Camera::class;
-			self::$list[self::BEETROOT] = Beetroot::class;
-			self::$list[self::SKULL] = Skull::class;
-			self::$list[self::RAW_RABBIT] = RawRabbit::class;
-			self::$list[self::COOKED_RABBIT] = CookedRabbit::class;
-			self::$list[self::GOLDEN_CARROT] = GoldenCarrot::class;
-			self::$list[self::NETHER_WART] = NetherWart::class;
-			self::$list[self::SPIDER_EYE] = SpiderEye::class;
-			self::$list[self::FERMENTED_SPIDER_EYE] = FermentedSpiderEye::class;
-			self::$list[self::BLAZE_POWDER] = BlazePowder::class;
-			self::$list[self::MAGMA_CREAM] = MagmaCream::class;
-			self::$list[self::GLISTERING_MELON] = GlisteringMelon::class;
-			self::$list[self::ENCHANTED_BOOK] = EnchantedBook::class;
-			self::$list[self::REPEATER] = Repeater::class;
-			self::$list[self::CAULDRON] = Cauldron::class;
-			self::$list[self::ROTTEN_FLESH] = RottenFlesh::class;
-			self::$list[self::ENCHANTED_GOLDEN_APPLE] = EnchantedGoldenApple::class;
-			self::$list[self::RAW_MUTTON] = RawMutton::class;
-			self::$list[self::COOKED_MUTTON] = CookedMutton::class;
-			self::$list[self::HOPPER] = Hopper::class;
-			self::$list[self::ELYTRA] = Elytra::class;
-			self::$list[self::NETHER_STAR] = NetherStar::class;
-			self::$list[self::CHORUS_FRUIT] = ChorusFruit::class;
-			self::$list[self::PRISMARINE_CRYSTALS] = PrismarineCrystals::class;
-			self::$list[self::PRISMARINE_SHARD] = PrismarineShard::class;
-			self::$list[self::FIRE_CHARGE] = FireCharge::class;
-			self::$list[self::ARMOR_STAND] = ArmorStand::class;
+            self::registerItem(new Brick());
+            self::registerItem(new Clay());
+            self::registerItem(new Sugarcane());
+            self::registerItem(new Paper());
+            self::registerItem(new Book());
+            self::registerItem(new Slimeball());
+            // TODO : MINECART_WITH_CHEST
 
-			self::$list[self::MUSIC_DISC_13] = MusicDisc13::class;
-			self::$list[self::MUSIC_DISC_CAT] = MusicDiscCat::class;
-			self::$list[self::MUSIC_DISC_BLOCKS] = MusicDiscBlocks::class;
-			self::$list[self::MUSIC_DISC_STRAD] = MusicDiscStrad::class;
-			self::$list[self::MUSIC_DISC_WARD] = MusicDiscWard::class;
-			self::$list[self::MUSIC_DISC_STAL] = MusicDiscStal::class;
-			self::$list[self::MUSIC_DISC_WAIT] = MusicDiscWait::class;
-			self::$list[self::MUSIC_DISC_MALL] = MusicDiscMall::class;
-			self::$list[self::MUSIC_DISC_CHIRP] = MusicDiscChirp::class;
-			self::$list[self::MUSIC_DISC_MELLOHI] = MusicDiscMellohi::class;
-			self::$list[self::MUSIC_DISC_FAR] = MusicDiscFar::class;
-			
-			self::$list[self::WRITABLE_BOOK] = WritableBook::class;
-			self::$list[self::WRITTEN_BOOK] = WrittenBook::class;
+            self::registerItem(new Egg());
+            self::registerItem(new Compass());
+            self::registerItem(new FishingRod());
+            self::registerItem(new Clock());
+            self::registerItem(new GlowstoneDust());
+            self::registerItem(new Fish());
+            self::registerItem(new CookedFish());
+            self::registerItem(new Dye());
+            self::registerItem(new Bone());
+            self::registerItem(new Sugar());
+            self::registerItem(new Cake());
+            self::registerItem(new Bed());
+            self::registerItem(new Repeater());
+            self::registerItem(new Cookie());
+            // TODO : FILLED_MAP
+            self::registerItem(new Shears());
+            self::registerItem(new Melon());
+            self::registerItem(new PumpkinSeeds());
+            self::registerItem(new MelonSeeds());
+            self::registerItem(new RawBeef());
+            self::registerItem(new Steak());
+            self::registerItem(new RawChicken());
+            self::registerItem(new CookedChicken());
+            self::registerItem(new RottenFlesh());
+            self::registerItem(new EnderPearl());
+            self::registerItem(new BlazeRod());
+            self::registerItem(new GhastTear());
+            self::registerItem(new GoldNugget());
+            self::registerItem(new NetherWart());
+            self::registerItem(new Potion());
+            self::registerItem(new GlassBottle());
+            self::registerItem(new SpiderEye());
+            self::registerItem(new FermentedSpiderEye());
+            self::registerItem(new BlazePowder());
+            self::registerItem(new MagmaCream());
+            self::registerItem(new BrewingStand());
+            self::registerItem(new Cauldron());
+            self::registerItem(new EyeOfEnder());
+            self::registerItem(new GlisteringMelon());
+            self::registerItem(new SpawnEgg());
+            self::registerItem(new EnchantingBottle());
+            self::registerItem(new FireCharge());
+            self::registerItem(new WritableBook());
+            self::registerItem(new WrittenBook());
+            self::registerItem(new Emerald());
+            self::registerItem(new ItemFrame());
+            self::registerItem(new FlowerPot());
+            self::registerItem(new Carrot());
+            self::registerItem(new Potato());
+            self::registerItem(new BakedPotato());
+            // TODO : POISONOUS_POTATO
+            // TODO : EMPTY_MAP
+            self::registerItem(new GoldenCarrot());
+            self::registerItem(new Skull());
+            // TODO : CARROT_ON_A_STICK
+            self::registerItem(new NetherStar());
+            self::registerItem(new PumpkinPie());
+            // TODO : FIREWORK
+            // TODO : FIREWORK_STAR
+            self::registerItem(new EnchantedBook());
+            // TODO : COMPARATOR
+            self::registerItem(new NetherBrick());
+            self::registerItem(new Quartz());
+            // TODO : MINECART_WITH_TNT
+            // TODO : MINECART_WITH_HOPPER
+            self::registerItem(new PrismarineShard());
+            self::registerItem(new Hopper());
+            self::registerItem(new RawRabbit());
+            self::registerItem(new CookedRabbit());
+            self::registerItem(new RabbitStew());
+            // TODO : RABBIT_FOOT
+            // TODO : RABBIT_HIDE
+            // TODO : LEATHER_HORSE_ARMOR
+            // TODO : IRON_HORSE_ARMOR
+            // TODO : GOLD_HORSE_ARMOR
+            // TODO : DIAMOND_HORSE_ARMOR
+            // TODO : LEAD
+            // TODO : NAMETAG
+            self::registerItem(new PrismarineCrystals());
+            self::registerItem(new RawMutton());
+            self::registerItem(new CookedMutton());
+            self::registerItem(new ArmorStand());
+            // TODO : END_CRYSTAL
+            self::registerItem(new SpruceDoor());
+            self::registerItem(new BirchDoor());
+            self::registerItem(new JungleDoor());
+            self::registerItem(new AcaciaDoor());
+            self::registerItem(new DarkOakDoor());
+            self::registerItem(new ChorusFruit());
+            self::registerItem(new PoppedChorusFruit());
 
-			self::$list[self::LINGERING_POTION] = LingeringPotion::class;
-			self::$list[self::TOTEM] = TotemOfUndying::class;
+            self::registerItem(new DragonsBreath());
+            self::registerItem(new SplashPotion());
+
+            self::registerItem(new LingeringPotion());
+
+            //TODO: COMMAND_BLOCK_MINECART
+            self::registerItem(new Elytra());
+            self::registerItem(new ShulkerShell());
+            // TODO : BANNER
+
+            self::registerItem(new TotemOfUndying());
+
+            self::registerItem(new Item(Item::IRON_NUGGET, 0, 1, "Iron Nugget")); // Iron Nugget
+
+            self::registerItem(new Beetroot());
+            self::registerItem(new BeetrootSeeds());
+            self::registerItem(new BeetrootSoup());
+            //TODO: RAW_SALMON
+            //TODO: CLOWN_FISH
+            //TODO: PUFFER_FISH
+            //TODO: COOKED_SALMON
+
+            self::registerItem(new EnchantedGoldenApple());
+
+            self::registerItem(new Camera());
+
+            self::registerItem(new MusicDisc13());
+            self::registerItem(new MusicDiscCat());
+            self::registerItem(new MusicDiscBlocks());
+            self::registerItem(new MusicDiscChirp());
+            self::registerItem(new MusicDiscFar());
+            self::registerItem(new MusicDiscMall());
+            self::registerItem(new MusicDiscMellohi());
+            self::registerItem(new MusicDiscStal());
+            self::registerItem(new MusicDiscStrad());
+            self::registerItem(new MusicDiscWard());
+            self::registerItem(new MusicDisc11());
+            self::registerItem(new MusicDiscWait());
 
 			for($i = 0; $i < 256; ++$i){
 				if(Block::$list[$i] !== null){
@@ -305,6 +336,41 @@ class Item implements ItemIds, \JsonSerializable {
 
 		self::initCreativeItems();
 	}
+
+    /**
+     * Registers an item type into the index. Plugins may use this method to register new item types or override existing
+     * ones.
+     *
+     * NOTE: If you are registering a new item type, you will need to add it to the creative inventory yourself - it
+     * will not automatically appear there.
+     *
+     * @param Item $item
+     * @param bool $override
+     *
+     * @throws \RuntimeException if something attempted to override an already-registered item without specifying the
+     * $override parameter.
+     */
+    public static function registerItem(Item $item, bool $override = false){
+        $id = $item->getId();
+        if(!$override and self::isRegistered($id)){
+            throw new \RuntimeException("Trying to overwrite an already registered item : ".$id);
+        }
+
+        self::$list[$id] = clone $item;
+    }
+
+    /**
+     * Returns whether the specified item ID is already registered in the item factory.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public static function isRegistered(int $id) : bool{
+        if($id < 256){
+            return Block::isRegistered($id);
+        }
+        return isset(self::$list[$id]);
+    }
 
 	private static $creative = [];
 
@@ -400,27 +466,41 @@ class Item implements ItemIds, \JsonSerializable {
 		return -1;
 	}
 
-	/**
-	 * @param int    $id
-	 * @param int    $meta
-	 * @param int    $count
-	 * @param string $tags
-	 *
-	 * @return Item
-	 */
-	public static function get(int $id, int $meta = 0, int $count = 1, string $tags = "") : Item{
-		try{
-			$class = self::$list[$id];
-			if($class === null){
-				return (new Item($id, $meta, $count))->setCompoundTag($tags);
-			}elseif($id < 256){
-                return (new ItemBlock($id, $meta, $count))->setCompoundTag($tags);
-			}else{
-                return (new $class($meta, $count))->setCompoundTag($tags);
-			}
-		}catch(\RuntimeException $e){
-            return (new Item($id, $meta, $count))->setCompoundTag($tags);
-		}
+    /**
+     * @param int $id
+     * @param int $meta
+     * @param int $count
+     * @param string $tags
+     * @return Item
+     * @throws \TypeError
+     */
+    public static function get(int $id, int $meta = 0, int $count = 1, string $tags = "") : Item{
+        if(!is_string($tags) and !($tags instanceof CompoundTag)){
+            throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
+        }
+
+        $item = null;
+        try{
+            if($id < 256){
+                /* Blocks must have a damage value 0-15, but items can have damage value -1 to indicate that they are
+                 * crafting ingredients with any-damage. */
+                $item = new ItemBlock($id, $meta);
+            }else{
+                /** @var Item|null $listed */
+                if(isset(self::$list[$id])){
+                    $item = clone self::$list[$id];
+                }
+            }
+        }catch(\RuntimeException $e){
+            throw new \InvalidArgumentException("Item ID $id is invalid or out of bounds");
+        }
+
+        $item = ($item ?? new Item($id, $meta));
+
+        $item->setDamage($meta);
+        $item->setCount($count);
+        $item->setCompoundTag($tags);
+        return $item;
 	}
 
 	/**
