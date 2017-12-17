@@ -191,6 +191,11 @@ class Item extends Entity {
 	public function getItem(){
 		return $this->item;
 	}
+	
+	public function setItem(ItemItem $item){
+		$this->item = $item;
+		$this->respawnToAll();
+	}
 
 	/**
 	 * @param Entity $entity
