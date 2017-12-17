@@ -59,12 +59,18 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return CompoundTag
 	 */
 	private static function parseCompoundTag(string $tag) : CompoundTag{
-		if(self::$cachedParser === null){
-			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
-		}
-
-		self::$cachedParser->read($tag);
-		return self::$cachedParser->getData();
+        if($tag === ""){
+            throw new \InvalidArgumentException("No NBT data found in supplied string");
+        }
+        if(self::$cachedParser === null){
+            self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
+        }
+        self::$cachedParser->read($tag);
+        $data = self::$cachedParser->getData();
+        if(!($data instanceof CompoundTag)){
+            throw new \InvalidArgumentException("Invalid item NBT string given, it could not be deserialized");
+        }
+        return $data;
 	}
 
 	/**
@@ -947,12 +953,10 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return null|CompoundTag
 	 */
 	public function getNamedTag(){
-		if(!$this->hasCompoundTag()){
-			return null;
-		}elseif($this->cachedNBT !== null){
-			return $this->cachedNBT;
-		}
-		return $this->cachedNBT = self::parseCompoundTag($this->tags);
+        if(!$this->hasCompoundTag() and $this->cachedNBT === null){
+            $this->cachedNBT = new CompoundTag();
+        }
+        return $this->cachedNBT ?? ($this->cachedNBT = self::parseCompoundTag($this->tags));
 	}
 
 	/**

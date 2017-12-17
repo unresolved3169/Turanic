@@ -2915,31 +2915,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		if(!$this->spawned or !$this->isAlive()){
-			return true;
-		}
-
-        if($packet->inventorySlot === 255){
-            $packet->inventorySlot = -1; //Cleared slot
-        }else{
-            if($packet->inventorySlot < 9){
-                $this->server->getLogger()->debug("Tried to equip a slot that does not exist (index " . $packet->inventorySlot . ")");
-                $this->inventory->sendContents($this);
-                return false;
-            }
-            $packet->inventorySlot -= 9; //Get real inventory slot
-            $item = $this->inventory->getItem($packet->inventorySlot);
-            if(!$item->equals($packet->item)){
-                $this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
-                $this->inventory->sendContents($this);
-                return false;
-            }
+        if($this->spawned === false or !$this->isAlive()){
+            return true;
         }
-        $this->inventory->equipItem($packet->hotbarSlot, $packet->inventorySlot);
+        $item = $this->inventory->getItem($packet->hotbarSlot);
+        if(!$item->equals($packet->item)){
+            $this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
+            $this->inventory->sendContents($this);
+            return false;
+        }
 
-		$this->setUsingItem(false);
+        $this->inventory->equipItem($packet->hotbarSlot);
 
-		return true;
+        $this->setUsingItem(false);
+
+        return true;
 	}
 
 	public function handleInteract(InteractPacket $packet) : bool{
@@ -3368,7 +3358,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
 				/** @var WrittenBook $newBook */
-				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
+				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1);
+				$newBook->setNamedTag($oldBook->getNamedTag());
 				$newBook->setAuthor($packet->author);
 				$newBook->setTitle($packet->title);
 				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);

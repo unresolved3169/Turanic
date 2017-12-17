@@ -78,27 +78,14 @@ class PlayerInventory extends EntityInventory{
      * @return bool if the equipment change was successful, false if not.
      */
     public function equipItem(int $hotbarSlot, int $inventorySlot = null) : bool{
-        if($inventorySlot === null){
-            $inventorySlot = $this->isHotbarSlot($hotbarSlot) ? $hotbarSlot : -1;
-        }
-        if($hotbarSlot < 0 or $hotbarSlot >= $this->getHotbarSize() or $inventorySlot < -1 or $inventorySlot >= $this->getSize()){
+        if(!$this->isHotbarSlot($hotbarSlot)){
             $this->sendContents($this->getHolder());
             return false;
         }
-        if($inventorySlot === -1){
-            $item = Item::get(Item::AIR, 0, 0);
-        }else{
-            $item = $this->getItem($inventorySlot);
-        }
-        $this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $item, $hotbarSlot));
+        $this->getHolder()->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerItemHeldEvent($this->getHolder(), $this->getItem($hotbarSlot), $hotbarSlot));
         if($ev->isCancelled()){
-            $this->sendContents($this->getHolder());
+            $this->sendHeldItem($this->getHolder());
             return false;
-        }
-        if (!($hotbarSlot == $inventorySlot || $inventorySlot < 0)) {
-            $tmp = $this->getItem($hotbarSlot);
-            $this->setItem($hotbarSlot, $this->getItem($inventorySlot));
-            $this->setItem($inventorySlot, $tmp);
         }
         $this->setHeldItemIndex($hotbarSlot, false);
         return true;
