@@ -65,7 +65,7 @@ class DoubleWoodSlab extends Solid {
 			6 => "",
 			7 => ""
 		];
-		return "Double " . $names[$this->meta & 0x07] . " Wooden Slab";
+		return "Double " . $names[$this->getVariant()] . " Wooden Slab";
 	}
 
 	/**
@@ -75,7 +75,7 @@ class DoubleWoodSlab extends Solid {
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			[Item::WOOD_SLAB, $this->meta & 0x07, 2],
+			[Item::WOOD_SLAB, $this->getVariant(), 2],
 		];
 	}
 

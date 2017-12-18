@@ -65,7 +65,7 @@ class DoubleSlab extends Solid {
 			6 => "Quartz",
 			7 => "Nether Brick",
 		];
-		return "Double " . $names[$this->meta & 0x07] . " Slab";
+		return "Double " . $names[$this->getVariant()] . " Slab";
 	}
 
 	/**
@@ -76,7 +76,7 @@ class DoubleSlab extends Solid {
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
-				[Item::SLAB, $this->meta & 0x07, 2],
+				[Item::SLAB, $this->getVariant(), 2],
 			];
 		}else{
 			return [];

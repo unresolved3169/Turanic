@@ -69,7 +69,7 @@ class StoneBricks extends Solid {
 			2 => "Cracked Stone Bricks",
 			3 => "Chiseled Stone Bricks",
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	/**
@@ -79,12 +79,10 @@ class StoneBricks extends Solid {
 	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
-			return [
-				[Item::STONE_BRICKS, $this->meta & 0x03, 1],
-			];
-		}else{
-			return [];
+			return parent::getDrops($item);
 		}
+
+		return [];
 	}
 
     /**

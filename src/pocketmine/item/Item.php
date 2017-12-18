@@ -20,6 +20,8 @@
  *
 */
 
+declare(strict_types=1);
+
 /**
  * All the Item classes
  */

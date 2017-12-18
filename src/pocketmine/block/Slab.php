@@ -69,10 +69,9 @@ class Slab extends Transparent {
 			3 => "Cobblestone",
 			4 => "Brick",
 			5 => "Stone Brick",
-			6 => "Quartz",
-			7 => "",
+			6 => "Quartz"
 		];
-		return (($this->meta & 0x08) > 0 ? "Upper " : "") . $names[$this->meta & 0x07] . " Slab";
+		return (($this->meta & 0x08) > 0 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Slab";
 	}
 
 	/**

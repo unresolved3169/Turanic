@@ -58,10 +58,9 @@ class Sandstone extends Solid {
 		static $names = [
 			0 => "Sandstone",
 			1 => "Chiseled Sandstone",
-			2 => "Smooth Sandstone",
-			3 => "",
+			2 => "Smooth Sandstone"
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->getVariant()] ?? "";
 	}
 
 	/**

@@ -48,7 +48,7 @@ class Leaves2 extends Leaves {
 			self::ACACIA => "Acacia Leaves",
 			self::DARK_OAK => "Dark Oak Leaves",
 		];
-		return $names[$this->meta & 0x01];
+		return $names[$this->getVariant()];
 	}
 
     public function getSaplingItem() : Item{

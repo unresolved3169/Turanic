@@ -61,7 +61,7 @@ class Wood extends Solid {
 			self::BIRCH => "Birch Wood",
 			self::JUNGLE => "Jungle Wood",
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	/**

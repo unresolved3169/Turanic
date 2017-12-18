@@ -64,7 +64,7 @@ class DoublePlant extends Flowable {
 			4 => "Rose Bush",
 			5 => "Peony"
 		];
-		return $names[$this->meta & 0x07];
+		return $names[$this->getVariant()] ?? "";
 	}
 
 	/**

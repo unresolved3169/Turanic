@@ -35,10 +35,8 @@ class Wood2 extends Wood {
 	public function getName() : string{
 		static $names = [
 			0 => "Acacia Wood",
-			1 => "Dark Oak Wood",
-			2 => "Unknown",
-			3 => "Unknown"
+			1 => "Dark Oak Wood"
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 }
