@@ -2461,4 +2461,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	public function doesTriggerPressurePlate() : bool{
 	    return false;
     }
+    
+    public function getAge() : int{
+    	return $this->age;
+    }
+    
+    public function setAge(int $age){
+        $this->age = $age;
+    }
 }
