@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 /**
  * All Level related classes are here, like Generators, Populators, Noise, ...
  */
@@ -31,6 +33,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\object\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
+use pocketmine\entity\object\FloatingText;
 use pocketmine\entity\object\Item as DroppedItem;
 use pocketmine\entity\object\Lightning;
 use pocketmine\entity\object\XPOrb;
@@ -573,6 +576,43 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 	}
+
+    /**
+     * @param Vector3 $pos
+     * @param string $text
+     * @param string $title
+     * @param bool $center
+     *
+     * @return Entity|null
+     */
+    public function addFloatingText(Vector3 $pos, string $text, string $title = "", bool $center = false){
+        $entity = Entity::createEntity("FloatingText", $this, new CompoundTag("", [
+            new ListTag("Pos", [
+                new DoubleTag("", $pos->x),
+                new DoubleTag("", $pos->y),
+                new DoubleTag("", $pos->z)
+            ]),
+            new ListTag("Motion", [
+                new DoubleTag("", 0),
+                new DoubleTag("", 0),
+                new DoubleTag("", 0)
+            ]),
+            new ListTag("Rotation", [
+                new FloatTag("", 0),
+                new FloatTag("", 0)
+            ])
+        ]));
+
+        assert($entity !== null);
+
+        if ($entity instanceof FloatingText) {
+            $entity->setTitle($title, $center);
+            $entity->setText($text, $center);
+        }
+
+        $entity->spawnToAll();
+        return $entity;
+    }
 
 	public function broadcastLevelEvent(Vector3 $pos, int $evid, int $data = 0) {
 		$pk = new LevelEventPacket();
@@ -2389,8 +2429,6 @@ class Level implements ChunkManager, Metadatable{
 		if (count($this->chunkSendQueue) > 0) {
 			$this->timings->syncChunkSendTimer->startTiming();
 
-			$x = null;
-			$z = null;
 			foreach ($this->chunkSendQueue as $index => $players) {
 				if (isset($this->chunkSendTasks[$index])) {
 					continue;
@@ -2841,9 +2879,6 @@ class Level implements ChunkManager, Metadatable{
 
 	public function doChunkGarbageCollection() {
 		$this->timings->doChunkGC->startTiming();
-
-		$X = null;
-		$Z = null;
 
 		foreach ($this->chunks as $index => $chunk) {
 			if (!isset($this->unloadQueue[$index])) {

@@ -31,6 +31,9 @@ use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\utils\TextUtils;
 use pocketmine\utils\UUID;
 
+/**
+ * @deprecated
+ */
 class FloatingTextParticle extends Particle {
 	//TODO: HACK!
 

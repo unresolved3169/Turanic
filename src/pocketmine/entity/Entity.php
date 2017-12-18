@@ -68,6 +68,7 @@ use pocketmine\entity\object\Egg;
 use pocketmine\entity\object\EnderPearl;
 use pocketmine\entity\object\FallingSand;
 use pocketmine\entity\object\FishingHook;
+use pocketmine\entity\object\FloatingText;
 use pocketmine\entity\object\Lightning;
 use pocketmine\entity\object\LingeringPotion;
 use pocketmine\entity\object\Minecart;
@@ -321,6 +322,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		Entity::registerEntity(Evoker::class);
 		Entity::registerEntity(FallingSand::class);
 		Entity::registerEntity(FishingHook::class);
+		Entity::registerEntity(FloatingText::class);
 		Entity::registerEntity(Ghast::class);
 		Entity::registerEntity(Guardian::class);
 		Entity::registerEntity(Horse::class);
