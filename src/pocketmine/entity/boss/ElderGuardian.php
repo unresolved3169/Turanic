@@ -76,10 +76,11 @@ class ElderGuardian extends Animal {
 		parent::spawnTo($player);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$drops = [
 			ItemItem::get(ItemItem::PRISMARINE_CRYSTALS, 0, mt_rand(0, 1))
 		];

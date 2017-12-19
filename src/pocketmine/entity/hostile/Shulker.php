@@ -47,10 +47,10 @@ class Shulker extends Monster {
 	}
 
 	public function initEntity(){
-			$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
-			$this->addBehavior(new StrollBehavior($this));
-			$this->addBehavior(new LookAtPlayerBehavior($this));
-			$this->addBehavior(new RandomLookaroundBehavior($this));
+	    $this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+	    $this->addBehavior(new StrollBehavior($this));
+	    $this->addBehavior(new LookAtPlayerBehavior($this));
+	    $this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setMaxHealth(30);
 		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, 10);
 		parent::initEntity();
@@ -72,10 +72,11 @@ class Shulker extends Monster {
 		parent::spawnTo($player);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$drops = [
 			ItemItem::get(ItemItem::SHULKER_SHELL, 0, mt_rand(0, 1))
 		];

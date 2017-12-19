@@ -387,16 +387,17 @@ class CaveCommand extends VanillaCommand {
 		return $n;
 	}
 
-	/**
-	 * @param Level $level
-	 * @param       $x
-	 * @param       $y
-	 * @param       $z
-	 * @param       $l
-	 * @param       $id
-	 * @param       $bd
-	 */
-	public function tiankengy(Level $level, $x, $y, $z, $l, $id, $bd){
+    /**
+     * @param Level $level
+     * @param $x
+     * @param $y
+     * @param $z
+     * @param $l
+     * @param $id
+     * @param $bd
+     * @throws \TypeError
+     */
+    public function tiankengy(Level $level, $x, $y, $z, $l, $id, $bd){
 		if($level->getBlock(new Vector3($x, $y, $z))->getId() == 0) $level->setBlock(new Vector3($x, $y, $z), Item::get($id, $bd)->getBlock());
 		if($l >= 0){
 			$random = mt_rand(0, 99999) / 100000;

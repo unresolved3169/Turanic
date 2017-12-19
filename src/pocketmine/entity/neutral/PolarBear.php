@@ -75,10 +75,11 @@ class PolarBear extends Monster {
 		parent::spawnTo($player);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$drops = [ItemItem::get(ItemItem::RAW_SALMON, 0, mt_rand(0, 2))];
 		$drops[] = ItemItem::get(ItemItem::RAW_FISH, 0, mt_rand(0, 2));
 		return $drops;

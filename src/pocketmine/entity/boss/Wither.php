@@ -65,12 +65,13 @@ class Wither extends FlyingAnimal {
 		parent::spawnTo($player);
 	}
 
-	//TODO: 添加出生和死亡情景
+	//TODO: Add Spawn Moment and Dead
 
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$drops = [ItemItem::get(ItemItem::NETHER_STAR, 0, 1)];
 		return $drops;
 	}

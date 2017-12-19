@@ -28,7 +28,6 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Zombie extends Monster {
@@ -48,7 +47,6 @@ class Zombie extends Monster {
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-
         $this->setMaxHealth(20);
 		parent::initEntity();
 	}
@@ -83,10 +81,11 @@ class Zombie extends Monster {
 		parent::spawnTo($player);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$cause = $this->lastDamageCause;
 		$drops = [];
 		if($cause instanceof EntityDamageByEntityEvent){

@@ -70,10 +70,11 @@ class Spider extends Monster {
 		parent::spawnTo($player);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$drops = [ItemItem::get(ItemItem::STRING, 0, 1)];
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent and $this->lastDamageCause->getEntity() instanceof Player){
 			if(mt_rand(0, 199) < 5){

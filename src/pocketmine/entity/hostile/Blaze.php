@@ -61,10 +61,11 @@ class Blaze extends Monster {
 		parent::spawnTo($player);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$cause = $this->lastDamageCause;
 		if($cause instanceof EntityDamageByEntityEvent){
 			$damager = $cause->getDamager();

@@ -101,7 +101,6 @@ use pocketmine\utils\ReversePriorityQueue;
 #include <rules/Level.h>
 
 class Level implements ChunkManager, Metadatable{
-	
 
 	private static $levelIdCounter = 1;
 	private static $chunkLoaderCounter = 1;
