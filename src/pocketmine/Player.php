@@ -23,6 +23,7 @@
 namespace pocketmine;
 
 use pocketmine\block\CommandBlock;
+use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\tile\CommandBlock as TileCommandBlock;
 use pocketmine\form\Form;
@@ -41,7 +42,6 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
-use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
 use pocketmine\event\player\PlayerAnimationEvent;
@@ -75,8 +75,6 @@ use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
-use pocketmine\inventory\ShapedRecipe;
-use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerInventory;
@@ -2697,7 +2695,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-					    $target->onInteract($this, $this->getItemInHand());
+					    $this->server->getPluginManager()->callEvent($ev = new PlayerEntityInteractEvent($this, $target));
+					    if(!$ev->isCancelled()){
+                            $target->onInteract($this, $this->getItemInHand());
+                        }
 						break;
 					case InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_ATTACK:
 						if(!$target->isAlive()){
