@@ -811,6 +811,7 @@ class CreativeItems {
         ["id" => Item::MUSIC_DISC_11],
 
         ["id" => Item::GLOWSTONE_DUST],
+        ["id" => Item::GLOWSTONE],
         ["id" => Item::REDSTONE_LAMP],
         ["id" => Item::SEA_LANTERN],
         ["id" => Item::SIGN],
