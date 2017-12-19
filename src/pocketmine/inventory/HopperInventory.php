@@ -25,6 +25,10 @@ use pocketmine\tile\Hopper;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class HopperInventory extends ContainerInventory {
+
+    /** @var Hopper */
+    protected $holder;
+
 	/**
 	 * HopperInventory constructor.
 	 *

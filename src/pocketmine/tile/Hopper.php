@@ -142,7 +142,7 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 		$source = $this->getLevel()->getTile($this->getBlock()->getSide(Vector3::SIDE_UP));
 		if($source instanceof Tile and $source instanceof InventoryHolder){
 			$inventory = $source->getInventory();
-			$item = clone $inventory->getItem($inventory->firstOccupied());
+			$item = clone $inventory->getItem($inventory->firstEmpty());
 			$item->setCount(1);
 			if($this->inventory->canAddItem($item)){
 				$this->inventory->addItem($item);
@@ -280,9 +280,9 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 		return isset($this->namedtag->CustomName);
 	}
 
-	/**
-	 * @param void $str
-	 */
+    /**
+     * @param string $str
+     */
 	public function setName(string $str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);
