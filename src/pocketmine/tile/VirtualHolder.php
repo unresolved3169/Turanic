@@ -18,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- * Thanks to Muqsit and Derpific for VirtualHolder
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\tile;
 

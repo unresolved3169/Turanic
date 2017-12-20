@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\tile;
 
@@ -129,7 +129,7 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
     /**
      * @return bool
      */
-    public function hasName(){
+    public function hasName() : bool{
         return isset($this->namedtag->CustomName);
     }
 

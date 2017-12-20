@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\tile;
 
@@ -112,18 +115,18 @@ class ItemFrame extends Spawnable {
 	}
 
 	/**
-	 * @param string $mapid
+	 * @param int $mapid
 	 */
-	public function SetMapID(string $mapid){
+	public function setMapID(int $mapid){
 		$this->map_uuid = $mapid;
-		$this->namedtag->Map_UUID = new StringTag("map_uuid", $mapid);
+		$this->namedtag->map_uuid = new IntTag("map_uuid", $mapid);
 		$this->onChanged();
 	}
 
 	/**
-	 * @return string
+	 * @return int
 	 */
-	public function getMapID() : string{
+	public function getMapID() : int{
 		return $this->map_uuid;
 	}
 
@@ -142,8 +145,8 @@ class ItemFrame extends Spawnable {
 		if($this->hasItem()){
 			$tag->Item = $this->namedtag->Item;
 			if($this->getItem()->getId() === Item::FILLED_MAP){
-				if(isset($this->namedtag->Map_UUID)){
-					$tag->Map_UUID = $this->namedtag->Map_UUID;
+				if(isset($this->namedtag->map_uuid)){
+					$tag->map_uuid = $this->namedtag->map_uuid;
 				}
 			}
 		}

@@ -90,7 +90,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable 
 	/**
 	 * @return bool
 	 */
-	public function hasName(){
+	public function hasName(): bool{
 		return isset($this->namedtag->CustomName);
 	}
 

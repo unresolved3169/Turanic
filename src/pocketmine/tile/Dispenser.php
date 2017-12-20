@@ -2,25 +2,27 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
 
-namespace pocketmine\tile;
+declare(strict_types=1);
 
+namespace pocketmine\tile;
 
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\Item as ItemEntity;
@@ -164,13 +166,13 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 	/**
 	 * @return bool
 	 */
-	public function hasName(){
+	public function hasName(): bool{
 		return isset($this->namedtag->CustomName);
 	}
 
-	/**
-	 * @param void $str
-	 */
+    /**
+     * @param string $str
+     */
 	public function setName(string $str){
 		if($str === ""){
 			unset($this->namedtag->CustomName);

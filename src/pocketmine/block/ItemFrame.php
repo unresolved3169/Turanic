@@ -90,7 +90,7 @@ class ItemFrame extends Flowable {
 				$tile->setItem($frameItem);
 				$this->getLevel()->addSound(new ItemFrameAddItemSound($this));
 				if($item->getId() === Item::FILLED_MAP){
-					$tile->SetMapID($item->getMapId());
+					$tile->setMapID($item->getMapId());
 				}
 				if($player instanceof Player and $player->isSurvival()){
 					$player->getInventory()->setItemInHand($item->getCount() <= 0 ? Item::get(Item::AIR) : $item);
