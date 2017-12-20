@@ -35,7 +35,7 @@ use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
-use pocketmine\entity\object\FishingHook;
+use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\Human;
 use pocketmine\entity\object\Item as DroppedItem;
 use pocketmine\entity\Living;
@@ -1630,7 +1630,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->isCollided = $this->onGround;
 	}
 
-	public function move($dx, $dy, $dz){
+	public function move(float $dx, float $dy, float $dz){
 		$this->checkGroundState(0,0,0,0,0,0);
 		if($dx == 0 and $dz == 0 and $dy == 0){
 			return true;
@@ -3967,10 +3967,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->sendRespawnPacket($this->getSpawn());
 	}
 
-	/**
-	 * @param int $amount
-	 */
-	public function setHealth($amount){
+    /**
+     * @param float|int $amount
+     */
+	public function setHealth(float $amount){
 		parent::setHealth($amount);
 		if ($this->spawned === true) {
 			$this->foodTick = 0;

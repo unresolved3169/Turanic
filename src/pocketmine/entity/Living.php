@@ -51,6 +51,9 @@ abstract class Living extends Entity implements Damageable {
 	protected $invisible = false;
 	protected $jumpVelocity = 0.42;
 
+	/** @var int */
+	public $maxAir = 400;
+
 	protected function initEntity(){
 		parent::initEntity();
 
@@ -71,9 +74,9 @@ abstract class Living extends Entity implements Damageable {
 	}
 
 	/**
-	 * @param int $amount
+	 * @param float $amount
 	 */
-	public function setHealth($amount){
+	public function setHealth(float $amount){
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
 		if($this->isAlive() and !$wasAlive){
@@ -183,7 +186,7 @@ abstract class Living extends Entity implements Damageable {
 	 * @param		$z
 	 * @param float  $base
 	 */
-	public function knockBack(Entity $attacker, $damage, $x, $z, $base = 0.4){
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4){
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -220,11 +223,10 @@ abstract class Living extends Entity implements Damageable {
 
 	/**
 	 * @param int $tickDiff
-	 * @param int $EnchantL
 	 *
 	 * @return bool
 	 */
-	public function entityBaseTick(int $tickDiff = 1, $EnchantL = 0){
+	public function entityBaseTick(int $tickDiff = 1){
 		Timings::$timerLivingEntityBaseTick->startTiming();
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BREATHING, !$this->isInsideOfWater());
 
@@ -236,7 +238,7 @@ abstract class Living extends Entity implements Damageable {
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
 				$this->attack($ev);
 			}
-			$maxAir = 400 + $EnchantL * 300;
+			$maxAir = $this->maxAir;
 			$this->setDataProperty(self::DATA_MAX_AIR, self::DATA_TYPE_SHORT, $maxAir);
 			if(!$this->hasEffect(Effect::WATER_BREATHING) and $this->isInsideOfWater()){
 				if($this instanceof WaterAnimal){

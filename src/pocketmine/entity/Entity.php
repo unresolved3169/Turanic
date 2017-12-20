@@ -1155,29 +1155,28 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		return $this->health > 0;
 	}
 
-	/**
-	 * Sets the health of the Entity. This won't send any update to the players
-	 *
-	 * @param int $amount
-	 */
-	public function setHealth($amount){
-		$amount = (int) $amount;
-	/*	if($amount === $this->health){
-			return;
-		}*/
+    /**
+     * Sets the health of the Entity. This won't send any update to the players
+     *
+     * @param float $amount
+     */
+    public function setHealth(float $amount){
+        if($amount == $this->health){
+            return;
+        }
 
-		if($amount <= 0){
-			if($this->isAlive()){
-				$this->kill();
-			}
-		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
-			$this->health = (int) $amount;
-		}else{
-			$this->health = $this->getMaxHealth();
-		}
-	}
+        if($amount <= 0){
+            if($this->isAlive()){
+                $this->kill();
+            }
+        }elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
+            $this->health = $amount;
+        }else{
+            $this->health = $this->getMaxHealth();
+        }
+    }
 
-	/**
+    /**
 	 * @param EntityDamageEvent $type
 	 */
 	public function setLastDamageCause(EntityDamageEvent $type){
@@ -1816,7 +1815,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 *
 	 * @return bool
 	 */
-	public function move($dx, $dy, $dz){
+	public function move(float $dx, float $dy, float $dz){
         $this->blocksAround = [];
         if($dx == 0 and $dz == 0 and $dy == 0){
             return true;
