@@ -4,12 +4,12 @@ namespace pocketmine\level\generator\normal\object;
 
 use pocketmine\block\Block;
 use pocketmine\level\ChunkManager;
-use pocketmine\level\generator\object\Object;
+use pocketmine\level\generator\object\PopulatorObject;
 use pocketmine\math\Vector3;
 use pocketmine\utils\BuildingUtils;
 use pocketmine\utils\Random;
 
-class Temple extends Object{
+class Temple extends PopulatorObject{
 
     const DIRECTION_PLUSX = 0;
     const DIRECTION_MINX = 1;
