@@ -279,8 +279,8 @@ class BinaryStream extends \stdClass {
 	/**
 	 * @param $v
 	 */
-	public function putByte(int $v){
-		$this->buffer .= chr($v);
+	public function putByte($v){
+		$this->buffer .= chr((int) $v);
 	}
 
 	/**
@@ -506,8 +506,8 @@ class BinaryStream extends \stdClass {
      * Writes a 64-bit zigzag-encoded variable-length integer to the end of the buffer.
      * @param int
      */
-    public function putVarLong(int $v){
-        $this->buffer .= Binary::writeVarLong($v);
+    public function putVarLong($v){
+        $this->buffer .= Binary::writeVarLong((int) $v);
     }
 
     /**
@@ -522,8 +522,8 @@ class BinaryStream extends \stdClass {
      * Writes a 64-bit variable-length integer to the end of the buffer.
      * @param int $v
      */
-    public function putUnsignedVarLong(int $v){
-        $this->buffer .= Binary::writeUnsignedVarLong($v);
+    public function putUnsignedVarLong($v){
+        $this->buffer .= Binary::writeUnsignedVarLong((int) $v);
     }
 
     public function getRoundedLFloat(int $accuracy) : float{

@@ -323,8 +323,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setByte(string $name, int $value, bool $force = false){
-		$this->setTagValue($name, ByteTag::class, $value, $force);
+	public function setByte(string $name, $value, bool $force = false){
+		$this->setTagValue($name, ByteTag::class, (int) $value, $force);
 	}
 
 	/**
@@ -332,8 +332,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setShort(string $name, int $value, bool $force = false){
-		$this->setTagValue($name, ShortTag::class, $value, $force);
+	public function setShort(string $name, $value, bool $force = false){
+		$this->setTagValue($name, ShortTag::class, (int) $value, $force);
 	}
 
 	/**
@@ -341,8 +341,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setInt(string $name, int $value, bool $force = false){
-		$this->setTagValue($name, IntTag::class, $value, $force);
+	public function setInt(string $name, $value, bool $force = false){
+		$this->setTagValue($name, IntTag::class, (int) $value, $force);
 	}
 
 	/**
@@ -350,8 +350,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setLong(string $name, int $value, bool $force = false){
-		$this->setTagValue($name, LongTag::class, $value, $force);
+	public function setLong(string $name, $value, bool $force = false){
+		$this->setTagValue($name, LongTag::class, (int) $value, $force);
 	}
 
 	/**
@@ -359,8 +359,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param float  $value
 	 * @param bool   $force
 	 */
-	public function setFloat(string $name, float $value, bool $force = false){
-		$this->setTagValue($name, FloatTag::class, $value, $force);
+	public function setFloat(string $name, $value, bool $force = false){
+		$this->setTagValue($name, FloatTag::class, (float) $value, $force);
 	}
 
 	/**
@@ -368,8 +368,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param float  $value
 	 * @param bool   $force
 	 */
-	public function setDouble(string $name, float $value, bool $force = false){
-		$this->setTagValue($name, DoubleTag::class, $value, $force);
+	public function setDouble(string $name, $value, bool $force = false){
+		$this->setTagValue($name, DoubleTag::class, (float) $value, $force);
 	}
 
 	/**
