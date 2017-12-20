@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -31,9 +33,10 @@ class Coal extends Solid {
 
 	protected $id = self::COAL_BLOCK;
 
-	/**
-	 * Coal constructor.
-	 */
+    /**
+     * Coal constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
@@ -93,5 +96,9 @@ class Coal extends Solid {
      */
     public function canHarvestWithHand(): bool{
         return false;
+    }
+
+    public function getFuelTime(): int{
+        return 16000;
     }
 }

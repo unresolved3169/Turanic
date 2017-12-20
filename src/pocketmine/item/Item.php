@@ -1154,10 +1154,11 @@ class Item implements ItemIds, \JsonSerializable {
 	}
 
 	/**
+     * Returns the time in ticks which the item will fuel a furnace for.
 	 * @return int
 	 */
 	public function getFuelTime() : int{
-		return FurnaceFuel::getFurnaceFuelTime($this->getId());
+		return 0;
 	}
 
 	/**

@@ -20,6 +20,8 @@
  *
 */
 
+declare(strict_types=1);
+
 /**
  * All the Tile classes and related classes
  */
@@ -75,8 +77,7 @@ abstract class Tile extends Position {
 	public $metadata;
 	public $closed = false;
 	public $namedtag;
-	
-	protected $lastUpdate;
+
 	protected $server;
 	protected $timings;
 
@@ -178,7 +179,6 @@ abstract class Tile extends Position {
 		assert($this->chunk !== null);
 
 		$this->name = "";
-		$this->lastUpdate = microtime(true);
 		$this->id = Tile::$tileCount++;
 		$this->x = (int) $this->namedtag["x"];
 		$this->y = (int) $this->namedtag["y"];

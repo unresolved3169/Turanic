@@ -165,8 +165,6 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 			}
 		}
 
-		$this->lastUpdate = microtime(true);
-
 		$this->timings->stopTiming();
 
 		return true;
