@@ -37,29 +37,29 @@ use pocketmine\nbt\tag\StringTag;
 
 abstract class Tile extends Position {
 
-	const BREWING_STAND = "BrewingStand";
-	const CHEST = "Chest";
-	const COMMAND_BLOCK = "CommandBlock";
-	const DL_DETECTOR = "DLDetector";
-	const ENCHANT_TABLE = "EnchantTable";
-	const FLOWER_POT = "FlowerPot";
-	const FURNACE = "Furnace";
-	const MOB_SPAWNER = "MobSpawner";
-	const SIGN = "Sign";
-	const SHULKER_BOX = "ShulkerBox";
-	const SKULL = "Skull";
-	const ITEM_FRAME = "ItemFrame";
-	const BED = "Bed";
-	const DAY_LIGHT_DETECTOR = "DLDetector";
-	const DISPENSER = "Dispenser";
-	const CAULDRON = "Cauldron";
-	const HOPPER = "Hopper";
-	const ENDER_CHEST = "EnderChest";
-	const DROPPER = "Dropper";
-	const BEACON = "Beacon";
-	const VIRTUAL_HOLDER = "VirtualHolder";
-	const JUKEBOX = "Jukebox";
-	const BANNER = "Banner";
+    const BANNER = "Banner";
+    const BEACON = "Beacon";
+    const BED = "Bed";
+    const BREWING_STAND = "BrewingStand";
+    const CAULDRON = "Cauldron";
+    const CHEST = "Chest";
+    const COMMAND_BLOCK = "CommandBlock";
+    const DAY_LIGHT_DETECTOR = "DLDetector";
+    const DISPENSER = "Dispenser";
+    const DL_DETECTOR = "DLDetector";
+    const DROPPER = "Dropper";
+    const ENCHANT_TABLE = "EnchantTable";
+    const ENDER_CHEST = "EnderChest";
+    const FLOWER_POT = "FlowerPot";
+    const FURNACE = "Furnace";
+    const HOPPER = "Hopper";
+    const ITEM_FRAME = "ItemFrame";
+    const JUKEBOX = "Jukebox";
+    const MOB_SPAWNER = "MobSpawner";
+    const SHULKER_BOX = "ShulkerBox";
+    const SIGN = "Sign";
+    const SKULL = "Skull";
+    const VIRTUAL_HOLDER = "VirtualHolder";
 
 	public static $tileCount = 1;
 
@@ -99,14 +99,14 @@ abstract class Tile extends Position {
 		self::registerTile(EnderChest::class);
 		self::registerTile(FlowerPot::class);
 		self::registerTile(Furnace::class);
+        self::registerTile(Hopper::class);
 		self::registerTile(ItemFrame::class);
-		self::registerTile(MobSpawner::class);
-		self::registerTile(Sign::class);
-		self::registerTile(ShulkerBox::class);
-		self::registerTile(Skull::class);
-		self::registerTile(VirtualHolder::class);
-		self::registerTile(Jukebox::class);
-		self::registerTile(Hopper::class);
+        self::registerTile(Jukebox::class);
+        self::registerTile(MobSpawner::class);
+        self::registerTile(ShulkerBox::class);
+        self::registerTile(Sign::class);
+        self::registerTile(Skull::class);
+        self::registerTile(VirtualHolder::class);
 	}
 
 	/**
