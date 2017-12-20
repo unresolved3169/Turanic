@@ -77,7 +77,7 @@ class ArmorStand extends Entity {
         return false;
     }
 
-    public function onUpdate($currentTick){
+    public function onUpdate(int $currentTick){
         if(parent::onUpdate($currentTick)){
             $v = $this->getSide(self::SIDE_DOWN);
             if($this->level->getBlock($v, false)->getId() == ItemItem::AIR){

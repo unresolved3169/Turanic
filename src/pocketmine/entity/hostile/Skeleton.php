@@ -23,7 +23,7 @@
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Monster;
-use pocketmine\entity\ProjectileSource;
+use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;

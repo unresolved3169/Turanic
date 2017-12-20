@@ -31,7 +31,7 @@ use pocketmine\form\Form;
 use pocketmine\block\Block;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\entity\object\Arrow;
+use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
@@ -1883,7 +1883,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
         if (!$this->loggedIn or !$this->constructed) {
             return false;
         }

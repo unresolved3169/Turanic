@@ -34,7 +34,7 @@ abstract class Creature extends Living {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($tick){
+	public function onUpdate(int $tick){
 		if(!$this instanceof Human){
 			if($this->attackingTick > 0){
 				$this->attackingTick--;

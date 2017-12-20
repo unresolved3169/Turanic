@@ -2,6 +2,7 @@
 
 /*
  *
+ *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -18,19 +19,23 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+ *
+*/
 
-namespace pocketmine\entity\object;
+declare(strict_types=1);
+
+namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
 use pocketmine\level\Level;
+use pocketmine\level\particle\ItemBreakParticle;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
+use pocketmine\item\Item as ItemItem;
 use pocketmine\Player;
 
-class Egg extends Projectile {
-	const NETWORK_ID = self::EGG;
+class Snowball extends Projectile {
+	const NETWORK_ID = self::SNOWBALL;
 
 	public $width = 0.25;
 	public $length = 0.25;
@@ -40,7 +45,7 @@ class Egg extends Projectile {
 	protected $drag = 0.01;
 
 	/**
-	 * Egg constructor.
+	 * Snowball constructor.
 	 *
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
@@ -55,7 +60,7 @@ class Egg extends Projectile {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->closed){
 			return false;
 		}
@@ -65,8 +70,9 @@ class Egg extends Projectile {
 		$hasUpdate = parent::onUpdate($currentTick);
 
 		if($this->age > 1200 or $this->isCollided){
+		        $this->level->addParticle(new ItemBreakParticle($this->add(0, 1, 0), ItemItem::get(ItemItem::SNOWBALL)));
 			$this->kill();
-			$hasUpdate = true; //Chance to spawn chicken
+			$hasUpdate = true;
 		}
 
 		$this->timings->stopTiming();
@@ -79,7 +85,7 @@ class Egg extends Projectile {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->type = Egg::NETWORK_ID;
+		$pk->type = Snowball::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
         $pk->position = $this->getPosition();
         $pk->motion = $this->getMotion();

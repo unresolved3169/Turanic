@@ -85,7 +85,7 @@ class Minecart extends Vehicle {
      *
      * @return bool
      */
-    public function onUpdate($currentTick){
+    public function onUpdate(int $currentTick){
         if ($this->closed !== false) {
             return false;
         }

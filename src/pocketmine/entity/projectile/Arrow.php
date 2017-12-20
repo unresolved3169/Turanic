@@ -20,17 +20,17 @@
  *
  */
 
-namespace pocketmine\entity\object;
+declare(strict_types=1);
+
+namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
 use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\MobSpellParticle;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
@@ -52,7 +52,7 @@ class Arrow extends Projectile {
 	protected $sound = true;
 	
 	protected $isCritical;
-	protected $potionId;
+	protected $potionId = 0;
 
 	/**
 	 * Arrow constructor.
@@ -65,10 +65,10 @@ class Arrow extends Projectile {
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false){
 		$this->isCritical = $critical;
 		if(!isset($nbt->Potion)){
-			$nbt->Potion = new ShortTag("Potion", 0);
+			$nbt->setShort("Potion", 0);
 		}
 		parent::__construct($level, $nbt, $shootingEntity);
-		$this->potionId = $this->namedtag["Potion"];
+		$this->potionId = $this->namedtag->getShort("Potion", 0);
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Arrow extends Projectile {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->closed){
 			return false;
 		}

@@ -57,7 +57,7 @@ class Lightning extends Entity {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($tick){
+	public function onUpdate(int $tick){
 		parent::onUpdate($tick);
 		if($this->age > 20){
 			$this->kill();

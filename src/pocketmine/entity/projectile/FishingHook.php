@@ -20,10 +20,11 @@
  *
  */
 
-namespace pocketmine\entity\object;
+declare(strict_types=1);
+
+namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
 use pocketmine\event\player\PlayerFishEvent;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
@@ -85,7 +86,7 @@ class FishingHook extends Projectile {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->closed){
 			return false;
 		}

@@ -86,7 +86,7 @@ class FloatingText extends Entity {
         $this->namedtag->Text = new StringTag("Text", $this->text);
     }
 
-    public function onUpdate($currentTick){
+    public function onUpdate(int $currentTick){
         return false;
     }
 

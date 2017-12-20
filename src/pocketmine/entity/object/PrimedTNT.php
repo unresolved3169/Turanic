@@ -107,7 +107,7 @@ class PrimedTNT extends Entity implements Explosive {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 
 		if($this->closed){
 			return false;

@@ -30,7 +30,7 @@ namespace pocketmine\level;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
-use pocketmine\entity\object\Arrow;
+use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\FloatingText;
@@ -1431,7 +1431,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @param Vector3 $motion
 	 * @param int $delay
 	 *
-	 * @return null|Entity|DroppedItem|\pocketmine\entity\Projectile
+	 * @return null|Entity|DroppedItem|\pocketmine\entity\projectile\Projectile
 	 */
 	public function dropItem(Vector3 $source, Item $item, Vector3 $motion = null, int $delay = 10) {
 		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;

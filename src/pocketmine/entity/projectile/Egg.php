@@ -20,19 +20,16 @@
  *
  */
 
-namespace pocketmine\entity\object;
+namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
 use pocketmine\level\Level;
-use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class EnderPearl extends Projectile {
-
-	const NETWORK_ID = self::ENDER_PEARL;
+class Egg extends Projectile {
+	const NETWORK_ID = self::EGG;
 
 	public $width = 0.25;
 	public $length = 0.25;
@@ -41,10 +38,8 @@ class EnderPearl extends Projectile {
 	protected $gravity = 0.03;
 	protected $drag = 0.01;
 
-	private $hasTeleportedShooter = false;
-
 	/**
-	 * EnderPearl constructor.
+	 * Egg constructor.
 	 *
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
@@ -54,24 +49,12 @@ class EnderPearl extends Projectile {
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
-	public function teleportShooter(){
-		if(!$this->hasTeleportedShooter){
-			$this->hasTeleportedShooter = true;
-			if($this->shootingEntity instanceof Player and $this->y > 0){
-                $this->shootingEntity->teleport($this->getPosition());
-                $this->getLevel()->addSound(new EndermanTeleportSound($this->getPosition()), array($this->shootingEntity));
-            }
-
-			$this->kill();
-		}
-	}
-
 	/**
 	 * @param $currentTick
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->closed){
 			return false;
 		}
@@ -80,9 +63,9 @@ class EnderPearl extends Projectile {
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if($this->age > 1200 or $this->isCollided or $this->hadCollision){
-			$this->teleportShooter();
-			$hasUpdate = true;
+		if($this->age > 1200 or $this->isCollided){
+			$this->kill();
+			$hasUpdate = true; //Chance to spawn chicken
 		}
 
 		$this->timings->stopTiming();
@@ -95,13 +78,13 @@ class EnderPearl extends Projectile {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->type = EnderPearl::NETWORK_ID;
+		$pk->type = Egg::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
         $pk->position = $this->getPosition();
         $pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
+
 		parent::spawnTo($player);
 	}
-
 }

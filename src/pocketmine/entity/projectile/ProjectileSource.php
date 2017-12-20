@@ -20,8 +20,7 @@
  *
  */
 
-namespace pocketmine\entity;
-
+namespace pocketmine\entity\projectile;
 
 interface ProjectileSource {
 

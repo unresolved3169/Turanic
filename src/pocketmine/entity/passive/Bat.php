@@ -88,7 +88,7 @@ class Bat extends FlyingAnimal {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->age > 20 * 60 * 10){
 			$this->kill();
 		}

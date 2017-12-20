@@ -53,7 +53,7 @@ abstract class Mob extends Creature{
         return $vec->normalize();
     }
 
-    public function onUpdate($tick){
+    public function onUpdate(int $tick){
         if($this->closed or !$this->isAlive()) return false;
         
         if($this->behaviorsEnabled) {

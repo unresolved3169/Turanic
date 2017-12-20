@@ -20,10 +20,13 @@
  *
  */
 
-namespace pocketmine\entity;
+declare(strict_types=1);
 
+namespace pocketmine\entity\projectile;
 
-use pocketmine\entity\object\Arrow;
+use pocketmine\entity\Effect;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -34,7 +37,6 @@ use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
 
 abstract class Projectile extends Entity {
 
@@ -99,7 +101,7 @@ abstract class Projectile extends Entity {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->closed){
 			return false;
 		}

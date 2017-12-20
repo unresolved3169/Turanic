@@ -22,9 +22,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\object;
+namespace pocketmine\entity\projectile;
 
-use pocketmine\entity\Projectile;
 use pocketmine\entity\Entity;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
@@ -33,6 +32,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -51,7 +51,7 @@ class LingeringPotion extends Projectile {
 
     public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null){
         if(!isset($nbt->PotionId)){
-            $nbt->PotionId = new ShortTag("PotionId", Potion::AWKWARD);
+            $nbt->setShort("PotionId", Potion::AWKWARD);
         }
         parent::__construct($level, $nbt, $shootingEntity);
         unset($this->dataProperties[self::DATA_SHOOTER_ID]);
@@ -59,11 +59,11 @@ class LingeringPotion extends Projectile {
         $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_LINGER);
     }
 
-    public function getPotionId(){
-        return (int) $this->namedtag["PotionId"];
+    public function getPotionId() : int{
+        return $this->namedtag->getShort("PotionId", Potion::AWKWARD);
     }
 
-    public function onUpdate($currentTick){
+    public function onUpdate(int $currentTick){
         if($this->closed){
             return false;
         }
@@ -96,7 +96,7 @@ class LingeringPotion extends Projectile {
                 new IntTag("WaitTime", 10),
                 new IntTag("Duration", 600),
                 new IntTag("DurationOnUse", 0),
-                new IntTag("Color", $color)
+                new IntArrayTag("Color", $color)
             ]);
 
             $aec = Entity::createEntity("AreaEffectCloud", $this->getLevel(), $nbt);

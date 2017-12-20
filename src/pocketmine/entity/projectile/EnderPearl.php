@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,22 +18,22 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
 
-namespace pocketmine\entity\object;
+declare(strict_types=1);
+
+namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\Projectile;
 use pocketmine\level\Level;
-use pocketmine\level\particle\ItemBreakParticle;
+use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\item\Item as ItemItem;
 use pocketmine\Player;
 
-class Snowball extends Projectile {
-	const NETWORK_ID = self::SNOWBALL;
+class EnderPearl extends Projectile {
+
+	const NETWORK_ID = self::ENDER_PEARL;
 
 	public $width = 0.25;
 	public $length = 0.25;
@@ -43,8 +42,10 @@ class Snowball extends Projectile {
 	protected $gravity = 0.03;
 	protected $drag = 0.01;
 
+	private $hasTeleportedShooter = false;
+
 	/**
-	 * Snowball constructor.
+	 * EnderPearl constructor.
 	 *
 	 * @param Level       $level
 	 * @param CompoundTag $nbt
@@ -54,12 +55,24 @@ class Snowball extends Projectile {
 		parent::__construct($level, $nbt, $shootingEntity);
 	}
 
+	public function teleportShooter(){
+		if(!$this->hasTeleportedShooter){
+			$this->hasTeleportedShooter = true;
+			if($this->shootingEntity instanceof Player and $this->y > 0){
+                $this->shootingEntity->teleport($this->getPosition());
+                $this->getLevel()->addSound(new EndermanTeleportSound($this->getPosition()), array($this->shootingEntity));
+            }
+
+			$this->kill();
+		}
+	}
+
 	/**
 	 * @param $currentTick
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->closed){
 			return false;
 		}
@@ -68,9 +81,8 @@ class Snowball extends Projectile {
 
 		$hasUpdate = parent::onUpdate($currentTick);
 
-		if($this->age > 1200 or $this->isCollided){
-		        $this->level->addParticle(new ItemBreakParticle($this->add(0, 1, 0), ItemItem::get(ItemItem::SNOWBALL)));
-			$this->kill();
+		if($this->age > 1200 or $this->isCollided or $this->hadCollision){
+			$this->teleportShooter();
 			$hasUpdate = true;
 		}
 
@@ -84,13 +96,13 @@ class Snowball extends Projectile {
 	 */
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
-		$pk->type = Snowball::NETWORK_ID;
+		$pk->type = EnderPearl::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();
         $pk->position = $this->getPosition();
         $pk->motion = $this->getMotion();
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
-
 		parent::spawnTo($player);
 	}
+
 }

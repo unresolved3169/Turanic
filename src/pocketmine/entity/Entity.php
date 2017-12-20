@@ -62,24 +62,25 @@ use pocketmine\entity\neutral\ZombiePigman;
 use pocketmine\entity\neutral\PolarBear;
 use pocketmine\entity\neutral\Spider;
 use pocketmine\entity\object\ArmorStand;
-use pocketmine\entity\object\Arrow;
+use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\object\Boat;
-use pocketmine\entity\object\Egg;
-use pocketmine\entity\object\EnderPearl;
+use pocketmine\entity\projectile\Egg;
+use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\object\FallingSand;
-use pocketmine\entity\object\FishingHook;
+use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\object\FloatingText;
 use pocketmine\entity\object\Lightning;
-use pocketmine\entity\object\LingeringPotion;
+use pocketmine\entity\projectile\LingeringPotion;
 use pocketmine\entity\object\Minecart;
 use pocketmine\entity\object\MinecartChest;
 use pocketmine\entity\object\MinecartHopper;
 use pocketmine\entity\object\MinecartTNT;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PrimedTNT;
-use pocketmine\entity\object\Snowball;
-use pocketmine\entity\object\ThrownExpBottle;
-use pocketmine\entity\object\ThrownPotion;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\Snowball;
+use pocketmine\entity\projectile\ThrownExpBottle;
+use pocketmine\entity\projectile\ThrownPotion;
 use pocketmine\entity\object\XPOrb;
 use pocketmine\entity\object\Item as DroppedItem;
 use pocketmine\entity\passive\Bat;
@@ -127,7 +128,6 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
@@ -1477,7 +1477,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 *
 	 * @return bool
 	 */
-	public function onUpdate($currentTick){
+	public function onUpdate(int $currentTick){
 		if($this->closed){
 			return false;
 		}

@@ -95,7 +95,7 @@ class AreaEffectCloud extends Entity {
         $this->setDataProperty(self::DATA_POTION_AMBIENT, self::DATA_TYPE_BYTE, 1);
     }
 
-    public function onUpdate($tick){
+    public function onUpdate(int $tick){
         if($this->closed){
             return false;
         }

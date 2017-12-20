@@ -21,7 +21,7 @@
 
 namespace pocketmine\block;
 
-use pocketmine\entity\object\Arrow;
+use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockBurnEvent;
