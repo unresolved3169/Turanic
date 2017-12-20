@@ -55,21 +55,19 @@ class FallingSand extends Entity {
 
 	protected function initEntity(){
 		parent::initEntity();
-		if(isset($this->namedtag->TileID)){
-			$this->blockId = $this->namedtag["TileID"];
-		}elseif(isset($this->namedtag->Tile)){
-			$this->blockId = $this->namedtag["Tile"];
-			$this->namedtag["TileID"] = new IntTag("TileID", $this->blockId);
-		}
-
-		if(isset($this->namedtag->Data)){
-			$this->damage = $this->namedtag["Data"];
-		}
+        if($this->namedtag->hasTag("TileID", IntTag::class)){
+            $this->blockId = $this->namedtag->getInt("TileID");
+        }elseif($this->namedtag->hasTag("Tile", ByteTag::class)) {
+            $this->blockId = $this->namedtag->getByte("Tile");
+            $this->namedtag->removeTag("Tile");
+        }
 
 		if($this->blockId === 0){
 			$this->close();
 			return;
 		}
+
+        $this->damage = $this->namedtag->getByte("Data", 0);
 
 		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $this->getBlock() | ($this->getDamage() << 8));
 	}
@@ -199,8 +197,8 @@ class FallingSand extends Entity {
 	}
 
 	public function saveNBT(){
-		$this->namedtag->TileID = new IntTag("TileID", $this->blockId);
-		$this->namedtag->Data = new ByteTag("Data", $this->damage);
+		$this->namedtag->setInt("TileID", $this->blockId, true);
+		$this->namedtag->setByte("Data", $this->damage);
 	}
 
 	/**

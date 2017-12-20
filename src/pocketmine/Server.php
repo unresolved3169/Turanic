@@ -823,12 +823,12 @@ class Server{
 		}
 		$spawn = $this->getDefaultLevel()->getSafeSpawn();
 		$nbt = new CompoundTag("", [
-			new LongTag("firstPlayed", floor(microtime(true) * 1000)),
-			new LongTag("lastPlayed", floor(microtime(true) * 1000)),
+			new LongTag("firstPlayed", (int) (microtime(true) * 1000)),
+			new LongTag("lastPlayed", (int) (microtime(true) * 1000)),
 			new ListTag("Pos", [
-				new DoubleTag(0, $spawn->x),
-				new DoubleTag(1, $spawn->y),
-				new DoubleTag(2, $spawn->z)
+				new DoubleTag("", $spawn->x),
+				new DoubleTag("", $spawn->y),
+				new DoubleTag("", $spawn->z)
 			]),
 			new StringTag("Level", $this->getDefaultLevel()->getName()),
 			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getName()),
@@ -836,19 +836,19 @@ class Server{
 			//new IntTag("SpawnY", (int) $spawn->y),
 			//new IntTag("SpawnZ", (int) $spawn->z),
 			//new ByteTag("SpawnForced", 1), //TODO
-			new ListTag("Inventory", []),
-			new ListTag("EnderChestInventory", []),
+			new ListTag("Inventory", [], NBT::TAG_Compound),
+			new ListTag("EnderChestInventory", [], NBT::TAG_Compound),
 			new CompoundTag("Achievements", []),
 			new IntTag("playerGameType", $this->getGamemode()),
 			new ListTag("Motion", [
-				new DoubleTag(0, 0.0),
-				new DoubleTag(1, 0.0),
-				new DoubleTag(2, 0.0)
-			]),
+				new DoubleTag("", 0.0),
+				new DoubleTag("", 0.0),
+				new DoubleTag("", 0.0)
+			], NBT::TAG_Double),
 			new ListTag("Rotation", [
-				new FloatTag(0, 0.0),
-				new FloatTag(1, 0.0)
-			]),
+				new FloatTag("", 0.0),
+				new FloatTag("", 0.0)
+			], NBT::TAG_Float),
 			new FloatTag("FallDistance", 0.0),
 			new ShortTag("Fire", 0),
 			new ShortTag("Air", 300),
@@ -858,11 +858,6 @@ class Server{
 			new ShortTag("Health", 20),
 			new ShortTag("MaxHealth", 20),
 		]);
-		$nbt->Pos->setTagType(NBT::TAG_Double);
-		$nbt->Inventory->setTagType(NBT::TAG_Compound);
-		$nbt->EnderChestInventory->setTagType(NBT::TAG_Compound);
-		$nbt->Motion->setTagType(NBT::TAG_Double);
-		$nbt->Rotation->setTagType(NBT::TAG_Float);
 
 		$this->saveOfflinePlayerData($name, $nbt);
 

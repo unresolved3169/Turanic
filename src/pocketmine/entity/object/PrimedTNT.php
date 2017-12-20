@@ -30,6 +30,7 @@ use pocketmine\level\Explosion;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
@@ -76,8 +77,8 @@ class PrimedTNT extends Entity implements Explosive {
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->Fuse)){
-			$this->fuse = $this->namedtag["Fuse"];
+		if($this->namedtag->hasTag("Fuse", ShortTag::class)){
+            $this->fuse = $this->namedtag->getShort("Fuse");
 		}else{
 			$this->fuse = 80;
 		}
@@ -98,7 +99,7 @@ class PrimedTNT extends Entity implements Explosive {
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Fuse = new ByteTag("Fuse", $this->fuse);
+		$this->namedtag->getShort("Fuse", $this->fuse);
 	}
 
 	/**

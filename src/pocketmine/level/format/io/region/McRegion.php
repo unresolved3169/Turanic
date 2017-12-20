@@ -2,19 +2,22 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  *
 */
@@ -35,6 +38,7 @@ use pocketmine\nbt\tag\{
 	ByteArrayTag, ByteTag, CompoundTag, IntArrayTag, IntTag, ListTag, LongTag, StringTag
 };
 use pocketmine\Player;
+use pocketmine\Server;
 use pocketmine\utils\MainLogger;
 
 class McRegion extends BaseLevelProvider{
@@ -54,12 +58,12 @@ class McRegion extends BaseLevelProvider{
 	 */
 	public function nbtSerialize(Chunk $chunk) : string{
 		$nbt = new CompoundTag("Level", []);
-		$nbt->xPos = new IntTag("xPos", $chunk->getX());
-		$nbt->zPos = new IntTag("zPos", $chunk->getZ());
+        $nbt->setInt("xPos", $chunk->getX());
+        $nbt->setInt("zPos", $chunk->getZ());
 
-		$nbt->LastUpdate = new LongTag("LastUpdate", 0); //TODO
-		$nbt->TerrainPopulated = new ByteTag("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->LightPopulated = new ByteTag("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+        $nbt->setLong("LastUpdate", 0); //TODO
+        $nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
+        $nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
 		$ids = "";
 		$data = "";
@@ -78,13 +82,13 @@ class McRegion extends BaseLevelProvider{
 			}
 		}
 
-		$nbt->Blocks = new ByteArrayTag("Blocks", $ids);
-		$nbt->Data = new ByteArrayTag("Data", $data);
-		$nbt->SkyLight = new ByteArrayTag("SkyLight", $skyLight);
-		$nbt->BlockLight = new ByteArrayTag("BlockLight", $blockLight);
+        $nbt->setByteArray("Blocks", $ids);
+        $nbt->setByteArray("Data", $data);
+        $nbt->setByteArray("SkyLight", $skyLight);
+        $nbt->setByteArray("BlockLight", $blockLight);
 
-		$nbt->Biomes = new ByteArrayTag("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
-		$nbt->HeightMap = new ByteArrayTag("HeightMap", pack("C*", ...$chunk->getHeightMapArray()));
+        $nbt->setByteArray("Biomes", $chunk->getBiomeIdArray()); //doesn't exist in regular McRegion, this is here for PocketMine-MP only
+        $nbt->setByteArray("HeightMap", pack("C*", ...$chunk->getHeightMapArray())); //this is ByteArray in McRegion, but IntArray in Anvil (due to raised build height)
 
 		$entities = [];
 
@@ -95,8 +99,7 @@ class McRegion extends BaseLevelProvider{
 			}
 		}
 
-		$nbt->Entities = new ListTag("Entities", $entities);
-		$nbt->Entities->setTagType(NBT::TAG_Compound);
+        $nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
 
 		$tiles = [];
 		foreach($chunk->getTiles() as $tile){
@@ -104,8 +107,7 @@ class McRegion extends BaseLevelProvider{
 			$tiles[] = $tile->namedtag;
 		}
 
-		$nbt->TileEntities = new ListTag("TileEntities", $tiles);
-		$nbt->TileEntities->setTagType(NBT::TAG_Compound);
+        $nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
 
 		$writer = new NBT(NBT::BIG_ENDIAN);
 		$nbt->setName("Level");
@@ -249,7 +251,7 @@ class McRegion extends BaseLevelProvider{
 		//TODO, add extra details
 		$levelData = new CompoundTag("Data", [
 			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
-			//new ByteTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))), 
+			new ByteTag("Difficulty", Server::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
 			new ByteTag("initialized", 1),
 			new IntTag("GameType", 0),
 			new IntTag("generatorVersion", 1), //2 in MCPE
@@ -283,13 +285,13 @@ class McRegion extends BaseLevelProvider{
 		return ["preset" => $this->levelData["generatorOptions"]];
 	}
 
-	public function getDifficulty() : int{
-		return isset($this->levelData->Difficulty) ? $this->levelData->Difficulty->getValue() : Level::DIFFICULTY_NORMAL;
-	}
+    public function getDifficulty() : int{
+        return $this->levelData->getByte("Difficulty", Level::DIFFICULTY_NORMAL);
+    }
 
-	public function setDifficulty(int $difficulty){
-		$this->levelData->Difficulty = new ByteTag("Difficulty", $difficulty);
-	}
+    public function setDifficulty(int $difficulty){
+        $this->levelData->setByte("Difficulty", $difficulty);
+    }
 
 	public function getChunk(int $chunkX, int $chunkZ, bool $create = false){
 		$index = Level::chunkHash($chunkX, $chunkZ);

@@ -22,12 +22,14 @@
 
 namespace pocketmine\entity\passive;
 
-use pocketmine\entity\Animal;
+use pocketmine\entity\Ageable;
+use pocketmine\entity\Mob;
+use pocketmine\entity\NPC;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class Villager extends Animal {
+class Villager extends Mob implements NPC, Ageable {
 	
 	const NETWORK_ID = self::VILLAGER;
 
@@ -39,7 +41,7 @@ class Villager extends Animal {
 
 	public $width = 0.6;
 	public $length = 0.6;
-	public $height = 0;
+	public $height = 1.8;
 
     public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
@@ -50,14 +52,21 @@ class Villager extends Animal {
 		parent::initEntity();
 
         /** @var int $profession */
-        $profession = $this->namedtag["Profession"] ?? self::PROFESSION_FARMER;
+        $profession = $this->namedtag->getInt("Profession", self::PROFESSION_FARMER);
+
         if($profession > 4 or $profession < 0){
             $profession = self::PROFESSION_FARMER;
         }
+
         $this->setProfession($profession);
 	}
 
-	/**
+	public function saveNBT(){
+        parent::saveNBT();
+        $this->namedtag->setInt("Profession", $this->getProfession());
+    }
+
+    /**
 	 * @return string
 	 */
 	public function getName() : string{
@@ -91,5 +100,9 @@ class Villager extends Animal {
 
     public function getProfession() : int{
         return $this->getDataProperty(self::DATA_VARIANT);
+    }
+
+    public function isBaby() : bool{
+        return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
     }
 }

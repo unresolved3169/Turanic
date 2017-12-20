@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
@@ -28,9 +30,6 @@ use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddItemEntityPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
@@ -38,8 +37,11 @@ use pocketmine\Player;
 class Item extends Entity {
 	const NETWORK_ID = self::ITEM;
 
-	protected $owner = null;
-	protected $thrower = null;
+	/** @var string */
+	protected $owner = "";
+	/** @var string */
+	protected $thrower = "";
+	/** @var int */
 	protected $pickupDelay = 0;
 	/** @var ItemItem */
 	protected $item;
@@ -56,29 +58,21 @@ class Item extends Entity {
 		parent::initEntity();
 
 		$this->setMaxHealth(5);
-		$this->setHealth($this->namedtag["Health"]);
-		if(isset($this->namedtag->Age)){
-			$this->age = $this->namedtag["Age"];
-		}
-		if(isset($this->namedtag->PickupDelay)){
-			$this->pickupDelay = $this->namedtag["PickupDelay"];
-		}
-		if(isset($this->namedtag->Owner)){
-			$this->owner = $this->namedtag["Owner"];
-		}
-		if(isset($this->namedtag->Thrower)){
-			$this->thrower = $this->namedtag["Thrower"];
-		}
-		if(!isset($this->namedtag->Item)){
-			$this->close();
-			return;
-		}
+        $this->setHealth($this->namedtag->getShort("Health", (int) $this->getHealth()));
+        $this->age = $this->namedtag->getShort("Age", $this->age);
+        $this->pickupDelay = $this->namedtag->getShort("PickupDelay", $this->pickupDelay);
+        $this->owner = $this->namedtag->getString("Owner", $this->owner);
+        $this->thrower = $this->namedtag->getString("Thrower", $this->thrower);
 
-		assert($this->namedtag->Item instanceof CompoundTag);
+        $itemTag = $this->namedtag->getCompoundTag("Item");
+        if($itemTag === null){
+            $this->close();
+            return;
+        }
 
-		$this->item = ItemItem::nbtDeserialize($this->namedtag->Item);
+        $this->item = ItemItem::nbtDeserialize($itemTag);
 
-		$this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
+        $this->server->getPluginManager()->callEvent(new ItemSpawnEvent($this));
 	}
 
     /**
@@ -172,17 +166,17 @@ class Item extends Entity {
 	}
 
 	public function saveNBT(){
-		parent::saveNBT();
-		$this->namedtag->Item = $this->item->nbtSerialize(-1, "Item");
-		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
-		$this->namedtag->Age = new ShortTag("Age", $this->age);
-		$this->namedtag->PickupDelay = new ShortTag("PickupDelay", $this->pickupDelay);
-		if($this->owner !== null){
-			$this->namedtag->Owner = new StringTag("Owner", $this->owner);
-		}
-		if($this->thrower !== null){
-			$this->namedtag->Thrower = new StringTag("Thrower", $this->thrower);
-		}
+        parent::saveNBT();
+        $this->namedtag->setTag($this->item->nbtSerialize(-1, "Item"));
+        $this->namedtag->setShort("Health", $this->getHealth());
+        $this->namedtag->setShort("Age", $this->age);
+        $this->namedtag->setShort("PickupDelay", $this->pickupDelay);
+        if($this->owner !== null){
+            $this->namedtag->setString("Owner", $this->owner);
+        }
+        if($this->thrower !== null){
+            $this->namedtag->setString("Thrower", $this->thrower);
+        }
 	}
 
 	/**

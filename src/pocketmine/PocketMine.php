@@ -24,7 +24,12 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace {
+    const INT32_MIN = -0x80000000;
+    const INT32_MAX = 0x7fffffff;
+
 	function safe_var_dump(){
 		static $cnt = 0;
 		foreach(func_get_args() as $var){
@@ -122,12 +127,12 @@ namespace pocketmine {
 
 	gc_enable();
 	error_reporting(-1);
-	ini_set("allow_url_fopen", 1);
-	ini_set("display_errors", 1);
-	ini_set("display_startup_errors", 1);
-	ini_set("default_charset", "utf-8");
+    ini_set("allow_url_fopen", '1');
+    ini_set("display_errors", '1');
+    ini_set("display_startup_errors", '1');
+    ini_set("default_charset", "utf-8");
 
-	ini_set("memory_limit", -1);
+	ini_set("memory_limit", '-1');
 	define('pocketmine\START_TIME', microtime(true));
 
 	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);

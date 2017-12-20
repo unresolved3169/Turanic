@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 /**
  * Named Binary Tag handling classes
@@ -72,6 +75,42 @@ class NBT {
 	private $offset;
 	public $endianness;
 	private $data;
+
+    /**
+     * @param int $type
+     *
+     * @return Tag
+     */
+    public static function createTag(int $type){
+        switch($type){
+            case self::TAG_End:
+                return new EndTag();
+            case self::TAG_Byte:
+                return new ByteTag();
+            case self::TAG_Short:
+                return new ShortTag();
+            case self::TAG_Int:
+                return new IntTag();
+            case self::TAG_Long:
+                return new LongTag();
+            case self::TAG_Float:
+                return new FloatTag();
+            case self::TAG_Double:
+                return new DoubleTag();
+            case self::TAG_ByteArray:
+                return new ByteArrayTag();
+            case self::TAG_String:
+                return new StringTag();
+            case self::TAG_List:
+                return new ListTag();
+            case self::TAG_Compound:
+                return new CompoundTag();
+            case self::TAG_IntArray:
+                return new IntArrayTag();
+            default:
+                throw new \InvalidArgumentException("Unknown NBT tag type $type");
+        }
+    }
 
 	/**
 	 * @param ListTag $tag1
@@ -217,41 +256,12 @@ class NBT {
 
 			$value = self::readValue($str, $offset, $type);
 
-			switch($type){
-				case NBT::TAG_Byte:
-					$data[$key] = new ByteTag($key, $value);
-					break;
-				case NBT::TAG_Short:
-					$data[$key] = new ShortTag($key, $value);
-					break;
-				case NBT::TAG_Int:
-					$data[$key] = new IntTag($key, $value);
-					break;
-				case NBT::TAG_Long:
-					$data[$key] = new LongTag($key, $value);
-					break;
-				case NBT::TAG_Float:
-					$data[$key] = new FloatTag($key, $value);
-					break;
-				case NBT::TAG_Double:
-					$data[$key] = new DoubleTag($key, $value);
-					break;
-				case NBT::TAG_ByteArray:
-					$data[$key] = new ByteArrayTag($key, $value);
-					break;
-				case NBT::TAG_String:
-					$data[$key] = new StringTag($key, $value);
-					break;
-				case NBT::TAG_List:
-					$data[$key] = new ListTag($key, $value);
-					break;
-				case NBT::TAG_Compound:
-					$data[$key] = new CompoundTag($key, $value);
-					break;
-				case NBT::TAG_IntArray:
-					$data[$key] = new IntArrayTag($key, $value);
-					break;
-			}
+            $tag = self::createTag($type);
+            if($tag instanceof NamedTag){
+                $tag->setName($key);
+                $tag->setValue($value);
+                $data[$key] = $tag;
+            }
 
 			$key++;
 		}
@@ -281,41 +291,12 @@ class NBT {
 			$key = self::readKey($str, $offset);
 			$value = self::readValue($str, $offset, $type);
 
-			switch($type){
-				case NBT::TAG_Byte:
-					$data[$key] = new ByteTag($key, $value);
-					break;
-				case NBT::TAG_Short:
-					$data[$key] = new ShortTag($key, $value);
-					break;
-				case NBT::TAG_Int:
-					$data[$key] = new IntTag($key, $value);
-					break;
-				case NBT::TAG_Long:
-					$data[$key] = new LongTag($key, $value);
-					break;
-				case NBT::TAG_Float:
-					$data[$key] = new FloatTag($key, $value);
-					break;
-				case NBT::TAG_Double:
-					$data[$key] = new DoubleTag($key, $value);
-					break;
-				case NBT::TAG_ByteArray:
-					$data[$key] = new ByteArrayTag($key, $value);
-					break;
-				case NBT::TAG_String:
-					$data[$key] = new StringTag($key, $value);
-					break;
-				case NBT::TAG_List:
-					$data[$key] = new ListTag($key, $value);
-					break;
-				case NBT::TAG_Compound:
-					$data[$key] = new CompoundTag($key, $value);
-					break;
-				case NBT::TAG_IntArray:
-					$data[$key] = new IntArrayTag($key, $value);
-					break;
-			}
+            $tag = self::createTag($type);
+            if($tag instanceof NamedTag){
+                $tag->setName($key);
+                $tag->setValue($value);
+                $data[$key] = $tag;
+            }
 		}
 
 		return $data;
@@ -520,14 +501,6 @@ class NBT {
 		$this->read(zlib_decode($buffer));
 	}
 
-	/**
-	 * @param     $buffer
-	 * @param int $compression
-	 */
-	public function readNetworkCompressed($buffer, $compression = ZLIB_ENCODING_GZIP){
-		$this->read(zlib_decode($buffer), false, true);
-	}
-
 
 	/**
 	 * @param bool $network
@@ -566,83 +539,18 @@ class NBT {
 		return false;
 	}
 
-	/**
-	 * @param int $compression
-	 * @param int $level
-	 *
-	 * @return bool|string
-	 */
-	public function writeNetworkCompressed($compression = ZLIB_ENCODING_GZIP, $level = 7){
-		if(($write = $this->write(true)) !== false){
-			return zlib_encode($write, $compression, $level);
-		}
-
-		return false;
-	}
-
-	/**
-	 * @param bool $network
-	 *
-	 * @return ByteArrayTag|ByteTag|DoubleTag|FloatTag|IntTag|LongTag|ShortTag
-	 */
 	public function readTag(bool $network = false){
 		if($this->feof()){
-			$tagType = -1; //prevent crashes for empty tags
-		}else{
-			$tagType = $this->getByte();
+			return new EndTag();
 		}
-		switch($tagType){
-			case NBT::TAG_Byte:
-				$tag = new ByteTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_Short:
-				$tag = new ShortTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_Int:
-				$tag = new IntTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_Long:
-				$tag = new LongTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_Float:
-				$tag = new FloatTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_Double:
-				$tag = new DoubleTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_ByteArray:
-				$tag = new ByteArrayTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_String:
-				$tag = new StringTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_List:
-				$tag = new ListTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_Compound:
-				$tag = new CompoundTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
-			case NBT::TAG_IntArray:
-				$tag = new IntArrayTag($this->getString($network));
-				$tag->read($this, $network);
-				break;
 
-			case NBT::TAG_End: //No named tag
-			default:
-				$tag = new EndTag;
-				break;
-		}
-		return $tag;
+        $tagType = $this->getByte();
+        $tag = self::createTag($tagType);
+        if($tag instanceof NamedTag){
+            $tag->setName($this->getString($network));
+            $tag->read($this, $network);
+        }
+        return $tag;
 	}
 
 	/**

@@ -20,8 +20,9 @@
  *
  */
 
-namespace pocketmine\entity;
+declare(strict_types=1);
 
+namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\entity\hostile\Husk;
@@ -53,18 +54,20 @@ abstract class Living extends Entity implements Damageable {
 	protected function initEntity(){
 		parent::initEntity();
 
-		if(isset($this->namedtag->HealF)){
-			$this->namedtag->Health = new ShortTag("Health", (int) $this->namedtag["HealF"]);
-			unset($this->namedtag->HealF);
-		}
+        $health = $this->getMaxHealth();
 
-		if(!isset($this->namedtag->Health) or !($this->namedtag->Health instanceof ShortTag)){
-			$this->namedtag->Health = new ShortTag("Health", $this->getMaxHealth());
-		}
+        if($this->namedtag->hasTag("HealF", ShortTag::class)){
+            $health = $this->namedtag->getShort("HealF");
+            $this->namedtag->removeTag("HealF");
+        }elseif($this->namedtag->hasTag("Health")){
+            $healthTag = $this->namedtag->getTag("Health");
+            $health = $healthTag->getValue();
+            if(!($healthTag instanceof ShortTag)){
+                $this->namedtag->removeTag("Health");
+            }
+        }
 
-		if($this->namedtag["Health"] <= 0)
-			$this->setHealth(20);
-		else $this->setHealth($this->namedtag["Health"]);
+		$this->setHealth($health);
 	}
 
 	/**
@@ -83,7 +86,7 @@ abstract class Living extends Entity implements Damageable {
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->Health = new ShortTag("Health", $this->getHealth());
+		$this->namedtag->setShort("Health", $this->getHealth());
 	}
 
 	public function jump(){

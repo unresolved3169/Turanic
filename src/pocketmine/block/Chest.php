@@ -29,6 +29,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -134,13 +135,12 @@ class Chest extends Transparent {
 
 		$this->getLevel()->setBlock($block, $this, true, true);
 		$nbt = new CompoundTag("", [
-			new ListTag("Items", []),
+			new ListTag("Items", [], NBT::TAG_Compound),
 			new StringTag("id", Tile::CHEST),
 			new IntTag("x", $this->x),
 			new IntTag("y", $this->y),
 			new IntTag("z", $this->z)
 		]);
-		$nbt->Items->setTagType(NBT::TAG_Compound);
 
 		if($item->hasCustomName()){
 			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
@@ -185,34 +185,30 @@ class Chest extends Transparent {
 	 */
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
-			$top = $this->getSide(1);
-			if($top->isTransparent() !== true){
-				return true;
-			}
-
 			$t = $this->getLevel()->getTile($this);
 			$chest = null;
 			if($t instanceof TileChest){
 				$chest = $t;
 			}else{
 				$nbt = new CompoundTag("", [
-					new ListTag("Items", []),
+					new ListTag("Items", [], NBT::TAG_Compound),
 					new StringTag("id", Tile::CHEST),
 					new IntTag("x", $this->x),
 					new IntTag("y", $this->y),
 					new IntTag("z", $this->z)
 				]);
-				$nbt->Items->setTagType(NBT::TAG_Compound);
 				$chest = Tile::createTile("Chest", $this->getLevel(), $nbt);
 			}
 
-			if(isset($chest->namedtag->Lock) and $chest->namedtag->Lock instanceof StringTag){
-				if($chest->namedtag->Lock->getValue() !== $item->getCustomName()){
-					return true;
-				}
-			}
+            if(
+                !$this->getSide(Vector3::SIDE_UP)->isTransparent() or
+                ($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or
+                ($chest->namedtag->hasTag("Lock", StringTag::class) and $chest->namedtag->getString("Lock") !== $item->getCustomName())
+            ){
+                return true;
+            }
 
-			if($player->isCreative() and $player->getServer()->limitedCreative){
+            if($player->isCreative() and $player->getServer()->limitedCreative){
 				return true;
 			}
 			$player->addWindow($chest->getInventory());

@@ -49,7 +49,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\inventory\FurnaceFuel;
 
 class Item implements ItemIds, \JsonSerializable {
 
@@ -757,8 +756,7 @@ class Item implements ItemIds, \JsonSerializable {
 		}
 
 		if(!isset($tag->ench)){
-			$tag->ench = new ListTag("ench", []);
-			$tag->ench->setTagType(NBT::TAG_Compound);
+			$tag->ench = new ListTag("ench", [], NBT::TAG_Compound);
 		}
 
 		$found = false;
@@ -985,16 +983,12 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return array
 	 */
 	public function getLore() : array{
-		$tag = $this->getNamedTagEntry("display");
-		if($tag instanceof CompoundTag and isset($tag->Lore) and $tag->Lore instanceof ListTag){
-			$lines = [];
-			/** @var StringTag $line */
-            foreach($tag->Lore->getValue() as $line){
-				$lines[] = $line->getValue();
-			}
-			return $lines;
-		}
-		return [];
+        $display = $this->getNamedTagEntry("display");
+        if($display instanceof CompoundTag and ($lore = $display->getListTag("Lore")) !== null){
+            return $lore->getAllValues();
+        }
+
+        return [];
 	}
 
 	/**
@@ -1003,18 +997,18 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return $this
 	 */
 	public function setLore(array $lines){
-		$tag = $this->getNamedTag() ?? new CompoundTag("", []);
-		if(!isset($tag->display)){
-			$tag->display = new CompoundTag("display", []);
-		}
-		$tag->display->Lore = new ListTag("Lore");
-		$tag->display->Lore->setTagType(NBT::TAG_String);
-		$count = 0;
-		foreach($lines as $line){
-			$tag->display->Lore[$count++] = new StringTag("", $line);
-		}
-		$this->setNamedTag($tag);
-		return $this;
+        $display = $this->getNamedTagEntry("display");
+        if(!($display instanceof CompoundTag)){
+            $display = new CompoundTag("display", []);
+        }
+
+        $display->setTag(new ListTag("Lore", array_map(function(string $str) : StringTag{
+            return new StringTag("", $str);
+        }, $lines), NBT::TAG_String));
+
+        $this->setNamedTagEntry($display);
+
+        return $this;
 	}
 
 	/**

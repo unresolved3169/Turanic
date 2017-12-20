@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\nbt\tag;
 
@@ -27,18 +30,17 @@ use pocketmine\nbt\NBT;
 
 class CompoundTag extends NamedTag implements \ArrayAccess {
 
-	/**
-	 * @param string     $name
-	 * @param NamedTag[] $value
-	 */
-	public function __construct($name = "", $value = []){
-		$this->__name = $name;
-		foreach($value as $tag){
-			$this->{$tag->getName()} = $tag;
-		}
-	}
+    /**
+     * CompoundTag constructor.
+     *
+     * @param string $name
+     * @param NamedTag[] $value
+     */
+    public function __construct(string $name = "", array $value = []){
+        parent::__construct($name, $value);
+    }
 
-	/**
+    /**
 	 * @return int
 	 */
 	public function getCount(){
@@ -89,15 +91,15 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * Here follows many functions of misery for the sake of type safety. We really needs generics in PHP :(
 	 */
 
-	/**
-	 * Returns the tag with the specified name, or null if it does not exist.
-	 *
-	 * @param string      $name
-	 * @param string|null $expectedClass Class that extends NamedTag
-	 *
-	 * @return NamedTag|null
-	 * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
-	 */
+    /**
+     * Returns the tag with the specified name, or null if it does not exist.
+     *
+     * @param string $name
+     * @param string|null $expectedClass Class that extends NamedTag
+     *
+     * @return NamedTag|null
+     * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
+     */
 	public function getTag(string $name, string $expectedClass = NamedTag::class){
 		assert(is_a($expectedClass, NamedTag::class, true));
 		$tag = $this->{$name} ?? null;
@@ -113,8 +115,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * with that name and the tag is not a ListTag.
 	 *
 	 * @param string $name
-	 * @return ListTag|null
-	 */
+	 * @return null|ListTag|NamedTag
+     */
 	public function getListTag(string $name){
 		return $this->getTag($name, ListTag::class);
 	}
@@ -124,8 +126,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * exists with that name and the tag is not a CompoundTag.
 	 *
 	 * @param string $name
-	 * @return CompoundTag|null
-	 */
+	 * @return null|CompoundTag|NamedTag
+     */
 	public function getCompoundTag(string $name){
 		return $this->getTag($name, CompoundTag::class);
 	}
@@ -235,7 +237,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @return int
 	 */
 	public function getLong(string $name, $default = null, bool $badTagDefault = false) : int{
-		return $this->getTagValue($name, LongTag::class, $default, $badTagDefault);
+		return (int) $this->getTagValue($name, LongTag::class, $default, $badTagDefault);
 	}
 
 	/**
@@ -445,7 +447,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	/**
 	 * @return int
 	 */
-	public function getType(){
+	public function getType(): int{
 		return NBT::TAG_Compound;
 	}
 
@@ -493,4 +495,12 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 		}
 		return $str . "}";
 	}
+
+    public function __clone(){
+        foreach ($this as $key => $tag) {
+            if ($tag instanceof Tag) {
+                $this->{$key} = clone $tag;
+            }
+        }
+    }
 }
