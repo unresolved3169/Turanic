@@ -779,13 +779,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
-
-	/**
-	 * @param PermissionAttachment $attachment
-	 *
-	 * @return bool
-	 */
-	public function removeAttachment(PermissionAttachment $attachment){
+    /**
+     * @param PermissionAttachment $attachment
+     * @return bool|void
+     * @throws \Throwable
+     */
+    public function removeAttachment(PermissionAttachment $attachment){
 		if ($this->perm == null) {
 			return false;
 		}

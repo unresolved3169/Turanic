@@ -30,7 +30,6 @@ use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 
-
 class BanIpCommand extends VanillaCommand {
 
 	/**

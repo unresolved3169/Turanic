@@ -34,6 +34,7 @@ use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAt
 
 class ZombiePigman extends Monster {
 	const NETWORK_ID = self::ZOMBIE_PIGMAN;
+
 	public $width = 0.6;
 	public $length = 0.6;
 	public $height = 0;
@@ -46,7 +47,8 @@ class ZombiePigman extends Monster {
 			$this->addBehavior(new StrollBehavior($this));
 			$this->addBehavior(new LookAtPlayerBehavior($this));
 			$this->addBehavior(new RandomLookaroundBehavior($this));
-			$this->setMaxHealth(30);
+			//2 Armor Points
+			$this->setMaxHealth(20);
 			$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, 10);
 			parent::initEntity();
 		}
@@ -78,10 +80,12 @@ class ZombiePigman extends Monster {
         $pk->inventorySlot = $pk->hotbarSlot = 0;
 		$player->dataPacket($pk);
 	}
-	/**
-	 * @return array
-	 */
-	public function getDrops(){
+
+    /**
+     * @return array|ItemItem[]
+     * @throws \TypeError
+     */
+    public function getDrops(){
 		$cause = $this->lastDamageCause;
 		if($cause instanceof EntityDamageByEntityEvent){
 			$damager = $cause->getDamager();

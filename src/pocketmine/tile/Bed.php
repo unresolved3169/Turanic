@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: SuperXingKong
- * Date: 2017/6/28
- * Time: 21:16
- */
-
 namespace pocketmine\tile;
 
 use pocketmine\level\Level;

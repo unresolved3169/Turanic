@@ -46,7 +46,7 @@ class BanListCommand extends VanillaCommand {
 		);
 		$this->setPermission("pocketmine.command.ban.list");
 
-        $this->getOverload("default")->setParameter(0, new CommandParameter("list", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("list", ["ips", "cids", "players"])));
+        $this->getOverload("default")->setParameter(0, new CommandParameter("list", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("from", ["ips", "cids", "players"])));
 	}
 
 	/**
@@ -57,7 +57,7 @@ class BanListCommand extends VanillaCommand {
 	 * @return bool
 	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 

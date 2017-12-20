@@ -42,7 +42,6 @@ class ZombieVillager extends Zombie {
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		
 		$this->setMaxHealth(20);
 		parent::initEntity();
 	}

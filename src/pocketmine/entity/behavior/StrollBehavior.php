@@ -23,7 +23,6 @@
 namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
-use pocketmine\block\Air;
 use pocketmine\math\Vector3;
 
 class StrollBehavior extends Behavior{

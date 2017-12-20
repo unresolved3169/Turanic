@@ -144,14 +144,14 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		return -1;
 	}
 
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int $index
-	 *
-	 * @return Item
-	 */
-	public function getItem($index){
+    /**
+     * Do not use this method in plugin use inventory
+     *
+     * @param int $index
+     * @return Item
+     * @throws \TypeError
+     */
+    public function getItem($index){
 		$i = $this->getSlotIndex($index);
 		if($i < 0){
 			return Item::get(Item::AIR, 0, 0);
@@ -215,10 +215,11 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 		$this->onChanged();
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function onUpdate(){
+    /**
+     * @return bool
+     * @throws \TypeError
+     */
+    public function onUpdate(){
 		if($this->closed === true){
 			return false;
 		}
