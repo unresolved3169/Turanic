@@ -20,10 +20,13 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\tag\ListTag;
@@ -47,27 +50,27 @@ class ArmorStand extends Entity {
         parent::__construct($level, $nbt);
 
         $item = ItemItem::get(ItemItem::AIR)->nbtSerialize();
-        if (!isset($nbt->HandItems)) {
-            $nbt->HandItems = new ListTag("", [
+        if (!$nbt->hasTag("HandItems", ListTag::class)) {
+            $nbt->setTag(new ListTag("HandItems", [
                 $item, // main
                 $item // off
-            ]);
+            ], NBT::TAG_Compound));
         }
 
-        if (!isset($nbt->ArmorItems)) {
-            $nbt->ArmorItems = new ListTag("ArmorItems", [
+        if (!$nbt->hasTag("ArmorItems", ListTag::class)) {
+            $nbt->setTag(new ListTag("ArmorItems", [
                 $item, // boots
                 $item, // leggings
                 $item, // chestplate
                 $item // helmet
-            ]);
+            ], NBT::TAG_Compound));
 		}
 
-		$this->handItem = ItemItem::nbtDeserialize($nbt["HandItems"][0]);
-		$this->helmet = ItemItem::nbtDeserialize($nbt["ArmorItems"][3]);
-		$this->chestplate = ItemItem::nbtDeserialize($nbt["ArmorItems"][2]);
-		$this->leggings = ItemItem::nbtDeserialize($nbt["ArmorItems"][1]);
-		$this->boots = ItemItem::nbtDeserialize($nbt["ArmorItems"][0]);
+		$this->handItem = ItemItem::nbtDeserialize($nbt->getListTag("HandItems")[0]);
+		$this->helmet = ItemItem::nbtDeserialize($nbt->getListTag("ArmorItems")[3]);
+		$this->chestplate = ItemItem::nbtDeserialize($nbt->getListTag("ArmorItems")[2]);
+		$this->leggings = ItemItem::nbtDeserialize($nbt->getListTag("ArmorItems")[1]);
+		$this->boots = ItemItem::nbtDeserialize($nbt->getListTag("ArmorItems")[0]);
 
         $this->setHealth(2);
         $this->setMaxHealth(2);
@@ -180,14 +183,14 @@ class ArmorStand extends Entity {
 	public function saveNBT(){
         parent::saveNBT();
 
-        $this->namedtag->ArmorItems = new ListTag("ArmorItems", [
+        $this->namedtag->setTag(new ListTag("ArmorItems", [
             $this->boots->nbtSerialize(),
             $this->leggings->nbtSerialize(),
             $this->chestplate->nbtSerialize(),
             $this->helmet->nbtSerialize()
-        ]);
+        ], NBT::TAG_Compound));
 
-        $this->namedtag->HandItems = new ListTag("HandItems", [$this->handItem->nbtSerialize(), ItemItem::get(ItemItem::AIR)]);
+        $this->namedtag->setTag(new ListTag("HandItems", [$this->handItem->nbtSerialize(), ItemItem::get(ItemItem::AIR)->nbtSerialize()], NBT::TAG_Compound));
     }
 
     public function getHandItem() : ItemItem{

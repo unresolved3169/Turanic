@@ -29,6 +29,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
 class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable {
+    public static $handlerList = null;
 
     /** @var Entity */
     protected $entity;

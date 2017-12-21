@@ -49,10 +49,10 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
 		if(!isset($nbt->primary)){
-			$nbt->primary = new IntTag("primary", 0);
+			$nbt->setInt("primary", 0);
 		}
 		if(!isset($nbt->secondary)){
-			$nbt->secondary = new IntTag("secondary", 0);
+			$nbt->setInt("secondary", 0);
 		}
 		$this->inventory = new BeaconInventory($this);
 		parent::__construct($level, $nbt);
@@ -69,12 +69,12 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 	public function getSpawnCompound(){
 		$c = new CompoundTag("", [
 			new StringTag("id", Tile::BEACON),
-			new ByteTag("isMovable", (bool) true),
+			new ByteTag("isMovable", 1), // true
 			new IntTag("x", (int) $this->x),
 			new IntTag("y", (int) $this->y),
 			new IntTag("z", (int) $this->z),
-			new IntTag("primary", $this->namedtag["primary"]),
-			new IntTag("secondary", $this->namedtag["secondary"])
+			new IntTag("primary", $this->namedtag->getInt("primary")),
+			new IntTag("secondary", $this->namedtag->getInt("secondary"))
 		]);
 		if($this->hasName()){
 			$c->CustomName = $this->namedtag->CustomName;
@@ -124,8 +124,8 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 		if($nbt["id"] !== Tile::BEACON){
 			return false;
 		}
-		$this->namedtag->primary = new IntTag("primary", $nbt["primary"]);
-		$this->namedtag->secondary = new IntTag("secondary", $nbt["secondary"]);
+		$this->namedtag->setInt("primary", $nbt->getInt("primary", 0));
+		$this->namedtag->setInt("secondary", $nbt->getInt("secondary", 0));
 		return true;
 	}
 
@@ -147,10 +147,10 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 		$id = 0;
 
 		if($level > 0){
-			if(isset($this->namedtag->secondary) && $this->namedtag["primary"] != 0){
-				$id = $this->namedtag["primary"];
-			}else if(isset($this->namedtag->secondary) && $this->namedtag["secondary"] != 0){
-				$id = $this->namedtag["secondary"];
+			if($this->namedtag->hasTag("secondary") && $this->namedtag->getInt("primary", 0) != 0){
+				$id = $this->namedtag->getInt("primary");
+			}else if($this->namedtag->hasTag("secondary") && $this->namedtag->getInt("secondary", 0) != 0){
+				$id = $this->namedtag->getInt("secondary");
 			}
 			if($id != 0){
 				$range = ($level + 1) * 10;
