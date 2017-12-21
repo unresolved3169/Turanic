@@ -67,6 +67,7 @@ use pocketmine\entity\object\Boat;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\object\FallingSand;
+use pocketmine\entity\projectile\FireworkRocket;
 use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\object\FloatingText;
 use pocketmine\entity\object\Lightning;
@@ -321,6 +322,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		Entity::registerEntity(EnderPearl::class);
 		Entity::registerEntity(Evoker::class);
 		Entity::registerEntity(FallingSand::class);
+		Entity::registerEntity(FireworkRocket::class);
 		Entity::registerEntity(FishingHook::class);
 		Entity::registerEntity(FloatingText::class);
 		Entity::registerEntity(Ghast::class);

@@ -47,6 +47,7 @@ class EntityEventPacket extends DataPacket{
     const IRON_GOLEM_OFFER_FLOWER = 19;
     const IRON_GOLEM_WITHDRAW_FLOWER = 20;
     const LOVE_PARTICLES = 21; //breeding
+
     const WITCH_SPELL_PARTICLES = 24;
     const FIREWORK_PARTICLES = 25;
     const SILVERFISH_SPAWN_ANIMATION = 27;
