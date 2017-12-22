@@ -17,11 +17,6 @@ config:
 level:
  #Aktif yaparsanız hava durumu aktifleşir (Eski cihazlarda laga sebep olabilir)
  weather: true
- #Rastgele kalma süreleri
- weather-random-duration-min: 6000
- weather-random-duration-max: 12000
- #Rastgele yıldırım düşme ayarı standart 10 saniye = 200, 0 = deaktif
- lightning-time: 200
  #Yıldırım düşen yerde ateş olsun mu
  lightning-fire: false
  #Ateş yayılsın mı (ağaçlar, vb.)

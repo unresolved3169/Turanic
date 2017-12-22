@@ -12,16 +12,11 @@
 
 #Version of this file
 config:
- version: 30
+ version: 31
  
 level:
  #날씨 시스템을 켜는 경우 설정하세요
  weather: true
- #날씨 랜덤 기간
- weather-random-duration-min: 6000
- weather-random-duration-max: 12000
- #랜덤 번개 치는 주기，기본은 10초, 0 = 비활성화
- lightning-time: 200
  #번개가 불과 함께 치게 하려는 경우 설정하세요
  lightning-fire: false
  #불이 번지는 것을 활성화 하려는 경우 설정하세요

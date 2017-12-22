@@ -12,16 +12,11 @@
 
 #Version de ce fichier
 config:
- version: 30
+ version: 31
 
 level:
  #Réglez si la météo est activée (la pluie peut provoquer un retard sur les périphériques plus anciens)
  weather: true
- #Temps de durée aléatoire
- weather-random-duration-min: 6000
- weather-random-duration-max: 12000
- #Intervalle d'éclairement aléatoire, par défaut 10s, 0 = désactiver
- lightning-time: 200
  #Réglez si les éclairs mettent le feu dans les biomes après
  lightning-fire: false
  #Réglez si le feu doit se propager (arbres, etc.)

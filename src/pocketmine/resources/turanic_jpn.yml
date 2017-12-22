@@ -12,16 +12,11 @@
 
 #ファイルのバージョン
 config:
- version: 30
+ version: 31
 
 level:
  #有効にすると、天候要素が加わります（雨が降ると古い端末の動作が遅くなる場合があります）
  weather: true
- #天気が変わる時間の間隔
- weather-random-duration-min: 6000
- weather-random-duration-max: 12000
- #落雷が発生する間隔（初期値は10秒、0秒にすると無効になります)
- lightning-time: 200
  #有効にすると落雷した場所が火災します
  lightning-fire: false
  #有効にすると炎が延焼します（木など）

@@ -281,9 +281,6 @@ class Server{
 	public $netherEnabled = false;
 	public $netherName = "nether";
 	public $netherLevel = null;
-	public $weatherRandomDurationMin = 6000;
-	public $weatherRandomDurationMax = 12000;
-	public $lightningTime = 200;
 	public $lightningFire = false;
 	public $version;
 	public $allowSnowGolem;
@@ -1510,9 +1507,6 @@ class Server{
 		$this->netherName = $this->getAdvancedProperty("nether.level-name", "nether");
 		$this->enderEnabled = $this->getAdvancedProperty("ender.allow-ender", false);
 		$this->enderName = $this->getAdvancedProperty("ender.level-name", "ender");
-		$this->weatherRandomDurationMin = $this->getAdvancedProperty("level.weather-random-duration-min", 6000);
-		$this->weatherRandomDurationMax = $this->getAdvancedProperty("level.weather-random-duration-max", 12000);
-		$this->lightningTime = $this->getAdvancedProperty("level.lightning-time", 200);
 		$this->lightningFire = $this->getAdvancedProperty("level.lightning-fire", false);
 		$this->allowSnowGolem = $this->getAdvancedProperty("server.allow-snow-golem", false);
 		$this->allowIronGolem = $this->getAdvancedProperty("server.allow-iron-golem", false);

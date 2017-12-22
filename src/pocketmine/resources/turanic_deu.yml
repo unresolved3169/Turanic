@@ -12,16 +12,11 @@
 
 #Version of this file
 config:
- version: 30
+ version: 31
 
 level:
  #Wetter ein und ausschalten (Regen kann bei älteren geräten zum ruckeln führen)
  weather: true
- #Weather random duration
- weather-random-duration-min: 6000
- weather-random-duration-max: 12000
- #Zufälliger Blitz interval，standard jede 10 sekunden, 0 = deaktivieren
- lightning-time: 200
  #Um feuer beim Blitz einschlag einzuschallten
  lightning-fire: false
  #Feuer ausbreitung (bäume, etc.)

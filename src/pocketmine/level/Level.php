@@ -389,7 +389,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->temporalPosition = new Position(0, 0, 0, $this);
 		$this->temporalVector = new Vector3(0, 0, 0);
 		$this->tickRate = 1;
-		$this->weather = new Weather($this, 0);
+		$this->weather = new Weather($this);
 
 		$this->setDimension(self::DIMENSION_NORMAL);
 
@@ -783,7 +783,7 @@ class Level implements ChunkManager, Metadatable{
 			$this->sendTimeTicker = 0;
 		}
 
-		$this->weather->calcWeather($currentTick);
+		$this->weather->tick();
 
 		$this->unloadChunks();
 
