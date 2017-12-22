@@ -86,30 +86,32 @@ class Weather {
 			$tickDiff = $currentTick - $this->lastUpdate;
 			$this->duration -= $tickDiff;
 
-			if($this->duration <= 0){
-				$duration = mt_rand(
-					min($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax),
-					max($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax));
-
-				if($this->weatherNow === self::SUNNY){
-					$weather = $this->randomWeatherData[array_rand($this->randomWeatherData)];
-					$this->setWeather($weather, $duration);
-				}else{
-					$weather = self::SUNNY;
-					$this->setWeather($weather, $duration);
-				}
-			}
-			if(($this->weatherNow >= self::RAINY_THUNDER) and ($this->level->getServer()->lightningTime > 0) and is_int($this->duration / $this->level->getServer()->lightningTime)){
-				$players = $this->level->getPlayers();
-				if(count($players) > 0){
-					$p = $players[array_rand($players)];
-					$x = $p->x + mt_rand(-64, 64);
-					$z = $p->z + mt_rand(-64, 64);
-					$y = $this->level->getHighestBlockAt($x, $z);
-					$this->level->spawnLightning($this->temporalVector->setComponents($x, $y, $z));
-				}
-			}
-		}
+            if ($this->level->getServer()->weatherEnabled) {
+                if($this->duration <= 0){
+                    $duration = mt_rand(
+                        min($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax),
+                        max($this->level->getServer()->weatherRandomDurationMin, $this->level->getServer()->weatherRandomDurationMax));
+                    if($this->weatherNow === self::SUNNY){
+                        $weather = $this->randomWeatherData[array_rand($this->randomWeatherData)];
+                        $this->setWeather($weather, $duration);
+                    }else{
+                        $weather = self::SUNNY;
+                        $this->setWeather($weather, $duration);
+                    }
+                    return;
+                }
+                if(($this->weatherNow >= self::RAINY_THUNDER) and ($this->level->getServer()->lightningTime > 0) and is_int($this->duration / $this->level->getServer()->lightningTime)){
+                    $players = $this->level->getPlayers();
+                    if(count($players) > 0){
+                        $p = $players[array_rand($players)];
+                        $x = $p->x + mt_rand(-64, 64);
+                        $z = $p->z + mt_rand(-64, 64);
+                        $y = $this->level->getHighestBlockAt($x, $z);
+                        $this->level->spawnLightning($this->temporalVector->setComponents($x, $y, $z));
+                    }
+                }
+            }
+        }
 		$this->lastUpdate = $currentTick;
 	}
 
@@ -219,6 +221,7 @@ class Weather {
 	 * @param Player $p
 	 */
 	public function sendWeather(Player $p){
+        if(!$this->level->getServer()->weatherEnabled) return;
 		$pks = [
 			new LevelEventPacket(),
 			new LevelEventPacket()

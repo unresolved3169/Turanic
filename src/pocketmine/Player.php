@@ -2016,7 +2016,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 *
 	 * @return bool
 	 */
-	public function canInteract(Vector3 $pos, $maxDistance, float $maxDiff = 0.5){
+	public function canInteract(Vector3 $pos, $maxDistance, float $maxDiff = 0.71){
 		$eyePos = $this->getPosition()->add(0, $this->getEyeHeight(), 0);
 		if ($eyePos->distanceSquared($pos) > $maxDistance ** 2) {
 			return false;
