@@ -256,7 +256,7 @@ class Item implements ItemIds, \JsonSerializable {
             // TODO : CARROT_ON_A_STICK
             self::registerItem(new NetherStar());
             self::registerItem(new PumpkinPie());
-            // TODO : FIREWORK
+            self::registerItem(new FireworkRocket());
             // TODO : FIREWORK_STAR
             self::registerItem(new EnchantedBook());
             // TODO : COMPARATOR

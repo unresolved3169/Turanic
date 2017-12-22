@@ -171,5 +171,4 @@ class Position extends Vector3 {
 		return $this;
 	}
 
-
 }

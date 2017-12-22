@@ -25,6 +25,7 @@ namespace pocketmine;
 use pocketmine\block\CommandBlock;
 use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\tile\CommandBlock as TileCommandBlock;
 use pocketmine\form\Form;
@@ -2827,6 +2828,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		return false;
 	}
+
+    public function handleEntityPickRequest(EntityPickRequestPacket $packet) : bool{
+        return true;
+    }
 
 	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
 		return true;

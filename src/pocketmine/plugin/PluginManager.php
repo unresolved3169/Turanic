@@ -249,7 +249,7 @@ class PluginManager {
 								break;
 							}
 
-							$compatiblegeniapi = false;
+							$compatibleturanicapi = false;
 							foreach($description->getCompatibleGeniApis() as $version){
 								//Format: majorVersion.minorVersion.patch
 								$version = array_map("intval", explode(".", $version));
@@ -260,7 +260,7 @@ class PluginManager {
 								}
 								//If the plugin uses new API
 								if($version[0] < $apiVersion[0]){
-									$compatiblegeniapi = true;
+									$compatibleturanicapi = true;
 									break;
 								}
 								//If the plugin requires new API features, being backwards compatible
@@ -272,21 +272,21 @@ class PluginManager {
 									continue;
 								}
 
-								$compatiblegeniapi = true;
+								$compatibleturanicapi = true;
 								break;
 							}
 
 							if($compatible === false){
 								if($this->server->loadIncompatibleAPI === true){
-									$this->server->getLogger()->debug("插件{$name}的API与服务器不符,但Turanic仍然加载了它");
+									$this->server->getLogger()->debug("{$name} uses an older API, but Turanic will load it.");
 								}else{
 									$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.incompatibleAPI"]));
 									continue;
 								}
 							}
 
-							if($compatiblegeniapi === false){
-								$this->server->getLogger()->error("Could not load plugin '{$description->getName()}': Incompatible GeniAPI version");
+							if($compatibleturanicapi === false){
+								$this->server->getLogger()->error("Could not load plugin '{$description->getName()}': Incompatible TuranicAPI version");
 								continue;
 							}
 
@@ -757,15 +757,12 @@ class PluginManager {
 		}
 	}
 
-	/**
-	 * Registers all the events in the given Listener class
-	 *
-	 * @param Listener $listener
-	 * @param Plugin   $plugin
-	 *
-	 * @throws PluginException
-	 */
-	public function registerEvents(Listener $listener, Plugin $plugin){
+    /**
+     * @param Listener $listener
+     * @param Plugin $plugin
+     * @throws \Throwable
+     */
+    public function registerEvents(Listener $listener, Plugin $plugin){
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register " . get_class($listener) . " while not enabled");
 		}
@@ -807,17 +804,16 @@ class PluginManager {
 		}
 	}
 
-	/**
-	 * @param string        $event Class name that extends Event
-	 * @param Listener      $listener
-	 * @param int           $priority
-	 * @param EventExecutor $executor
-	 * @param Plugin        $plugin
-	 * @param bool          $ignoreCancelled
-	 *
-	 * @throws PluginException
-	 */
-	public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
+    /**
+     * @param $event
+     * @param Listener $listener
+     * @param $priority
+     * @param EventExecutor $executor
+     * @param Plugin $plugin
+     * @param bool $ignoreCancelled
+     * @throws \Throwable
+     */
+    public function registerEvent($event, Listener $listener, $priority, EventExecutor $executor, Plugin $plugin, $ignoreCancelled = false){
 		if(!is_subclass_of($event, Event::class)){
 			throw new PluginException($event . " is not an Event");
 		}
