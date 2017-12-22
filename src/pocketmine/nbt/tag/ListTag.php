@@ -239,7 +239,7 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable {
 
     public function getAllValues() : array{
         $result = [];
-        foreach($this as $tag){
+        foreach($this->getValue() as $tag){
             if(!($tag instanceof NamedTag)){
                 continue;
             }
