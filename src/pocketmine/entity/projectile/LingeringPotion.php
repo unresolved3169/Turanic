@@ -28,12 +28,6 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\IntArrayTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
@@ -73,31 +67,17 @@ class LingeringPotion extends Projectile {
             $potionId = $this->getPotionId();
             $color = Potion::getColor($potionId);
 
-            $nbt = new CompoundTag("", [
-                new ListTag("Pos", [
-                    new DoubleTag("", $this->getX()),
-                    new DoubleTag("", $this->getY()),
-                    new DoubleTag("", $this->getZ()),
-                ]),
-                new ListTag("Motion", [
-                    new DoubleTag("", 0),
-                    new DoubleTag("", 0),
-                    new DoubleTag("", 0),
-                ]),
-                new ListTag("Rotation", [
-                    new FloatTag("", 0),
-                    new FloatTag("", 0),
-                ]),
-                new IntTag("Age", 0),
-                new ShortTag("PotionId", $potionId),
-                new FloatTag("Radius", 3),
-                new FloatTag("RadiusOnUse", -0.5),
-                new FloatTag("RadiusPerTick", -0.005),
-                new IntTag("WaitTime", 10),
-                new IntTag("Duration", 600),
-                new IntTag("DurationOnUse", 0),
-                new IntArrayTag("Color", $color)
-            ]);
+            $nbt = Entity::createBaseNBT($this);
+            $nbt->setFloat("Radius", 3);
+            $nbt->setFloat("RadiusOnUse", -0.5);
+            $nbt->setFloat("RadiusPerTick", -0.005);
+            $nbt->setInt("Age", 0);
+            $nbt->setInt("WaitTime", 10);
+            $nbt->setInt("Duration", 600);
+            $nbt->setInt("DurationOnUse", 0);
+            $nbt->setInt("Age", 0);
+            $nbt->setIntArray("Color", $color);
+            $nbt->setShort("PotionId", $potionId);
 
             $aec = Entity::createEntity("AreaEffectCloud", $this->getLevel(), $nbt);
             if($aec instanceof Entity){

@@ -24,12 +24,9 @@ declare(strict_types = 1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\Player;
 
 class LingeringPotion extends ProjectileItem {
@@ -98,23 +95,10 @@ class LingeringPotion extends ProjectileItem {
 
     public function onClickAir(Player $player, Vector3 $directionVector, CompoundTag $nbt = null) : bool{
         if($player->server->allowSplashPotion) {
-            $nbt = new CompoundTag("", [
-                new ListTag("Pos", [
-                    new DoubleTag("", $player->x),
-                    new DoubleTag("", $player->y + $player->getEyeHeight()),
-                    new DoubleTag("", $player->z)
-                ]),
-                new ListTag("Motion", [
-                    new DoubleTag("", $directionVector->x),
-                    new DoubleTag("", $directionVector->y),
-                    new DoubleTag("", $directionVector->z)
-                ]),
-                new ListTag("Rotation", [
-                    new FloatTag("", $player->yaw),
-                    new FloatTag("", $player->pitch)
-                ]),
-                new ShortTag("PotionId", $this->meta)
-            ]);
+            if($nbt == null){
+                $nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
+                $nbt->setShort("PotionId", $this->meta);
+            }
             return parent::onClickAir($player, $directionVector, $nbt);
         }
 

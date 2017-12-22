@@ -26,10 +26,6 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\hostile\Silverfish;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
 
 class MonsterEggBlock extends Solid{
 
@@ -50,23 +46,7 @@ class MonsterEggBlock extends Solid{
     public function onBreak(Item $item){
         parent::onBreak($item);
         if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) == 0){
-            $nbt = new CompoundTag("", [
-                new ListTag("Pos", [
-                    new DoubleTag("", $this->x),
-                    new DoubleTag("", $this->y),
-                    new DoubleTag("", $this->z)
-                ]),
-                new ListTag("Motion", [
-                    new DoubleTag("", 0),
-                    new DoubleTag("", 0),
-                    new DoubleTag("", 0)
-                ]),
-                new ListTag("Rotation", [
-                    new FloatTag("", 0),
-                    new FloatTag("", 0)
-                ]),
-            ]);
-            $sf = Entity::createEntity("Silverfish", $this->level, $nbt);
+            $sf = Entity::createEntity("Silverfish", $this->level, Entity::createBaseNBT($this));
             if($sf instanceof Silverfish){
                 $sf->spawnToAll();
             }

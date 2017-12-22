@@ -42,24 +42,8 @@ abstract class ProjectileItem extends Item{
 	abstract public function getThrowForce() : float;
 
 	public function onClickAir(Player $player, Vector3 $directionVector, CompoundTag $nbt = null) : bool{
-		if($nbt == null){
-            $nbt = new CompoundTag("", [
-                new ListTag("Pos", [
-                    new DoubleTag("", $player->x),
-                    new DoubleTag("", $player->y + $player->getEyeHeight()),
-                    new DoubleTag("", $player->z)
-                ]),
-                new ListTag("Motion", [
-                    new DoubleTag("", $directionVector->x),
-                    new DoubleTag("", $directionVector->y),
-                    new DoubleTag("", $directionVector->z)
-                ]),
-                new ListTag("Rotation", [
-                    new FloatTag("", $player->yaw),
-                    new FloatTag("", $player->pitch)
-                ]),
-            ]);
-        }
+		if($nbt == null)
+            $nbt = Entity::createBaseNBT($player->add(0, $player->getEyeHeight(), 0), $directionVector, $player->yaw, $player->pitch);
 
 		$projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
         if($projectile !== null){

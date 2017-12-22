@@ -72,12 +72,7 @@ use pocketmine\math\Vector3;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\LongTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
@@ -585,22 +580,7 @@ class Level implements ChunkManager, Metadatable{
      * @return Entity|null
      */
     public function addFloatingText(Vector3 $pos, string $text, string $title = "", bool $center = false){
-        $entity = Entity::createEntity("FloatingText", $this, new CompoundTag("", [
-            new ListTag("Pos", [
-                new DoubleTag("", $pos->x),
-                new DoubleTag("", $pos->y),
-                new DoubleTag("", $pos->z)
-            ]),
-            new ListTag("Motion", [
-                new DoubleTag("", 0),
-                new DoubleTag("", 0),
-                new DoubleTag("", 0)
-            ]),
-            new ListTag("Rotation", [
-                new FloatTag("", 0),
-                new FloatTag("", 0)
-            ])
-        ]));
+        $entity = Entity::createEntity("FloatingText", $this, Entity::createBaseNBT($pos));
 
         assert($entity !== null);
 
@@ -1437,28 +1417,13 @@ class Level implements ChunkManager, Metadatable{
 		$motion = $motion === null ? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1) : $motion;
 
 		if ($item->getId() > 0 and $item->getCount() > 0) {
-			$itemEntity = Entity::createEntity("Item", $this, new CompoundTag("", [
-				"Pos" => new ListTag("Pos", [
-					new DoubleTag("", $source->getX()),
-					new DoubleTag("", $source->getY()),
-					new DoubleTag("", $source->getZ())
-				]),
+		    $nbt = Entity::createBaseNBT($source, $motion, lcg_value() * 360);
+		    $nbt->setShort("Health", 5);
+            $nbt->setTag($item->nbtSerialize(-1, "Item"));
+            $nbt->setShort("PickupDelay", $delay);
 
-				"Motion" => new ListTag("Motion", [
-					new DoubleTag("", $motion->x),
-					new DoubleTag("", $motion->y),
-					new DoubleTag("", $motion->z)
-				]),
-				"Rotation" => new ListTag("Rotation", [
-					new FloatTag("", lcg_value() * 360),
-					new FloatTag("", 0)
-				]),
-				"Health" => new ShortTag("Health", 5),
-				"Item" => $item->nbtSerialize(-1, "Item"),
-				"PickupDelay" => new ShortTag("PickupDelay", $delay)
-			]));
-
-			$itemEntity->spawnToAll();
+            $itemEntity = Entity::createEntity("Item", $this, $nbt);
+			if($itemEntity != null) $itemEntity->spawnToAll();
 
 			return $itemEntity;
 		}
@@ -2273,28 +2238,11 @@ class Level implements ChunkManager, Metadatable{
 	 * Add a lightning
 	 *
 	 * @param Vector3 $pos
-	 * @return Lightning
+	 * @return Lightning|Entity
 	 */
 	public function spawnLightning(Vector3 $pos): Lightning {
-		$nbt = new CompoundTag("", [
-			"Pos" => new ListTag("Pos", [
-				new DoubleTag("", $pos->getX()),
-				new DoubleTag("", $pos->getY()),
-				new DoubleTag("", $pos->getZ())
-			]),
-			"Motion" => new ListTag("Motion", [
-				new DoubleTag("", 0),
-				new DoubleTag("", 0),
-				new DoubleTag("", 0)
-			]),
-			"Rotation" => new ListTag("Rotation", [
-				new FloatTag("", 0),
-				new FloatTag("", 0)
-			]),
-		]);
-
-		$lightning = new Lightning($this, $nbt);
-		$lightning->spawnToAll();
+		$lightning = Entity::createEntity("Lightning", $this, Entity::createBaseNBT($pos));
+		if($lightning != null) $lightning->spawnToAll();
 
 		return $lightning;
 	}
@@ -2304,30 +2252,15 @@ class Level implements ChunkManager, Metadatable{
 	 *
 	 * @param Vector3 $pos
 	 * @param int $exp
-	 * @return bool|XPOrb
+	 * @return bool|Entity|XPOrb
 	 */
 	public function spawnXPOrb(Vector3 $pos, int $exp = 1) {
 		if ($exp > 0) {
-			$nbt = new CompoundTag("", [
-				"Pos" => new ListTag("Pos", [
-					new DoubleTag("", $pos->getX()),
-					new DoubleTag("", $pos->getY() + 0.5),
-					new DoubleTag("", $pos->getZ())
-				]),
-				"Motion" => new ListTag("Motion", [
-					new DoubleTag("", 0),
-					new DoubleTag("", 0),
-					new DoubleTag("", 0)
-				]),
-				"Rotation" => new ListTag("Rotation", [
-					new FloatTag("", 0),
-					new FloatTag("", 0)
-				]),
-				"Experience" => new LongTag("Experience", $exp),
-			]);
+		    $nbt = Entity::createBaseNBT($pos->add(0,0.5,0));
+			$nbt->setLong("Experience", $exp);
 
-			$expOrb = new XPOrb($this, $nbt);
-			$expOrb->spawnToAll();
+			$expOrb = Entity::createEntity("XPOrb", $this, $nbt);
+			if($expOrb != null) $expOrb->spawnToAll();
 
 			return $expOrb;
 		}

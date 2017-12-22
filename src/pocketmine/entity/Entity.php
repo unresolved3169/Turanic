@@ -907,6 +907,37 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		return false;
 	}
 
+    /**
+     * Helper function which creates minimal NBT needed to spawn an entity.
+     *
+     * @param Vector3      $pos
+     * @param Vector3|null $motion
+     * @param float        $yaw
+     * @param float        $pitch
+     *
+     * @return CompoundTag
+     */
+    public static function createBaseNBT(Vector3 $pos, $motion = null , float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
+        if(!($motion instanceof Vector3))
+            $motion = new Vector3(0.0,0.0,0.0);
+        return new CompoundTag("", [
+			new ListTag("Pos", [
+				new DoubleTag("", $pos->x),
+				new DoubleTag("", $pos->y),
+				new DoubleTag("", $pos->z)
+			]),
+			new ListTag("Motion", [
+				new DoubleTag("", $motion->x),
+				new DoubleTag("", $motion->y),
+				new DoubleTag("", $motion->z)
+			]),
+			new ListTag("Rotation", [
+				new FloatTag("", $yaw),
+				new FloatTag("", $pitch)
+			])
+		]);
+	}
+
 	/**
 	 * Returns the short save name
 	 *

@@ -28,11 +28,7 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\sound\TNTPrimeSound;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
@@ -88,30 +84,19 @@ class TNT extends Solid implements ElectricalAppliance {
      * @param int $fuse
      */
 	public function prime(Player $player = null, int $fuse = 80){
-		$this->meta = 1;
-		$dropItem = $player != null and $player->isCreative() ? false : true;
-		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-		$tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), new CompoundTag("", [
-			"Pos" => new ListTag("Pos", [
-				new DoubleTag("", $this->x + 0.5),
-				new DoubleTag("", $this->y),
-				new DoubleTag("", $this->z + 0.5)
-			]),
-			"Motion" => new ListTag("Motion", [
-				new DoubleTag("", -sin($mot) * 0.02),
-				new DoubleTag("", 0.2),
-				new DoubleTag("", -cos($mot) * 0.02)
-			]),
-			"Rotation" => new ListTag("Rotation", [
-				new FloatTag("", 0),
-				new FloatTag("", 0)
-			]),
-			"Fuse" => new ByteTag("Fuse", $fuse)
-		]), $dropItem);
+        $this->meta = 1;
+        $dropItem = $player != null and $player->isCreative() ? false : true;
+        $mot = (new Random())->nextSignedFloat() * M_PI * 2;
+        $nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5), new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
+        $nbt->setByte("Fuse", $fuse);
 
-		$tnt->spawnToAll();
-		$this->level->addSound(new TNTPrimeSound($this));
-	}
+        $tnt = Entity::createEntity("PrimedTNT", $this->getLevel(), $nbt, $dropItem);
+
+        if ($tnt !== null)
+            $tnt->spawnToAll();
+
+        $this->level->addSound(new TNTPrimeSound($this));
+    }
 
 	/**
 	 * @param int $type

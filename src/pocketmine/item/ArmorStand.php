@@ -20,15 +20,13 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
 class ArmorStand extends Item {
@@ -48,23 +46,7 @@ class ArmorStand extends Item {
     }
 
     public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-        $nbt = new CompoundTag("", [
-            new ListTag("Pos", [
-                new DoubleTag("", $block->x + 0.5),
-                new DoubleTag("", $block->y),
-                new DoubleTag("", $block->z + 0.5)
-            ]),
-            new ListTag("Motion", [
-                new DoubleTag("", 0),
-                new DoubleTag("", 0),
-                new DoubleTag("", 0)
-            ]),
-            new ListTag("Rotation", [
-                new FloatTag("", $this->getDirection($player->yaw)),
-                new FloatTag("", 0)
-            ]),
-        ]);
-        $as = Entity::createEntity("ArmorStand", $level, $nbt);
+        $as = Entity::createEntity("ArmorStand", $level, Entity::createBaseNBT($block->add(0.5, 0, 0.5), null, $this->getDirection($player->yaw)));
 
         if ($as != null) {
             if ($player->isSurvival()) {

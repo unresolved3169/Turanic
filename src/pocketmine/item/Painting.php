@@ -3,16 +3,12 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\object\Painting as PaintingEntity;
+use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
+// TODO : OPTIMIZE
 class Painting extends Item {
 	/**
 	 * Painting constructor.
@@ -104,34 +100,12 @@ class Painting extends Item {
 			}
 
 			$motive = $motives[mt_rand(0, count($validMotives) - 1)];
-			$data = [
-				"x" => $target->x,
-				"y" => $target->y,
-				"z" => $target->z,
-				"yaw" => $faces[$face] * 90,
-				"Motive" => $motive[0],
-			];
 
-			$nbt = new CompoundTag("", [
-				"Motive" => new StringTag("Motive", $data["Motive"]),
-				"Pos" => new ListTag("Pos", [
-					new DoubleTag("", $data["x"]),
-					new DoubleTag("", $data["y"]),
-					new DoubleTag("", $data["z"])
-				]),
-				"Motion" => new ListTag("Motion", [
-					new DoubleTag("", 0),
-					new DoubleTag("", 0),
-					new DoubleTag("", 0)
-				]),
-				"Rotation" => new ListTag("Rotation", [
-					new FloatTag("", $data["yaw"]),
-					new FloatTag("", 0)
-				]),
-			]);
+            $nbt = Entity::createBaseNBT($target, null, $faces[$face] * 90);
+            $nbt->setString("Motive", $motive[0]);
 
-			$painting = new PaintingEntity($player->getLevel(), $nbt);
-			$painting->spawnToAll();
+			$painting = Entity::createEntity("Painting", $player->getLevel(), $nbt);
+			if($painting != null) $painting->spawnToAll();
 
 			if($player->isSurvival()){
 				$item = $player->getInventory()->getItemInHand();
@@ -144,12 +118,6 @@ class Painting extends Item {
 				$item->setCount($count);
 				$player->getInventory()->setItemInHand($item);
 			}
-			//TODO
-			//$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			//$e->spawnToAll();
-			/*if(($player->gamemode & 0x01) === 0x00){
-				$player->removeItem(Item::get($this->getId(), $this->getDamage(), 1));
-			}*/
 
 			return true;
 		}

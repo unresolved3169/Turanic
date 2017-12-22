@@ -21,14 +21,9 @@
 
 namespace pocketmine\block;
 
-use pocketmine\entity\utility\IronGolem;
-use pocketmine\entity\utility\SnowGolem;
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
 class Pumpkin extends Solid {
@@ -96,23 +91,9 @@ class Pumpkin extends Solid {
 					$level->setBlock($block, new Air());
 					$level->setBlock($block0, new Air());
 					$level->setBlock($block1, new Air());
-					$golem = new SnowGolem($player->getLevel(), new CompoundTag("", [
-						"Pos" => new ListTag("Pos", [
-							new DoubleTag("", $this->x),
-							new DoubleTag("", $this->y),
-							new DoubleTag("", $this->z)
-						]),
-						"Motion" => new ListTag("Motion", [
-							new DoubleTag("", 0),
-							new DoubleTag("", 0),
-							new DoubleTag("", 0)
-						]),
-						"Rotation" => new ListTag("Rotation", [
-							new FloatTag("", 0),
-							new FloatTag("", 0)
-						]),
-					]));
-					$golem->spawnToAll();
+
+                    $golem = Entity::createEntity("SnowGolem", $player->getLevel(), Entity::createBaseNBT($this));
+                    if($golem != null) $golem->spawnToAll();
 				}
 			}
 			if($player->getServer()->allowIronGolem){
@@ -133,23 +114,9 @@ class Pumpkin extends Solid {
 					$level->setBlock($block, new Air());
 					$level->setBlock($block0, new Air());
 					$level->setBlock($block1, new Air());
-					$golem = new IronGolem($player->getLevel(), new CompoundTag("", [
-						"Pos" => new ListTag("Pos", [
-							new DoubleTag("", $this->x),
-							new DoubleTag("", $this->y),
-							new DoubleTag("", $this->z)
-						]),
-						"Motion" => new ListTag("Motion", [
-							new DoubleTag("", 0),
-							new DoubleTag("", 0),
-							new DoubleTag("", 0)
-						]),
-						"Rotation" => new ListTag("Rotation", [
-							new FloatTag("", 0),
-							new FloatTag("", 0)
-						]),
-					]));
-					$golem->spawnToAll();
+
+                    $golem = Entity::createEntity("IronGolem", $player->getLevel(), Entity::createBaseNBT($this));
+                    if($golem != null) $golem->spawnToAll();
 				}
 			}
 		}

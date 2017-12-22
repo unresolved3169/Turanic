@@ -30,11 +30,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
@@ -66,23 +62,8 @@ class FireworkRocket extends ProjectileItem {
 
     public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
         $up = $block->getSide(Vector3::SIDE_UP)->add(0.5, 0, 0.5);
-        $nbt = new CompoundTag("", [
-            new ListTag("Pos", [
-                new DoubleTag("", $up->x),
-                new DoubleTag("", $up->y),
-                new DoubleTag("", $up->z)
-            ], NBT::TAG_Double),
-            new ListTag("Motion", [
-                new DoubleTag("", 0),
-                new DoubleTag("", $this->getThrowForce()),
-                new DoubleTag("", 0)
-            ], NBT::TAG_Double),
-            new ListTag("Rotation", [
-                new FloatTag("", mt_rand(0, 360)),
-                new FloatTag("", -1*(float) (90.0 + (5.0 - 5.0/2)))
-            ], NBT::TAG_Float),
-        ]);
 
+        $nbt = Entity::createBaseNBT($up, new Vector3(0,$this->getThrowForce(),0), mt_rand(0, 360), -1*(float) (90.0 + (5.0 - 5.0/2)));
         $projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
 
         if($projectile instanceof Projectile) {
