@@ -41,7 +41,6 @@ class Arrow extends Projectile {
 	const NETWORK_ID = self::ARROW;
 
 	public $width = 0.5;
-	public $length = 0.5;
 	public $height = 0.5;
 
 	protected $gravity = 0.05;

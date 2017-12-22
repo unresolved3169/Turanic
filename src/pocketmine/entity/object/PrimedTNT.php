@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
@@ -28,7 +30,6 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\level\Explosion;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
@@ -38,7 +39,6 @@ class PrimedTNT extends Entity implements Explosive {
 	const NETWORK_ID = self::TNT;
 
 	public $width = 0.98;
-	public $length = 0.98;
 	public $height = 0.98;
 
 	protected $gravity = 0.04;

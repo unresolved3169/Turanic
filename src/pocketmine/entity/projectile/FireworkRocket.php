@@ -42,7 +42,6 @@ class FireworkRocket extends Projectile{
     const NETWORK_ID = self::FIREWORKS_ROCKET;
 
     public $width = 0.25;
-    public $length = 0.25;
     public $height = 0.25;
 
     protected $gravity = 0.0;

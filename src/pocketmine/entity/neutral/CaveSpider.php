@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\neutral;
 
 use pocketmine\entity\Monster;
@@ -30,7 +32,6 @@ class CaveSpider extends Monster {
 	const NETWORK_ID = self::CAVE_SPIDER;
 
 	public $width = 1;
-	public $length = 1;
 	public $height = 0.5;
 
 	public $dropExp = [5, 5];

@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Animal;
@@ -33,7 +35,6 @@ class Mooshroom extends Animal {
 	const NETWORK_ID = self::MOOSHROOM;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 1.8;
 
 	/**

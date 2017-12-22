@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\neutral;
 
 use pocketmine\entity\Monster;
@@ -31,7 +33,6 @@ class Enderman extends Monster {
 	const NETWORK_ID = self::ENDERMAN;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 0;
 	public $dropExp = [5, 5];
 	public $drag = 0.2;

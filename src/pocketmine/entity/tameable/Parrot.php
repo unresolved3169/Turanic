@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\tameable;
 
 use pocketmine\entity\FlyingAnimal;
@@ -40,7 +42,6 @@ class Parrot extends FlyingAnimal {
     const COLOR_SILVER = 4;
 
     public $width = 0.5;
-    public $length = 0.9;
     public $height = 0.9;
 
     public $dropExp = [1, 3];
@@ -59,14 +60,14 @@ class Parrot extends FlyingAnimal {
      * @param int $type
      */
     public function setColor(int $type){
-        $this->namedtag->Variant = new IntTag("Variant", $type);
+        $this->namedtag->setInt("Variant", $type);
     }
 
     /**
      * @return int
      */
     public function getColor() : int{
-        return $this->namedtag["Variant"];
+        return $this->namedtag->getInt("Variant", mt_rand(0,4));
     }
 
     /**

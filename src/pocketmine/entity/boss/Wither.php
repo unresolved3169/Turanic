@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\boss;
 
 use pocketmine\entity\FlyingAnimal;
@@ -31,7 +33,6 @@ class Wither extends FlyingAnimal {
 	const NETWORK_ID = self::WITHER;
 
 	public $width = 0.72;
-	public $length = 6;
 	public $height = 0;
 
 	public $dropExp = 50;

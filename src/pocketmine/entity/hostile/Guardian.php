@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Animal;
@@ -32,7 +34,6 @@ class Guardian extends Animal {
 	const NETWORK_ID = self::GUARDIAN;
 
 	public $width = 0.95;
-	public $length = 0.95;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

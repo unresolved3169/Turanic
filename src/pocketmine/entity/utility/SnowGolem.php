@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\utility;
 
 use pocketmine\entity\Animal;
@@ -31,8 +33,8 @@ class SnowGolem extends Animal {
 	const NETWORK_ID = self::SNOW_GOLEM;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 1.8;
+
 	public $drag = 0.2;
 	public $gravity = 0.3;
 

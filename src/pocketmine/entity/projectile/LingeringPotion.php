@@ -44,8 +44,8 @@ class LingeringPotion extends Projectile {
     const DATA_POTION_ID = 16;
 
     public $width = 0.25;
-    public $length = 0.25;
     public $height = 0.25;
+
     protected $gravity = 0.1;
     protected $drag = 0.05;
 

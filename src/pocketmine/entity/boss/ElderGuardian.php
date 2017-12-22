@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\boss;
 
 use pocketmine\entity\Animal;
@@ -34,7 +36,6 @@ class ElderGuardian extends Animal {
 	const NETWORK_ID = self::ELDER_GUARDIAN;
 
 	public $width = 1.45;
-	public $length = 1.45;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
@@ -32,7 +34,6 @@ class XPOrb extends Entity {
 	const NETWORK_ID = self::XP_ORB;
 
 	public $width = 0.25;
-	public $length = 0.25;
 	public $height = 0.25;
 
 	protected $gravity = 0.04;

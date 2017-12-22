@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
@@ -30,7 +32,6 @@ class ZombieVillager extends Zombie {
 	const NETWORK_ID = self::ZOMBIE_VILLAGER;
 
 	public $width = 1.031;
-	public $length = 0.891;
 	public $height = 0;
 	
 	public $dropExp = [5, 5];

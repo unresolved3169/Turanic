@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\neutral;
 
 use pocketmine\entity\Monster;
@@ -32,7 +34,6 @@ class PolarBear extends Monster {
 	const NETWORK_ID = self::POLAR_BEAR;
 
 	public $width = 0.6;
-	public $length = 0.9;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

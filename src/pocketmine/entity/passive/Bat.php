@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\FlyingAnimal;
@@ -36,7 +38,6 @@ class Bat extends FlyingAnimal {
 	const DATA_IS_RESTING = 16;
 
 	public $width = 0.6;
-	public $length = 0.6;
 	public $height = 0.6;
 
 	public $flySpeed = 0.8;

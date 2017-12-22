@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\utility;
 
 use pocketmine\entity\Animal;
@@ -32,7 +34,6 @@ class IronGolem extends Animal {
 	const NETWORK_ID = self::IRON_GOLEM;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 2.8;
 
 	public $drag = 0.2;

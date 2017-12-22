@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Monster;
@@ -30,7 +32,6 @@ class Endermite extends Monster {
 	const NETWORK_ID = self::ENDERMITE;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

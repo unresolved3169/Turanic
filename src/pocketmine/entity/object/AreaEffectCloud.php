@@ -18,7 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
@@ -38,7 +40,6 @@ class AreaEffectCloud extends Entity {
     const NETWORK_ID = self::AREA_EFFECT_CLOUD;
 
     public $width = 5;
-    public $length = 5;
     public $height = 1;
 
     private $PotionId = 0;

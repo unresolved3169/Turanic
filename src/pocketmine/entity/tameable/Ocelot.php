@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\tameable;
 
 use pocketmine\entity\Animal;
@@ -40,7 +42,6 @@ class Ocelot extends Animal {
 	const TYPE_SIAMESE = 3;
 
 	public $width = 0.312;
-	public $length = 2.188;
 	public $height = 0;
 
 	public $dropExp = [1, 3];

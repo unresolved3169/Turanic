@@ -432,13 +432,11 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	public $deadTicks = 0;
 	protected $age = 0;
 
+    public $width;
 	public $height;
 
 	public $eyeHeight = null;
 	public $baseOffset = 0;
-
-	public $width;
-	public $length;
 
 	/** @var int */
 	protected $health = 20;
@@ -581,15 +579,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	public function getWidth(){
 		return $this->width;
 	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getLength(){
-		return $this->length;
-	}
-
-	//add original function (set scale etc)
 
 	/**
 	 * @param $scale

@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Entity;
@@ -29,8 +31,8 @@ use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAt
 
 class Husk extends Zombie {
 	const NETWORK_ID = self::HUSK;
+
 	public $width = 0.6;
-	public $length = 0.6;
 	public $height = 0;
 	
 	public $dropExp = [5, 5];

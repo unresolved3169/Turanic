@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\object;
 
 use pocketmine\block\Anvil;
@@ -43,7 +45,6 @@ class FallingSand extends Entity {
 	const NETWORK_ID = self::FALLING_BLOCK;
 
 	public $width = 0.98;
-	public $length = 0.98;
 	public $height = 0.98;
 
 	protected $gravity = 0.04;

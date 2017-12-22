@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Monster;
@@ -32,7 +34,6 @@ class Vindicator extends Monster {
 	const NETWORK_ID = self::VINDICATOR;
 
 	public $width = 0.6;
-	public $length = 0.6;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

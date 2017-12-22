@@ -35,7 +35,6 @@ class ThrownExpBottle extends Projectile {
 	const NETWORK_ID = self::XP_BOTTLE;
 
 	public $width = 0.25;
-	public $length = 0.25;
 	public $height = 0.25;
 
 	protected $gravity = 0.1;

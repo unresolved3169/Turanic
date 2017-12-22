@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Ageable;
@@ -40,7 +42,6 @@ class Villager extends Mob implements NPC, Ageable {
     const PROFESSION_BUTCHER = 4;
 
 	public $width = 0.6;
-	public $length = 0.6;
 	public $height = 1.8;
 
     public function initEntity(){

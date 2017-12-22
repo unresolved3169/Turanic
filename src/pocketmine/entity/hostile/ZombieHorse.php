@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Animal;
@@ -31,7 +33,6 @@ class ZombieHorse extends Animal {
 	const NETWORK_ID = self::ZOMBIE_HORSE;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

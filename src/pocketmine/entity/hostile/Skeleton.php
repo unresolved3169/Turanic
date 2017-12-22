@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Monster;
@@ -42,7 +44,7 @@ class Skeleton extends Monster implements ProjectileSource {
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-                $this->setMaxHealth(20);
+        $this->setMaxHealth(20);
 		parent::initEntity();
 	}
 	/**

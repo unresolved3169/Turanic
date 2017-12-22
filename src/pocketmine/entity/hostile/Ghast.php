@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\FlyingAnimal;
@@ -30,7 +32,6 @@ class Ghast extends FlyingAnimal {
 	const NETWORK_ID = self::GHAST;
 
 	public $width = 6;
-	public $length = 6;
 	public $height = 6;
 
 	/**

@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Ageable;
@@ -37,7 +39,6 @@ class Squid extends WaterAnimal implements Ageable {
 	const NETWORK_ID = self::SQUID;
 
 	public $width = 0.95;
-	public $length = 0.95;
 	public $height = 0.95;
 
 	public $dropExp = [1, 3];

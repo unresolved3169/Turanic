@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\tameable;
 
 use pocketmine\entity\Animal;
@@ -35,15 +37,17 @@ class Horse extends Animal{
 	const NETWORK_ID = self::HORSE;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 0;
+
 	public $drag = 0.2;
 	public $gravity = 0.3;
+
 	const CREAMY = 0;
 	const WHITE = 1;
 	const BROWN = 2;
 	const GRAY = 3;
 	const BLACK = 4;
+
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
 		$this->addBehavior(new StrollBehavior($this));

@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\neutral;
 
 use pocketmine\entity\Entity;
@@ -36,10 +38,11 @@ class ZombiePigman extends Monster {
 	const NETWORK_ID = self::ZOMBIE_PIGMAN;
 
 	public $width = 0.6;
-	public $length = 0.6;
 	public $height = 0;
+
 	public $drag = 0.2;
 	public $gravity = 0.3;
+
 	public $dropExp = [5, 5];
 	
 	public function initEntity(){

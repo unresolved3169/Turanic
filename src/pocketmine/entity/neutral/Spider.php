@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\neutral;
 
 use pocketmine\entity\Monster;
@@ -32,7 +34,6 @@ use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAt
 class Spider extends Monster {
 	const NETWORK_ID = self::SPIDER;
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Entity;
@@ -33,7 +35,6 @@ class Shulker extends Monster {
 	const NETWORK_ID = self::SHULKER;
 
 	public $width = 0.5;
-	public $length = 0.9;
 	public $height = 0;
 
 	public $dropExp = [5, 5];

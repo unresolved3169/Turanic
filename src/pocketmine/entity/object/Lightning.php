@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\object;
 
 use pocketmine\block\Liquid;
@@ -36,7 +38,6 @@ class Lightning extends Entity {
 	const NETWORK_ID = self::LIGHTNING_BOLT;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 0;
 
 	/**

@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Animal;
@@ -35,8 +37,8 @@ class Cow extends Animal {
 	const NETWORK_ID = self::COW;
 
 	public $width = 0.3;
-	public $length = 0.9;
 	public $height = 0;
+
 	public $drag = 0.2;
 	public $gravity = 0.3;
 
