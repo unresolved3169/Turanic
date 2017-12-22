@@ -2,34 +2,27 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
  *
- *  _____            _               _____
- * / ____|          (_)             |  __ \
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/
- *                         __/ |
- *                        |___/
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
-
 
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -41,9 +34,6 @@ class ResourcePackManager {
 
 	/** @var string */
 	private $path;
-
-	/** @var Config */
-	private $resourcePacksConfig;
 
 	/** @var bool */
 	private $serverForceResources = false;
@@ -63,9 +53,10 @@ class ResourcePackManager {
 	public function __construct(Server $server, string $path){
 		$this->server = $server;
 		$this->path = $path;
+		$logger = $this->server->getLogger();
 
 		if(!file_exists($this->path)){
-			$this->server->getLogger()->debug($this->server->getLanguage()->translateString("pocketmine.resourcepacks.createFolder", [$path]));
+            $logger->debug($this->server->getLanguage()->translateString("pocketmine.resourcepacks.createFolder", [$path]));
 			mkdir($this->path);
 		}elseif(!is_dir($this->path)){
 			throw new \InvalidArgumentException($this->server->getLanguage()->translateString("pocketmine.resourcepacks.notFolder", [$path]));
@@ -81,20 +72,20 @@ class ResourcePackManager {
 			file_put_contents($this->path . "resource_packs.yml", $content);
 		}
 
-		$this->resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
+		$resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
 
-		$this->serverForceResources = (bool) $this->resourcePacksConfig->get("force_resources", false);
+		$this->serverForceResources = (bool) $resourcePacksConfig->get("force_resources", false);
 
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.resourcepacks.load"));
+        $logger->info($this->server->getLanguage()->translateString("pocketmine.resourcepacks.load"));
 
-		foreach($this->resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
+		foreach($resourcePacksConfig->get("resource_stack", []) as $pos => $pack){
 			try{
 				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
 				if(file_exists($packPath)){
 					$newPack = null;
 					//Detect the type of resource pack.
 					if(is_dir($packPath)){
-						$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.resourcepacks.folderNotSupported", [$path]));
+                        $logger->warning($this->server->getLanguage()->translateString("pocketmine.resourcepacks.folderNotSupported", [$path]));
 					}else{
 						$info = new \SplFileInfo($packPath);
 						switch($info->getExtension()){
@@ -105,7 +96,7 @@ class ResourcePackManager {
 								$newPack = new ZippedResourcePack($packPath);
 								break;
 							default:
-								$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.resourcepacks.unsupportedType", [$path]));
+                                $logger->warning($this->server->getLanguage()->translateString("pocketmine.resourcepacks.unsupportedType", [$path]));
 								break;
 						}
 					}
@@ -115,14 +106,14 @@ class ResourcePackManager {
 						$this->uuidList[$newPack->getPackId()] = $newPack;
 					}
 				}else{
-					$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.resourcepacks.packNotFound", [$path]));
+                    $logger->warning($this->server->getLanguage()->translateString("pocketmine.resourcepacks.packNotFound", [$path]));
 				}
 			}catch(\Throwable $e){
-				$this->server->getLogger()->logException($e);
+                $logger->logException($e);
 			}
 		}
 
-		$this->server->getLogger()->debug($this->server->getLanguage()->translateString("pocketmine.resourcepacks.loadFinished", [count($this->resourcePacks)]));
+        $logger->debug($this->server->getLanguage()->translateString("pocketmine.resourcepacks.loadFinished", [count($this->resourcePacks)]));
 	}
 
 	/**
@@ -147,6 +138,14 @@ class ResourcePackManager {
 	public function getPackById(string $id){
 		return $this->uuidList[$id] ?? null;
 	}
+
+    /**
+     * Returns the directory which resource packs are loaded from.
+     * @return string
+     */
+	public function getPath() : string{
+        return $this->path;
+    }
 
 	/**
 	 * @return string[]

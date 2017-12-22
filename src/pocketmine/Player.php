@@ -2343,6 +2343,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         $this->setSkin($skin);
 
+        $this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
+        if ($ev->isCancelled()) {
+            $this->close("", $ev->getKickMessage());
+
+            return true;
+        }
+
         if (!$this->server->isWhitelisted($this->iusername) and $this->kick("Server is white-listed", false)) {
             return true;
         }
@@ -2354,12 +2361,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return true;
         }
 
-        $this->server->getPluginManager()->callEvent($ev = new PlayerPreLoginEvent($this, "Plugin reason"));
-        if ($ev->isCancelled()) {
-            $this->close("", $ev->getKickMessage());
-
-            return true;
-        }
         if ($packet->identityPublicKey !== null) {
             $this->processLogin();
         }
@@ -2968,8 +2969,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     $this->setBanned(true);
                     break;
                 }
-
-                $this->resetCraftingGridType();
 
                 $this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
@@ -3941,6 +3940,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			default:
 			 break;
 		}
+
+		$this->resetCraftingGridType();
 
 		$ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params));
 		$ev->setKeepInventory($this->server->keepInventory);
