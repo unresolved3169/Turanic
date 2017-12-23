@@ -181,8 +181,12 @@ namespace pocketmine {
 		$timezone = ini_get("date.timezone");
 		if(strpos($timezone, "/") === false){
 			$default_timezone = timezone_name_from_abbr($timezone);
-			ini_set("date.timezone", $default_timezone);
-			date_default_timezone_set($default_timezone);
+			if($default_timezone != false){
+                ini_set("date.timezone", $default_timezone);
+                date_default_timezone_set($default_timezone);
+            }else{
+                date_default_timezone_set($timezone);
+            }
 		}else{
 			date_default_timezone_set($timezone);
 		}
