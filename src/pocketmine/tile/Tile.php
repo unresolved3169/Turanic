@@ -28,12 +28,16 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\event\Timings;
+use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\Player;
 
 abstract class Tile extends Position {
 
@@ -158,7 +162,7 @@ abstract class Tile extends Position {
 	 *
 	 * @return string
 	 */
-	public function getSaveId(){
+	public static function getSaveId(){
 		return self::$shortNames[static::class];
 	}
 
@@ -175,14 +179,14 @@ abstract class Tile extends Position {
 		$this->namedtag = $nbt;
 		$this->server = $level->getServer();
 		$this->setLevel($level);
-		$this->chunk = $level->getChunk($this->namedtag["x"] >> 4, $this->namedtag["z"] >> 4, false);
+        $this->chunk = $level->getChunk($this->namedtag->getInt("x") >> 4, $this->namedtag->getInt("z") >> 4, false);
 		assert($this->chunk !== null);
 
 		$this->name = "";
 		$this->id = Tile::$tileCount++;
-		$this->x = (int) $this->namedtag["x"];
-		$this->y = (int) $this->namedtag["y"];
-		$this->z = (int) $this->namedtag["z"];
+        $this->x = $this->namedtag->getInt("x");
+        $this->y = $this->namedtag->getInt("y");
+        $this->z = $this->namedtag->getInt("z");
 
 		$this->chunk->addTile($this);
 		$this->getLevel()->addTile($this);
@@ -197,11 +201,55 @@ abstract class Tile extends Position {
 	}
 
 	public function saveNBT(){
-		$this->namedtag->id = new StringTag("id", $this->getSaveId());
-		$this->namedtag->x = new IntTag("x", $this->x);
-		$this->namedtag->y = new IntTag("y", $this->y);
-		$this->namedtag->z = new IntTag("z", $this->z);
+		$this->namedtag->setString("id", static::getSaveId());
+		$this->namedtag->setInt("x", $this->x);
+		$this->namedtag->setInt("y", $this->y);
+		$this->namedtag->setInt("z", $this->z);
 	}
+
+    /**
+     * Creates and returns a CompoundTag containing the necessary information to spawn a tile of this type.
+     *
+     * @param Vector3     $pos
+     * @param int|null    $face
+     * @param Item|null   $item
+     * @param Player|null $player
+     *
+     * @return CompoundTag
+     */
+    public static function createNBT(Vector3 $pos, $face = null, $item = null, $player = null) : CompoundTag{
+        $nbt = new CompoundTag("", [
+            new StringTag("id", static::getSaveId()),
+            new IntTag("x", (int) $pos->x),
+            new IntTag("y", (int) $pos->y),
+            new IntTag("z", (int) $pos->z)
+        ]);
+        static::createAdditionalNBT($nbt, $pos, $face, $item, $player);
+        if($item !== null){
+            if($item->hasCustomBlockData()){
+                foreach($item->getCustomBlockData() as $customBlockDataTag){
+                    if(!($customBlockDataTag instanceof NamedTag)){
+                        continue;
+                    }
+                    $nbt->setTag($customBlockDataTag);
+                }
+            }
+        }
+        return $nbt;
+    }
+
+    /**
+     * Called by createNBT() to allow descendent classes to add their own base NBT using the parameters provided.
+     *
+     * @param CompoundTag $nbt
+     * @param Vector3     $pos
+     * @param int|null    $face
+     * @param Item|null   $item
+     * @param Player|null $player
+     */
+    protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, $face = null, $item = null, $player = null) {
+
+    }
 
 	/**
 	 * @return \pocketmine\block\Block
@@ -249,7 +297,7 @@ abstract class Tile extends Position {
     public function getCleanedNBT(){
         $this->saveNBT();
         $tag = clone $this->namedtag;
-        unset($tag->x, $tag->y, $tag->z, $tag->id);
+        $tag->removeTag("x", "y", "z", "id");
         if($tag->getCount() > 0){
             return $tag;
         }else{
@@ -259,5 +307,9 @@ abstract class Tile extends Position {
     
     public function isClosed() : bool{
     	return $this->closed;
+    }
+
+    public function getNBT() : CompoundTag{
+        return $this->namedtag;
     }
 }

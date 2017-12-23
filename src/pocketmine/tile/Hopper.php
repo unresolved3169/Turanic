@@ -31,13 +31,14 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 
 class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
+    use NameableTrait, ContainerTrait;
+
+    const TAG_TRANSFER_COOLDOWN = "TransferCooldown";
+
 	/** @var HopperInventory */
 	protected $inventory;
 
@@ -54,31 +55,20 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->TransferCooldown) or !($nbt->TransferCooldown instanceof IntTag)){
-			$nbt->TransferCooldown = new IntTag("TransferCooldown", 0);
+		if(!$nbt->hasTag(self::TAG_TRANSFER_COOLDOWN, IntTag::class)){
+			$nbt->setInt(self::TAG_TRANSFER_COOLDOWN, 0);
 		}
 
 		parent::__construct($level, $nbt);
-
 		$this->inventory = new HopperInventory($this);
-
-		if(!isset($this->namedtag->Items) or !($this->namedtag->Items instanceof ListTag)){
-			$this->namedtag->Items = new ListTag("Items", []);
-			$this->namedtag->Items->setTagType(NBT::TAG_Compound);
-		}
-
-		for($i = 0; $i < $this->getSize(); ++$i){
-			$this->inventory->setItem($i, $this->getItem($i));
-		}
-
+        $this->loadItems();
 		$this->scheduleUpdate();
 	}
 
 	public function close(){
 		if($this->closed === false){
-			foreach($this->getInventory()->getViewers() as $player){
-				$player->removeWindow($this->getInventory());
-			}
+			$this->inventory->removeAllViewers(true);
+			$this->inventory = null;
 			parent::close();
 		}
 	}
@@ -95,11 +85,11 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 	 * @return bool
 	 */
 	public function canUpdate(){
-		return $this->namedtag->TransferCooldown->getValue() === 0 and !$this->isPowered;
+		return $this->namedtag->getInt(self::TAG_TRANSFER_COOLDOWN) === 0 and !$this->isPowered;
 	}
 
 	public function resetCooldownTicks(){
-		$this->namedtag->TransferCooldown->setValue(8);
+		$this->namedtag->setInt(self::TAG_TRANSFER_COOLDOWN, 8);
 	}
 
 	/**
@@ -137,7 +127,7 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 		}
 
 		if(!$this->canUpdate()){ //Hoppers only update CONTENTS every 8th tick
-			$this->namedtag->TransferCooldown->setValue($this->namedtag->TransferCooldown->getValue() - 1);
+			$this->namedtag->setInt(self::TAG_TRANSFER_COOLDOWN, $this->namedtag->getInt(self::TAG_TRANSFER_COOLDOWN) - 1);
 			return true;
 		}
 
@@ -194,112 +184,32 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 		return $this->inventory;
 	}
 
-	/**
+	public function getRealInventory(){
+        return $this->inventory;
+    }
+
+    /**
 	 * @return int
 	 */
 	public function getSize(){
 		return 5;
 	}
 
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int $index
-	 *
-	 * @return Item
-	 */
-	public function getItem($index){
-		$i = $this->getSlotIndex($index);
-		if($i < 0){
-			return Item::get(Item::AIR, 0, 0);
-		}else{
-			return Item::nbtDeserialize($this->namedtag->Items[$i]);
-		}
-	}
-
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int  $index
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	public function setItem($index, Item $item){
-		$i = $this->getSlotIndex($index);
-
-		if($item->getId() === Item::AIR or $item->getCount() <= 0){
-			if($i >= 0){
-				unset($this->namedtag->Items[$i]);
-			}
-		}elseif($i < 0){
-			for($i = 0; $i <= $this->getSize(); ++$i){
-				if(!isset($this->namedtag->Items[$i])){
-					break;
-				}
-			}
-			$this->namedtag->Items[$i] = $item->nbtSerialize($index);
-		}else{
-			$this->namedtag->Items[$i] = $item->nbtSerialize($index);
-		}
-
-		return true;
-	}
-
-	/**
-	 * @param $index
-	 *
-	 * @return int
-	 */
-	protected function getSlotIndex($index){
-		foreach($this->namedtag->Items as $i => $slot){
-			if((int) $slot["Slot"] === (int) $index){
-				return (int) $i;
-			}
-		}
-
-		return -1;
-	}
-
 	public function saveNBT(){
-		$this->namedtag->Items = new ListTag("Items", []);
-		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
-		for($index = 0; $index < $this->getSize(); ++$index){
-			$this->setItem($index, $this->inventory->getItem($index));
-		}
+		parent::saveNBT();
+		$this->saveItems();
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Hopper";
-	}
+	public function getDefaultName(): string{
+        return "Hopper";
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function hasName(): bool{
-		return isset($this->namedtag->CustomName);
-	}
 
     /**
-     * @param string $str
-     */
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-
-	/**
 	 * @return bool
 	 */
 	public function hasLock(){
-		return isset($this->namedtag->Lock);
+		return $this->namedtag->hasTag("Lock");
 	}
 
 	/**
@@ -307,10 +217,10 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 	 */
 	public function setLock(string $itemName = ""){
 		if($itemName === ""){
-			unset($this->namedtag->Lock);
+			$this->namedtag->removeTag("Lock");
 			return;
 		}
-		$this->namedtag->Lock = new StringTag("Lock", $itemName);
+		$this->namedtag->setString("Lock", $itemName);
 	}
 
 	/**
@@ -319,27 +229,15 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 	 * @return bool
 	 */
 	public function checkLock(string $key){
-		return $this->namedtag->Lock->getValue() === $key;
+		return $this->namedtag->getString("Lock") === $key;
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		$c = new CompoundTag("", [
-			new StringTag("id", Tile::HOPPER),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
-
-		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
-		}
-		if($this->hasLock()){
-			$c->Lock = $this->namedtag->Lock;
-		}
-
-		return $c;
-	}
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+        if($this->hasName()){
+            $nbt->setTag($this->namedtag->getTag("CustomName"));
+        }
+        if($this->hasLock()){
+            $nbt->setTag($this->namedtag->getTag("Lock"));
+        }
+    }
 }

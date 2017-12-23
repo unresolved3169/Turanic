@@ -176,4 +176,8 @@ class FlowerPot extends Flowable {
 		return $items;
 	}
 
+	public function getVariant(): int{
+        return 0;
+    }
+
 }

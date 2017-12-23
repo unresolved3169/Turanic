@@ -25,23 +25,17 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\object\Item as ItemEntity;
 use pocketmine\inventory\DispenserInventory;
+use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\particle\SmokeParticle;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
 
 class Dispenser extends Spawnable implements InventoryHolder, Container, Nameable {
+    use NameableTrait, ContainerTrait;
 
 	/** @var DispenserInventory */
 	protected $inventory;
@@ -55,31 +49,21 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 		$this->inventory = new DispenserInventory($this);
-		if(!isset($this->namedtag->Items) or !($this->namedtag->Items instanceof ListTag)){
-			$this->namedtag->Items = new ListTag("Items", []);
-			$this->namedtag->Items->setTagType(NBT::TAG_Compound);
-		}
-		for($i = 0; $i < $this->getSize(); ++$i){
-			$this->inventory->setItem($i, $this->getItem($i));
-		}
+		$this->loadItems();
 		$this->scheduleUpdate();
 	}
 
 	public function close(){
 		if($this->closed === false){
-			foreach($this->getInventory()->getViewers() as $player){
-				$player->removeWindow($this->getInventory());
-			}
+			$this->inventory->removeAllViewers(true);
+			$this->inventory = null;
 			parent::close();
 		}
 	}
 
 	public function saveNBT(){
-		$this->namedtag->Items = new ListTag("Items", []);
-		$this->namedtag->Items->setTagType(NBT::TAG_Compound);
-		for($index = 0; $index < $this->getSize(); ++$index){
-			$this->setItem($index, $this->inventory->getItem($index));
-		}
+		parent::saveNBT();
+		$this->saveItems();
 	}
 
 	/**
@@ -90,99 +74,17 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 	}
 
 	/**
-	 * @param $index
-	 *
-	 * @return int
-	 */
-	protected function getSlotIndex($index){
-		foreach($this->namedtag->Items as $i => $slot){
-			if((int) $slot["Slot"] === (int) $index){
-				return (int) $i;
-			}
-		}
-
-		return -1;
-	}
-
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int $index
-	 *
-	 * @return Item
-	 */
-	public function getItem($index){
-		$i = $this->getSlotIndex($index);
-		if($i < 0){
-			return Item::get(Item::AIR, 0, 0);
-		}else{
-			return Item::nbtDeserialize($this->namedtag->Items[$i]);
-		}
-	}
-
-	/**
-	 * This method should not be used by plugins, use the Inventory
-	 *
-	 * @param int  $index
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	public function setItem($index, Item $item){
-		$i = $this->getSlotIndex($index);
-
-		if($item->getId() === Item::AIR or $item->getCount() <= 0){
-			if($i >= 0){
-				unset($this->namedtag->Items[$i]);
-			}
-		}elseif($i < 0){
-			for($i = 0; $i <= $this->getSize(); ++$i){
-				if(!isset($this->namedtag->Items[$i])){
-					break;
-				}
-			}
-			$this->namedtag->Items[$i] = $item->nbtSerialize($index);
-		}else{
-			$this->namedtag->Items[$i] = $item->nbtSerialize($index);
-		}
-
-		return true;
-	}
-
-	/**
 	 * @return DispenserInventory
 	 */
 	public function getInventory(){
 		return $this->inventory;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Dispenser";
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasName(): bool{
-		return isset($this->namedtag->CustomName);
-	}
+	public function getDefaultName(): string{
+        return "Dispenser";
+    }
 
     /**
-     * @param string $str
-     */
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	/**
 	 * @return array
 	 */
 	public function getMotion(){
@@ -226,25 +128,14 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 			$motion = $this->getMotion();
 			$needItem = Item::get($item->getId(), $item->getDamage());
 			$f = 1.5;
-			$nbt = new CompoundTag("", [
-				"Pos" => new ListTag("Pos", [
-					new DoubleTag("", $this->x + $motion[0] * 2 + 0.5),
-					new DoubleTag("", $this->y + ($motion[1] > 0 ? $motion[1] : 0.5)),
-					new DoubleTag("", $this->z + $motion[2] * 2 + 0.5)
-				]),
-				"Motion" => new ListTag("Motion", [
-					new DoubleTag("", $motion[0]),
-					new DoubleTag("", $motion[1]),
-					new DoubleTag("", $motion[2])
-				]),
-				"Rotation" => new ListTag("Rotation", [
-					new FloatTag("", lcg_value() * 360),
-					new FloatTag("", 0)
-				]),
-			]);
+			$nbt = Entity::createBaseNBT(
+			    new Vector3($this->x + $motion[0] * 2 + 0.5, $this->y + ($motion[1] > 0 ? $motion[1] : 0.5), $this->z + $motion[2] * 2 + 0.5),
+                new Vector3(...$motion),
+                lcg_value() * 360
+            );
 			switch($needItem->getId()){
 				case Item::ARROW:
-					$nbt->Fire = new ShortTag("Fire", 0);
+					$nbt->setShort("Fire", 0);
 					$entity = Entity::createEntity("Arrow", $this->getLevel(), $nbt);
 					break;
 				case Item::SNOWBALL:
@@ -254,18 +145,18 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 					$entity = Entity::createEntity("Egg", $this->getLevel(), $nbt);
 					break;
 				case Item::SPLASH_POTION:
-					$nbt->PotionId = new ShortTag("PotionId", $item->getDamage());
+					$nbt->setShort("PotionId", $item->getDamage());
 					$entity = Entity::createEntity("ThrownPotion", $this->getLevel(), $nbt);
 					break;
 				case Item::ENCHANTING_BOTTLE:
 					$entity = Entity::createEntity("ThrownExpBottle", $this->getLevel(), $nbt);
 					break;
 				default:
-					$nbt->Health = new ShortTag("Health", 5);
-					$nbt->Item = $needItem->nbtSerialize(-1, "Item");
-					$nbt->PickupDelay = new ShortTag("PickupDelay", 10);
+					$nbt->setShort("Health", 5);
+					$nbt->setTag($needItem->nbtSerialize(-1, "Item"));
+					$nbt->setShort("PickupDelay", 10);
 					$f = 0.3;
-					$entity = new ItemEntity($this->getLevel(), $nbt);
+					$entity = Entity::createEntity("Item", $this->getLevel(), $nbt);
 					break;
 			}
 
@@ -278,21 +169,16 @@ class Dispenser extends Spawnable implements InventoryHolder, Container, Nameabl
 		}
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		$c = new CompoundTag("", [
-			new StringTag("id", Tile::DISPENSER),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+        if($this->hasName()){
+            $nbt->setTag($this->namedtag->getTag("CustomName"));
+        }
+    }
 
-		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
-		}
-
-		return $c;
-	}
+    /**
+     * @return Inventory
+     */
+    public function getRealInventory(){
+        return $this->inventory;
+    }
 }

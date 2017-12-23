@@ -24,12 +24,13 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 
 class EnchantTable extends Spawnable implements Nameable {
+    use NameableTrait;
 
 	/**
 	 * EnchantTable constructor.
@@ -41,47 +42,29 @@ class EnchantTable extends Spawnable implements Nameable {
 		parent::__construct($level, $nbt);
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return $this->hasName() ? $this->namedtag->CustomName->getValue() : "Enchanting Table";
-	}
+	public function getDefaultName(): string{
+        return "Enchanting Table";
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function hasName() : bool{
-		return isset($this->namedtag->CustomName);
-	}
+    /**
+     * @param CompoundTag $nbt
+     */
+    public function addAdditionalSpawnData(CompoundTag $nbt){
+        if($this->hasName()){
+            $nbt->setTag($this->namedtag->getTag("CustomName"));
+        }
+    }
 
-	/**
-	 * @param string $str
-	 */
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		$nbt = new CompoundTag("", [
-			new StringTag("id", Tile::ENCHANT_TABLE),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
-
-		if($this->hasName()){
-			$nbt->CustomName = $this->namedtag->CustomName;
-		}
-
-		return $nbt;
-	}
+    /**
+     * @param CompoundTag $nbt
+     * @param Vector3 $pos
+     * @param null $face
+     * @param Item|null $item
+     * @param null $player
+     */
+    protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, $face = null, $item = null, $player = null){
+        if($item !== null and $item->hasCustomName()){
+            $nbt->setString("CustomName", $item->getCustomName());
+        }
+    }
 }

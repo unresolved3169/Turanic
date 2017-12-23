@@ -41,7 +41,9 @@ use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 
+// TODO : OPTIMIZE
 class CommandBlock extends Spawnable implements Nameable,CommandSender {
+    use NameableTrait;
 
     const NORMAL = 0;
     const REPEATING = 1;
@@ -87,30 +89,16 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
         $this->scheduleUpdate();
     }
 
-    /**
-     * @param string $str
-     */
-    public function setName(string $str){
-        $this->namedtag->setString("CustomName", $str);
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasName() : bool{
-        return isset($this->namedtag->CustomName);
-    }
-
-    public function getName() : string{
-        return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "CommandBlock";
+    public function getDefaultName(): string{
+        return "Command Block";
     }
 
     public function getCommand() : string{
-        return isset($this->namedtag->Command) ? $this->namedtag->Command->getValue() : "";
+        return $this->namedtag->getString("Command", "");
     }
 
     public function setCommand(string $command){
-        $this->namedtag->Command = new StringTag("Command", $command);
+        $this->namedtag->setString("Command", $command);
     }
 
     public function getSuccessCount() : int{
@@ -121,22 +109,19 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
         $this->server->dispatchCommand($this, $this->getCommand());
     }
 
-    public function getSpawnCompound(){
-        $nbt = new CompoundTag("", [
-            new StringTag("id", Tile::COMMAND_BLOCK),
-            new IntTag("x", (int) $this->x),
-            new IntTag("y", (int) $this->y),
-            new IntTag("z", (int) $this->z),
-            new IntTag("blockType", $this->getBlockType()),
-            new StringTag("Command", $this->getCommand()),
-            new StringTag("LastOutput", $this->getLastOutput()),
-            new ByteTag("TrackOutput", $this->getTrackOutput()),
-            new IntTag("SuccessCount", $this->getSuccessCount()),
-            new ByteTag("auto", (int) $this->getAuto()),
-            new ByteTag("powered", $this->getPowered()),
-            new ByteTag("conditionMet", $this->isConditional()),
-        ]);
-        return $nbt;
+    public function addAdditionalSpawnData(CompoundTag $nbt){
+        $nbt->setTag($this->namedtag->getTag("blockType"));
+        $nbt->setTag($this->namedtag->getTag("Command"));
+        $nbt->setTag($this->namedtag->getTag("LastOutput"));
+        $nbt->setTag($this->namedtag->getTag("TrackOutput"));
+        $nbt->setTag($this->namedtag->getTag("SuccessCount"));
+        $nbt->setTag($this->namedtag->getTag("auto"));
+        $nbt->setTag($this->namedtag->getTag("powered"));
+        $nbt->setTag($this->namedtag->getTag("conditionMet"));
+
+        if($this->hasName()){
+            $nbt->setTag($this->namedtag->getTag("CustomName"));
+        }
     }
 
     public function isNormal(){
@@ -202,7 +187,7 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
     }
 
     public function getLastOutput() : string{
-        return isset($this->namedtag->LastOutput) ? $this->namedtag->LastOutput->getValue() : "";
+        return $this->namedtag->getString("LastOutput", "");
     }
 
     public function show(Player $player){

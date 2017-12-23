@@ -91,14 +91,16 @@ abstract class Spawnable extends Tile {
 	 */
 	public function getSpawnCompound(){
 		$nbt = new CompoundTag("", [
-			$this->namedtag->id,
-			$this->namedtag->x,
-			$this->namedtag->y,
-			$this->namedtag->z
+            $this->namedtag->getTag("id"),
+            $this->namedtag->getTag("x"),
+            $this->namedtag->getTag("y"),
+            $this->namedtag->getTag("z")
 		]);
 		$this->addAdditionalSpawnData($nbt);
 		return $nbt;
 	}
+
+    abstract public function addAdditionalSpawnData(CompoundTag $nbt);
 
 	/**
 	 * Called when a player updates a block entity's NBT data
@@ -111,9 +113,5 @@ abstract class Spawnable extends Tile {
 	 */
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
 		return false;
-	}
-	
-	public function addAdditionalSpawnData(CompoundTag $nbt){
-		
 	}
 }

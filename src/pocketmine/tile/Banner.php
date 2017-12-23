@@ -24,7 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
@@ -94,141 +96,207 @@ class Banner extends Spawnable{
 	const COLOR_WHITE = 15;
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->Base) or !($nbt->Base instanceof IntTag)){
-			$nbt->Base = new IntTag("Base", 15);
-		}
-		
-		if(!isset($nbt->Patterns) or !($nbt->Patterns instanceof ListTag)){
-			$nbt->Patterns = new ListTag("Patterns");
-		}
+        if(!$nbt->hasTag(self::TAG_BASE, IntTag::class)){
+            $nbt->setInt(self::TAG_BASE, 0);
+        }
+        if(!$nbt->hasTag(self::TAG_PATTERNS, ListTag::class)){
+            $nbt->setTag(new ListTag(self::TAG_PATTERNS));
+        }
 		
 		parent::__construct($level, $nbt);
 	}
 	
-	public function getSpawnCompound(){
-		$c = new CompoundTag("", [
-			new StringTag("id", Tile::BANNER),
-			new IntTag("x", (int)$this->x),
-			new IntTag("y", (int)$this->y),
-			new IntTag("z", (int)$this->z)
-		]);
-		
-		return $c;
-	}
-	
 	public function addAdditionalSpawnData(CompoundTag $nbt){
-		$nbt->Patterns = $this->namedtag->Patterns;
-		$nbt->Base = $this->namedtag->Base;
+        $nbt->setTag($this->namedtag->getTag(self::TAG_PATTERNS));
+        $nbt->setTag($this->namedtag->getTag(self::TAG_BASE));
 	}
-	
+
+    /**
+     * Returns the color of the banner base.
+     *
+     * @return int
+     */
 	public function getBaseColor(){
-		return $this->namedtag->Base->getValue();
+        return $this->namedtag->getInt(self::TAG_BASE, 0);
 	}
-	
-	public function setBaseColor($color){
-		$this->namedtag->Base->setValue($color & 0x0f);
-		$this->onChanged();
-	}
-	
-	public function getPatternIds(){
-		$keys = array_keys((array) $this->namedtag->Patterns);
 
-		foreach($keys as $key => $index){
-			if(!is_numeric($index)){
-				unset($keys[$key]);
-			}
-		}
-		
-		return $keys;
-	}
-	
-	public function addPattern($pattern, $color){
-		$patternId = 0;
-		if($this->getPatternCount() !== 0) {
-			$patternId = max($this->getPatternIds()) + 1;
-		}
+    /**
+     * Sets the color of the banner base.
+     *
+     * @param int $color
+     */
+    public function setBaseColor(int $color) {
+        $this->namedtag->setInt(self::TAG_BASE, $color & 0x0f);
+        $this->onChanged();
+    }
 
-		$this->namedtag->Patterns->{$patternId} = new CompoundTag("", [
-			new IntTag("Color", $color & 0x0f),
-			new StringTag("Pattern", $pattern)
-		]);
+    /**
+     * Returns an array containing all pattern IDs
+     *
+     * @return array
+     */
+    public function getPatternIds() : array{
+        $keys = array_keys((array) $this->namedtag->getTag(self::TAG_PATTERNS));
+        return array_filter($keys, function(string $key){
+            return is_numeric($key);
+        }, ARRAY_FILTER_USE_KEY);
+    }
 
-		$this->onChanged();
-		
-		return $patternId;
-	}
-	
-	public function patternExists($patternId){
-		return isset($this->namedtag->Patterns->{$patternId});
-	}
-	
-	public function getPatternData($patternId){
-		if(!$this->patternExists($patternId)){
-			return [];
-		}
+    /**
+     * Applies a new pattern on the banner with the given color.
+     *
+     * @param string $pattern
+     * @param int    $color
+     *
+     * @return int ID of pattern.
+     */
+    public function addPattern(string $pattern, int $color) : int{
+        $patternId = 0;
+        if($this->getPatternCount() !== 0){
+            $patternId = max($this->getPatternIds()) + 1;
+        }
 
-		return [
-			"Color" => $this->namedtag->Patterns->{$patternId}->Color->getValue(),
-			"Pattern" => $this->namedtag->Patterns->{$patternId}->Pattern->getValue()
-		];
-	}
-	
-	public function changePattern($patternId, $pattern, $color){
-		if(!$this->patternExists($patternId)){
-			return true;
-		}
+        $list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+        assert($list !== null);
+        $list[$patternId] = new CompoundTag("", [
+            new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+            new StringTag(self::TAG_PATTERN_NAME, $pattern)
+        ]);
 
-		$this->namedtag->Patterns->{$patternId}->setValue([
-			new IntTag("Color", $color & 0x0f),
-			new StringTag("Pattern", $pattern)
-		]);
+        $this->onChanged();
+        return $patternId;
+    }
 
-		$this->onChanged();
-		
-		return true;
-	}
-	
-	public function deletePattern($patternId){
-		if(!$this->patternExists($patternId)){
-			return true;
-		}
-		
-		unset($this->namedtag->Patterns->{$patternId});
+    /**
+     * Returns whether a pattern with the given ID exists on the banner or not.
+     *
+     * @param int $patternId
+     *
+     * @return bool
+     */
+    public function patternExists(int $patternId) : bool{
+        return isset($this->namedtag->getListTag(self::TAG_PATTERNS)[$patternId]);
+    }
 
-		$this->onChanged();
-		
-		return true;
-	}
-	
-	public function deleteTopPattern(){
-		$keys = $this->getPatternIds();
-		if(empty($keys)){
-			return true;
-		}
+    /**
+     * Returns the data of a pattern with the given ID.
+     *
+     * @param int $patternId
+     *
+     * @return array
+     */
+    public function getPatternData(int $patternId) : array{
+        if(!$this->patternExists($patternId)){
+            return [];
+        }
 
-		$index = max($keys);
-		unset($this->namedtag->Patterns->{$index});
+        $list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+        assert($list instanceof ListTag);
+        $patternTag = $list[$patternId];
+        assert($patternTag instanceof CompoundTag);
 
-		$this->onChanged();
-		
-		return true;
-	}
-	
-	public function deleteBottomPattern(){
-		$keys = $this->getPatternIds();
-		if(empty($keys)){
-			return true;
-		}
+        return [
+            self::TAG_PATTERN_COLOR => $patternTag->getInt(self::TAG_PATTERN_COLOR),
+            self::TAG_PATTERN_NAME => $patternTag->getString(self::TAG_PATTERN_NAME)
+        ];
+    }
 
-		$index = min($keys);
-		unset($this->namedtag->Patterns->{$index});
+    /**
+     * Changes the pattern of a previously existing pattern.
+     *
+     * @param int    $patternId
+     * @param string $pattern
+     * @param int    $color
+     *
+     * @return bool indicating success.
+     */
+    public function changePattern(int $patternId, string $pattern, int $color) : bool{
+        if(!$this->patternExists($patternId)){
+            return false;
+        }
 
-		$this->onChanged();
-		
-		return true;
-	}
+        $list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+        assert($list instanceof ListTag);
+
+        $list[$patternId] = new CompoundTag("", [
+            new IntTag(self::TAG_PATTERN_COLOR, $color & 0x0f),
+            new StringTag(self::TAG_PATTERN_NAME, $pattern)
+        ]);
+
+        $this->onChanged();
+        return true;
+    }
+
+    /**
+     * Deletes a pattern from the banner with the given ID.
+     *
+     * @param int $patternId
+     *
+     * @return bool indicating whether the pattern existed or not.
+     */
+    public function deletePattern(int $patternId) : bool{
+        if(!$this->patternExists($patternId)){
+            return false;
+        }
+
+        $list = $this->namedtag->getListTag(self::TAG_PATTERNS);
+        if($list !== null){
+            unset($list[$patternId]);
+        }
+
+        $this->onChanged();
+        return true;
+    }
+
+    /**
+     * Deletes the top most pattern of the banner.
+     *
+     * @return bool indicating whether the banner was empty or not.
+     */
+    public function deleteTopPattern() : bool{
+        $keys = $this->getPatternIds();
+        if(empty($keys)){
+            return false;
+        }
+
+        return $this->deletePattern(max($keys));
+    }
+
+    /**
+     * Deletes the bottom pattern of the banner.
+     *
+     * @return bool indicating whether the banner was empty or not.
+     */
+    public function deleteBottomPattern() : bool{
+        $keys = $this->getPatternIds();
+        if(empty($keys)){
+            return false;
+        }
+
+        return $this->deletePattern(min($keys));
+    }
 	
 	public function getPatternCount(){
 		return count($this->getPatternIds());
 	}
+
+    /**
+     * @param CompoundTag $nbt
+     * @param Vector3 $pos
+     * @param null $face
+     * @param Item|null $item
+     * @param null $player
+     */
+    protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, $face = null, $item = null, $player = null){
+        $nbt->setInt(self::TAG_BASE, $item !== null ? $item->getDamage() & 0x0f : 0);
+
+        if($item !== null){
+            if($item->getNamedTag()->hasTag(self::TAG_PATTERNS, ListTag::class)){
+                $nbt->setTag($item->getNamedTag()->getListTag(self::TAG_PATTERNS));
+            }
+            if($item->hasCustomName()){
+                $nbt->setString("CustomName", $item->getCustomName());
+            }
+        }
+    }
 }

@@ -31,14 +31,17 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
 class MobSpawner extends Spawnable {
+
+    const TAG_ENTITY_ID = "EntityId";
+    const TAG_SPAWN_COUNT = "SpawnCount";
+    const TAG_SPAWN_RANGE = "SpawnRange";
+    const TAG_MIN_SPAWN_DELAY = "MinSpawnDelay";
+    const TAG_MAX_SPAWN_DELAY = "MaxSpawnDelay";
+    const TAG_DELAY = "Delay";
 
 	/**
 	 * MobSpawner constructor.
@@ -47,23 +50,23 @@ class MobSpawner extends Spawnable {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->EntityId) or !($nbt->EntityId instanceof IntTag)){
-			$nbt->EntityId = new IntTag("EntityId", 0);
+		if(!$nbt->hasTag(self::TAG_ENTITY_ID, IntTag::class)){
+			$nbt->setInt(self::TAG_ENTITY_ID, 0);
 		}
-		if(!isset($nbt->SpawnCount) or !($nbt->SpawnCount instanceof IntTag)){
-			$nbt->SpawnCount = new IntTag("SpawnCount", 4);
+		if(!$nbt->hasTag(self::TAG_SPAWN_COUNT, IntTag::class)){
+			$nbt->setInt(self::TAG_SPAWN_COUNT, 4);
 		}
-		if(!isset($nbt->SpawnRange) or !($nbt->SpawnRange instanceof IntTag)){
-			$nbt->SpawnRange = new IntTag("SpawnRange", 4);
+        if(!$nbt->hasTag(self::TAG_SPAWN_RANGE, IntTag::class)){
+			$nbt->setInt(self::TAG_SPAWN_RANGE, 4);
 		}
-		if(!isset($nbt->MinSpawnDelay) or !($nbt->MinSpawnDelay instanceof IntTag)){
-			$nbt->MinSpawnDelay = new IntTag("MinSpawnDelay", 200);
+		if(!$nbt->hasTag(self::TAG_MIN_SPAWN_DELAY, IntTag::class)){
+			$nbt->setInt(self::TAG_MIN_SPAWN_DELAY, 200);
 		}
-		if(!isset($nbt->MaxSpawnDelay) or !($nbt->MaxSpawnDelay instanceof IntTag)){
-			$nbt->MaxSpawnDelay = new IntTag("MaxSpawnDelay", 799);
+		if(!$nbt->hasTag(self::TAG_MAX_SPAWN_DELAY, IntTag::class)){
+			$nbt->setInt(self::TAG_MAX_SPAWN_DELAY, 799);
 		}
-		if(!isset($nbt->Delay) or !($nbt->Delay instanceof IntTag)){
-			$nbt->Delay = new IntTag("Delay", mt_rand($nbt->MinSpawnDelay->getValue(), $nbt->MaxSpawnDelay->getValue()));
+		if(!$nbt->hasTag(self::TAG_DELAY, IntTag::class)){
+			$nbt->setInt("Delay", mt_rand($nbt->getInt(self::TAG_MIN_SPAWN_DELAY), $nbt->getInt(self::TAG_MAX_SPAWN_DELAY)));
 		}
 		parent::__construct($level, $nbt);
 		if($this->getEntityId() > 0){
@@ -75,14 +78,14 @@ class MobSpawner extends Spawnable {
 	 * @return int|null
 	 */
 	public function getEntityId(){
-		return $this->namedtag["EntityId"];
+		return $this->namedtag->getInt(self::TAG_ENTITY_ID);
 	}
 
 	/**
 	 * @param int $id
 	 */
 	public function setEntityId(int $id){
-		$this->namedtag->EntityId->setValue($id);
+		$this->namedtag->setInt(self::TAG_ENTITY_ID, $id);
 		$this->onChanged();
 		$this->scheduleUpdate();
 	}
@@ -91,70 +94,70 @@ class MobSpawner extends Spawnable {
 	 * @return null
 	 */
 	public function getSpawnCount(){
-		return $this->namedtag["SpawnCount"];
+		return $this->namedtag->getInt(self::TAG_SPAWN_COUNT);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setSpawnCount(int $value){
-		$this->namedtag->SpawnCount->setValue($value);
+		$this->namedtag->setInt(self::TAG_SPAWN_COUNT, $value);
 	}
 
 	/**
-	 * @return null
+	 * @return int
 	 */
 	public function getSpawnRange(){
-		return $this->namedtag["SpawnRange"];
+		return $this->namedtag->getInt(self::TAG_SPAWN_RANGE);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setSpawnRange(int $value){
-		$this->namedtag->SpawnRange->setValue($value);
+		$this->namedtag->setInt(self::TAG_SPAWN_RANGE, $value);
 	}
 
 	/**
 	 * @return null
 	 */
 	public function getMinSpawnDelay(){
-		return $this->namedtag["MinSpawnDelay"];
+		return $this->namedtag->getInt(self::TAG_MIN_SPAWN_DELAY);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setMinSpawnDelay(int $value){
-		$this->namedtag->MinSpawnDelay->setValue($value);
+		$this->namedtag->setInt(self::TAG_MIN_SPAWN_DELAY, $value);
 	}
 
 	/**
 	 * @return null
 	 */
 	public function getMaxSpawnDelay(){
-		return $this->namedtag["MaxSpawnDelay"];
+		return $this->namedtag->getInt(self::TAG_MAX_SPAWN_DELAY);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setMaxSpawnDelay(int $value){
-		$this->namedtag->MaxSpawnDelay->setValue($value);
+		$this->namedtag->setInt(self::TAG_MAX_SPAWN_DELAY, $value);
 	}
 
 	/**
 	 * @return null
 	 */
 	public function getDelay(){
-		return $this->namedtag["Delay"];
+		return $this->namedtag->getInt(self::TAG_DELAY);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setDelay(int $value){
-		$this->namedtag->Delay->setValue($value);
+		$this->namedtag->setInt(self::TAG_DELAY, $value);
 	}
 
 	/**
@@ -209,22 +212,7 @@ class MobSpawner extends Spawnable {
 						$success++;
 						$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityGenerateEvent($pos, $this->getEntityId(), EntityGenerateEvent::CAUSE_MOB_SPAWNER));
 						if(!$ev->isCancelled()){
-							$nbt = new CompoundTag("", [
-								"Pos" => new ListTag("Pos", [
-									new DoubleTag("", $pos->x),
-									new DoubleTag("", $pos->y),
-									new DoubleTag("", $pos->z)
-								]),
-								"Motion" => new ListTag("Motion", [
-									new DoubleTag("", 0),
-									new DoubleTag("", 0),
-									new DoubleTag("", 0)
-								]),
-								"Rotation" => new ListTag("Rotation", [
-									new FloatTag("", mt_rand() / mt_getrandmax() * 360),
-									new FloatTag("", 0)
-								]),
-							]);
+						    $nbt = Entity::createBaseNBT($pos, null, mt_rand() / mt_getrandmax() * 360);
 							$entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), $nbt);
 							$entity->spawnToAll();
 						}
@@ -243,18 +231,7 @@ class MobSpawner extends Spawnable {
 		return true;
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		$c = new CompoundTag("", [
-			new StringTag("id", Tile::MOB_SPAWNER),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z),
-			new IntTag("EntityId", (int) $this->getEntityId())
-		]);
-
-		return $c;
-	}
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+        $nbt->setTag($this->namedtag->getTag(self::TAG_ENTITY_ID));
+    }
 }

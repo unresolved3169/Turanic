@@ -25,52 +25,18 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 
 class EnderChest extends Spawnable implements Nameable {
+    use NameableTrait;
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return isset($this->namedtag->CustomName) ? $this->namedtag->CustomName->getValue() : "Ender Chest";
-	}
+	public function getDefaultName(): string{
+        return "EnderChest";
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function hasName() : bool{
-		return isset($this->namedtag->CustomName);
-	}
-
-	/**
-	 * @param string $str
-	 */
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		$c = new CompoundTag("", [
-			new StringTag("id", Tile::ENDER_CHEST),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z)
-		]);
-
-		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
-		}
-		return $c;
-	}
+    public function addAdditionalSpawnData(CompoundTag $nbt){
+        if($this->hasName()){
+            $nbt->setTag($this->namedtag->getTag("CustomName"));
+        }
+    }
 
 }

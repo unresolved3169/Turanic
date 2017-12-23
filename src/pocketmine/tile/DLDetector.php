@@ -28,8 +28,6 @@ use pocketmine\block\Block;
 use pocketmine\block\DaylightDetector;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 
 class DLDetector extends Spawnable {
 	private $lastType = 0;
@@ -89,15 +87,6 @@ class DLDetector extends Spawnable {
 		return true;
 	}
 
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		return new CompoundTag("", [
-			new StringTag("id", Tile::DAY_LIGHT_DETECTOR),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z),
-		]);
-	}
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+    }
 }

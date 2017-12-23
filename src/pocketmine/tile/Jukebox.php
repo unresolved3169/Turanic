@@ -24,25 +24,29 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
+use pocketmine\block\Block;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\item\{MusicDisc, Item};
 
 class Jukebox extends Spawnable {
 
+    const TAG_RECORD = "record";
+    const TAG_RECORD_ITEM = "recordItem";
+
+    /** @var int */
     protected $record = MusicDisc::NO_RECORD;
+    /** @var Item */
     protected $recordItem;
 
     public function __construct(Level $level, CompoundTag $nbt){
-        if(isset($nbt->record)){
-            $this->record = $nbt->record->getValue();
-        }
-        
-        if(isset($nbt->recordItem)){
-            $this->recordItem = Item::nbtDeserialize($nbt->recordItem->getValue());
+        $this->record = $nbt->getInt(self::TAG_RECORD, MusicDisc::NO_RECORD);
+
+        if($nbt->hasTag(self::TAG_RECORD_ITEM, CompoundTag::class)){
+            $this->recordItem = Item::nbtDeserialize($nbt->getCompoundTag(self::TAG_RECORD_ITEM));
+        }else{
+            $this->recordItem = Item::get(Block::AIR);
         }
 
         parent::__construct($level, $nbt);
@@ -56,22 +60,22 @@ class Jukebox extends Spawnable {
     	$this->record = $record;
     }
     
-    public function getRecordItem(){
+    public function getRecordItem() : Item{
     	return $this->recordItem;
     }
     
-    public function setRecordItem($item = null){
+    public function setRecordItem(Item $item){
     	$this->recordItem = $item;
     }
 
     public function saveNBT(){
         parent::saveNBT();
-        $this->namedtag->record = new IntTag("record", $this->record);
-        $this->namedtag->recordItem = ($this->recordItem instanceof MusicDisc ? $this->recordItem->nbtSerialize() : (Item::get(0))->nbtSerialize());
+        $this->namedtag->setInt("record", $this->record);
+        $this->namedtag->setTag($this->recordItem instanceof MusicDisc ? $this->recordItem->nbtSerialize() : (Item::get(0))->nbtSerialize());
     }
     
     public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-        if($nbt["id"] !== Tile::JUKEBOX){
+        if($nbt->getString("id") !== Tile::JUKEBOX){
             return false;
         }
         
@@ -79,18 +83,9 @@ class Jukebox extends Spawnable {
         return true;
     }
 
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		return new CompoundTag("", [
-			new StringTag("id", Tile::JUKEBOX),
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z),
-			new IntTag("record", $this->record),
-			($this->recordItem instanceof MusicDisc ? $this->recordItem->nbtSerialize() : (Item::get(0))->nbtSerialize())
-		]);
-	}
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+	    $nbt->setInt(self::TAG_RECORD, $this->record);
+	    $nbt->setTag($this->recordItem instanceof MusicDisc ? $this->recordItem->nbtSerialize(-1, self::TAG_RECORD_ITEM) : (Item::get(Block::AIR))->nbtSerialize(-1, self::TAG_RECORD_ITEM));
+    }
 
 }

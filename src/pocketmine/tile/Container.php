@@ -26,18 +26,20 @@ use pocketmine\item\Item;
 
 interface Container {
 
+    const TAG_ITEMS = "Items";
+
 	/**
 	 * @param int $index
 	 *
 	 * @return Item
 	 */
-	public function getItem($index);
+	public function getItem(int $index);
 
 	/**
 	 * @param int  $index
 	 * @param Item $item
 	 */
-	public function setItem($index, Item $item);
+	public function setItem(int $index, Item $item);
 
 	/**
 	 * @return int

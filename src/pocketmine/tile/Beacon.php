@@ -29,16 +29,19 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\block\Block;
 use pocketmine\entity\Effect;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
 class Beacon extends Spawnable implements Nameable, InventoryHolder {
+    use NameableTrait;
 
+    const TAG_PRIMARY = "primary";
+    const TAG_SECONDARY = "secondary";
+
+    /** @var BeaconInventory */
 	private $inventory;
 	protected $currentTick = 0;
+
 	const POWER_LEVEL_MAX = 4;
 
 	/**
@@ -48,66 +51,33 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->primary)){
-			$nbt->setInt("primary", 0);
+		if(!$nbt->hasTag(self::TAG_PRIMARY)){
+			$nbt->setInt(self::TAG_PRIMARY, 0);
 		}
-		if(!isset($nbt->secondary)){
-			$nbt->setInt("secondary", 0);
+		if(!$nbt->hasTag(self::TAG_SECONDARY)){
+			$nbt->setInt(self::TAG_SECONDARY, 0);
 		}
-		$this->inventory = new BeaconInventory($this);
-		parent::__construct($level, $nbt);
-		$this->scheduleUpdate();
+
+        parent::__construct($level, $nbt);
+        $this->inventory = new BeaconInventory($this);
+        $this->scheduleUpdate();
 	}
 
-	public function saveNBT(){
-		parent::saveNBT();
-	}
+	public function addAdditionalSpawnData(CompoundTag $nbt){
+        $nbt->setByte("isMovable", 1);
+        $nbt->setTag($this->namedtag->getTag(self::TAG_PRIMARY));
+        $nbt->setTag($this->namedtag->getTag(self::TAG_SECONDARY));
 
-	/**
-	 * @return CompoundTag
-	 */
-	public function getSpawnCompound(){
-		$c = new CompoundTag("", [
-			new StringTag("id", Tile::BEACON),
-			new ByteTag("isMovable", 1), // true
-			new IntTag("x", (int) $this->x),
-			new IntTag("y", (int) $this->y),
-			new IntTag("z", (int) $this->z),
-			new IntTag("primary", $this->namedtag->getInt("primary")),
-			new IntTag("secondary", $this->namedtag->getInt("secondary"))
-		]);
-		if($this->hasName()){
-			$c->CustomName = $this->namedtag->CustomName;
-		}
-		return $c;
-	}
+        if($this->hasName()) {
+            $nbt->setTag($this->namedtag->getTag("CustomName"));
+        }
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return $this->hasName() ? $this->namedtag->CustomName->getValue() : "Beacon";
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function hasName(): bool{
-		return isset($this->namedtag->CustomName);
-	}
+    public function getDefaultName(): string{
+        return "Beacon";
+    }
 
     /**
-     * @param string $str
-     */
-	public function setName(string $str){
-		if($str === ""){
-			unset($this->namedtag->CustomName);
-			return;
-		}
-		$this->namedtag->CustomName = new StringTag("CustomName", $str);
-	}
-
-	/**
 	 * @return BeaconInventory
 	 */
 	public function getInventory(){
@@ -121,11 +91,11 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 	 * @return bool
 	 */
 	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-		if($nbt["id"] !== Tile::BEACON){
+		if($nbt->getString("id") !== Tile::BEACON){
 			return false;
 		}
-		$this->namedtag->setInt("primary", $nbt->getInt("primary", 0));
-		$this->namedtag->setInt("secondary", $nbt->getInt("secondary", 0));
+		$this->namedtag->setInt(self::TAG_PRIMARY, $nbt->getInt(self::TAG_PRIMARY, 0));
+		$this->namedtag->setInt(self::TAG_SECONDARY, $nbt->getInt(self::TAG_SECONDARY, 0));
 		return true;
 	}
 
@@ -147,10 +117,10 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 		$id = 0;
 
 		if($level > 0){
-			if($this->namedtag->hasTag("secondary") && $this->namedtag->getInt("primary", 0) != 0){
-				$id = $this->namedtag->getInt("primary");
-			}else if($this->namedtag->hasTag("secondary") && $this->namedtag->getInt("secondary", 0) != 0){
-				$id = $this->namedtag->getInt("secondary");
+			if($this->namedtag->hasTag(self::TAG_PRIMARY) && $this->namedtag->getInt(self::TAG_PRIMARY, 0) != 0){
+				$id = $this->namedtag->getInt(self::TAG_PRIMARY);
+			}else if($this->namedtag->hasTag(self::TAG_SECONDARY) && $this->namedtag->getInt(self::TAG_SECONDARY, 0) != 0){
+				$id = $this->namedtag->getInt(self::TAG_SECONDARY);
 			}
 			if($id != 0){
 				$range = ($level + 1) * 10;
@@ -195,5 +165,4 @@ class Beacon extends Spawnable implements Nameable, InventoryHolder {
 		}
 		return self::POWER_LEVEL_MAX;
 	}
-
 }
