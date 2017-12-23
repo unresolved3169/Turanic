@@ -79,7 +79,8 @@ class Weather {
             }
         }
 
-        if(($this->isThunder() or $this->isRainyThunder()) and mt_rand(0,10000) < 20){
+        if(($this->isThunder() or $this->isRainyThunder()) and mt_rand(0,10000) == 0){
+            // TODO : Change
             $players = $this->level->getPlayers();
             if(count($players) > 0){
                 $p = $players[array_rand($players)];

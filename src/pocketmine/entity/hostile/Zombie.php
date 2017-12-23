@@ -30,7 +30,9 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior};
+use pocketmine\entity\behavior\{
+    PanicBehavior, StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior
+};
 
 class Zombie extends Monster {
 	const NETWORK_ID = self::ZOMBIE;
@@ -44,7 +46,7 @@ class Zombie extends Monster {
 	public $gravity = 0.3;
 	
 	public function initEntity(){
-		//$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
+		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));

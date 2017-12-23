@@ -22,7 +22,13 @@
 
 namespace pocketmine\entity\behavior;
 
+use pocketmine\entity\Mob;
+
 class PanicBehavior extends StrollBehavior{
+
+    public function __construct(Mob $entity, $speed = 0.25, $speedMultiplier = 0.75){
+        parent::__construct($entity, 60, $speed, $speedMultiplier);
+    }
 
     public function shouldStart() : bool{
         return $this->entity->getLastDamageCause() != null;
