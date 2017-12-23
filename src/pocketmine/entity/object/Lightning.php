@@ -32,13 +32,16 @@ use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\ExplodePacket;
+use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\Player;
+use pocketmine\Server;
 
+// TODO : OPTIMIZATION
 class Lightning extends Entity {
 	const NETWORK_ID = self::LIGHTNING_BOLT;
 
-	public $width = 0.3;
-	public $height = 0;
+    public $width = 0.3;
+    public $height = 1.8;
 
 	/**
 	 * @return string
@@ -59,12 +62,13 @@ class Lightning extends Entity {
 	 * @return bool
 	 */
 	public function onUpdate(int $tick){
-		parent::onUpdate($tick);
-		if($this->age > 20){
-			$this->kill();
-			$this->close();
-		}
-		return true;
+	    // TODO
+	    $this->age++;
+        $this->lastUpdate = $tick;
+        if($this->age > 6 * 20){
+            $this->close();
+        }
+        return true;
 	}
 
 	/**
@@ -74,20 +78,18 @@ class Lightning extends Entity {
 		$pk = new AddEntityPacket();
         $pk->entityRuntimeId = $this->getId();
 		$pk->type = self::NETWORK_ID;
-        $pk->position = $this->getPosition();
+        $pk->position = $this->asVector3();
         $pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
 
-		$pk = new ExplodePacket();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->radius = 10;
-		$pk->records = [];
-		$player->dataPacket($pk);
+		$pk2 = new ExplodePacket();
+		$pk2->position = $this->asVector3();
+		$pk2->radius = 10;
+		$pk2->records = [];
+		$player->dataPacket($pk2);
 
 		parent::spawnTo($player);
 	}
@@ -121,6 +123,16 @@ class Lightning extends Entity {
 					$entity->setPowered(true, $this);
 				}
 			}
+
+            $spk = new PlaySoundPacket();
+            $spk->soundName = "ambient.weather.lightning.impact";
+            $spk->x = $this->getX();
+            $spk->y = $this->getY();
+            $spk->z = $this->getZ();
+            $spk->volume = 500;
+            $spk->pitch = 1;
+
+            Server::getInstance()->broadcastPacket($this->getLevel()->getPlayers(), $spk);
 		}
 	}
 }

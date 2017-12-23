@@ -24,11 +24,14 @@ declare(strict_types=1);
 
 namespace pocketmine\level\weather;
 
+use pocketmine\block\Block;
 use pocketmine\event\level\WeatherChangeEvent;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\Server;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\Player;
+use pocketmine\utils\Random;
 
 class Weather {
 
@@ -59,7 +62,7 @@ class Weather {
         if(!$this->canCalculate()) return;
         $this->rainTime--;
         if ($this->rainTime <= 0) {
-            if ($this->setRainy(!$this->isRainy())) {
+            if ($this->setWeather($this->isRainy() ? self::SUNNY : self::RAINY)) {
                 if ($this->isRainy()) {
                     $this->rainTime = (mt_rand(0,12000) + 12000);
                 } else {
@@ -70,7 +73,7 @@ class Weather {
 
         $this->thunderTime--;
         if ($this->thunderTime <= 0) {
-            if ($this->setThunder(!$this->isThunder())) {
+            if ($this->setWeather($this->isThunder() ? self::SUNNY : self::RAINY_THUNDER)) {
                 if ($this->isThunder()) {
                     $this->thunderTime = (mt_rand(0, 12000) + 3600);
                 } else {
@@ -79,90 +82,63 @@ class Weather {
             }
         }
 
-        if(($this->isThunder() or $this->isRainyThunder()) and mt_rand(0,10000) == 0){
-            // TODO : Change
-            $players = $this->level->getPlayers();
-            if(count($players) > 0){
-                $p = $players[array_rand($players)];
-                $x = (int) $p->x + mt_rand(-64, 64);
-                $z = (int) $p->z + mt_rand(-64, 64);
-                $y = $this->level->getHighestBlockAt($x, $z);
-                $this->level->spawnLightning($this->temporalVector->setComponents($x, $y, $z));
+        if($this->isRainyThunder() or $this->isRainy()){
+            foreach ($this->level->getChunks() as $chunk){
+                if(mt_rand(0,10000) != 0)
+                    return;
+
+                $lcg = (new Random())->nextInt() * 3 + 1013904223;
+                $lcg = $lcg >> 2;
+
+                $chunkX = $chunk->getX() * 16;
+                $chunkZ = $chunk->getZ() * 16;
+                $vector = $this->level->adjustPosToNearbyEntity(new Vector3($chunkX + ($lcg & 15), 0, $chunkZ + ($lcg >> 8 & 15)));
+
+                $bId = $this->level->getBlockIdAt($vector->getFloorX(), $vector->getFloorY(), $vector->getFloorZ());
+                if ($bId != Block::TALL_GRASS && $bId != Block::WATER)
+                    $vector->y += 1;
+
+                $this->level->spawnLightning($vector);
+                $this->level->broadcastLevelSoundEvent($vector, LevelSoundEventPacket::SOUND_THUNDER, 93);
+                $this->level->broadcastLevelSoundEvent($vector, LevelSoundEventPacket::SOUND_EXPLODE, 93);
             }
         }
-    }
-
-    public function setRainy(bool $rain, bool $event = true){
-        if($event) {
-            $this->level->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this->level, self::RAINY, $this->rainTime));
-
-            if ($ev->isCancelled()) {
-                return false;
-            }
-        }
-
-        $this->weather = self::RAINY;
-
-        $pk = new LevelEventPacket();
-
-        if ($rain) {
-            $pk->evid = LevelEventPacket::EVENT_START_RAIN;
-            $pk->data = mt_rand(0, 50000) + 10000;
-            $this->rainTime = (mt_rand(0, 12000) + 12000);
-        } else {
-            $pk->evid = LevelEventPacket::EVENT_STOP_RAIN;
-            $this->rainTime = (mt_rand(0, 168000) + 12000);
-        }
-
-        Server::getInstance()->broadcastPacket($this->level->getPlayers(), $pk);
-
-        return true;
     }
 
     public function isRainy() : bool{
         return $this->getWeather() == self::RAINY;
     }
 
-    public function setThunder(bool $thunder, $rainy = false) : bool{
-        $this->level->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this->level, $rainy ? self::RAINY_THUNDER : self::THUNDER, $this->thunderTime));
+    public function setWeather(int $weather){
+        $this->level->getServer()->getPluginManager()->callEvent($ev = new WeatherChangeEvent($this->level, $weather));
 
         if ($ev->isCancelled()) {
             return false;
         }
+        $weather = $ev->getWeather();
 
-        if ($thunder && $rainy && !$this->isRainy()) {
-            $this->setRainy(true, false);
-        }
+        if($weather >= 0 && $weather <= 3){
+            $this->weather = $weather;
+            switch ($weather){
+                case self::SUNNY:
+                    $this->rainTime = (mt_rand(0, 168000) + 12000);
+                    $this->thunderTime = (mt_rand(0, 168000) + 12000);
+                    break;
+                case self::RAINY:
+                    $this->rainTime = (mt_rand(0, 12000) + 12000);
+                    $this->thunderTime = (mt_rand(0, 168000) + 12000);
+                    break;
+                case self::RAINY_THUNDER:
+                    $this->rainTime = (mt_rand(0, 12000) + 12000);
+                    $this->thunderTime = (mt_rand(0, 12000) + 3600);
+                    break;
+                case self::THUNDER:
+                    $this->rainTime = (mt_rand(0, 168000) + 12000);
+                    $this->thunderTime = (mt_rand(0, 12000) + 12000);
+                    break;
+            }
 
-        $this->weather = $ev->getWeather();
-
-        $pk = new LevelEventPacket();
-
-        if($thunder){
-            $pk->evid = LevelEventPacket::EVENT_START_THUNDER;
-            $pk->data = mt_rand(0, 50000) + 10000;
-            $this->thunderTime = (mt_rand(0, 12000) + 3600);
-        }else{
-            $pk->evid = LevelEventPacket::EVENT_STOP_THUNDER;
-            $this->thunderTime = (mt_rand(0, 168000) + 12000);
-        }
-
-        Server::getInstance()->broadcastPacket($this->level->getPlayers(), $pk);
-
-        return true;
-    }
-
-    public function setWeather(int $weather){
-        switch($weather){
-            case self::SUNNY:
-                $this->setRainy(false);
-                return $this->setThunder(false);
-            case self::RAINY:
-                return $this->setRainy(true);
-            case self::RAINY_THUNDER:
-                return $this->setThunder(true, true);
-            case self::THUNDER:
-                return $this->setThunder(true, true);
+            $this->sendWeatherToAll();
         }
 
         return false;
@@ -186,18 +162,16 @@ class Weather {
         return $this->getWeather() === self::THUNDER;
     }
 
+    public static function isWeather(int $weather){
+        return $weather >= 0 && $weather <= 3;
+    }
+
     /**
      * @param $weather
      *
      * @return int
      */
-    public static function getWeatherFromString($weather){
-        if(is_int($weather)){
-            if($weather <= 3){
-                return $weather;
-            }
-            return self::SUNNY;
-        }
+    public static function getWeatherFromString(string $weather) : int{
         switch(strtolower($weather)){
             case "clear":
             case "sunny":
@@ -207,7 +181,6 @@ class Weather {
             case "rainy":
                 return self::RAINY;
             case "thunder":
-                return self::THUNDER;
             case "rain_thunder":
             case "rainy_thunder":
             case "storm":
@@ -229,5 +202,33 @@ class Weather {
      */
     public function setCanCalculate(bool $canCalc){
         $this->canCalculate = $canCalc;
+    }
+
+    public function sendWeather(Player $player){
+        $pk = new LevelEventPacket();
+        $pk->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+        $pk2 = new LevelEventPacket();
+        $pk2->data = mt_rand(0, 50000) + 10000;
+        switch($this->weather){
+            case self::SUNNY:
+                $pk2->evid = LevelEventPacket::EVENT_STOP_RAIN;
+                break;
+            case self::RAINY:
+                $pk2->evid = LevelEventPacket::EVENT_START_RAIN;
+                break;
+            case self::RAINY_THUNDER:
+            case self::THUNDER:
+                $pk2->evid = LevelEventPacket::EVENT_START_RAIN;
+                break;
+        }
+
+        $player->dataPacket($pk);
+        $player->dataPacket($pk2);
+    }
+
+    public function sendWeatherToAll(){
+        foreach($this->level->getPlayers() as $player){
+            $this->sendWeather($player);
+        }
     }
 }

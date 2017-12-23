@@ -2,22 +2,25 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
+
+declare(strict_types=1);
 
 namespace pocketmine\event\level;
 
@@ -28,20 +31,18 @@ use pocketmine\level\weather\Weather;
 class WeatherChangeEvent extends LevelEvent implements Cancellable {
 	public static $handlerList = null;
 
+	/** @var int */
 	private $weather;
-	private $duration;
 
-	/**
-	 * WeatherChangeEvent constructor.
-	 *
-	 * @param Level $level
-	 * @param int   $weather
-	 * @param int   $duration
-	 */
-	public function __construct(Level $level, int $weather, int $duration){
+    /**
+     * WeatherChangeEvent constructor.
+     *
+     * @param Level $level
+     * @param int $weather
+     */
+	public function __construct(Level $level, int $weather){
 		parent::__construct($level);
 		$this->weather = $weather;
-		$this->duration = $duration;
 	}
 
 	/**
@@ -56,20 +57,6 @@ class WeatherChangeEvent extends LevelEvent implements Cancellable {
 	 */
 	public function setWeather(int $weather = Weather::SUNNY){
 		$this->weather = $weather;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getDuration() : int{
-		return $this->duration;
-	}
-
-	/**
-	 * @param int $duration
-	 */
-	public function setDuration(int $duration){
-		$this->duration = $duration;
 	}
 
 }

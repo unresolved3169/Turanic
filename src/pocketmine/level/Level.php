@@ -853,6 +853,29 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->timings->doTick->stopTiming();
 	}
+	
+	public function adjustPosToNearbyEntity(Vector3 $pos){
+	    $pos->y = $this->getHighestBlockAt($pos->getFloorX(), $pos->getFloorY());
+        $bb = (new AxisAlignedBB($pos->x, $pos->y, $pos->z, $pos->x, 255, $pos->z))->expand(3, 3, 3);
+        /** @var Entity[] $list */
+        $list = [];
+
+        foreach($this->getCollidingEntities($bb) as $entity){
+            if($entity->isAlive() && $this->canBlockSeeSky($entity)){
+                $list[] = $entity;
+            }
+        }
+
+        if(count($list) > 0){
+            return $list[array_rand($list)]->getPosition();
+        }else{
+            if ($pos->getY() == -1) {
+                $pos->y += 2;
+            }
+
+            return $pos;
+        }
+    }
 
 	public function checkSleep() {
 		if (count($this->players) === 0) {
@@ -2241,6 +2264,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Lightning|Entity
 	 */
 	public function spawnLightning(Vector3 $pos): Lightning {
+	    var_dump("sa");
 		$lightning = Entity::createEntity("Lightning", $this, Entity::createBaseNBT($pos));
 		if($lightning != null) $lightning->spawnToAll();
 

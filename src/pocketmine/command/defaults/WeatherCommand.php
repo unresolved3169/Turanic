@@ -67,8 +67,12 @@ class WeatherCommand extends VanillaCommand {
 		}
 
 		if($sender instanceof Player){
-			$wea = Weather::getWeatherFromString($args[0]);
-			if($wea >= 0 and $wea <= 3){
+		    if(is_int($args[0])){
+		        $wea = Weather::isWeather($args[0]) ? $args[0] : Weather::SUNNY;
+            }else{
+                $wea = Weather::getWeatherFromString($args[0]);
+            }
+			if(Weather::isWeather($wea)){
 				$sender->getLevel()->getWeather()->setWeather($wea);
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.weather.changed", [$sender->getLevel()->getFolderName()]));
 				return true;
@@ -89,8 +93,12 @@ class WeatherCommand extends VanillaCommand {
 			return false;
 		}
 
-		$wea = Weather::getWeatherFromString($args[1]);
-		if($wea >= 0 and $wea <= 3){
+        if(is_int($args[1])){
+            $wea = Weather::isWeather($args[1]) ? $args[1] : Weather::SUNNY;
+        }else{
+            $wea = Weather::getWeatherFromString($args[1]);
+        }
+		if(Weather::isWeather($wea)){
 			$level->getWeather()->setWeather($wea);
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.weather.changed", [$level->getFolderName()]));
 			return true;

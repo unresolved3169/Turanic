@@ -284,8 +284,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var PermissibleBase */
 	private $perm = null;
 
-	public $weatherData = [0, 0, 0];
-
 	/** @var FishingHook */
 	public $fishingHook = null;
 
@@ -994,6 +992,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 			$this->usedChunks = [];
 			$this->level->sendTime();
+            $targetLevel->getWeather()->sendWeather($this);
 			return true;
 		}
 		return false;
@@ -2208,6 +2207,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 
 		$this->level->sendTime();
+		$this->level->getWeather()->sendWeather($this);
 
 		$this->sendAttributes(true);
 		$this->setNameTagVisible();
