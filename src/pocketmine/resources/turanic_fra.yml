@@ -36,10 +36,8 @@ player:
 
 developer:
   #Ce paramètre permet au serveur de charger des plugins via le répertoire source via un fichier .phar
-  #Recommandé qu'il reste "faux"
   folder-plugin-loader: true
   #Ce paramètre permet au serveur de charger des plugins avec une API incompatible
-  #Recommandé qu'il reste "faux"
   load-incompatible-api: true
 
 nether:

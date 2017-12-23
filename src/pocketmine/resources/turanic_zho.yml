@@ -43,10 +43,8 @@ player:
  
 developer:
   #是否允許伺服器讀取檔案夾插件(源碼)
-  #建議關閉
   folder-plugin-loader: true
   #是否允許伺服器讀取不兼容的API插件
-  #建議關閉
   load-incompatible-api: true
 
 nether:

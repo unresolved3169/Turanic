@@ -15,9 +15,9 @@ config:
  version: 31
 
 level:
- #Wetter ein und ausschalten (Regen kann bei älteren geräten zum ruckeln führen)
+ #Wetter ein und ausschalten (Regen kann bei älteren geräten zu rucklern führen)
  weather: true
- #Um feuer beim Blitz einschlag einzuschallten
+ #Um feuer beim einem Blitz Einschlag einzuschalten
  lightning-fire: false
  #Feuer ausbreitung (bäume, etc.)
  fire-spread: false
@@ -27,17 +27,15 @@ player:
  hunger: true
  #Level funktion
  experience: true
- #Wenn ein Spieler stirb sachen bei sich behalten
+ #Beim Tod Items bei sich halten
  keep-inventory: false
- #Level bei behalten nach dem Tod
+ #Level behalten nach dem Tod
  keep-experience: false
 
 developer:
   #Ordner Plugins auch laden.
-  #Empfohlen "false"
   folder-plugin-loader: true
-  #Dies lässt zu plugins mit älteren oder nicht kompatiblen api versionen zu laden.
-  #Empfohlen "false"
+  #Plugins (Erweiterungen) mit älteren oder nicht kompatiblen API versionen laden.
   load-incompatible-api: true
 
 nether:

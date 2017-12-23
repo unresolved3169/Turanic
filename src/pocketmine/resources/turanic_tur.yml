@@ -34,10 +34,8 @@ player:
 
 developer:
   #Bu ayar sunucunuzdaki .phar olmayan pluginleri yükler
-  #Önerilen 'false'
   folder-plugin-loader: true
   #Bu ayar api sürümü uyumlu olmayan pluginleri aktif eder
-  #Önerilen 'false'
   load-incompatible-api: true
 
 nether:

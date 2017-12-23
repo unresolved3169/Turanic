@@ -35,8 +35,10 @@ player:
  keep-experience: false
  #플레이어들이 참여했을때 크래시가 발생하는 경우, 이 값을 10 이하로 설정하세요. 비활성화=-1
  chunk-radius: -1
- 
- check-movement: true
+
+developer:
+  folder-plugin-loader: true
+  load-incompatible-api: true
 
 nether:
  #지옥이 허용된 경우 고르세요. 지옥 레벨이 자동으로 생성됩니다.

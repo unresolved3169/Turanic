@@ -34,10 +34,8 @@ player:
 
 developer:
   #This setting allows the server to load plugins through the source directory over a .phar file
-  #Recommended that it stays "false"
   folder-plugin-loader: true
   #This setting allows the server to load plugins with Incompatible API
-  #Recommanded that it stays "false"
   load-incompatible-api: true
 
 nether:

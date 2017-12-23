@@ -36,10 +36,8 @@ player:
 
 developer:
   #有効にするとソースディレクトリからプラグインを読み込みます
-  #設定を変更しないことを推奨します
   folder-plugin-loader: true
   #有効にすると互換性のないAPIのプラグインを読み込みます
-  #設定を変更しないことを推奨します
   load-incompatible-api: true
 
 nether:
