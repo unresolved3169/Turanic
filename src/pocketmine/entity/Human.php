@@ -549,9 +549,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
             $this->setSkin(new Skin(
                 $skin->getString("Name"),
                 $skin->getString("Data"),
-                $skin->getString("CapeData"),
-                $skin->getString("GeometryName"),
-                $skin->getString("GeometryData")
+                $skin->getString("CapeData", ""),
+                $skin->getString("GeometryName", ""),
+                $skin->getString("GeometryData", "")
             ));
         }
 
