@@ -50,38 +50,37 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
     private $permission;
 
     public function __construct(Level $level, CompoundTag $nbt){
+        if(!$nbt->hasTag("Command", StringTag::class)){
+            $nbt->setString("Command", ""); // komut
+        }
+        if(!$nbt->hasTag("blockType", IntTag::class)){
+            $nbt->setInt("blockType", self::NORMAL); // komut bloğu tipi
+        }
+        if(!$nbt->hasTag("SuccessCount", IntTag::class)){
+            $nbt->setInt("SuccessCount", 0); // başarı sayısı
+        }
+        if(!$nbt->hasTag("LastOutput", StringTag::class)){
+            $nbt->setString("LastOutput", ""); // son çıkış
+        }
+        if(!$nbt->hasTag("TrackOutput", ByteTag::class)){
+            $nbt->setByte("TrackOutput", 0); // komut çıkışı
+        }
+        if(!$nbt->hasTag("powered", ByteTag::class)){
+            $nbt->setByte("powered", 0); // redstone
+        }
+        if(!$nbt->hasTag("conditionMet", ByteTag::class)){
+            $nbt->setByte("conditionMet", 0); // koşul
+        }
+        if(!$nbt->hasTag("UpdateLastExecution", ByteTag::class)){
+            $nbt->setByte("UpdateLastExecution", 0); // sadece bir kez çalışsın
+        }
+        if(!$nbt->hasTag("LastExecution", LongTag::class)){
+            $nbt->setLong("LastExecution", 0); // son çalıştırma
+        }
+        if(!$nbt->hasTag("auto", ByteTag::class)){
+            $nbt->setByte("auto", 0);
+        }
         parent::__construct($level, $nbt);
-
-        if(!isset($nbt->Command)){
-            $nbt->Command = new StringTag("Command", ""); // komut
-        }
-        if(!isset($nbt->blockType)){
-            $nbt->blockType = new IntTag("blockType", self::NORMAL); // komut bloğu tipi
-        }
-        if(!isset($nbt->SuccessCount)){
-            $nbt->SuccessCount = new IntTag("SuccessCount", 0); // başarı sayısı
-        }
-        if(!isset($nbt->LastOutput)){
-            $nbt->LastOutput = new StringTag("LastOutput", ""); // son çıkış
-        }
-        if(!isset($nbt->TrackOutput)){
-            $nbt->TrackOutput = new ByteTag("TrackOutput", 0); // komut çıkışı
-        }
-        if(!isset($nbt->powered)){
-            $nbt->powered = new ByteTag("powered", 0); // redstone
-        }
-        if(!isset($nbt->conditionMet)){
-            $nbt->conditionMet = new ByteTag("conditionMet", 0); // koşul
-        }
-        if(!isset($nbt->UpdateLastExecution)){
-            $nbt->UpdateLastExecution = new ByteTag("UpdateLastExecution", 0); // sadece bir kez çalışsın
-        }
-        if(!isset($nbt->LastExecution)){
-            $nbt->LastExecution = new LongTag("LastExecution", 0); // son çalıştırma
-        }
-        if(!isset($nbt->auto)){
-            $nbt->auto = new IntTag("auto", 0);
-        }
 
         $this->permission = new PermissibleBase($this);
 
@@ -92,7 +91,7 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
      * @param string $str
      */
     public function setName(string $str){
-        $this->namedtag->CustomName = new StringTag("CustomName", $str);
+        $this->namedtag->setString("CustomName", $str);
     }
 
     /**
@@ -114,8 +113,8 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
         $this->namedtag->Command = new StringTag("Command", $command);
     }
 
-    public function getSuccessCount(){
-        return isset($this->namedtag->SuccessCount) ? $this->namedtag->SuccessCount->getValue() : "";
+    public function getSuccessCount() : int{
+        return $this->namedtag->getInt("SuccessCount", 0);
     }
 
     public function runCommand(){
@@ -128,14 +127,14 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
             new IntTag("x", (int) $this->x),
             new IntTag("y", (int) $this->y),
             new IntTag("z", (int) $this->z),
+            new IntTag("blockType", $this->getBlockType()),
             new StringTag("Command", $this->getCommand()),
-            new StringTag("blockType", $this->getBlockType()),
             new StringTag("LastOutput", $this->getLastOutput()),
             new ByteTag("TrackOutput", $this->getTrackOutput()),
             new IntTag("SuccessCount", $this->getSuccessCount()),
-            new ByteTag("auto", $this->getAuto()),
+            new ByteTag("auto", (int) $this->getAuto()),
             new ByteTag("powered", $this->getPowered()),
-            new ByteTag("conditionalMode", $this->isConditional()),
+            new ByteTag("conditionMet", $this->isConditional()),
         ]);
         return $nbt;
     }
@@ -152,54 +151,54 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
         return $this->getBlockType() == self::CHAIN;
     }
 
-    public function getBlockType(){
-        return isset($this->namedtag->blockType) ? $this->namedtag->blockType->getValue() : self::NORMAL;
+    public function getBlockType() : int{
+        return $this->namedtag->getInt("blockType", self::NORMAL);
     }
 
     public function setBlockType(int $blockType){
-        return $this->namedtag->blockType = new IntTag("blockType", $blockType > 2 or $blockType < 0 ? self::NORMAL : $blockType);
+        return $this->namedtag->setInt("blockType", $blockType > 2 or $blockType < 0 ? self::NORMAL : $blockType);
     }
 
-    public function isConditional() : bool{
-        return boolval(isset($this->namedtag->conditionalMode) ? $this->namedtag->conditionalMode->getValue() : 0);
+    public function isConditional() : int{
+        return $this->namedtag->getByte("conditionMet", 0);
     }
 
-    public function getPowered() : bool{
-        return boolval(isset($this->namedtag->powered) ? $this->namedtag->powered->getValue() : 0);
+    public function getPowered() : int{
+        return $this->namedtag->getByte("powered", 0);
     }
 
     public function getAuto() : bool{
-        return boolval(isset($this->namedtag->auto) ? $this->namedtag->auto->getValue() : 0);
+        return boolval($this->namedtag->getByte("auto", 0));
     }
 
     public function setConditional(bool $condition){
-        $this->namedtag->conditionMet = new IntTag("conditionMet", +$condition);
+        $this->namedtag->setInt("conditionMet", +$condition);
     }
 
     public function setPowered(bool $powered){
         if ($this->getPowered() == $powered) {
             return;
         }
-        $this->namedtag->powered = new IntTag("powered", +$powered);
+        $this->namedtag->setInt("powered", +$powered);
         if ($this->isNormal() && $powered && !$this->getAuto()) {
             $this->runCommand();
         }
     }
 
     public function setAuto(bool $auto){
-        $this->namedtag->auto = new IntTag("auto", +$auto);
+        $this->namedtag->setInt("auto", (int) $auto);
     }
 
     public function setLastOutput(string $lastOutput){
-        $this->namedtag->LastOutput = new StringTag("LastOutput", $lastOutput);
+        $this->namedtag->setString("LastOutput", $lastOutput);
     }
 
-    public function getTrackOutput() : bool{
-        return boolval(isset($this->namedtag->TrackOutput) ? $this->namedtag->TrackOutput->getValue() : 0);
+    public function getTrackOutput() : int{
+        return $this->namedtag->getByte("TrackOutput", 0);
     }
 
-    public function setTrackOutput(bool $trackOutput) {
-        return $this->namedtag->TrackOutput = new IntTag("TrackOutput", $trackOutput);
+    public function setTrackOutput(int $trackOutput) {
+        return $this->namedtag->setByte("TrackOutput", $trackOutput);
     }
 
     public function getLastOutput() : string{
