@@ -38,6 +38,11 @@ memory:
  #当主线程内存占用超过此限制时，将会停止服务器
  main-hard-limit: 1024
 
+ #AsyncWorker threads' hard memory limit in megabytes. Set to 0 to disable
+ #This will crash the task currently executing on the worker if the task exceeds the limit
+ #NOTE: THIS LIMIT APPLIES PER WORKER, NOT TO THE WHOLE PROCESS.
+ async-worker-hard-limit: 1024
+
  #检查内存使用的周期，以游戏刻为单位（默认为 1 秒）
  check-rate: 20
 
