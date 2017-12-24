@@ -31,16 +31,6 @@ use pocketmine\nbt\NBT;
 class ByteTag extends NamedTag {
 
     /**
-     * ByteTag constructor.
-     *
-     * @param string $name
-     * @param int $value
-     */
-    public function __construct(string $name = "", int $value = 0){
-        parent::__construct($name, $value);
-    }
-
-    /**
 	 * @return int
 	 */
 	public function getType(): int{

@@ -1404,12 +1404,13 @@ class Item implements ItemIds, \JsonSerializable {
 		]);
 
 		if($this->hasCompoundTag()){
-			$tag->tag = clone $this->getNamedTag();
-			$tag->tag->setName("tag");
+			$tagg = clone $this->getNamedTag();
+			$tagg->setName("tag");
+			$tag->setTag($tagg);
 		}
 
 		if($slot !== -1){
-			$tag->Slot = new ByteTag("Slot", $slot);
+			$tag->setByte("Slot", $slot);
 		}
 
 		return $tag;

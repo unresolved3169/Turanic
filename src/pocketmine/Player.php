@@ -25,6 +25,7 @@ namespace pocketmine;
 use pocketmine\block\CommandBlock;
 use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\tile\CommandBlock as TileCommandBlock;
@@ -3402,6 +3403,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $timings->stopTiming();
 
         return true;
+    }
+
+    public function handleBossEvent(BossEventPacket $packet): bool{
+	    return false;
     }
 
 	/**

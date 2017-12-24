@@ -31,7 +31,6 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -70,8 +69,8 @@ class Sheep extends Animal implements Colorable {
      * @param CompoundTag $nbt
      */
     public function __construct(Level $level, CompoundTag $nbt){
-        if (!isset($nbt->Color)) {
-            $nbt->Color = new ByteTag("Color", self::getRandomColor());
+        if (!$nbt->hasTag("Color")) {
+            $nbt->setByte("Color", self::getRandomColor());
         }
         parent::__construct($level, $nbt);
 
@@ -105,14 +104,14 @@ class Sheep extends Animal implements Colorable {
      * @return int
      */
     public function getColor(): int{
-        return (int)$this->namedtag["Color"];
+        return $this->namedtag->getByte("Color");
     }
 
     /**
      * @param int $color
      */
     public function setColor(int $color){
-        $this->namedtag->Color = new ByteTag("Color", $color);
+        $this->namedtag->setByte("Color", $color);
     }
 
     /**

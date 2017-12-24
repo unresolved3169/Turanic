@@ -31,16 +31,6 @@ use pocketmine\nbt\NBT;
 class StringTag extends NamedTag {
 
     /**
-     * StringTag constructor.
-     *
-     * @param string $name
-     * @param string $value
-     */
-    public function __construct(string $name = "", string $value = ""){
-        parent::__construct($name, $value);
-    }
-
-    /**
 	 * @return int
 	 */
 	public function getType(): int{

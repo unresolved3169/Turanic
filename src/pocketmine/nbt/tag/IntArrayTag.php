@@ -31,16 +31,6 @@ use pocketmine\nbt\NBT;
 class IntArrayTag extends NamedTag {
 
     /**
-     * IntArrayTag constructor.
-     *
-     * @param string $name
-     * @param int[] $value
-     */
-    public function __construct(string $name = "", array $value = []){
-        parent::__construct($name, $value);
-    }
-
-    /**
 	 * @return int
 	 */
 	public function getType(): int{

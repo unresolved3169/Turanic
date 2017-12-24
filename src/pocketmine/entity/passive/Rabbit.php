@@ -30,7 +30,6 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -73,8 +72,8 @@ class Rabbit extends Animal {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->RabbitType)){
-			$nbt->RabbitType = new ByteTag("RabbitType", $this->getRandomRabbitType());
+		if(!$nbt->hasTag("RabbitType")){
+			$nbt->setByte("RabbitType", $this->getRandomRabbitType());
 		}
 		parent::__construct($level, $nbt);
 
@@ -93,7 +92,7 @@ class Rabbit extends Animal {
 	 * @param int $type
 	 */
 	public function setRabbitType(int $type){
-		$this->namedtag->RabbitType = new ByteTag("RabbitType", $type);
+		$this->namedtag->setByte("RabbitType", $type);
 	}
 
 	/**

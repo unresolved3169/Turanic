@@ -60,8 +60,8 @@ class Ocelot extends Animal {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->CatType)){
-			$nbt->CatType = new ByteTag("CatType", mt_rand(0, 3));
+		if(!$nbt->hasTag("CatType")){
+			$nbt->setByte("CatType", mt_rand(0, 3));
 		}
 		parent::__construct($level, $nbt);
 
@@ -72,14 +72,14 @@ class Ocelot extends Animal {
 	 * @param int $type
 	 */
 	public function setCatType(int $type){
-		$this->namedtag->CatType = new ByteTag("CatType", $type);
+		$this->namedtag->setByte("CatType", $type);
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getCatType() : int{
-		return (int) $this->namedtag["CatType"];
+		return $this->namedtag->getByte("CatType");
 	}
 
 	/**

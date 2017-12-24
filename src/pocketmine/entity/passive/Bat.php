@@ -26,7 +26,6 @@ namespace pocketmine\entity\passive;
 
 use pocketmine\entity\FlyingAnimal;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
@@ -62,8 +61,8 @@ class Bat extends FlyingAnimal {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->isResting)){
-			$nbt->isResting = new ByteTag("isResting", 0);
+		if(!$nbt->hasTag("isResting")){
+			$nbt->setByte("isResting", 0);
 		}
 		parent::__construct($level, $nbt);
 
@@ -74,14 +73,14 @@ class Bat extends FlyingAnimal {
 	 * @return int
 	 */
 	public function isResting() : int{
-		return (int) $this->namedtag["isResting"];
+		return $this->namedtag->getByte("isResting");
 	}
 
 	/**
 	 * @param bool $resting
 	 */
 	public function setResting(bool $resting){
-		$this->namedtag->isResting = new ByteTag("isResting", $resting ? 1 : 0);
+		$this->namedtag->setByte("isResting", (int) $resting);
 	}
 
 	/**

@@ -27,7 +27,6 @@ namespace pocketmine\entity\hostile;
 use pocketmine\entity\Monster;
 use pocketmine\entity\object\Lightning;
 use pocketmine\event\entity\CreeperPowerEvent;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
@@ -46,9 +45,9 @@ class Creeper extends Monster {
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
 		
-                $this->setMaxHealth(20);
+        $this->setMaxHealth(20);
 		parent::initEntity();
-		if(!isset($this->namedtag->powered)){
+		if(!$this->namedtag->hasTag("powered")){
 			$this->setPowered(false);
 		}
 		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
@@ -73,7 +72,7 @@ class Creeper extends Monster {
 		$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new CreeperPowerEvent($this, $lightning, $cause));
 
 		if(!$ev->isCancelled()){
-			$this->namedtag->powered = new ByteTag("powered", $powered ? 1 : 0);
+			$this->namedtag->setByte("powered", (int) $powered);
 			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $powered);
 		}
 	}

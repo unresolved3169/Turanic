@@ -478,7 +478,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	 *
 	 * @return int
 	 */
-	public static function getLevelXpRequirement(int $level) : int{
+	public static function getLevelXpRequirement(int $level) {
         if ($level <= 16) {
             return (2 * $level) + 7;
         } elseif ($level <= 32) {

@@ -86,7 +86,7 @@ class Beacon extends Transparent {
 		$this->getLevel()->setBlock($this, $this, true, true);
 		$nbt = new CompoundTag("", [
 			new StringTag("id", Tile::BEACON),
-			new ByteTag("isMovable", (bool) false),
+			new ByteTag("isMovable", 0),
 			new IntTag("primary", 0),
 			new IntTag("secondary", 0),
 			new IntTag("x", $block->x),
@@ -117,7 +117,7 @@ class Beacon extends Transparent {
 			}else{
 				$nbt = new CompoundTag("", [
 					new StringTag("id", Tile::BEACON),
-					new ByteTag("isMovable", (bool) false),
+					new ByteTag("isMovable", 0),
 					new IntTag("primary", 0),
 					new IntTag("secondary", 0),
 					new IntTag("x", $this->x),

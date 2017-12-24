@@ -918,7 +918,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
      * @return CompoundTag
      */
     public static function createBaseNBT(Vector3 $pos, $motion = null , float $yaw = 0.0, float $pitch = 0.0) : CompoundTag{
-        if(!($motion instanceof Vector3))
+        if($motion == null)
             $motion = new Vector3(0.0,0.0,0.0);
         return new CompoundTag("", [
 			new ListTag("Pos", [
