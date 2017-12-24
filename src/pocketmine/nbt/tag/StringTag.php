@@ -31,16 +31,6 @@ use pocketmine\nbt\NBT;
 class StringTag extends NamedTag {
 
     /**
-     * StringTag constructor.
-     *
-     * @param string $name
-     * @param string $value
-     */
-    public function __construct(string $name = "", string $value = ""){
-        parent::__construct($name, $value);
-    }
-
-    /**
 	 * @return int
 	 */
 	public function getType(): int{
@@ -66,15 +56,4 @@ class StringTag extends NamedTag {
 	public function write(NBT $nbt, bool $network = false){
 		$nbt->putString($this->value, $network);
 	}
-
-	public function &getValue(){
-        return parent::getValue();
-    }
-
-    public function setValue($value){
-        if (!is_string($value)) {
-            throw new \TypeError("StringTag value must be of type string, " . gettype($value) . " given");
-        }
-        parent::setValue($value);
-    }
 }

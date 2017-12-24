@@ -31,16 +31,6 @@ use pocketmine\nbt\NBT;
 class FloatTag extends NamedTag {
 
     /**
-     * FloatTag constructor.
-     *
-     * @param string $name
-     * @param float $value
-     */
-    public function __construct(string $name = "", float $value = 0.0){
-        parent::__construct($name, $value);
-    }
-
-    /**
 	 * @return int
 	 */
 	public function getType(): int{
@@ -66,15 +56,4 @@ class FloatTag extends NamedTag {
 	public function write(NBT $nbt, bool $network = false){
 		$nbt->putFloat($this->value);
 	}
-
-	public function &getValue(){
-        return parent::getValue();
-    }
-
-    public function setValue($value){
-        if (!is_float($value) and !is_int($value)) {
-            throw new \TypeError("FloatTag value must be of type float, " . gettype($value) . " given");
-        }
-        parent::setValue((float)$value);
-    }
 }

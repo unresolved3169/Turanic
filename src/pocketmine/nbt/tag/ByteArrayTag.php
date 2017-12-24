@@ -31,15 +31,6 @@ use pocketmine\nbt\NBT;
 class ByteArrayTag extends NamedTag {
 
     /**
-     * ByteArrayTag constructor.
-     * @param string $name
-     * @param string $value
-     */
-    public function __construct(string $name = "", string $value = ""){
-        parent::__construct($name, $value);
-    }
-
-    /**
 	 * @return int
 	 */
 	public function getType(): int{
@@ -66,15 +57,4 @@ class ByteArrayTag extends NamedTag {
 		$nbt->putInt(strlen($this->value), $network);
 		$nbt->put($this->value);
 	}
-
-	public function &getValue(){
-        return parent::getValue();
-    }
-
-    public function setValue($value){
-        if (!is_string($value)) {
-            throw new \TypeError("ByteArrayTag value must be of type string, " . gettype($value) . " given");
-        }
-        parent::setValue($value);
-    }
 }
