@@ -31,6 +31,16 @@ use pocketmine\nbt\NBT;
 class ByteTag extends NamedTag {
 
     /**
+     * ByteTag constructor.
+     *
+     * @param string $name
+     * @param int $value
+     */
+    public function __construct(string $name = "", int $value = 0){
+        parent::__construct($name, $value);
+    }
+
+    /**
 	 * @return int
 	 */
 	public function getType(): int{
@@ -56,4 +66,21 @@ class ByteTag extends NamedTag {
 	public function write(NBT $nbt, bool $network = false){
 		$nbt->putByte($this->value);
 	}
+
+	public function &getValue(){
+        return parent::getValue();
+    }
+
+    /**
+     * @param int $value
+     * @throws \TypeError
+     */
+    public function setValue($value){
+        if (!is_int($value)) {
+            throw new \TypeError("ByteTag value must be of type int, " . gettype($value) . " given");
+        } elseif ($value < -(2 ** 7) or $value > ((2 ** 7) - 1)) {
+            throw new \InvalidArgumentException("Value $value is too large!");
+        }
+        parent::setValue($value);
+    }
 }

@@ -31,6 +31,16 @@ use pocketmine\nbt\NBT;
 class DoubleTag extends NamedTag {
 
     /**
+     * DoubleTag constructor.
+     *
+     * @param string $name
+     * @param float $value
+     */
+    public function __construct(string $name = "", float $value = 0.0){
+        parent::__construct($name, $value);
+    }
+
+    /**
 	 * @return int
 	 */
 	public function getType(): int{
@@ -56,4 +66,15 @@ class DoubleTag extends NamedTag {
 	public function write(NBT $nbt, bool $network = false){
 		$nbt->putDouble($this->value);
 	}
+
+	public function &getValue(){
+        return parent::getValue();
+    }
+
+    public function setValue($value){
+        if (!is_float($value) and !is_int($value)) {
+            throw new \TypeError("DoubleTag value must be of type double, " . gettype($value) . " given");
+        }
+        parent::setValue((float)$value);
+    }
 }
