@@ -59,16 +59,13 @@ class Lava extends Liquid {
 		return "Lava";
 	}
 
-    public function tickRate() : int{
-        return 30;
-    }
-
-    public function getFlowDecayPerBlock() : int{
-	    if($this->level instanceof Level && $this->level->getDimension() == DimensionIds::NETHER){
-	        return 1;
-        }
-        return 2;
-    }
+	public function tickRate() : int{
+		return 32;
+	}
+	
+	public function getFlowDecayPerBlock() : int{
+		return 2; //TODO: this is 1 in the nether
+	}
 
     protected function checkForHarden(){
         $colliding = null;
@@ -79,6 +76,7 @@ class Lava extends Liquid {
                 break;
             }
         }
+		
         if($colliding !== null){
             if($this->getDamage() === 0){
                 $this->liquidCollide($colliding, Block::get(Block::OBSIDIAN));
@@ -90,7 +88,7 @@ class Lava extends Liquid {
 
     protected function flowIntoBlock(Block $block, int $newFlowDecay){
         if($block instanceof Water){
-            $block->liquidCollide($this, Block::get(Block::STONE));
+            $block->liquidCollide($this, Block::get(Block::COBBLESTONE));
         }else{
             parent::flowIntoBlock($block, $newFlowDecay);
         }
