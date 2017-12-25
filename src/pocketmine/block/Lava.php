@@ -65,7 +65,7 @@ class Lava extends Liquid {
 		$ProtectL = 0;
 		if(!$entity->hasEffect(Effect::FIRE_RESISTANCE)){
 			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
-			if($entity->attack($ev->getFinalDamage(), $ev) === true){
+			if($entity->attack($ev) === true){
 				$ev->useArmors();
 			}
 			$ProtectL = $ev->getFireProtectL();
