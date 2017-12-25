@@ -28,8 +28,6 @@ declare(strict_types=1);
 
 namespace pocketmine\level;
 
-use pocketmine\block\Air;
-use pocketmine\block\Block;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
@@ -92,6 +90,28 @@ use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
+use pocketmine\block\Air;
+use pocketmine\block\Beetroot;
+use pocketmine\block\Block;
+use pocketmine\block\BrownMushroom;
+use pocketmine\block\Cactus;
+use pocketmine\block\Carrot;
+use pocketmine\block\CocoaBlock;
+use pocketmine\block\Farmland;
+use pocketmine\block\Grass;
+use pocketmine\block\Ice;
+use pocketmine\block\Leaves;
+use pocketmine\block\Leaves2;
+use pocketmine\block\MelonStem;
+use pocketmine\block\Mycelium;
+use pocketmine\block\NetherWart;
+use pocketmine\block\Potato;
+use pocketmine\block\PumpkinStem;
+use pocketmine\block\RedMushroom;
+use pocketmine\block\Sapling;
+use pocketmine\block\SnowLayer;
+use pocketmine\block\Sugarcane;
+use pocketmine\block\Wheat;
 
 #include <rules/Level.h>
 
@@ -218,7 +238,7 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkTickList = [];
 	private $chunksPerTick;
 	private $clearChunksOnTick;
-	/*private $randomTickBlocks = [
+	private $randomTickBlocks = [
 		Block::GRASS => Grass::class,
 		Block::SAPLING => Sapling::class,
 		Block::LEAVES => Leaves::class,
@@ -234,15 +254,13 @@ class Level implements ChunkManager, Metadatable{
 		Block::PUMPKIN_STEM => PumpkinStem::class,
 		Block::NETHER_WART_BLOCK => NetherWart::class,
 		Block::MELON_STEM => MelonStem::class,
-		//Block::VINE => true,
 		Block::MYCELIUM => Mycelium::class,
-		//Block::COCOA_BLOCK => true,
 		Block::CARROT_BLOCK => Carrot::class,
 		Block::POTATO_BLOCK => Potato::class,
 		Block::LEAVES2 => Leaves2::class,
 
 		Block::BEETROOT_BLOCK => Beetroot::class,
-	];*/
+	];
 
 	/** @var LevelTimings */
 	public $timings;
@@ -1001,7 +1019,31 @@ class Level implements ChunkManager, Metadatable{
 
 	private function tickChunks(int $tick) {
 		$this->entityManager->despawnMobs($tick);
-	 // TODO: Leaves, random tickable blocks
+		
+		foreach($this->getChunks() as $chunk){
+			foreach ($chunk->getSubChunks() as $Y => $subChunk) {
+                if (!$subChunk->isEmpty()) {
+                    $k = mt_rand(0, 0x7fffffff);
+                    for ($i = 0; $i < 3; ++$i, $k >>= 10) {
+                        $x = $k & 0x0f;
+                        $y = ($k >> 8) & 0x0f;
+                        $z = ($k >> 16) & 0x0f;
+
+                        $blockId = $subChunk->getBlockId($x, $y, $z);
+                        if (isset($this->randomTickBlocks[$blockId])) {
+                            $class = $this->randomTickBlocks[$blockId];
+                            /** @var Block $block */
+                            $block = new $class($subChunk->getBlockData($x, $y, $z));
+                            $block->x = $chunk->getX() * 16 + $x;
+                            $block->y = ($Y << 4) + $y;
+                            $block->z = $chunk->getZ() * 16 + $z;
+                            $block->level = $this;
+                            $block->onUpdate(self::BLOCK_UPDATE_RANDOM);
+                        }
+                    }
+                }
+            }
+		}
 	}
 
 	public function __debugInfo(): array {
