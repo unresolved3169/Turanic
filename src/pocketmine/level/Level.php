@@ -28,6 +28,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level;
 
+use pocketmine\block\NetherWartBlock;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
@@ -252,7 +253,7 @@ class Level implements ChunkManager, Metadatable{
 		Block::RED_MUSHROOM => RedMushroom::class,
 		Block::BROWN_MUSHROOM => BrownMushroom::class,
 		Block::PUMPKIN_STEM => PumpkinStem::class,
-		Block::NETHER_WART_BLOCK => NetherWart::class,
+		Block::NETHER_WART_BLOCK => NetherWartBlock::class,
 		Block::MELON_STEM => MelonStem::class,
 		Block::MYCELIUM => Mycelium::class,
 		Block::CARROT_BLOCK => Carrot::class,
