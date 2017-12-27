@@ -24,6 +24,7 @@ namespace pocketmine\entity\behavior;
 
 use pocketmine\entity\Mob;
 use pocketmine\math\Vector3;
+use pocketmine\block\Air;
 
 class StrollBehavior extends Behavior{
 
@@ -62,7 +63,7 @@ class StrollBehavior extends Behavior{
 		$entity = $this->entity;
 
 		$blockDown = $level->getBlock($coordinates->add(0,-1,0));
-		if ($entity->getMotion()->y < 0 && $blockDown instanceof Air)
+		if ($entity->getMotion()->y < 0 and $blockDown instanceof Air)
 		{
 			$this->timeLeft = 0;
 			return;
