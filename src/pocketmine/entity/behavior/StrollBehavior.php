@@ -46,7 +46,7 @@ class StrollBehavior extends Behavior{
     }
 
     public function shouldStart() : bool{
-        return rand(0,50) == 0; //$this->entity->random->nextRange(0, 120) == 0;
+        return rand(0,120) == 0;
     }
 
     public function canContinue() : bool{
@@ -54,64 +54,58 @@ class StrollBehavior extends Behavior{
     }
 
     public function onTick(){
-        $speedFactor = $this->speed * $this->speedMultiplier;
+        $speedFactor = (float) ($this->speed*$this->speedMultiplier*0.7*($this->entity->isInsideOfWater() ? 0.3 : 1.0)); // 0.7 is a general mob base factor
+		$level = $this->entity->getLevel();
+		$coordinates = $this->entity->getPosition();
+		$direction = $this->entity->getDirectionVector();
+		$direction->y = 0;
+		$entity = $this->entity;
 
-        $level = $this->entity->level;
+		$blockDown = $level->getBlock($coordinates->add(0,-1,0));
+		if ($entity->getMotion()->y < 0 && $blockDown instanceof Air)
+		{
+			$this->timeLeft = 0;
+			return;
+		}
 
-        $direction = $this->entity->getDirectionVector();
-        $direction->y *= 0;
+	    $coord = ($coordinates->add($direction->multiply($speedFactor))->add($direction->multiply(0.5)));
 
-        $random = $this->entity->random;
+		$players = $entity->getViewers();
 
-        $entity = $this->entity;
-        
-        $coord = $this->entity->asVector3()->add($direction->round());
-        $motion = $direction->multiply($speedFactor);
-        $moveVector = $entity->asVector3()->add($motion);
-        
-        $blockDown = $level->getBlock($moveVector->add(0,-1,0));
-        $blockDownDown = $level->getBlock($moveVector->add(0,-2,0));
-        
-        if(!$blockDown->isSolid() and !$blockDownDown->isSolid()){ // dont fall
-        	$this->timeLeft = 0;
-        	return;
-        }
-        
-        if($this->entity->motionY < 0 and !$blockDown->isSolid()){ // dont move when falling
-        	$this->timeLeft = 0;
-        	return;
-        }
+		$block = $level->getBlock($coord);
+		$blockUp = $level->getBlock($coord->add(0,1,0));
+		$blockUpUp = $level->getBlock($coord->add(0,2,0));
 
-        $block = $level->getBlock($coord);
-        $blockIn = $level->getBlock($entity); // when entity in block
-        $blockUp = $level->getBlock($coord->add(0,1,0));
-
-        if(($block->isSolid() and !$blockUp->isSolid()) or $blockIn->isSolid()){
-            $motion->y += 0.7;
-        }elseif($block->isSolid() and $blockUp->isSolid()){
-            $this->timeLeft = 0;
-            return;
-        }
-
-        $entityCollide = false; // TODO
-
-        if($entityCollide){
-            $rot = rand(0,2) == 0 ? rand(45,180) : rand(-180,-45);
-
-            $this->entity->yaw += $rot;
-            $this->entity->setMotion(new Vector3(0,0,0));
-        }else{
-            $vm = $this->entity->getMotion();
-            $vm->y *= 0;
-            if($vm->length() < $motion->length()){
-                $this->entity->setMotion($vm->add($motion->subtract($vm)));
-            }else{
-                $this->entity->setMotion($motion);
-            }
-        }
+		$colliding = $block->isSolid() or ($entity->getHeight() >= 1 and $blockUp->isSolid());
+		if (!$colliding)
+		{
+			$motion = $direction->multiply($speedFactor);
+			$pm = $entity->getMotion();
+			$pm->y = 0;
+			if ($pm->length() < $motion->length())
+			{
+				$entity->setMotion($pm->add($motion->x - $pm->x, 0, $motion->z - $pm->z));
+			}
+			else
+			{
+				$entity->setMotion($motion);
+			}
+		}
+		else
+		{
+			if (!$blockUp->isSolid() and !($entity->getHeight() > 1 and $blockUpUp->isSolid()) and rand(0,4) != 0)
+			{
+				$entity->motionY = 0.42;
+			}
+			else
+			{
+				//TODO
+			}
+		}
     }
 
     public function onEnd(){
         $this->timeLeft = $this->duration;
+        $this->entity->setMotion(new Vector3(0,0,0));
     }
 }
