@@ -30,7 +30,7 @@ Port: **19172**
 - Support Some PmmpApi and Some GenApi
 - Mob Behavior System (MobAI) (Optional)
 - Added some sounds/particles and methods for Player
-- Support 32 & 64 bit systems (32bit buggy on mcbe1.2)
+- Support 32 & 64 bit systems (32bit buggy on mcpe1.2)
 - Command Overloads,Parameters system in 1.2 (AvailableCommandsPacket)
 - And more...
 
