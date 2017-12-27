@@ -2,6 +2,7 @@
 
 Fast server software for Minecraft: Bedrock/PE Edition and W10 Edition - v1.2.x.
 Turanic is a fork of GenisysPro
+## Turanic running on 7.0.x php no on 7.2.x
 
 | Phar | Twitter | Travis CI | Discord |
 | :---: | :---: | :---: | :---: |
