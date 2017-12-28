@@ -228,8 +228,7 @@ class AxisAlignedBB {
 			if($x1 < $x){
 				$x = $x1;
 			}
-		}
-		if($x < 0 and $bb->minX >= $this->maxX){
+		}elseif($x < 0 and $bb->minX >= $this->maxX){
 			$x2 = $this->maxX - $bb->minX;
 			if($x2 > $x){
 				$x = $x2;
@@ -257,8 +256,7 @@ class AxisAlignedBB {
 			if($y1 < $y){
 				$y = $y1;
 			}
-		}
-		if($y < 0 and $bb->minY >= $this->maxY){
+		}elseif($y < 0 and $bb->minY >= $this->maxY){
 			$y2 = $this->maxY - $bb->minY;
 			if($y2 > $y){
 				$y = $y2;
@@ -286,8 +284,7 @@ class AxisAlignedBB {
 			if($z1 < $z){
 				$z = $z1;
 			}
-		}
-		if($z < 0 and $bb->minZ >= $this->maxZ){
+		}elseif($z < 0 and $bb->minZ >= $this->maxZ){
 			$z2 = $this->maxZ - $bb->minZ;
 			if($z2 > $z){
 				$z = $z2;

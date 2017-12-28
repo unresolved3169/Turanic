@@ -27,7 +27,7 @@ use pocketmine\Player;
 
 class Water extends Liquid {
 
-	protected $id = self::WATER;
+	protected $id = self::FLOWING_WATER;
 
 	/**
 	 * Water constructor.
@@ -75,4 +75,11 @@ class Water extends Liquid {
 
 		return $ret;
 	}
+
+    /**
+     * @return int
+     */
+    public function tickRate(): int{
+        return 5;
+    }
 }

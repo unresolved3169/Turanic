@@ -1083,22 +1083,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return bool
 	 */
 	public function canBeConsumed() : bool{
-		return false;
-	}
-
-	/**
-	 * @param Entity $entity
-	 *
-	 * @return bool
-	 */
-	public function canBeConsumedBy(Entity $entity) : bool{
-		return $this->canBeConsumed();
-	}
-
-	/**
-	 * @param Entity $entity
-	 */
-	public function onConsume(Entity $entity){
+		return $this instanceof Consumable;
 	}
 
 	/**

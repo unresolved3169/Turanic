@@ -70,7 +70,7 @@ class MovingObjectPosition {
         $ob->blockY = $y;
         $ob->blockZ = $z;
         $ob->sideHit = $side;
-        $ob->hitVector = new Vector3($hitVector->x, $hitVector->y, $hitVector->z);
+        $ob->hitVector = $hitVector->asVector3();
         return $ob;
     }
 
@@ -83,7 +83,7 @@ class MovingObjectPosition {
         $ob = new MovingObjectPosition;
         $ob->typeOfHit = self::TYPE_ENTITY_COLLISION;
         $ob->entityHit = $entity;
-        $ob->hitVector = new Vector3($entity->x, $entity->y, $entity->z);
+        $ob->hitVector = $entity->asVector3();
         return $ob;
     }
 }

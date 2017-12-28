@@ -2,28 +2,32 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
+
+declare(strict_types=1);
 
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDrinkPotionEvent;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
@@ -192,9 +196,9 @@ class Potion extends Item {
 
 
 	/**
-	 * @param Entity $human
+	 * @param Living $human
 	 */
-	public function onConsume(Entity $human){
+	public function onConsume(Living $human){
 		$pk = new EntityEventPacket();
 		$pk->entityRuntimeId = $human->getId();
 		$pk->event = EntityEventPacket::USE_ITEM;

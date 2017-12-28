@@ -105,7 +105,6 @@ use pocketmine\block\Leaves;
 use pocketmine\block\Leaves2;
 use pocketmine\block\MelonStem;
 use pocketmine\block\Mycelium;
-use pocketmine\block\NetherWart;
 use pocketmine\block\Potato;
 use pocketmine\block\PumpkinStem;
 use pocketmine\block\RedMushroom;
@@ -2321,7 +2320,6 @@ class Level implements ChunkManager, Metadatable{
 	 * @return Lightning|Entity
 	 */
 	public function spawnLightning(Vector3 $pos): Lightning {
-	    var_dump("sa");
 		$lightning = Entity::createEntity("Lightning", $this, Entity::createBaseNBT($pos));
 		if($lightning != null) $lightning->spawnToAll();
 

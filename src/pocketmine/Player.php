@@ -153,7 +153,7 @@ use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\item\{
- Elytra, WrittenBook, WritableBook
+    Bucket, Consumable, Elytra, WrittenBook, WritableBook
 };
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
@@ -2462,8 +2462,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$this->isTeleporting = false;
 			}
 
-			$packet->yaw %= 360;
-			$packet->pitch %= 360;
+            $packet->yaw = fmod($packet->yaw, 360);
+            $packet->pitch = fmod($packet->pitch, 360);
 
 			if($packet->yaw < 0){
 				$packet->yaw += 360;
@@ -2768,49 +2768,32 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 									$this->inventory->setItemInHand($item);
 								}
 							}else{
-								$this->inventory->sendContents($this);
+								break;
 							}
 
 							return true;
 						case InventoryTransactionPacket::RELEASE_ITEM_ACTION_CONSUME:
 							$slot = $this->inventory->getItemInHand();
 
-							if($slot->canBeConsumed()){
-								$ev = new PlayerItemConsumeEvent($this, $slot);
-								if(!$slot->canBeConsumedBy($this)){
-									$ev->setCancelled();
-								}
-								$this->server->getPluginManager()->callEvent($ev);
-								if(!$ev->isCancelled()){
-									$slot->onConsume($this);
-								}else{
-									$this->inventory->sendContents($this);
-								}
+							if($slot instanceof Consumable){
+							    if($slot->getId() === Item::BUCKET and $slot->getDamage() != Bucket::TYPE_MILK){
+							        return false;
+                                }
+                                $ev = new PlayerItemConsumeEvent($this, $slot);
+                                $this->server->getPluginManager()->callEvent($ev);
 
-								return true;
-							}elseif($slot->getId() === Item::BUCKET and $slot->getDamage() === 1){ //Milk!
-								$this->server->getPluginManager()->callEvent($ev = new PlayerItemConsumeEvent($this, $slot));
-								if($ev->isCancelled()){
-									$this->inventory->sendContents($this);
+                                if($ev->isCancelled() or !$this->consumeObject($slot)){
+                                    $this->inventory->sendContents($this);
+                                    return true;
+                                }
 
-									return true;
-								}
+                                if($this->isSurvival()){
+                                    $slot->pop();
+                                    $this->inventory->setItemInHand($slot);
+                                    $this->inventory->addItem($slot->getResidue());
+                                }
 
-								$pk = new EntityEventPacket();
-								$pk->entityRuntimeId = $this->getId();
-								$pk->event = EntityEventPacket::USE_ITEM;
-								$this->dataPacket($pk);
-								$this->server->broadcastPacket($this->getViewers(), $pk);
-
-								if($this->isSurvival()){
-									--$slot->count;
-									$this->inventory->setItemInHand($slot);
-									$this->inventory->addItem(Item::get(Item::BUCKET, 0, 1));
-								}
-
-								$this->removeAllEffects();
-
-								return true;
+                                return true;
 							}
 
 							return false;
@@ -2820,6 +2803,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				}finally{
 					$this->setUsingItem(false);
 				}
+
+                $this->inventory->sendContents($this);
 				break;
 			default:
 				$this->inventory->sendContents($this);

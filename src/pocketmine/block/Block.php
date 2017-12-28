@@ -335,7 +335,7 @@ class Block extends Position implements BlockIds, Metadatable{
         $id = $block->getId();
 
         if(!$override and self::isRegistered($id)){
-            throw new \RuntimeException("Trying to overwrite an already registered block");
+            throw new \RuntimeException("Trying to overwrite an already registered block (id: $id)");
         }
 
         self::$list[$id] = clone $block;

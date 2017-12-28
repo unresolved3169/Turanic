@@ -34,6 +34,7 @@ use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
+use pocketmine\item\Consumable;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ShortTag;
@@ -426,5 +427,23 @@ abstract class Living extends Entity implements Damageable {
             $effect->remove($this);
             $this->recalculateEffectColor();
         }
+    }
+
+    /**
+     * Causes the mob to consume the given Consumable object, applying applicable effects, health bonuses, food bonuses,
+     * etc.
+     *
+     * @param Consumable $consumable
+     *
+     * @return bool
+     */
+	public function consumeObject(Consumable $consumable) : bool{
+        foreach ($consumable->getAdditionalEffects() as $effect) {
+            $this->addEffect($effect);
+        }
+
+        $consumable->onConsume($this);
+
+        return true;
     }
 }

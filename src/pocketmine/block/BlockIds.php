@@ -34,10 +34,10 @@ interface BlockIds {
 	const PLANK = 5, PLANKS = 5, WOODEN_PLANK = 5, WOODEN_PLANKS = 5;
 	const SAPLING = 6, SAPLINGS = 6;
 	const BEDROCK = 7;
-	const WATER = 8;
-	const STILL_WATER = 9;
-	const LAVA = 10;
-	const STILL_LAVA = 11;
+    const FLOWING_WATER = 8;
+    const STILL_WATER = 9, WATER = 9;
+    const FLOWING_LAVA = 10;
+	const LAVA = 11, STILL_LAVA = 11;
 	const SAND = 12;
 	const GRAVEL = 13;
 	const GOLD_ORE = 14;

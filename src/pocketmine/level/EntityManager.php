@@ -23,7 +23,11 @@
 namespace pocketmine\level;
 
 use pocketmine\Player;
-use pocketmine\entity\Mob;
+use pocketmine\entity\Creature;
+
+/**
+ * Based on MiNET
+ */
 
 class EntityManager{
 	
@@ -36,7 +40,8 @@ class EntityManager{
 	public function despawnMobs(int $tick){
 		if($tick % 400 == 0) {
             foreach ($this->level->getEntities() as $e) {
-                if ($e instanceof Mob) {
+                if ($e instanceof Player) continue;
+                if ($e instanceof Creature) {
                     if (count($e->getViewers()) == 0) {
                         $e->close();
                     }

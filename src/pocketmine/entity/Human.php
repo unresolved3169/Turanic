@@ -32,7 +32,9 @@ use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Math;
 use pocketmine\nbt\NBT;
@@ -793,4 +795,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 			parent::close();
 		}
 	}
+
+	public function isHungry(){
+	    return !($this->getFood() >= $this->getMaxFood());
+    }
+
+	public function consumeObject(Consumable $consumable): bool{
+	    if($consumable instanceof FoodSource){
+            if($consumable->requiresHunger() and !$this->isHungry()){
+                return false;
+ 			}
+
+            $this->addFood($consumable->getFoodRestore());
+            $this->addSaturation($consumable->getSaturationRestore());
+        }
+
+        return parent::consumeObject($consumable);
+    }
 }

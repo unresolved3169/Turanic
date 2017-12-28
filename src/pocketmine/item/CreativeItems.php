@@ -603,9 +603,9 @@ class CreativeItems {
         ["id" => Item::CAKE],
         // bucket
         ["id" => Item::BUCKET],
-        ["id" => Item::BUCKET, "meta" => 1],
-        ["id" => Item::BUCKET, "meta" => 8],
-        ["id" => Item::BUCKET, "meta" => 10],
+        ["id" => Item::BUCKET, "meta" => Bucket::TYPE_MILK],
+        ["id" => Item::BUCKET, "meta" => Bucket::TYPE_WATER],
+        ["id" => Item::BUCKET, "meta" => Bucket::TYPE_LAVA],
 
         ["id" => Item::FISHING_ROD],
         ["id" => Item::CARROT_ON_A_STICK],

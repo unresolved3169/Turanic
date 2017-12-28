@@ -27,12 +27,19 @@ namespace pocketmine\item;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\Liquid;
+use pocketmine\entity\Effect;
+use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\level\Level;
 use pocketmine\Player;
 
-class Bucket extends Item {
+class Bucket extends Item implements Consumable {
+
+    const TYPE_MILK = 1;
+    const TYPE_WATER = Block::FLOWING_WATER;
+    const TYPE_LAVA = Block::FLOWING_LAVA;
+
 	/**
 	 * Bucket constructor.
 	 *
@@ -75,17 +82,10 @@ class Bucket extends Item {
 		if($targetBlock instanceof Air){
 			if($target instanceof Liquid and $target->getDamage() === 0){
 				$result = clone $this;
-				$id = $target->getId();
-				if($id == self::STILL_WATER){
-					$id = self::WATER;
-				}
-				if($id == self::STILL_LAVA){
-					$id = self::LAVA;
-				}
-				$result->setDamage($id);
+				$result->setDamage($target->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $block, $face, $this, $result));
 				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($target, new Air(), true, true);
+					$player->getLevel()->setBlock($target, Block::get(Block::AIR), true, true);
 					if($player->isSurvival()){
 						$player->getInventory()->setItemInHand($ev->getItem());
 					}
@@ -117,10 +117,37 @@ class Bucket extends Item {
 	}
 
 	public function getFuelTime(): int{
-        if($this->meta == Block::LAVA or $this->meta == Block::STILL_LAVA){
-            return 20000;
-        }
-
-        return parent::getFuelTime();
+        return ($this->meta == Block::LAVA or $this->meta == Block::FLOWING_LAVA) ? 20000 : 0;
     }
+
+    /**
+     * Returns the leftover that this Consumable produces when it is consumed. For Items, this is usually air, but could
+     * be an Item to add to a Player's inventory afterwards (such as a bowl).
+     *
+     * @return Item|Block|mixed
+     */
+    public function getResidue(){
+        return Item::get(Item::BUCKET, 0, 1);
+    }
+
+    /**
+     * @return Effect[]
+     */
+    public function getAdditionalEffects(): array{
+        return [];
+    }
+
+    public function canBeConsumed(): bool{
+        return $this->meta == self::TYPE_MILK;
+    }
+
+    /**
+     * Called when this Consumable is consumed by mob, after standard resulting effects have been applied.
+     *
+     * @param Living $consumer
+     */
+    public function onConsume(Living $consumer){
+        $consumer->removeAllEffects();
+    }
+
 }
