@@ -22,14 +22,14 @@
  *
 */
 
-namespace pocketmine\block;
+declare(strict_types=1);
 
+namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\particle\SmokeParticle;
-use pocketmine\level\sound\FizzSound;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
@@ -235,13 +235,17 @@ abstract class Liquid extends Transparent {
                 $smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x, $this->y, $this->z + 1), $smallestFlowDecay);
                 $smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x - 1, $this->y, $this->z), $smallestFlowDecay);
                 $smallestFlowDecay = $this->getSmallestFlowDecay($this->level->getBlockAt($this->x + 1, $this->y, $this->z), $smallestFlowDecay);
+
                 $newDecay = $smallestFlowDecay + $multiplier;
+
                 if($newDecay >= 8 or $smallestFlowDecay < 0){
                     $newDecay = -1;
                 }
+
                 if(($topFlowDecay = $this->getFlowDecay($this->level->getBlockAt($this->x, $this->y + 1, $this->z))) >= 0){
                     $newDecay = $topFlowDecay | 0x08;
                 }
+
                 if($this->adjacentSources >= 2 and $this instanceof Water){
                     $bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
                     if($bottomBlock->isSolid()){
@@ -250,6 +254,7 @@ abstract class Liquid extends Transparent {
                         $newDecay = 0;
                     }
                 }
+
                 if($newDecay !== $decay){
                     $decay = $newDecay;
                     if($decay < 0){
@@ -260,6 +265,7 @@ abstract class Liquid extends Transparent {
                     }
                 }
             }
+
             if($decay >= 0){
                 $bottomBlock = $this->level->getBlockAt($this->x, $this->y - 1, $this->z);
                 $this->flowIntoBlock($bottomBlock, $decay | 0x08);
@@ -418,7 +424,7 @@ abstract class Liquid extends Transparent {
         return ($decay >= 0 && $blockDecay >= $decay) ? $decay : $blockDecay;
     }
 
-	private function checkForHarden(){
+	protected function checkForHarden(){
 	}
 
 	/**
@@ -428,27 +434,18 @@ abstract class Liquid extends Transparent {
 		return null;
 	}
 
-	/**
-	 * Creates fizzing sound and smoke. Used when lava flows over block or mixes with water.
-	 *
-	 * @param Vector3 $pos
-	 */
-	protected function triggerLavaMixEffects(Vector3 $pos){
-		$this->getLevel()->addSound(new FizzSound($pos->add(0.5, 0.5, 0.5), 2.5 + mt_rand(0, 1000) / 1000 * 0.8));
-
-		for($i = 0; $i < 8; ++$i){
-			$this->getLevel()->addParticle(new SmokeParticle($pos->add(mt_rand(0, 80) / 100, 0.5, mt_rand(0, 80) / 100)));
-		}
-	}
-
 	public function canHarvestWithHand(): bool{
         return false;
     }
 
     protected function liquidCollide(Block $cause, Block $result) : bool{
         //TODO: add events
-        $this->level->setBlock($this, $result, true, true);
+        $this->level->setBlock($this, $result, true);
         $this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_FIZZ, (int) ((2.6 + (lcg_value() - lcg_value()) * 0.8) * 1000));
+
+        for($i = 0; $i < 8; ++$i){
+            $this->getLevel()->addParticle(new SmokeParticle($this->add(mt_rand(0, 80) / 100, 0.5, mt_rand(0, 80) / 100)));
+        }
         return true;
     }
 
