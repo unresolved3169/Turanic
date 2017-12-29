@@ -17,36 +17,60 @@ Port: **19172**
 -------------
 
 ## Known Bugs in 1.2:
-
 - Movement Bug (players not affected by gravity in some server devices)
 
-## Features of Turanic:
-- Soft Codes
-- Better Than other PocketMine-Forks about lag problem
-- Fast Packet Serializing with Worker
-- More Blocks / Items
-- Jukebox
-- MusicDiscs
-- Support Some PmmpApi and Some GenApi
-- Mob Behavior System (MobAI) (Optional)
-- Added some sounds/particles and methods for Player
-- Support 32 & 64 bit systems (32bit buggy on mcbe1.2)
-- Command Overloads,Parameters system in 1.2 (AvailableCommandsPacket)
-- And more...
-
-### TODO List (we will be continue after fully 1.2 update):
-- [x] **Optimization and Stability**
-- [x] **Virtual Inventory** 
-- [x] **Command Parameters**
-- [x] **Add All New Blocks in 1.2**
-- [x] **Rewrite Creative Items**
-- [ ] **Fully MobAI (indev)**
-- [ ] **Ultra Fast Chunk Load/Unload/Generate**
-- [ ] **More thread/worker**
-- [ ] **Basic ChunkLoader System**
-- [ ] **Fast NBT Writer/reader**
-- [ ] **Basic Redstone system (without lag) (%80)**
-- [ ] **Update languages**
+# Finished & Planned Features
+ - Worlds
+  - [x] Dimensions
+    - [x] Nether Dimension
+    - [x] End Dimension
+    - [x] Fully Functional Nether Portal Frame and Block
+    - [x] Funtional END_PORTAL Block (Portal Soon)
+  - [x] Weather System
+  - [ ] Temperature System
+ - Blocks
+   - [x] EndPortal
+   - [x] Portal (Nether Portal Block)
+   - [x] DragonEgg
+   - [x] Slime Block
+   - [x] Monster Spawner
+ - Tiles
+   - [x] Beacon
+   - [x] Brewing Stand
+   - [x] Command Block
+   - [x] Daylight Detector
+   - [x] Dispenser
+   - [x] Dropper
+   - [x] Hopper
+   - [x] Jukebox
+   - [x] Mob Spawner
+   - [x] Shulker Box
+ - Items
+   - [x] Vanilla Enchants (Progress: 98%)
+   - [x] Splash Potions
+   - [ ] FireCharge
+   - [x] Totem of Undying
+   - [x] Elytra Wings
+   - [ ] Firework Rocket (Progress: 95%)
+   - [x] Lingering Potions
+ - Commands
+   - [x] ClearInventory Command
+   - [ ] PlaySound Command
+ - Utils
+   - [x] TextUtils::center like PC or Minet.
+   - [x] TextFormat::randomize 
+ - Others
+   - [x] Virtual Inventory
+   - [x] Command Parameters
+   - [x] Advanced Creative Items
+   - [ ] Fully MobAI (indev)
+   - [ ] Ultra Fast Chunk Load/Unload/Generate
+   - [ ] More thread/worker
+   - [ ] Basic ChunkLoader System
+   - [ ] Fast NBT Writer/reader
+   - [ ] Basic Redstone system (without lag) (Progress: %80)
+   - [ ] Update languages
+<br />***More to do...***
 
 # License:
 ```
