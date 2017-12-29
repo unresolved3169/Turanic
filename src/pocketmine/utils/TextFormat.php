@@ -64,6 +64,28 @@ abstract class TextFormat {
 		return preg_split("/(" . TextFormat::ESCAPE . "[0123456789abcdefklmnor])/", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 	}
 
+    /**
+     * It makes every letter of this sentence mixed in color.
+     *
+     * @param string $string
+     * @param string|null $colors
+     * @return string
+     */
+    public static function randomize(string $string, string $colors = null) : string{
+	    $string = TextFormat::clean($string);
+        $colors = $colors ?? "abcdef0123456789"; // only colors added
+        $replace = "";
+        for($i = 0; $i<strlen($string); $i++){
+            if($string{$i} == " "){
+                $replace .= " ";
+                continue;
+            }
+            $color = $colors{mt_rand(0, strlen($colors) - 1)};
+            $replace .= TextFormat::ESCAPE.$color.$string{$i};
+        }
+        return $replace;
+    }
+
 	/**
 	 * Cleans the string from Minecraft codes and ANSI Escape Codes
 	 *
