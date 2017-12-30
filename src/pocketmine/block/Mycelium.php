@@ -33,9 +33,10 @@ class Mycelium extends Solid {
 
 	protected $id = self::MYCELIUM;
 
-	/**
-	 * Mycelium constructor.
-	 */
+    /**
+     * Mycelium constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
@@ -87,7 +88,7 @@ class Mycelium extends Solid {
 			$x = mt_rand($this->x - 1, $this->x + 1);
 			$y = mt_rand($this->y - 2, $this->y + 2);
 			$z = mt_rand($this->z - 1, $this->z + 1);
-			$block = $this->getLevel()->getBlock($x, $y, $z);
+			$block = $this->getLevel()->getBlockAt($x, $y, $z);
 			if($block->getId() === Block::DIRT){
 				if($block->getSide(1) instanceof Transparent){
 					Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, new Mycelium()));
