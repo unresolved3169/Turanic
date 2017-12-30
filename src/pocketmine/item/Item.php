@@ -244,8 +244,8 @@ class Item implements ItemIds, \JsonSerializable {
             self::registerItem(new WritableBook());
             self::registerItem(new WrittenBook());
             self::registerItem(new Emerald());
-            self::registerItem(new ItemFrame());
-            self::registerItem(new FlowerPot());
+            self::registerItem(new ItemBlock(Block::ITEM_FRAME_BLOCK, 0, Item::ITEM_FRAME));
+            self::registerItem(new ItemBlock(Block::FLOWER_POT_BLOCK, 0, Item::FLOWER_POT));
             self::registerItem(new Carrot());
             self::registerItem(new Potato());
             self::registerItem(new BakedPotato());

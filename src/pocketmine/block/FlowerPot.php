@@ -38,6 +38,7 @@ class FlowerPot extends Flowable {
 	const STATE_FULL = 1;
 
 	protected $id = self::FLOWER_POT_BLOCK;
+    protected $itemId = Item::FLOWER_POT;
 
 	/**
 	 * FlowerPot constructor.
@@ -52,7 +53,7 @@ class FlowerPot extends Flowable {
 	 * @return string
 	 */
 	public function getName() : string{
-		return "Flower Pot Block";
+		return "Flower Pot";
 	}
 
 	/**
@@ -94,7 +95,6 @@ class FlowerPot extends Flowable {
 		}
 
 		$this->getLevel()->setBlock($block, $this, true, true);
-
         Tile::createTile(Tile::FLOWER_POT, $this->getLevel(), TileFlowerPot::createNBT($this, $face, $item, $player));
 		return true;
 	}
@@ -106,7 +106,7 @@ class FlowerPot extends Flowable {
 	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent() === true){
+			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
 				$this->getLevel()->useBreakOn($this);
 
 				return Level::BLOCK_UPDATE_NORMAL;
@@ -153,7 +153,7 @@ class FlowerPot extends Flowable {
 		return $items;
 	}
 
-	public function getVariant(): int{
+    public function getVariantBitmask(): int{
         return 0;
     }
 
