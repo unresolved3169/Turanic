@@ -26,6 +26,7 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
 use pocketmine\entity\Living;
+use pocketmine\utils\Color;
 
 class Potion extends Item implements Consumable {
 
