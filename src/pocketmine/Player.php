@@ -25,6 +25,8 @@ namespace pocketmine;
 use pocketmine\block\CommandBlock;
 use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
@@ -144,7 +146,6 @@ use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
-use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
@@ -1046,30 +1047,26 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param $payload
 	 */
 	public function sendChunk($x, $z, $payload){
-		if ($this->connected === false) {
-			return;
-		}
+        if(!$this->isConnected()){
+            return;
+        }
 
-		$this->usedChunks[Level::chunkHash($x, $z)] = true;
-		$this->chunkLoadCount++;
+        $this->usedChunks[Level::chunkHash($x, $z)] = true;
+        $this->chunkLoadCount++;
 
-		if ($payload instanceof DataPacket) {
-			$this->dataPacket($payload);
-		} else {
-			$pk = new FullChunkDataPacket();
-			$pk->chunkX = $x;
-			$pk->chunkZ = $z;
-			$pk->data = $payload;
-			$this->batchDataPacket($pk);
-		}
+        $this->dataPacket($payload);
 
-		if ($this->spawned) {
-			foreach ($this->level->getChunkEntities($x, $z) as $entity) {
-				if ($entity !== $this and !$entity->closed and $entity->isAlive()) {
-					$entity->spawnTo($this);
-				}
-			}
-		}
+        if($this->spawned){
+            foreach($this->level->getChunkEntities($x, $z) as $entity){
+                if($entity !== $this and !$entity->isClosed() and $entity->isAlive()){
+                    $entity->spawnTo($this);
+                }
+            }
+        }
+
+        if($this->chunkLoadCount >= $this->spawnThreshold and $this->spawned === false){
+            $this->doFirstSpawn();
+        }
 	}
 
 	protected function sendNextChunk(){
@@ -2099,24 +2096,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	protected function processLogin(){
 		foreach($this->server->getLoggedInPlayers() as $p){
-			if($p !== $this and $p->iusername === $this->iusername){
-				if($p->kick("logged in from another location") === false){
-					$this->close($this->getLeaveMessage(), "Logged in from another location");
-
-					return;
-				}
-			}elseif($p->loggedIn and $this->getUniqueId()->equals($p->getUniqueId())){
-				if($p->kick("logged in from another location") === false){
-					$this->close($this->getLeaveMessage(), "Logged in from another location");
-
-					return;
-				}
-			}
+            if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
+                if($p->kick("logged in from another location") === false){
+                    $this->close($this->getLeaveMessage(), "Logged in from another location");
+                    return;
+                }
+            }
 		}
 
 		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
 
-		$this->playedBefore = ($this->namedtag["lastPlayed"] - $this->namedtag["firstPlayed"]) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
+        $this->playedBefore = ($this->getLastPlayed() - $this->getFirstPlayed()) > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
         $this->namedtag->setString("NameTag", $this->username);
 
         $this->gamemode = $this->namedtag->getInt("playerGameType", self::SURVIVAL) & 0x03;
@@ -2127,15 +2117,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->allowFlight = $this->isCreative();
 
-		if(($level = $this->server->getLevelByName((string) $this->namedtag["Level"])) === null){
-			$this->setLevel($this->server->getDefaultLevel());
-			$this->namedtag["Level"] = $this->level->getName();
-			$this->namedtag["Pos"][0] = $this->level->getSpawnLocation()->x;
-			$this->namedtag["Pos"][1] = $this->level->getSpawnLocation()->y;
-			$this->namedtag["Pos"][2] = $this->level->getSpawnLocation()->z;
-		}else{
-			$this->setLevel($level);
-		}
+        if(($level = $this->server->getLevelByName($this->namedtag->getString("Level", "", true))) === null){
+            $this->setLevel($this->server->getDefaultLevel());
+            $this->namedtag->setString("Level", $this->level->getName());
+            $spawnLocation = $this->level->getSpawnLocation();
+            $this->namedtag->setTag(new ListTag("Pos", [
+                new DoubleTag("", $spawnLocation->x),
+                new DoubleTag("", $spawnLocation->y),
+                new DoubleTag("", $spawnLocation->z)
+            ]));
+        }else{
+            $this->setLevel($level);
+        }
 
 		$this->achievements = [];
         $achievements = $this->namedtag->getCompoundTag("Achievements") ?? [];
@@ -2207,7 +2200,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
 
-		$this->level->sendTime();
+		$this->level->sendTime($this);
 		$this->level->getWeather()->sendWeather($this);
 
 		$this->sendAttributes(true);
@@ -2221,9 +2214,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->port,
 			$this->id,
 			$this->level->getName(),
-			round($this->x),
-			round($this->y),
-			round($this->z)
+			round($this->x, 4),
+			round($this->y, 4),
+			round($this->z, 4   )
 		]));
 
 		if($this->isOp()){
@@ -2234,8 +2227,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->sendSettings();
 		$this->sendPotionEffects($this);
 		$this->sendData($this);
-
-		$this->doFirstSpawn();
 
 		$this->inventory->sendContents($this);
 		$this->inventory->sendArmorContents($this);
@@ -2287,9 +2278,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
 	public function handleLogin(LoginPacket $packet) : bool{
-        if ($this->loggedIn) {
+        if ($this->loggedIn)
             return false;
-        }
 
         $this->protocol = $packet->protocol;
 

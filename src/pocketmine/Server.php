@@ -2469,18 +2469,20 @@ class Server{
 		}
 	}
 
-	/**
-	 * @param UUID          $uuid
-	 * @param int           $entityId
-	 * @param string        $name
-	 * @param Skin          $skin
-	 * @param Player[]|null $players
-	 */
+    /**
+     * @param UUID $uuid
+     * @param int $entityId
+     * @param string $name
+     * @param Skin $skin
+     * @param string $xboxUserId
+     * @param Player[]|null $players
+     */
 	public function updatePlayerListData(UUID $uuid, int $entityId, string $name, Skin $skin, string $xboxUserId = "", array $players = null){
-		$pk = new PlayerListPacket();
-		$pk->type = PlayerListPacket::TYPE_ADD;
-		$pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin, $xboxUserId);
-		$this->broadcastPacket($players ?? $this->playerList, $pk);
+        $pk = new PlayerListPacket();
+        $pk->type = PlayerListPacket::TYPE_ADD;
+
+        $pk->entries[] = PlayerListEntry::createAdditionEntry($uuid, $entityId, $name, $skin, $xboxUserId);
+        $this->broadcastPacket($players ?? $this->playerList, $pk);
 	}
 
 	/**
@@ -2498,10 +2500,9 @@ class Server{
 	 * @param Player $p
 	 */
 	public function sendFullPlayerListData(Player $p){
-		$pk = new PlayerListPacket();
+        $pk = new PlayerListPacket();
         $pk->type = PlayerListPacket::TYPE_ADD;
         foreach($this->playerList as $player){
-            if($player === $p) continue;
             $pk->entries[] = PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $player->getSkin(), $player->getXUID());
         }
 

@@ -28,14 +28,35 @@ declare(strict_types=1);
 
 namespace pocketmine\level;
 
+use pocketmine\block\Air;
+use pocketmine\block\Beetroot;
+use pocketmine\block\Block;
+use pocketmine\block\BrownMushroom;
+use pocketmine\block\Cactus;
+use pocketmine\block\Carrot;
+use pocketmine\block\CocoaBlock;
+use pocketmine\block\Farmland;
+use pocketmine\block\Grass;
+use pocketmine\block\Leaves;
+use pocketmine\block\Leaves2;
+use pocketmine\block\MelonStem;
+use pocketmine\block\Mycelium;
 use pocketmine\block\NetherWartBlock;
-use pocketmine\entity\projectile\Arrow;
+use pocketmine\block\Potato;
+use pocketmine\block\PumpkinStem;
+use pocketmine\block\RedMushroom;
+use pocketmine\block\Sapling;
+use pocketmine\block\SnowLayer;
+use pocketmine\block\Sugarcane;
+use pocketmine\block\Wheat;
+use pocketmine\block\Ice;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\FloatingText;
-use pocketmine\entity\object\Item as DroppedItem;
 use pocketmine\entity\object\Lightning;
 use pocketmine\entity\object\XPOrb;
+use pocketmine\entity\object\Item as DroppedItem;
+use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
@@ -91,27 +112,6 @@ use pocketmine\tile\Tile;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Random;
 use pocketmine\utils\ReversePriorityQueue;
-use pocketmine\block\Air;
-use pocketmine\block\Beetroot;
-use pocketmine\block\Block;
-use pocketmine\block\BrownMushroom;
-use pocketmine\block\Cactus;
-use pocketmine\block\Carrot;
-use pocketmine\block\CocoaBlock;
-use pocketmine\block\Farmland;
-use pocketmine\block\Grass;
-use pocketmine\block\Ice;
-use pocketmine\block\Leaves;
-use pocketmine\block\Leaves2;
-use pocketmine\block\MelonStem;
-use pocketmine\block\Mycelium;
-use pocketmine\block\Potato;
-use pocketmine\block\PumpkinStem;
-use pocketmine\block\RedMushroom;
-use pocketmine\block\Sapling;
-use pocketmine\block\SnowLayer;
-use pocketmine\block\Sugarcane;
-use pocketmine\block\Wheat;
 
 #include <rules/Level.h>
 
@@ -772,17 +772,18 @@ class Level implements ChunkManager, Metadatable{
 		}
 	}
 
-	/**
-	 * WARNING: Do not use this, it's only for internal use.
-	 * Changes to this function won't be recorded on the version.
-	 */
-	public function sendTime() {
-		$pk = new SetTimePacket();
-		$pk->time = (int)$this->time;
-		$pk->started = $this->stopTime == false;
+    /**
+     * WARNING: Do not use this, it's only for internal use.
+     * Changes to this function won't be recorded on the version.
+     *
+     * @param Player[] ...$targets If empty, will send to all players in the level.
+     */
+    public function sendTime(Player ...$targets){
+        $pk = new SetTimePacket();
+        $pk->time = $this->time;
 
-		$this->server->broadcastPacket($this->players, $pk);
-	}
+        $this->server->broadcastPacket(count($targets) > 0 ? $targets : $this->players, $pk);
+    }
 
 	/**
 	 * WARNING: Do not use this, it's only for internal use.

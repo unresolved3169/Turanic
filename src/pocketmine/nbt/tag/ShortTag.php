@@ -69,8 +69,6 @@ class ShortTag extends NamedTag {
     public function setValue($value){
         if (!is_int($value)){
             throw new \TypeError("ShortTag value must be of type int, " . gettype($value) . " given");
-        }elseif ($value < -(2 ** 15) or $value > ((2 ** 15) - 1)) {
-            throw new \InvalidArgumentException("Value $value is too large!");
         }
         parent::setValue($value);
     }
