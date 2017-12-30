@@ -168,18 +168,8 @@ class Bed extends Transparent {
 				$this->getLevel()->setBlock($block, Block::get($this->id, $meta), true, true);
 				$this->getLevel()->setBlock($next, Block::get($this->id, $meta | 0x08), true, true);
 
-				$nbt = new CompoundTag("", [
-					new StringTag("id", Tile::BED),
-					new ByteTag("color", $item->getDamage() & 0x0f),
-					new IntTag("x", $block->x),
-					new IntTag("y", $block->y),
-					new IntTag("z", $block->z),
-				]);
-				$nbt2 = clone $nbt;
-				$nbt2["x"] = $next->x;
-				$nbt2["z"] = $next->z;
-				Tile::createTile(Tile::BED, $this->getLevel(), $nbt);
-				Tile::createTile(Tile::BED, $this->getLevel(), $nbt2);
+                Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));
+                Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next, $face, $item, $player));
 
 				return true;
 			}

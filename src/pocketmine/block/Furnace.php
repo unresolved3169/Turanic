@@ -22,8 +22,9 @@
  *
 */
 
-namespace pocketmine\block;
+declare(strict_types=1);
 
+namespace pocketmine\block;
 
 class Furnace extends BurningFurnace {
 

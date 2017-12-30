@@ -22,15 +22,12 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Dispenser as TileDispenser;
 use pocketmine\tile\Tile;
@@ -108,26 +105,7 @@ class Dispenser extends Solid {
 		$this->meta = $faces[$f];
 
 		$this->getLevel()->setBlock($block, $this, true, true);
-		$nbt = new CompoundTag("", [
-			new ListTag("Items", []),
-			new StringTag("id", Tile::DISPENSER),
-			new IntTag("x", $this->x),
-			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
-		]);
-		$nbt->Items->setTagType(NBT::TAG_Compound);
-
-		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-		}
-
-		if($item->hasCustomBlockData()){
-			foreach($item->getCustomBlockData() as $key => $v){
-				$nbt->{$key} = $v;
-			}
-		}
-
-		Tile::createTile(Tile::DISPENSER, $this->getLevel(), $nbt);
+		Tile::createTile(Tile::DISPENSER, $this->getLevel(), TileDispenser::createNBT($this, $face, $item, $player));
 
 		return true;
 	}
@@ -155,15 +133,7 @@ class Dispenser extends Solid {
 			if($t instanceof TileDispenser){
 				$dispenser = $t;
 			}else{
-				$nbt = new CompoundTag("", [
-					new ListTag("Items", []),
-					new StringTag("id", Tile::DISPENSER),
-					new IntTag("x", $this->x),
-					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
-				]);
-				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$dispenser = Tile::createTile(Tile::DISPENSER, $this->getLevel(), $nbt);
+				$dispenser = Tile::createTile(Tile::DISPENSER, $this->getLevel(), TileDispenser::createNBT($this));
 			}
 
 			if($player->isCreative() and $player->getServer()->limitedCreative){

@@ -22,15 +22,14 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\EnderChest as TileEnderChest;
 use pocketmine\tile\Tile;
@@ -127,18 +126,7 @@ class EnderChest extends Transparent {
 		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 
 		$this->getLevel()->setBlock($block, $this, true, true);
-		$nbt = new CompoundTag("", [
-			new StringTag("id", Tile::ENDER_CHEST),
-			new IntTag("x", $this->x),
-			new IntTag("y", $this->y),
-			new IntTag("z", $this->z)
-		]);
-
-		if($item->hasCustomName()){
-			$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-		}
-
-		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), $nbt);
+		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
 
 		return true;
 	}
@@ -157,13 +145,7 @@ class EnderChest extends Transparent {
 			}
 
 			if(!($this->getLevel()->getTile($this) instanceof TileEnderChest)){
-				$nbt = new CompoundTag("", [
-					new StringTag("id", Tile::ENDER_CHEST),
-					new IntTag("x", $this->x),
-					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
-				]);
-				Tile::createTile("EnderChest", $this->getLevel(), $nbt);
+				Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this));
 			}
 
 			if($player->isCreative() and $player->getServer()->limitedCreative){

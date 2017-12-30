@@ -154,7 +154,7 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 			}
 		}
 
-		if($ingredient->getId() !== Item::AIR and $ingredient->getCount() > 0){
+		if(!$ingredient->isNull()){
 			if($canBrew){
 				if(!$this->checkIngredient($ingredient)){
 					$canBrew = false;
@@ -197,7 +197,7 @@ class BrewingStand extends Spawnable implements InventoryHolder, Container, Name
 				for($i = 1; $i <= 3; $i++){
 					$potion = $this->inventory->getItem($i);
 					$recipe = Server::getInstance()->getCraftingManager()->matchBrewingRecipe($ingredient, $potion);
-					if($recipe != null and $potion->getId() !== Item::AIR){
+					if($recipe != null and !$potion->isNull()){
 						$this->inventory->setItem($i, $recipe->getResult());
 					}
 				}

@@ -51,6 +51,9 @@ class Config {
 	/** @var int */
 	private $type = Config::DETECT;
 
+	/** @var bool */
+	protected $changed = false;
+
 	public static $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
@@ -89,6 +92,14 @@ class Config {
 		$this->correct = false;
 		$this->load($this->file, $this->type);
 	}
+
+	public function hasChanged() : bool{
+	    return $this->changed;
+    }
+
+    public function setChanged(bool $changed = true){
+        $this->changed = $changed;
+    }
 
 	/**
 	 * @param $str
@@ -213,6 +224,8 @@ class Config {
 				}
 			}
 
+			$this->changed = true;
+
 			return true;
 		}else{
 			return false;
@@ -276,6 +289,7 @@ class Config {
 
 		$base = $value;
 		$this->nestedCache[$key] = $value;
+		$this->changed = true;
 	}
 
 	/**
@@ -309,6 +323,27 @@ class Config {
 		return $this->nestedCache[$key] = $base;
 	}
 
+    public function removeNested(string $key) : void{
+        $this->nestedCache = [];
+        $this->changed = true;
+
+        $vars = explode(".", $key);
+
+        $currentNode =& $this->config;
+        while(count($vars) > 0){
+            $nodeName = array_shift($vars);
+            if(isset($currentNode[$nodeName])){
+                if(empty($vars)){ //final node
+                    unset($currentNode[$nodeName]);
+                }elseif(is_array($currentNode[$nodeName])){
+                    $currentNode =& $currentNode[$nodeName];
+                }
+            }else{
+                break;
+            }
+        }
+    }
+
 	/**
 	 * @param       $k
 	 * @param mixed $default
@@ -325,6 +360,7 @@ class Config {
 	 */
 	public function set($k, $v = true){
 		$this->config[$k] = $v;
+		$this->changed = true;
 		foreach($this->nestedCache as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
 				unset($this->nestedCache[$nestedKey]);
@@ -337,6 +373,7 @@ class Config {
 	 */
 	public function setAll($v){
 		$this->config = $v;
+		$this->changed = true;
 	}
 
 	/**
@@ -360,6 +397,7 @@ class Config {
 	 */
 	public function remove($k){
 		unset($this->config[$k]);
+		$this->changed = true;
 	}
 
 	/**
@@ -397,6 +435,10 @@ class Config {
 				++$changed;
 			}
 		}
+
+		if($changed > 0){
+		    $this->changed = true;
+        }
 
 		return $changed;
 	}

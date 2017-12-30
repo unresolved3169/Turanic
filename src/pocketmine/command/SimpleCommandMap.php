@@ -329,8 +329,8 @@ class SimpleCommandMap implements CommandMap {
 	 *
 	 * @return bool
 	 */
-	public function dispatch(CommandSender $sender, $commandLine){
-		$args = explode(" ", $commandLine);
+	public function dispatch(CommandSender $sender, string $commandLine){
+        $args = array_map("stripslashes", str_getcsv($commandLine, " "));
 
 		if(count($args) === 0){
 			return false;

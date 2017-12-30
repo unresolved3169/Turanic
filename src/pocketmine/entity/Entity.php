@@ -1834,7 +1834,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 *
 	 * @return bool
 	 */
-	public function move(float $dx, float $dy, float $dz){
+	public function move($dx, $dy, $dz){
         $this->blocksAround = [];
         if($dx == 0 and $dz == 0 and $dy == 0){
             return true;

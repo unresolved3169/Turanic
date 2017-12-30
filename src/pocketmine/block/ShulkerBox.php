@@ -26,12 +26,10 @@ namespace pocketmine\block;
 
 use pocketmine\item\Tool;
 use pocketmine\item\Item;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
+use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
 use pocketmine\tile\ShulkerBox as TileShulkerBox;
 
@@ -71,26 +69,7 @@ class ShulkerBox extends Transparent {
 
     public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
         $this->getLevel()->setBlock($this, $this, true, true);
-        $nbt = new CompoundTag("", [
-            new ListTag("Items", []),
-            new StringTag("id", Tile::SHULKER_BOX),
-            new IntTag("x", $this->x),
-            new IntTag("y", $this->y),
-            new IntTag("z", $this->z)
-        ]);
-        $nbt->Items->setTagType(NBT::TAG_Compound);
-
-        if($item->hasCustomName()){
-            $nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-        }
-
-        if($item->hasCustomBlockData()){
-            foreach($item->getCustomBlockData() as $key => $v){
-                $nbt->{$key} = $v;
-            }
-        }
-
-        Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), $nbt);
+        Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this, $face, $item, $player));
     }
 
     public function onActivate(Item $item, Player $player = null){
@@ -105,21 +84,11 @@ class ShulkerBox extends Transparent {
             if($t instanceof TileShulkerBox){
                 $sb = $t;
             }else{
-                $nbt = new CompoundTag("", [
-                    new ListTag("Items", []),
-                    new StringTag("id", Tile::CHEST),
-                    new IntTag("x", $this->x),
-                    new IntTag("y", $this->y),
-                    new IntTag("z", $this->z)
-                ]);
-                $nbt->Items->setTagType(NBT::TAG_Compound);
-                $sb = Tile::createTile("Chest", $this->getLevel(), $nbt);
+                $sb = Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this));
             }
 
-            if(isset($sb->namedtag->Lock) and $sb->namedtag->Lock instanceof StringTag){
-                if($sb->namedtag->Lock->getValue() !== $item->getCustomName()){
-                    return true;
-                }
+            if(!($this->getSide(Vector3::SIDE_UP)->isTransparent()) or ($sb->namedtag->hasTag("Lock", StringTag::class) and $sb->namedtag->getString("Lock") !== $item->getCustomName())) {
+                return true;
             }
 
             if($player->isCreative() and $player->getServer()->limitedCreative){
@@ -127,6 +96,21 @@ class ShulkerBox extends Transparent {
             }
             $player->addWindow($sb->getInventory());
         }
+
+        return true;
+    }
+
+    public function onBreak(Item $item, Player $player = null) : bool{
+        $t = $this->getLevel()->getTile($this);
+        if ($t instanceof TileShulkerBox) {
+            $item = Item::get(Item::SHULKER_BOX, $this->meta, 1);
+            $itemNBT = clone $item->getNamedTag();
+            $itemNBT->setTag($t->getNBT()->getTag(Container::TAG_ITEMS));
+            $item->setNamedTag($itemNBT);
+            $this->getLevel()->dropItem($this->asVector3(), $item);
+            $t->getInventory()->clearAll(); // dont drop the items
+        }
+        $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 
         return true;
     }
@@ -140,9 +124,7 @@ class ShulkerBox extends Transparent {
     }
 
     public function getDrops(Item $item): array{
-        return [
-            [$this->id, 0, 1]
-        ];
+        return [];
     }
 
 }

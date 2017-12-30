@@ -22,18 +22,17 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
+use pocketmine\tile\Banner as TileBanner;
 
 class StandingBanner extends Transparent{
 
@@ -63,28 +62,15 @@ class StandingBanner extends Transparent{
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
         if ($face !== Vector3::SIDE_DOWN) {
-            $nbt = new CompoundTag("", [
-                new StringTag("id", Tile::BANNER),
-                new IntTag("x", $block->x),
-                new IntTag("y", $block->y),
-                new IntTag("z", $block->z),
-                $item->getNamedTag()->Base ?? new IntTag("Base", $item->getDamage() & 0x0f),
-            ]);
-
-            if ($face === Vector3::SIDE_UP) {
+            if($face === Vector3::SIDE_UP and $player !== null){
                 $this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
                 $this->getLevel()->setBlock($block, $this, true);
-            } else {
+            }else{
                 $this->meta = $face;
-                $this->getLevel()->setBlock($block, new WallBanner($this->meta), true);
+                $this->getLevel()->setBlock($block, Block::get(Block::WALL_BANNER, $this->meta), true);
             }
 
-            if (isset($item->getNamedTag()->Patterns) and ($item->getNamedTag()->Patterns instanceof ListTag)) {
-                $nbt->Patterns = $item->getNamedTag()->Patterns;
-            }
-
-            Tile::createTile(Tile::BANNER, $this->getLevel(), $nbt);
-
+            Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
             return true;
         }
 

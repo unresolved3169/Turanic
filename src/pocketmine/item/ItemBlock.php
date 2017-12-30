@@ -36,10 +36,11 @@ class ItemBlock extends Item {
      * @param int $id
      * @param int $meta
      * @param int $count
+     * @param int|null $itemId
      */
-	public function __construct(int $id, $meta = 0, int $count = 1){
+	public function __construct(int $id, $meta = 0, int $count = 1, int $itemId = null){
 		$this->block = $block = Block::get($id, $meta & 0xf);
-		parent::__construct($block->getId(), $block->getDamage(), $count, $block->getName());
+		parent::__construct($itemId ?? $block->getId(), $block->getDamage(), $count, $block->getName());
 	}
 
 	/**

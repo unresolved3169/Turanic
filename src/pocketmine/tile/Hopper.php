@@ -154,9 +154,7 @@ class Hopper extends Spawnable implements InventoryHolder, Container, Nameable {
 			if($target instanceof Tile and $target instanceof InventoryHolder){
 				$inv = $target->getInventory();
 				foreach($this->inventory->getContents() as $item){
-					if($item->getId() === Item::AIR or $item->getCount() < 1){
-						continue;
-					}
+					if($item->isNull()) continue;
 					$targetItem = clone $item;
 					$targetItem->setCount(1);
 

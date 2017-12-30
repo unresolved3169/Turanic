@@ -227,7 +227,7 @@ class Block extends Position implements BlockIds, Metadatable{
             self::registerBlock(new Carrot());
             self::registerBlock(new Potato());
             self::registerBlock(new WoodenButton());
-            self::registerBlock(new SkullBlock());
+            self::registerBlock(new Skull());
             self::registerBlock(new Anvil());
             self::registerBlock(new TrappedChest());
             self::registerBlock(new LightWeightedPressurePlate());
