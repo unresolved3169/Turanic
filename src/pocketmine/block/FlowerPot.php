@@ -28,10 +28,6 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\FlowerPot as TileFlowerPot;
 use pocketmine\tile\Tile;
@@ -99,22 +95,7 @@ class FlowerPot extends Flowable {
 
 		$this->getLevel()->setBlock($block, $this, true, true);
 
-		$nbt = new CompoundTag("", [
-			new StringTag("id", Tile::FLOWER_POT),
-			new IntTag("x", $block->x),
-			new IntTag("y", $block->y),
-			new IntTag("z", $block->z),
-			new ShortTag("item", 0),
-			new IntTag("mData", 0),
-		]);
-
-		if($item->hasCustomBlockData()){
-			foreach($item->getCustomBlockData() as $key => $v){
-				$nbt->{$key} = $v;
-			}
-		}
-
-		Tile::createTile(Tile::FLOWER_POT, $this->getLevel(), $nbt);
+        Tile::createTile(Tile::FLOWER_POT, $this->getLevel(), TileFlowerPot::createNBT($this, $face, $item, $player));
 		return true;
 	}
 

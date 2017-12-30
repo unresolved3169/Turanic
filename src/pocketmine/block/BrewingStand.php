@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,19 +18,15 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\BrewingStand as TileBrewingStand;
 use pocketmine\tile\Tile;
@@ -64,26 +59,7 @@ class BrewingStand extends Transparent {
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($block->getSide(Vector3::SIDE_DOWN)->isTransparent() === false){
 			$this->getLevel()->setBlock($block, $this, true, true);
-			$nbt = new CompoundTag("", [
-				new ListTag("Items", []),
-				new StringTag("id", Tile::BREWING_STAND),
-				new IntTag("x", $this->x),
-				new IntTag("y", $this->y),
-				new IntTag("z", $this->z)
-			]);
-			$nbt->Items->setTagType(NBT::TAG_Compound);
-			if($item->hasCustomName()){
-				$nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-			}
-
-			if($item->hasCustomBlockData()){
-				foreach($item->getCustomBlockData() as $key => $v){
-					$nbt->{$key} = $v;
-				}
-			}
-
-			Tile::createTile(Tile::BREWING_STAND, $this->getLevel(), $nbt);
-
+            Tile::createTile(Tile::BREWING_STAND, $this->getLevel(), TileBrewingStand::createNBT($this, $face, $item, $player));
 			return true;
 		}
 		return false;
@@ -144,19 +120,10 @@ class BrewingStand extends Transparent {
 				return true;
 			}
 			$t = $this->getLevel()->getTile($this);
-			//$brewingStand = false;
 			if($t instanceof TileBrewingStand){
 				$brewingStand = $t;
 			}else{
-				$nbt = new CompoundTag("", [
-					new ListTag("Items", []),
-					new StringTag("id", Tile::BREWING_STAND),
-					new IntTag("x", $this->x),
-					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
-				]);
-				$nbt->Items->setTagType(NBT::TAG_Compound);
-				$brewingStand = Tile::createTile(Tile::BREWING_STAND, $this->getLevel(), $nbt);
+				$brewingStand = Tile::createTile(Tile::BREWING_STAND, $this->getLevel(), TileBrewingStand::createNBT($this));
 			}
 			$player->addWindow($brewingStand->getInventory());
 		}

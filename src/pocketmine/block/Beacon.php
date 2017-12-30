@@ -1,23 +1,30 @@
 <?php
 
 /*
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author SuperXingKong
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Beacon as TileBeacon;
 use pocketmine\tile\Tile;
@@ -84,16 +91,7 @@ class Beacon extends Transparent {
 	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$this->getLevel()->setBlock($this, $this, true, true);
-		$nbt = new CompoundTag("", [
-			new StringTag("id", Tile::BEACON),
-			new ByteTag("isMovable", 0),
-			new IntTag("primary", 0),
-			new IntTag("secondary", 0),
-			new IntTag("x", $block->x),
-			new IntTag("y", $block->y),
-			new IntTag("z", $block->z)
-		]);
-		Tile::createTile(Tile::BEACON, $this->getLevel(), $nbt);
+        Tile::createTile(Tile::BEACON, $this->getLevel(), TileBeacon::createNBT($this, $face, $item, $player));
 		return true;
 	}
 
@@ -115,16 +113,7 @@ class Beacon extends Transparent {
 			if($t instanceof TileBeacon){
 				$beacon = $t;
 			}else{
-				$nbt = new CompoundTag("", [
-					new StringTag("id", Tile::BEACON),
-					new ByteTag("isMovable", 0),
-					new IntTag("primary", 0),
-					new IntTag("secondary", 0),
-					new IntTag("x", $this->x),
-					new IntTag("y", $this->y),
-					new IntTag("z", $this->z)
-				]);
-				$beacon = Tile::createTile(Tile::BEACON, $this->getLevel(), $nbt);
+				$beacon = Tile::createTile(Tile::BEACON, $this->getLevel(), TileBeacon::createNBT($this));
 			}
 
 			if($player->isCreative() and $player->getServer()->limitedCreative){

@@ -25,9 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\DLDetector;
 use pocketmine\tile\Tile;
@@ -79,15 +76,9 @@ class DaylightDetector extends Transparent {
 		if($t instanceof DLDetector){
 			return $t;
 		}else{
-			$nbt = new CompoundTag("", [
-				new StringTag("id", Tile::DL_DETECTOR),
-				new IntTag("x", $this->x),
-				new IntTag("y", $this->y),
-				new IntTag("z", $this->z)
-			]);
-			$t = Tile::createTile(Tile::DL_DETECTOR, $this->getLevel(), $nbt);
-            if($t instanceof DLDetector) return $t;
-            return null;
+		    /** @var DLDetector $t */
+			$t = Tile::createTile(Tile::DL_DETECTOR, $this->getLevel(), DLDetector::createNBT($this));
+            return $t;
 		}
 	}
 

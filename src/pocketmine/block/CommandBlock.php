@@ -20,13 +20,12 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
 use pocketmine\tile\CommandBlock as TileCB;
@@ -92,14 +91,7 @@ class CommandBlock extends Solid {
         ];
         $this->meta = $faces[$f];
         $this->level->setBlock($this, $this);
-        $nbt = new CompoundTag("", [
-            new StringTag("id", Tile::COMMAND_BLOCK),
-            new IntTag("x", $this->x),
-            new IntTag("y", $this->y),
-            new IntTag("z", $this->z),
-            new IntTag("blockType", $this->getBlockType())
-        ]);
-        Tile::createTile(Tile::COMMAND_BLOCK, $this->level, $nbt);
+        Tile::createTile(Tile::COMMAND_BLOCK, $this->level, TileCB::createNBT($this, $face, $item, $player));
         return true;
     }
 
@@ -108,16 +100,8 @@ class CommandBlock extends Solid {
             return false;
         }
         $tile = $this->getTile();
-        if(!$tile instanceof TileCB){
-            $nbt = new CompoundTag("", [
-                new StringTag("id", Tile::COMMAND_BLOCK),
-                new IntTag("x", $this->x),
-                new IntTag("y", $this->y),
-                new IntTag("z", $this->z),
-                new IntTag("blockType", $this->getBlockType())
-            ]);
-            $tile = Tile::createTile(Tile::COMMAND_BLOCK, $this->level, $nbt);
-        }
+        if(!$tile instanceof TileCB)
+            $tile = Tile::createTile(Tile::COMMAND_BLOCK, $this->level, TileCB::createNBT($this));
         $tile->spawnTo($player);
         $tile->show($player);
         return true;

@@ -29,9 +29,6 @@ use pocketmine\level\Level;
 use pocketmine\level\sound\ItemFrameAddItemSound;
 use pocketmine\level\sound\ItemFrameRotateItemSound;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\{
-	ByteTag, CompoundTag, FloatTag, IntTag, StringTag
-};
 use pocketmine\Player;
 use pocketmine\tile\ItemFrame as TileItemFrame;
 use pocketmine\tile\Tile;
@@ -70,16 +67,8 @@ class ItemFrame extends Flowable {
 	 */
 	public function onActivate(Item $item, Player $player = null){
 		if(!(($tile = $this->level->getTile($this)) instanceof TileItemFrame)){
-			$nbt = new CompoundTag("", [
-				new StringTag("id", Tile::ITEM_FRAME),
-				new IntTag("x", $this->x),
-				new IntTag("y", $this->y),
-				new IntTag("z", $this->z),
-				new FloatTag("ItemDropChance", 1.0),
-				new ByteTag("ItemRotation", 0)
-			]);
-			/** @var TileItemFrame $tile */
-			$tile = Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), $nbt);
+		    /** @var TileItemFrame $tile */
+            $tile = Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this));
 		}
 
 		if($tile->hasItem()){
@@ -160,22 +149,7 @@ class ItemFrame extends Flowable {
 		$this->meta = $faces[$face];
 		$this->level->setBlock($block, $this, true, true);
 
-		$nbt = new CompoundTag("", [
-			new StringTag("id", Tile::ITEM_FRAME),
-			new IntTag("x", $block->x),
-			new IntTag("y", $block->y),
-			new IntTag("z", $block->z),
-			new FloatTag("ItemDropChance", 1.0),
-			new ByteTag("ItemRotation", 0)
-		]);
-
-		if($item->hasCustomBlockData()){
-			foreach($item->getCustomBlockData() as $key => $v){
-				$nbt->{$key} = $v;
-			}
-		}
-
-		Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), $nbt);
+        Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this, $face, $item, $player));
 
 		return true;
 

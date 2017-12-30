@@ -32,6 +32,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 
+// TODO : OPTIMIZE
 class VirtualHolder extends Chest {
 
     protected $inventory;

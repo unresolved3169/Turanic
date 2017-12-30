@@ -26,11 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Tool;
 use pocketmine\item\Item;
-use pocketmine\nbt\NBT;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
 use pocketmine\tile\ShulkerBox as TileShulkerBox;
@@ -71,26 +67,7 @@ class ShulkerBox extends Transparent {
 
     public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
         $this->getLevel()->setBlock($this, $this, true, true);
-        $nbt = new CompoundTag("", [
-            new ListTag("Items", []),
-            new StringTag("id", Tile::SHULKER_BOX),
-            new IntTag("x", $this->x),
-            new IntTag("y", $this->y),
-            new IntTag("z", $this->z)
-        ]);
-        $nbt->Items->setTagType(NBT::TAG_Compound);
-
-        if($item->hasCustomName()){
-            $nbt->CustomName = new StringTag("CustomName", $item->getCustomName());
-        }
-
-        if($item->hasCustomBlockData()){
-            foreach($item->getCustomBlockData() as $key => $v){
-                $nbt->{$key} = $v;
-            }
-        }
-
-        Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), $nbt);
+        Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this, $face, $item, $player));
     }
 
     public function onActivate(Item $item, Player $player = null){
@@ -105,15 +82,7 @@ class ShulkerBox extends Transparent {
             if($t instanceof TileShulkerBox){
                 $sb = $t;
             }else{
-                $nbt = new CompoundTag("", [
-                    new ListTag("Items", []),
-                    new StringTag("id", Tile::CHEST),
-                    new IntTag("x", $this->x),
-                    new IntTag("y", $this->y),
-                    new IntTag("z", $this->z)
-                ]);
-                $nbt->Items->setTagType(NBT::TAG_Compound);
-                $sb = Tile::createTile("Chest", $this->getLevel(), $nbt);
+                $sb = Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this));
             }
 
             if(isset($sb->namedtag->Lock) and $sb->namedtag->Lock instanceof StringTag){
