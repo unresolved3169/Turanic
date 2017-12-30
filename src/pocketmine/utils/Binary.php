@@ -248,6 +248,18 @@ class Binary {
 	}
 
     /**
+     * Reads a 4-byte floating-point number, rounded to the specified number of decimal places.
+     *
+     * @param string $str
+     * @param int $accuracy
+     *
+     * @return float
+     */
+    public static function readRoundedFloat(string $str, int $accuracy) : float{
+        return round(self::readFloat($str), $accuracy);
+    }
+
+    /**
      * Reads a 4-byte floating-point number
      *
      * @param string $str

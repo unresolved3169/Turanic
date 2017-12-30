@@ -22,30 +22,25 @@
 
 namespace pocketmine;
 
-use pocketmine\block\CommandBlock;
-use pocketmine\event\player\PlayerEntityInteractEvent;
-use pocketmine\inventory\transaction\CraftingTransaction;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\protocol\BossEventPacket;
-use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
-use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
-use pocketmine\tile\CommandBlock as TileCommandBlock;
-use pocketmine\form\Form;
 use pocketmine\block\Block;
+use pocketmine\block\CommandBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
-use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\Human;
-use pocketmine\entity\object\Item as DroppedItem;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\Item as DroppedItem;
+use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\projectile\FishingHook;
+use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\form\{
+    FormCloseEvent, FormDataReceiveEvent
+};
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\player\cheat\PlayerIllegalMoveEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
@@ -58,11 +53,9 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
+use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
-use pocketmine\event\player\PlayerTransferEvent;
-use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerLoginEvent;
@@ -73,19 +66,29 @@ use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
-use pocketmine\event\server\DataPacketSendEvent;
+use pocketmine\event\player\PlayerTransferEvent;
+use pocketmine\event\player\PlayerInteractEvent;
+use pocketmine\event\player\PlayerItemConsumeEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
+use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\TextContainer;
 use pocketmine\event\Timings;
 use pocketmine\event\TranslationContainer;
+use pocketmine\form\CustomForm;
+use pocketmine\form\element\Label;
+use pocketmine\form\Form;
+use pocketmine\inventory\BigCraftingGrid;
 use pocketmine\inventory\CraftingGrid;
 use pocketmine\inventory\PlayerCursorInventory;
-use pocketmine\inventory\transaction\action\InventoryAction;
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\event\form\{FormCloseEvent, FormDataReceiveEvent};
+use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
+use pocketmine\item\{
+    Bucket, Consumable, Elytra, WritableBook, WrittenBook
+};
 use pocketmine\item\Item;
 use pocketmine\level\ChunkLoader;
 use pocketmine\level\format\Chunk;
@@ -100,29 +103,38 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\BlockEntityDataPacket;
 use pocketmine\network\mcpe\protocol\BlockPickRequestPacket;
 use pocketmine\network\mcpe\protocol\BookEditPacket;
+use pocketmine\network\mcpe\protocol\BossEventPacket;
+use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
+use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\EntityFallPacket;
-use pocketmine\network\mcpe\protocol\InteractPacket;
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
+use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
+use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\PingPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
+use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
@@ -130,45 +142,36 @@ use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackClientResponsePacket;
 use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
-use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
+use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
+use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
-use pocketmine\network\mcpe\protocol\PingPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
-use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
-use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
-use pocketmine\network\mcpe\protocol\CommandRequestPacket;
-use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
-use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
-use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
-use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
-use pocketmine\network\mcpe\protocol\CraftingEventPacket;
-use pocketmine\item\{
-    Bucket, Consumable, Elytra, WrittenBook, WritableBook
-};
+use pocketmine\network\mcpe\protocol\InteractPacket;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
 use pocketmine\plugin\Plugin;
 use pocketmine\resourcepacks\ResourcePack;
+use pocketmine\tile\CommandBlock as TileCommandBlock;
+use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\tile\ItemFrame;
-use pocketmine\tile\Spawnable;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
-use pocketmine\entity\Skin;
-use pocketmine\form\CustomForm;
-use pocketmine\form\element\Label;
 
 class Player extends Human implements CommandSender, InventoryHolder, ChunkLoader, IPlayer{
 
@@ -2512,21 +2515,23 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         /** @var InventoryAction[] $actions */
         $actions = [];
         foreach($packet->actions as $networkInventoryAction){
-            $action = $networkInventoryAction->createInventoryAction($this);
-
-            if($action === null){
-                $this->server->getLogger()->debug("Unmatched inventory action from " . $this->getName() . ": " . json_encode($networkInventoryAction));
+            try{
+                $action = $networkInventoryAction->createInventoryAction($this);
+                if($action !== null){
+                    $actions[] = $action;
+                }
+            }catch(\Throwable $e){
+                $this->server->getLogger()->debug("Unhandled inventory action from " . $this->getName() . ": " . $e->getMessage());
                 $this->sendAllInventories();
                 return false;
             }
-            $actions[] = $action;
         }
 
         if($packet->isCraftingPart){
             if($this->craftingTransaction === null){
                 $this->craftingTransaction = new CraftingTransaction($this, $actions);
             }else{
-                foreach ($actions as $action) {
+                foreach($actions as $action){
                     $this->craftingTransaction->addAction($action);
                 }
             }
@@ -2534,11 +2539,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             if($this->craftingTransaction->getPrimaryOutput() !== null){
                 //we get the actions for this in several packets, so we can't execute it until we get the result
 
-                $this->craftingTransaction->execute(); //if it can't execute, no inventories will be modified
+                $this->craftingTransaction->execute();
                 $this->craftingTransaction = null;
             }
 
             return true;
+        }elseif($this->craftingTransaction !== null){
+            $this->server->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction from " . $this->getName() . ", refusing to execute crafting");
+            $this->craftingTransaction = null;
         }
 
 		switch($packet->transactionType){
@@ -4147,8 +4155,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function resetCraftingGridType(){
-        $this->craftingGrid = new CraftingGrid($this);
-        $this->craftingType = self::CRAFTING_SMALL;
+        $contents = $this->craftingGrid->getContents();
+        if(count($contents) > 0){
+            $drops = $this->inventory->addItem(...$contents);
+            foreach($drops as $drop){
+                $this->dropItem($drop);
+            }
+
+            $this->craftingGrid->clearAll();
+        }
+
+        if($this->craftingGrid instanceof BigCraftingGrid){
+            $this->craftingGrid = new CraftingGrid($this);
+        }
 	}
 
 
@@ -4174,8 +4193,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return Inventory|null
 	 */
 	public function getWindow(int $windowId){
-        if($windowId === CraftingGrid::WINDOW_ID)
-            return $this->craftingGrid;
 		return $this->windowIndex[$windowId] ?? null;
 	}
 

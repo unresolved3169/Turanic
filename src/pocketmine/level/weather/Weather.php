@@ -207,6 +207,7 @@ class Weather {
     public function sendWeather(Player $player){
         $pk = new LevelEventPacket();
         $pk->evid = LevelEventPacket::EVENT_STOP_THUNDER;
+        $pk->data = 0;
         $pk2 = new LevelEventPacket();
         $pk2->data = mt_rand(0, 50000) + 10000;
         switch($this->weather){

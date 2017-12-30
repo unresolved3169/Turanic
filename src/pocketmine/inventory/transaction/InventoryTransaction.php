@@ -2,35 +2,37 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\Server;
+use pocketmine\utils\MainLogger;
 
 /**
  * This InventoryTransaction only allows doing Transaction between one / two inventories
@@ -170,16 +172,20 @@ class InventoryTransaction{
                 $slotChanges[spl_object_hash($action->getInventory()) . "@" . $action->getSlot()][] = $action;
             }
         }
+
         foreach($slotChanges as $hash => $list){
             if(count($list) === 1){ //No need to compact slot changes if there is only one on this slot
                 unset($slotChanges[$hash]);
                 continue;
             }
+
             $originalList = $list;
+
             /** @var SlotChangeAction|null $originalAction */
             $originalAction = null;
             /** @var Item|null $lastTargetItem */
             $lastTargetItem = null;
+
             foreach($list as $i => $action){
                 if($action->isValid($this->source)){
                     $originalAction = $action;
@@ -188,9 +194,11 @@ class InventoryTransaction{
                     break;
                 }
             }
+
             if($originalAction === null){
                 return false; //Couldn't find any actions that had a source-item matching the current inventory slot
             }
+
             do{
                 $sortedThisLoop = 0;
                 foreach($list as $i => $action){
@@ -202,14 +210,19 @@ class InventoryTransaction{
                     }
                 }
             }while($sortedThisLoop > 0);
+
             if(count($list) > 0){ //couldn't chain all the actions together
+                MainLogger::getLogger()->debug("Failed to compact " . count($originalList) . " actions for " . $this->source->getName());
                 return false;
             }
+
             foreach($originalList as $action){
                 unset($this->actions[spl_object_hash($action)]);
             }
+
             $this->addAction(new SlotChangeAction($originalAction->getInventory(), $originalAction->getSlot(), $originalAction->getSourceItem(), $lastTargetItem));
         }
+
         return true;
     }
 

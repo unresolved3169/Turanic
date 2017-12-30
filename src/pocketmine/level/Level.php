@@ -925,9 +925,7 @@ class Level implements ChunkManager, Metadatable{
 	public function sendBlockExtraData(int $x, int $y, int $z, int $id, int $data, array $targets = null) {
 		$pk = new LevelEventPacket;
 		$pk->evid = LevelEventPacket::EVENT_SET_DATA;
-		$pk->x = $x + 0.5;
-		$pk->y = $y + 0.5;
-		$pk->z = $z + 0.5;
+		$pk->position = new Vector3($x + 0.5, $y + 0.5, $z + 0.5);
 		$pk->data = ($data << 8) | $id;
 
 		$this->server->broadcastPacket($targets === null ? $this->getChunkPlayers($x >> 4, $z >> 4) : $targets, $pk);
