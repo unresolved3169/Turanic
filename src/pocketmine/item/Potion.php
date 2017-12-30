@@ -25,109 +25,50 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
-use pocketmine\entity\Entity;
-use pocketmine\entity\Human;
 use pocketmine\entity\Living;
-use pocketmine\event\entity\EntityDrinkPotionEvent;
-use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\Player;
 
-class Potion extends Item {
+class Potion extends Item implements Consumable {
 
 	//No effects
-	const WATER_BOTTLE = 0;
+	const WATER = 0, WATER_BOTTLE = 0;
 	const MUNDANE = 1;
-	const MUNDANE_EXTENDED = 2;
+	const LONG_MUNDANE = 2, MUNDANE_EXTENDED = 2;
 	const THICK = 3;
 	const AWKWARD = 4;
 
 	//Actual potions
 	const NIGHT_VISION = 5;
-	const NIGHT_VISION_T = 6;
+	const LONG_NIGHT_VISION = 6, NIGHT_VISION_T = 6;
 	const INVISIBILITY = 7;
-	const INVISIBILITY_T = 8;
+	const LONG_INVISIBILITY = 8, INVISIBILITY_T = 8;
 	const LEAPING = 9;
-	const LEAPING_T = 10;
-	const LEAPING_TWO = 11;
+	const LONG_LEAPING = 10, LEAPING_T = 10;
+	const STRONG_LEAPING = 11, LEAPING_TWO = 11;
 	const FIRE_RESISTANCE = 12;
-	const FIRE_RESISTANCE_T = 13;
+	const LONG_FIRE_RESISTANCE = 13, FIRE_RESISTANCE_T = 13;
 	const SWIFTNESS = 14;
-	const SWIFTNESS_T = 15;
-	const SWIFTNESS_TWO = 16;
+	const LONG_SWIFTNESS = 15, SWIFTNESS_T = 15;
+	const STRONG_SWIFTNESS = 16, SWIFTNESS_TWO = 16;
 	const SLOWNESS = 17;
-	const SLOWNESS_T = 18;
+	const LONG_SLOWNESS = 18, SLOWNESS_T = 18;
 	const WATER_BREATHING = 19;
-	const WATER_BREATHING_T = 20;
+	const LONG_WATER_BREATHING = 20, WATER_BREATHING_T = 20;
 	const HEALING = 21;
-	const HEALING_TWO = 22;
+	const STRONG_HEALING = 22, HEALING_TWO = 22;
 	const HARMING = 23;
-	const HARMING_TWO = 24;
+	const STRONG_HARMING = 24, HARMING_TWO = 24;
 	const POISON = 25;
-	const POISON_T = 26;
-	const POISON_TWO = 27;
+	const LONG_POISON = 26, POISON_T = 26;
+	const STRONG_POISON = 27, POISON_TWO = 27;
 	const REGENERATION = 28;
-	const REGENERATION_T = 29;
-	const REGENERATION_TWO = 30;
+	const LONG_REGENERATION = 29, REGENERATION_T = 29;
+	const STRONG_REGENERATION = 30, REGENERATION_TWO = 30;
 	const STRENGTH = 31;
-	const STRENGTH_T = 32;
-	const STRENGTH_TWO = 33;
+	const LONG_STRENGTH = 32, STRENGTH_T = 32;
+	const STRONG_STRENGTH = 33, STRENGTH_TWO = 33;
 	const WEAKNESS = 34;
-	const WEAKNESS_T = 35;
-	const DECAY = 36; //TODO
-
-	//Structure: Potion ID => [matching effect, duration in ticks, amplifier]
-	//Use false if no effects.
-	const POTIONS = [
-		self::WATER_BOTTLE => false,
-		self::MUNDANE => false,
-		self::MUNDANE_EXTENDED => false,
-		self::THICK => false,
-		self::AWKWARD => false,
-
-		self::NIGHT_VISION => [Effect::NIGHT_VISION, (180 * 20), 0],
-		self::NIGHT_VISION_T => [Effect::NIGHT_VISION, (480 * 20), 0],
-
-		self::INVISIBILITY => [Effect::INVISIBILITY, (180 * 20), 0],
-		self::INVISIBILITY_T => [Effect::INVISIBILITY, (480 * 20), 0],
-
-		self::LEAPING => [Effect::JUMP, (180 * 20), 0],
-		self::LEAPING_T => [Effect::JUMP, (480 * 20), 0],
-		self::LEAPING_TWO => [Effect::JUMP, (90 * 20), 1],
-
-		self::FIRE_RESISTANCE => [Effect::FIRE_RESISTANCE, (180 * 20), 0],
-		self::FIRE_RESISTANCE_T => [Effect::FIRE_RESISTANCE, (480 * 20), 0],
-
-		self::SWIFTNESS => [Effect::SPEED, (180 * 20), 0],
-		self::SWIFTNESS_T => [Effect::SPEED, (480 * 20), 0],
-		self::SWIFTNESS_TWO => [Effect::SPEED, (90 * 20), 1],
-
-		self::SLOWNESS => [Effect::SLOWNESS, (90 * 20), 0],
-		self::SLOWNESS_T => [Effect::SLOWNESS, (240 * 20), 0],
-
-		self::WATER_BREATHING => [Effect::WATER_BREATHING, (180 * 20), 0],
-		self::WATER_BREATHING_T => [Effect::WATER_BREATHING, (480 * 20), 0],
-
-		self::HEALING => [Effect::HEALING, (1), 0],
-		self::HEALING_TWO => [Effect::HEALING, (1), 1],
-
-		self::HARMING => [Effect::HARMING, (1), 0],
-		self::HARMING_TWO => [Effect::HARMING, (1), 1],
-
-		self::POISON => [Effect::POISON, (45 * 20), 0],
-		self::POISON_T => [Effect::POISON, (120 * 20), 0],
-		self::POISON_TWO => [Effect::POISON, (22 * 20), 1],
-
-		self::REGENERATION => [Effect::REGENERATION, (45 * 20), 0],
-		self::REGENERATION_T => [Effect::REGENERATION, (120 * 20), 0],
-		self::REGENERATION_TWO => [Effect::REGENERATION, (22 * 20), 1],
-
-		self::STRENGTH => [Effect::STRENGTH, (180 * 20), 0],
-		self::STRENGTH_T => [Effect::STRENGTH, (480 * 20), 0],
-		self::STRENGTH_TWO => [Effect::STRENGTH, (90 * 20), 1],
-
-		self::WEAKNESS => [Effect::WEAKNESS, (90 * 20), 0],
-		self::WEAKNESS_T => [Effect::WEAKNESS, (240 * 20), 0]
-	];
+	const LONG_WEAKNESS = 35, WEAKNESS_T = 35;
+	const WITHER = 36, DECAY = 36;
 
 	/**
 	 * Potion constructor.
@@ -160,26 +101,10 @@ class Potion extends Item {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function canBeConsumed() : bool{
-		return $this->meta > 0;
-	}
-
-	/**
-	 * @param Entity $entity
-	 *
-	 * @return bool
-	 */
-	public function canBeConsumedBy(Entity $entity) : bool{
-		return $entity instanceof Human;
-	}
-
-	/**
 	 * @return array
 	 */
 	public function getEffects() : array{
-		return self::getEffectsById($this->meta);
+		return self::getPotionEffectsById($this->meta);
 	}
 
 	/**
@@ -188,10 +113,7 @@ class Potion extends Item {
 	 * @return Effect[]
 	 */
 	public static function getEffectsById(int $id) : array{
-		if(count(self::POTIONS[$id] ?? []) === 3){
-			return [Effect::getEffect(self::POTIONS[$id][0])->setDuration(self::POTIONS[$id][1])->setAmplifier(self::POTIONS[$id][2])];
-		}
-		return [];
+		return self::getPotionEffectsById($id);
 	}
 
 
@@ -199,34 +121,17 @@ class Potion extends Item {
 	 * @param Living $human
 	 */
 	public function onConsume(Living $human){
-		$pk = new EntityEventPacket();
-		$pk->entityRuntimeId = $human->getId();
-		$pk->event = EntityEventPacket::USE_ITEM;
-		if($human instanceof Player){
-			$human->dataPacket($pk);
-		}
-		$server = $human->getLevel()->getServer();
-		$server->broadcastPacket($human->getViewers(), $pk);
-
-		$server->getPluginManager()->callEvent($ev = new EntityDrinkPotionEvent($human, $this));
-
-		if(!$ev->isCancelled()){
-			foreach($ev->getEffects() as $effect){
-				$human->addEffect($effect);
-			}
-			//Don't set the held item to glass bottle if we're in creative
-			if($human instanceof Player){
-				if($human->getGamemode() === 1){
-					return;
-				}
-			}
-			$human->getInventory()->setItemInHand(Item::get(self::GLASS_BOTTLE));
-		}
-
-
 	}
 
-	/**
+	public function getResidue(){
+        return Item::get(Item::GLASS_BOTTLE);
+    }
+
+    public function getAdditionalEffects(): array{
+        return $this->getEffects();
+    }
+
+    /**
 	 * @param int $meta
 	 *
 	 * @return int
@@ -346,5 +251,153 @@ class Potion extends Item {
 				return "Potion";
 		}
 	}
+
+    /**
+     * Returns a list of effects applied by potions with the specified ID.
+     *
+     * @param int $id
+     * @return Effect[]
+     *
+     * @throws \InvalidArgumentException if the potion type is unknown
+     */
+    public static function getPotionEffectsById(int $id) : array{
+        switch($id){
+            case self::WATER:
+            case self::MUNDANE:
+            case self::LONG_MUNDANE:
+            case self::THICK:
+            case self::AWKWARD:
+                return [];
+            case self::NIGHT_VISION:
+                return [
+                    Effect::getEffect(Effect::NIGHT_VISION)->setDuration(3600)
+                ];
+            case self::LONG_NIGHT_VISION:
+                return [
+                    Effect::getEffect(Effect::NIGHT_VISION)->setDuration(9600)
+                ];
+            case self::INVISIBILITY:
+                return [
+                    Effect::getEffect(Effect::INVISIBILITY)->setDuration(3600)
+                ];
+            case self::LONG_INVISIBILITY:
+                return [
+                    Effect::getEffect(Effect::INVISIBILITY)->setDuration(9600)
+                ];
+            case self::LEAPING:
+                return [
+                    Effect::getEffect(Effect::JUMP_BOOST)->setDuration(3600)
+                ];
+            case self::LONG_LEAPING:
+                return [
+                    Effect::getEffect(Effect::JUMP_BOOST)->setDuration(9600)
+                ];
+            case self::STRONG_LEAPING:
+                return [
+                    Effect::getEffect(Effect::JUMP_BOOST)->setDuration(1800)->setAmplifier(1)
+                ];
+            case self::FIRE_RESISTANCE:
+                return [
+                    Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(3600)
+                ];
+            case self::LONG_FIRE_RESISTANCE:
+                return [
+                    Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(9600)
+                ];
+            case self::SWIFTNESS:
+                return [
+                    Effect::getEffect(Effect::SPEED)->setDuration(3600)
+                ];
+            case self::LONG_SWIFTNESS:
+                return [
+                    Effect::getEffect(Effect::SPEED)->setDuration(9600)
+                ];
+            case self::STRONG_SWIFTNESS:
+                return [
+                    Effect::getEffect(Effect::SPEED)->setDuration(1800)->setAmplifier(1)
+                ];
+            case self::SLOWNESS:
+                return [
+                    Effect::getEffect(Effect::SLOWNESS)->setDuration(1800)
+                ];
+            case self::LONG_SLOWNESS:
+                return [
+                    Effect::getEffect(Effect::SLOWNESS)->setDuration(4800)
+                ];
+            case self::WATER_BREATHING:
+                return [
+                    Effect::getEffect(Effect::WATER_BREATHING)->setDuration(3600)
+                ];
+            case self::LONG_WATER_BREATHING:
+                return [
+                    Effect::getEffect(Effect::WATER_BREATHING)->setDuration(9600)
+                ];
+            case self::HEALING:
+                return [
+                    Effect::getEffect(Effect::HEALING)
+                ];
+            case self::STRONG_HEALING:
+                return [
+                    Effect::getEffect(Effect::HEALING)->setAmplifier(1)
+                ];
+            case self::HARMING:
+                return [
+                    Effect::getEffect(Effect::HARMING)
+                ];
+            case self::STRONG_HARMING:
+                return [
+                    Effect::getEffect(Effect::HARMING)->setAmplifier(1)
+                ];
+            case self::POISON:
+                return [
+                    Effect::getEffect(Effect::POISON)->setDuration(900)
+                ];
+            case self::LONG_POISON:
+                return [
+                    Effect::getEffect(Effect::POISON)->setDuration(2400)
+                ];
+            case self::STRONG_POISON:
+                return [
+                    Effect::getEffect(Effect::POISON)->setDuration(440)->setAmplifier(1)
+                ];
+            case self::REGENERATION:
+                return [
+                    Effect::getEffect(Effect::REGENERATION)->setDuration(900)
+                ];
+            case self::LONG_REGENERATION:
+                return [
+                    Effect::getEffect(Effect::REGENERATION)->setDuration(2400)
+                ];
+            case self::STRONG_REGENERATION:
+                return [
+                    Effect::getEffect(Effect::REGENERATION)->setDuration(440)->setAmplifier(1)
+                ];
+            case self::STRENGTH:
+                return [
+                    Effect::getEffect(Effect::STRENGTH)->setDuration(3600)
+                ];
+            case self::LONG_STRENGTH:
+                return [
+                    Effect::getEffect(Effect::STRENGTH)->setDuration(9600)
+                ];
+            case self::STRONG_STRENGTH:
+                return [
+                    Effect::getEffect(Effect::STRENGTH)->setDuration(1800)->setAmplifier(1)
+                ];
+            case self::WEAKNESS:
+                return [
+                    Effect::getEffect(Effect::WEAKNESS)->setDuration(1800)
+                ];
+            case self::LONG_WEAKNESS:
+                return [
+                    Effect::getEffect(Effect::WEAKNESS)->setDuration(4800)
+                ];
+            case self::WITHER:
+                return [
+                    Effect::getEffect(Effect::WITHER)->setDuration(800)->setAmplifier(1)
+                ];
+        }
+        throw new \InvalidArgumentException("Unknown potion type $id");
+    }
 
 }

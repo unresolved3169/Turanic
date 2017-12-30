@@ -1596,7 +1596,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		$above = $this->getBlockAt($target->x, $target->y + 1, $target->z);
-        if ($above->getId() === Item::FIRE) {
+        if ($above->getId() === Block::FIRE) {
             $this->setBlock($above, new Air(), true);
         }
 
