@@ -66,7 +66,7 @@ class LingeringPotion extends Projectile {
         if($this->age < 2){
             $aec = null;
             $potionId = $this->getPotionId();
-            $color = Potion::getColor($potionId);
+            $color = Potion::getColor($potionId)->toArray();
 
             $nbt = Entity::createBaseNBT($this);
             $nbt->setFloat("Radius", 3);

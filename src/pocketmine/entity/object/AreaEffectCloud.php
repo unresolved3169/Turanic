@@ -118,7 +118,7 @@ class AreaEffectCloud extends Entity {
             }
             /** @var Effect[] $effects */
             $firsteffect = $effects[0]; //Todo multiple effects
-            $this->setDataProperty(self::DATA_POTION_COLOR, self::DATA_TYPE_INT, ((255 & 0xff) << 24) | (($firsteffect->getColor()[0] & 0xff) << 16) | (($firsteffect->getColor()[1] & 0xff) << 8) | ($firsteffect->getColor()[2] & 0xff));
+            $this->setDataProperty(self::DATA_POTION_COLOR, self::DATA_TYPE_INT, $firsteffect->getColor()->toARGB());
             $this->Radius += $this->RadiusPerTick;
             $this->setDataProperty(self::DATA_BOUNDING_BOX_WIDTH, self::DATA_TYPE_FLOAT, $this->Radius * 2);
             if($this->WaitTime > 0){

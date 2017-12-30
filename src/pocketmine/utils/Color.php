@@ -43,13 +43,11 @@ class Color {
     const COLOR_DYE_ORANGE = 14;
     const COLOR_DYE_WHITE = 15;
 
-    private $red = 0;
-    private $green = 0;
-    private $blue = 0;
+    /** @var int */
+    protected $alpha, $red, $green, $blue;
 
     /** @var \SplFixedArray */
     public static $dyeColors = null;
-    private $alpha = 0;
 
     public static function init(){
         if(self::$dyeColors === null){
@@ -80,8 +78,8 @@ class Color {
      *
      * @return Color
      */
-    public static function getRGB($r, $g, $b){
-        return new Color((int) $r, (int) $g, (int) $b);
+    public static function getRGB(int $r, int $g, int $b){
+        return new Color($r, $g, $b);
     }
 
     /**
@@ -100,7 +98,32 @@ class Color {
             $tb += $c->getBlue();
             ++$count;
         }
-        return Color::getRGB($tr / $count, $tg / $count, $tb / $count);
+        return new Color((int) $tr / $count, (int) $tg / $count, (int) $tb / $count);
+    }
+
+    /**
+     * Mixes the supplied list of colours together to produce a result colour.
+     *
+     * @param Color[] ...$colors
+     * @return Color
+     * @throws \ArgumentCountError
+     */
+    public static function mix(Color ...$colors) : Color{
+        $count = count($colors);
+        if($count < 1){
+            throw new \ArgumentCountError("No colors given");
+        }
+
+        $a = $r = $g = $b = 0;
+
+        foreach($colors as $color){
+            $a += $color->alpha;
+            $r += $color->red;
+            $g += $color->green;
+            $b += $color->blue;
+        }
+
+        return new Color((int) ($r / $count), (int) ($g / $count), (int) ($b / $count), (int) ($a / $count));
     }
 
     /**
@@ -123,11 +146,19 @@ class Color {
      * @param $b
      * @param int $a
      */
-    public function __construct($r, $g, $b, $a = 0xff){
+    public function __construct(int $r, int $g, int $b, int $a = 0xff){
         $this->red = $r & 0xff;
         $this->green = $g & 0xff;
         $this->blue = $b & 0xff;
         $this->alpha = $a & 0xff;
+    }
+
+    /**
+     * @return int
+     * @deprecated
+     */
+    public function getA() : int{
+        return $this->getAlpha();
     }
 
     /**
@@ -149,47 +180,91 @@ class Color {
     /**
      * @return int
      */
-    public function getRed(){
-        return (int) $this->red;
+    public function getRed(): int{
+        return $this->red;
     }
 
     /**
      * @return int
+     * @deprecated
      */
-    public function getBlue(){
-        return (int) $this->blue;
-    }
-
-    /**
-     * @return int
-     */
-    public function getGreen(){
-        return (int) $this->green;
-    }
-
-    /**
-     * @return int
-     */
-    public function getR(){
+    public function getR() : int{
         return $this->getRed();
     }
 
     /**
-     * @return int
+     * @param int $r
      */
-    public function getG(){
-        return $this->getGreen();
+    public function setRed(int $r){
+        $this->red = $r & 0xff;
+    }
+
+    /**
+     * @param int $r
+     * @deprecated
+     */
+    public function setR(int $r){
+        $this->setRed($r);
     }
 
     /**
      * @return int
      */
-    public function getB(){
+    public function getGreen() : int{
+        return $this->green;
+    }
+
+    /**
+     * @return int
+     * @deprecated
+     */
+    public function getG() : int{
+        return $this->getGreen();
+    }
+
+    /**
+     * @param int $g
+     */
+    public function setGreen(int $g){
+        $this->green = $g & 0xff;
+    }
+
+    /**
+     * @param int $g
+     * @deprecated
+     */
+    public function setG(int $g){
+        $this->setGreen($g);
+    }
+
+    /**
+     * @return int
+     */
+    public function getBlue() : int{
+        return $this->blue;
+    }
+
+    /**
+     * @return int
+     * @deprecated
+     */
+    public function getB() : int{
         return $this->getBlue();
     }
 
-    public function getA(){
-        return $this->getAlpha();
+    /**
+     * @param int $b
+     */
+    public function setBlue(int $b){
+        $this->blue = $b & 0xff;
+    }
+
+    /**
+     * @param int $b
+     * @deprecated
+     */
+    public function setB(int $b){
+        $this->setBlue($b);
     }
 
     /**
@@ -268,5 +343,9 @@ class Color {
 
     public static function fromABGR(int $code){
         return new Color($code & 0xff, ($code >> 8) & 0xff, ($code >> 16) & 0xff, ($code >> 24) & 0xff);
+    }
+
+    public function toArray() : array {
+        return [$this->red, $this->green, $this->blue];
     }
 }

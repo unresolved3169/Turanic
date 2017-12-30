@@ -77,7 +77,7 @@ class ThrownPotion extends Projectile {
 		$this->timings->startTiming();
 
         if($this->isCollided || $this->age > 1200){
-            $color = Potion::getColor($this->getPotionId());
+            $color = Potion::getColor($this->getPotionId())->toArray();
             $this->getLevel()->addParticle(new SpellParticle($this, $color[0], $color[1], $color[2]));
             $radius = 6;
             foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow($radius, $radius, $radius)) as $p){

@@ -113,7 +113,7 @@ class Arrow extends Projectile {
 
 		if($this->potionId != 0){
 			if(!$this->onGround or ($this->onGround and ($currentTick % 4) == 0)){
-				$color = Potion::getColor($this->potionId - 1);
+				$color = Potion::getColor($this->potionId - 1)->toArray();
 				$this->level->addParticle(new MobSpellParticle($this->add(
 					$this->width / 2 + mt_rand(-100, 100) / 500,
 					$this->height / 2 + mt_rand(-100, 100) / 500,

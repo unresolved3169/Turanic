@@ -139,6 +139,7 @@ use pocketmine\network\mcpe\protocol\SetEntityMotionPacket;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
+use pocketmine\utils\Color;
 
 abstract class Entity extends Location implements Metadatable, EntityIds {
 
@@ -834,30 +835,26 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	    return false;
 	}
 
-	protected function recalculateEffectColor(){
-		//TODO: add transparency values
-		$color = [0, 0, 0]; //RGB
-		$count = 0;
+    protected function recalculateEffectColor(){
+	    /** @var Color[] $colors */
+		$colors = [];
 		$ambient = true;
 		foreach($this->effects as $effect){
 			if($effect->isVisible()){
-				$c = $effect->getColor();
-				$color[0] += $c[0] * ($effect->getAmplifier() + 1);
-				$color[1] += $c[1] * ($effect->getAmplifier() + 1);
-				$color[2] += $c[2] * ($effect->getAmplifier() + 1);
-				$count += $effect->getAmplifier() + 1;
+				$level = $effect->getEffectLevel();
+				$color = $effect->getColor();
+                for($i = 0; $i < $level; ++$i) {
+                    $colors[] = $color;
+                }
+
 				if(!$effect->isAmbient()){
 					$ambient = false;
 				}
 			}
 		}
 
-		if($count > 0){
-			$r = ($color[0] / $count) & 0xff;
-			$g = ($color[1] / $count) & 0xff;
-			$b = ($color[2] / $count) & 0xff;
-
-			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0xff000000 | ($r << 16) | ($g << 8) | $b);
+		if(!empty($colors)){
+			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, Color::mix(...$colors)->toARGB());
 			$this->setDataProperty(Entity::DATA_POTION_AMBIENT, Entity::DATA_TYPE_BYTE, $ambient ? 1 : 0);
 		}else{
 			$this->setDataProperty(Entity::DATA_POTION_COLOR, Entity::DATA_TYPE_INT, 0);
