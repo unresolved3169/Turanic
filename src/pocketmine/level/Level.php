@@ -1665,7 +1665,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if ($target->getId() === Item::AIR) {
+		if ($target->getId()->isNull()) {
 			return false;
 		}
 
