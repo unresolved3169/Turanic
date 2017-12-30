@@ -31,6 +31,7 @@ use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDrinkPotionEvent;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
+use pocketmine\utils\Color;
 
 class Potion extends Item {
 
@@ -142,14 +143,14 @@ class Potion extends Item {
 	/**
 	 * @param int $meta
 	 *
-	 * @return array
+	 * @return Color
 	 */
-	public static function getColor(int $meta){
+	public static function getColor(int $meta) : Color{
 		$effect = Effect::getEffect(self::getEffectId($meta));
 		if($effect !== null){
 			return $effect->getColor();
 		}
-		return [0, 0, 0];
+		return new Color(0, 0, 0);
 	}
 
 	/**

@@ -299,7 +299,7 @@ class Cauldron extends Solid {
 					if($player->isSurvival()){
 						$player->getInventory()->setItemInHand(Item::get(Item::GLASS_BOTTLE));
 					}
-					$color = Potion::getColor($item->getDamage());
+					$color = Potion::getColor($item->getDamage())->toArray();
 					$this->getLevel()->addSound(new SpellSound($this->add(0.5, 1, 0.5), $color[0], $color[1], $color[2]));
 				}
 				break;
@@ -325,7 +325,7 @@ class Cauldron extends Solid {
 					}
 					$this->getLevel()->setBlock($this, $this, true);
 					$this->addItem($item, $player, $result);
-					$color = Potion::getColor($result->getDamage());
+					$color = Potion::getColor($result->getDamage())->toArray();
 					$this->getLevel()->addSound(new SpellSound($this->add(0.5, 1, 0.5), $color[0], $color[1], $color[2]));
 				}else{
 					$this->meta -= 2;
