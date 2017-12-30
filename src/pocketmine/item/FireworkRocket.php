@@ -53,6 +53,14 @@ class FireworkRocket extends ProjectileItem {
     }
 
     public function onClickAir(Player $player, Vector3 $directionVector, CompoundTag $nbt = null) : bool{
+        if($player->isUseElytra()){
+            $this->count--;
+            $motion = $player->getDirectionVector()->multiply(1.25);
+            $nbt = Entity::createBaseNBT($player->asVector3(), $motion , mt_rand(0, 360), -1*(float) (90.0 + (5.0 - 5.0/2)));
+            $entity = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
+            $player->setMotion($motion);
+            if($entity != null) $entity->spawnToAll();
+        }
         return true;
     }
 

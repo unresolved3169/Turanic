@@ -30,9 +30,6 @@ use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\level\sound\LaunchSound;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\Player;
 
 abstract class ProjectileItem extends Item{
