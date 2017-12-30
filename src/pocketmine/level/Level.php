@@ -1665,7 +1665,7 @@ class Level implements ChunkManager, Metadatable{
 			return false;
 		}
 
-		if ($target->getId()->isNull()) {
+		if ($target->getId() == Block::AIR) {
 			return false;
 		}
 
@@ -1777,7 +1777,7 @@ class Level implements ChunkManager, Metadatable{
 		if ($hand->place($item, $block, $target, $face, $facepos->x, $facepos->y, $facepos->z, $player) === false) {
 			return false;
 		}
-		$item->setCount($item->getCount() - 1);
+		$item->pop();
 
 		return true;
 	}
