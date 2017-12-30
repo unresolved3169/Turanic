@@ -26,8 +26,10 @@ namespace pocketmine\block;
 
 use pocketmine\item\Tool;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
+use pocketmine\tile\Container;
 use pocketmine\tile\Tile;
 use pocketmine\tile\ShulkerBox as TileShulkerBox;
 
@@ -85,10 +87,8 @@ class ShulkerBox extends Transparent {
                 $sb = Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this));
             }
 
-            if(isset($sb->namedtag->Lock) and $sb->namedtag->Lock instanceof StringTag){
-                if($sb->namedtag->Lock->getValue() !== $item->getCustomName()){
-                    return true;
-                }
+            if(!($this->getSide(Vector3::SIDE_UP)->isTransparent()) or ($sb->namedtag->hasTag("Lock", StringTag::class) and $sb->namedtag->getString("Lock") !== $item->getCustomName())) {
+                return true;
             }
 
             if($player->isCreative() and $player->getServer()->limitedCreative){
@@ -96,6 +96,21 @@ class ShulkerBox extends Transparent {
             }
             $player->addWindow($sb->getInventory());
         }
+
+        return true;
+    }
+
+    public function onBreak(Item $item, Player $player = null) : bool{
+        $t = $this->getLevel()->getTile($this);
+        if ($t instanceof TileShulkerBox) {
+            $item = Item::get(Item::SHULKER_BOX, $this->meta, 1);
+            $itemNBT = clone $item->getNamedTag();
+            $itemNBT->setTag($t->getNBT()->getTag(Container::TAG_ITEMS));
+            $item->setNamedTag($itemNBT);
+            $this->getLevel()->dropItem($this->asVector3(), $item);
+            $t->getInventory()->clearAll(); // dont drop the items
+        }
+        $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 
         return true;
     }
@@ -109,9 +124,7 @@ class ShulkerBox extends Transparent {
     }
 
     public function getDrops(Item $item): array{
-        return [
-            [$this->id, 0, 1]
-        ];
+        return [];
     }
 
 }
