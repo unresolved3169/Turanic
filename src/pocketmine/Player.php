@@ -1630,7 +1630,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->isCollided = $this->onGround;
 	}
 
-	public function move(float $dx, float $dy, float $dz){
+	public function move($dx, $dy, $dz){
 		$this->checkGroundState(0,0,0,0,0,0);
 		if($dx == 0 and $dz == 0 and $dy == 0){
 			return true;
