@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
@@ -85,7 +86,7 @@ class Cobweb extends Flowable {
 			return [
 				[Item::COBWEB, 0, 1],
 			];
-		}elseif($item->isSword() >= Tool::TIER_WOODEN){
+		}elseif($item->isSword() >= TieredTool::TIER_WOODEN){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
 				return [
 					[Item::COBWEB, 0, 1],

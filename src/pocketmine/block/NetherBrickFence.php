@@ -24,6 +24,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\utils\Color;
@@ -82,7 +83,7 @@ class NetherBrickFence extends Transparent {
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
 				[Item::NETHER_BRICK_FENCE, $this->meta, 1],
 			];

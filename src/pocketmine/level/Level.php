@@ -1686,13 +1686,7 @@ class Level implements ChunkManager, Metadatable{
 					}
 
 					if ($item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $facepos->x, $facepos->y, $facepos->z)) {
-						if ($item->getCount() <= 0) {
-							$item = Item::get(Item::AIR, 0, 0);
-							return true;
-						} elseif ($item->isTool() and $item->getDamage() >= $item->getMaxDurability()) {
-							$item = Item::get(Item::AIR, 0, 0);
-							return true;
-						}
+						return true;
 					}
 				}
 			} else {

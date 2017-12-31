@@ -25,8 +25,9 @@
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
+use pocketmine\item\Item;
 
 class Stone extends Solid {
 	const NORMAL = 0;
@@ -85,7 +86,7 @@ class Stone extends Solid {
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0 and $this->getDamage() === 0){
 				return [
 					[Item::STONE, 0, 1],

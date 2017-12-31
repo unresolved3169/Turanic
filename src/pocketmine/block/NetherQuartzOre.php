@@ -25,6 +25,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
@@ -73,7 +74,7 @@ class NetherQuartzOre extends Solid {
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
 				return [
 					[Item::NETHER_QUARTZ_ORE, 0, 1],

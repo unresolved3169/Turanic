@@ -24,6 +24,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
@@ -76,7 +77,7 @@ class Prismarine extends Solid {
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
 				[$this->id, $this->meta & 0x03, 1],
 			];

@@ -24,32 +24,34 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class WoodenPickaxe extends Tool {
-	/**
-	 * WoodenPickaxe constructor.
-	 *
-	 * @param int $meta
-	 * @param int $count
-	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::WOODEN_PICKAXE, $meta, $count, "Wooden Pickaxe");
-	}
+use pocketmine\block\Block;
+
+class Sword extends TieredTool {
 
 	/**
 	 * @return int
 	 */
-	public function isPickaxe(){
-		return Tool::TIER_WOODEN;
+	public function isSword(){
+		return $this->tier;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getAttackDamage(){
-		return 3;
-	}
+    public function getBlockToolType() : int{
+        return Tool::TYPE_SWORD;
+    }
 
-	public function getFuelTime(): int{
-        return 200;
+    public function getAttackDamage() : int{
+        return self::getBaseDamageFromTier($this->tier);
+    }
+
+    public function getBlockToolHarvestLevel() : int{
+        return 1;
+    }
+
+    public function getMiningEfficiency(Block $block) : float{
+        return parent::getMiningEfficiency($block) * 1.5; //swords break any block 1.5x faster than hand
+    }
+
+    protected function getBaseMiningEfficiency() : float{
+        return 10;
     }
 }

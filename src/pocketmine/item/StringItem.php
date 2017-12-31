@@ -24,33 +24,13 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 
-class WoodenSword extends Tool {
-	/**
-	 * WoodenSword constructor.
-	 *
-	 * @param int $meta
-	 * @param int $count
-	 */
+class StringItem extends Item {
+
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::WOODEN_SWORD, $meta, $count, "Wooden Sword");
+	    $this->block = Block::get(Block::TRIPWIRE);
+		parent::__construct(self::STRING, $meta, $count, "String");
 	}
 
-	/**
-	 * @return int
-	 */
-	public function isSword(){
-		return Tool::TIER_WOODEN;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getAttackDamage(){
-		return 5;
-	}
-
-	public function getFuelTime(): int{
-        return 200;
-    }
 }

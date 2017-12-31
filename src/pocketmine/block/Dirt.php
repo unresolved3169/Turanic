@@ -29,9 +29,10 @@ class Dirt extends Solid {
 
 	protected $id = self::DIRT;
 
-	/**
-	 * Dirt constructor.
-	 */
+    /**
+     * Dirt constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
@@ -72,8 +73,12 @@ class Dirt extends Solid {
 	 */
 	public function onActivate(Item $item, Player $player = null){
 		if($item->isHoe()){
-			$item->useOn($this, 2);
-			$this->getLevel()->setBlock($this, Block::get(Item::FARMLAND, 0), true);
+			$item->useOn($this);
+            if($this->meta === 1){
+                $this->getLevel()->setBlock($this, Block::get(Block::DIRT), true);
+            }else{
+                $this->getLevel()->setBlock($this, Block::get(Block::FARMLAND), true);
+            }
 
 			return true;
 		}

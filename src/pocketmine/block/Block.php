@@ -457,6 +457,17 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
+    /**
+     * @return int
+     */
+	public function getToolType() {
+        return Tool::TYPE_NONE;
+ 	}
+
+	public function getToolHarvestLevel() : int{
+        return 0;
+ 	}
+
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
@@ -541,13 +552,6 @@ class Block extends Position implements BlockIds, Metadatable{
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_NONE;
 	}
 
 	/**
@@ -746,46 +750,32 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return float
 	 */
 	public function getBreakTime(Item $item){
-		$base = $this->getHardness() * 1.5;
-		if($this->canBeBrokenWith($item)){
-			if($this->getToolType() === Tool::TYPE_SHEARS and $item->isShears()){
-				$base /= 15;
-			}elseif(
-				($this->getToolType() === Tool::TYPE_PICKAXE and ($tier = $item->isPickaxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_AXE and ($tier = $item->isAxe()) !== false) or
-				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
-			){
-				switch($tier){
-					case Tool::TIER_WOODEN:
-						$base /= 2;
-						break;
-					case Tool::TIER_STONE:
-						$base /= 4;
-						break;
-					case Tool::TIER_IRON:
-						$base /= 6;
-						break;
-					case Tool::TIER_DIAMOND:
-						$base /= 8;
-						break;
-					case Tool::TIER_GOLD:
-						$base /= 12;
-						break;
-				}
-			}
-		}else{
-			$base *= 3.33;
-		}
+        $base = $this->getHardness();
+        if($this->canBeBrokenWith($item)){
+            $base *= 1.5;
+        }else{
+            $base *= 5;
+        }
 
-		if($item->isSword()){
-			$base /= 1.5;
-		}
+        $efficiency = $item->getMiningEfficiency($this);
+        if($efficiency <= 0){
+            throw new \RuntimeException("Item efficiency is invalid");
+        }
 
-		return $base;
+        $base /= $efficiency;
+
+        return $base;
 	}
 
 	public function canBeBrokenWith(Item $item){
-		return $this->getHardness() !== -1;
+        if($this->getHardness() < 0){
+            return false;
+        }
+
+        $toolType = $this->getToolType();
+        $harvestLevel = $this->getToolHarvestLevel();
+        return $toolType === Tool::TYPE_NONE or $harvestLevel === 0 or (
+                ($toolType & $item->getBlockToolType()) !== 0 and $item->getBlockToolHarvestLevel() >= $harvestLevel);
 	}
 
 	/**

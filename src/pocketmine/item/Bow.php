@@ -88,12 +88,7 @@ class Bow extends Tool {
                 $entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
                 if($player->isSurvival()){
                     $player->getInventory()->removeItem(Item::get(Item::ARROW, 0, 1));
-                    $this->setDamage($this->getDamage() + 1);
-                    if($this->getDamage() >= $this->getMaxDurability()){
-                        $player->getInventory()->setItemInHand(Item::get(Item::AIR, 0, 0));
-                    }else{
-                        $player->getInventory()->setItemInHand($this);
-                    }
+                    $this->applyDamage(1);
                 }
 
                 if($entity instanceof Projectile){
@@ -116,5 +111,9 @@ class Bow extends Tool {
 
     public function getFuelTime(): int{
         return 200;
+    }
+
+    public function getMaxDurability(){
+        return 385;
     }
 }

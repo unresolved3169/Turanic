@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\nbt\tag\StringTag;
@@ -151,7 +152,7 @@ class BurningFurnace extends Solid {
 	 */
 	public function getDrops(Item $item) : array{
 		$drops = [];
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			$drops[] = [Item::FURNACE, 0, 1];
 		}
 

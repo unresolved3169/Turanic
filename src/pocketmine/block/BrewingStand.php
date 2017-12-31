@@ -24,8 +24,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\BrewingStand as TileBrewingStand;
@@ -137,7 +137,7 @@ class BrewingStand extends Transparent {
 	 */
 	public function getDrops(Item $item) : array{
 		$drops = [];
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			$drops[] = [Item::BREWING_STAND, 0, 1];
 		}
 		return $drops;

@@ -106,10 +106,7 @@ class FlintSteel extends Tool {
 								$level->setBlock($this->temporalVector->setComponents($px, $py, $tz), new Portal());
 							}
 						}
-						if($player->isSurvival()){
-							$this->useOn($block, 2);
-							$player->getInventory()->setItemInHand($this);
-						}
+                        $this->applyDamage(1);
 						return true;
 					}
 				}
@@ -148,10 +145,7 @@ class FlintSteel extends Tool {
 								$level->setBlock($this->temporalVector->setComponents($tx, $py, $pz), new Portal());
 							}
 						}
-						if($player->isSurvival()){
-							$this->useOn($block, 2);
-							$player->getInventory()->setItemInHand($this);
-						}
+                        $this->applyDamage(1);
 						return true;
 					}
 				}
@@ -160,8 +154,8 @@ class FlintSteel extends Tool {
 		}
 
 		if($block->getId() === self::AIR and ($target instanceof Solid)){
-			$level->setBlock($block, new Fire(), true);
-			$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_IGNITE);
+			$level->setBlock($block, Block::get(Block::FIRE), true);
+			$player->getLevel()->broadcastLevelSoundEvent($block->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 
 			/** @var Fire $block */
 			$block = $level->getBlock($block);
@@ -170,14 +164,15 @@ class FlintSteel extends Tool {
 				//	return true;
 			}
 
-			if($player->isSurvival()){
-				$this->useOn($block, 2);//耐久跟报废分别写在 tool 跟 level 了
-				$player->getInventory()->setItemInHand($this);
-			}
+			$this->applyDamage(1);
 
 			return true;
 		}
 
 		return false;
 	}
+
+	public function getMaxDurability(){
+        return 65;
+    }
 }

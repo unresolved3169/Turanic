@@ -25,6 +25,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
@@ -33,9 +34,10 @@ class RedstoneOre extends Solid {
 
 	protected $id = self::REDSTONE_ORE;
 
-	/**
-	 * RedstoneOre constructor.
-	 */
+    /**
+     * RedstoneOre constructor.
+     * @param int $meta
+     */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
@@ -82,7 +84,7 @@ class RedstoneOre extends Solid {
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= Tool::TIER_IRON){
+		if($item->isPickaxe() >= TieredTool::TIER_IRON){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
 				return [
 					[Item::REDSTONE_ORE, 0, 1],

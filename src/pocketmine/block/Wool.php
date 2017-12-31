@@ -23,6 +23,7 @@ namespace pocketmine\block;
 
 
 use pocketmine\item\Tool;
+use pocketmine\item\Item;
 
 class Wool extends Solid {
 	const WHITE = 0;
@@ -105,5 +106,14 @@ class Wool extends Solid {
 	public function getBurnAbility() : int{
 		return 60;
 	}
+
+	public function getBreakTime(Item $item){
+        $time = parent::getBreakTime($item);
+        if($item->getBlockToolType() === Tool::TYPE_SHEARS){
+            $time *= 3; //shears break compatible blocks 15x faster, but wool 5x
+        }
+
+ 		return $time;
+    }
 
 }

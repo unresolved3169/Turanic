@@ -29,8 +29,8 @@ use pocketmine\block\Fire;
 use pocketmine\block\Portal;
 use pocketmine\block\Solid;
 use pocketmine\level\Level;
-use pocketmine\Player;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class FireCharge extends Item {
 	/** @var Vector3 */
@@ -105,7 +105,7 @@ class FireCharge extends Item {
 							}
 						}
 						if($player->isSurvival()){
-							$this->useOn($block, 2);
+							$this->useOn($block);
 							$player->getInventory()->setItemInHand($this);
 						}
 						return true;
@@ -145,7 +145,7 @@ class FireCharge extends Item {
 							}
 						}
 						if($player->isSurvival()){
-							$this->useOn($block, 2);
+							$this->useOn($block);
 							$player->getInventory()->setItemInHand($this);
 						}
 						return true;

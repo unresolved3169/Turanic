@@ -1,0 +1,75 @@
+<?php
+
+/*
+ *
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
+ *
+ */
+
+declare(strict_types=1);
+
+namespace pocketmine\item;
+
+use pocketmine\nbt\tag\ByteTag;
+
+abstract class Durable extends Item{
+
+    /**
+     * Returns whether this item will take damage when used.
+     * @return bool
+     */
+    public function isUnbreakable() : bool{
+        return $this->getNamedTag()->getByte("Unbreakable", 0) !== 0;
+    }
+
+    /**
+     * Sets whether the item will take damage when used.
+     * @param bool $value
+     */
+    public function setUnbreakable(bool $value = true){
+        $this->setNamedTagEntry(new ByteTag("Unbreakable", $value ? 1 : 0));
+    }
+
+    /**
+     * Applies damage to the item.
+     * @param int $amount
+     *
+     * @return bool if any damage was applied to the item
+     */
+    public function applyDamage(int $amount) : bool{
+        if($this->isUnbreakable() or $this->isBroken()){
+            return false;
+        }
+
+        //TODO: Unbreaking enchantment
+
+        $this->meta += $amount;
+        if($this->isBroken()){
+            $this->pop();
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns whether the item is broken.
+     * @return bool
+     */
+    public function isBroken() : bool{
+        return $this->meta >= $this->getMaxDurability();
+    }
+}
