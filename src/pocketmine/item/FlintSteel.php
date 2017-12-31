@@ -147,7 +147,7 @@ class FlintSteel extends Tool {
 			$player->getLevel()->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 
 			/** @var Fire $block */
-			$block = $level->getBlock($block);
+			$block = $level->getBlock($blockReplace);
 			if($block->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() or $block->canNeighborBurn()){
 				$level->scheduleUpdate($block, $block->getTickRate() + mt_rand(0, 10));
 				//	return true;
