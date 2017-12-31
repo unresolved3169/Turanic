@@ -49,6 +49,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\Server;
 
 class Item implements ItemIds, \JsonSerializable {
 
@@ -475,11 +476,10 @@ class Item implements ItemIds, \JsonSerializable {
      * @param int $count
      * @param string $tags
      * @return Item
-     * @throws \TypeError
      */
     public static function get(int $id, int $meta = 0, int $count = 1, string $tags = "") : Item{
         if(!is_string($tags) and !($tags instanceof CompoundTag)){
-            throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
+            Server::getInstance()->getLogger()->info("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
         }
 
         $item = null;

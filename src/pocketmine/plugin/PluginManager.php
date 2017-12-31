@@ -625,77 +625,77 @@ class PluginManager {
 	 * @return PluginCommand[]
 	 */
 	protected function parseYamlCommands(Plugin $plugin){
-		$pluginCmds = [];
+        $pluginCmds = [];
 
-		foreach($plugin->getDescription()->getCommands() as $key => $data){
-			if(strpos($key, ":") !== false){
-				$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $plugin->getDescription()->getFullName()]));
-				continue;
-			}
-			if(is_array($data)){
-				$newCmd = new PluginCommand($key, $plugin);
-				if(isset($data["description"])){
-					$newCmd->setDescription($data["description"]);
-				}
+        foreach ($plugin->getDescription()->getCommands() as $key => $data) {
+            if (strpos($key, ":") !== false) {
+                $this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $plugin->getDescription()->getFullName()]));
+                continue;
+            }
+            if (is_array($data)) {
+                $newCmd = new PluginCommand($key, $plugin);
+                if (isset($data["description"])) {
+                    $newCmd->setDescription($data["description"]);
+                }
 
-				if(isset($data["usage"])){
-					$newCmd->setUsage($data["usage"]);
-				}
-				
-				if(isset($data["overloads"]) and is_array($data["overloads"])){
-					foreach($data["overloads"] as $name => $d){
-						$params = [];
-						if(isset($d["parameters"])){
-							if(is_array($d["parameters"])){
-								foreach($d["parameters"] as $pn => $pd){
-									if(is_array($pd)){
-										$enum = null;
-										if(isset($pd["enum"]) and is_array($pd["enum"]) and isset($pd["enum-name"])){
-											
-											$enum = new CommandEnum($pd["enum-name"], array_values($pd["enum"]));
-										}
-									 $param = new CommandParameter($pn, CommandParameter::getTypeFromString($pd["type"] ?? "rawtext"), (bool) $pd["optional"] ?? false,  CommandParameter::getFlagFromString($pd["flag"] ?? "valid"), $enum, $pd["postfix"] ?? "");
-									}
-									$params[] = $param;
-								}
-							}
-						}
-						$overload = new CommandOverload($name, $params);
-						$newCmd->addOverload($overload);
-					}
-				}
-				
-				if(isset($data["permissionLevel"])){
-					$newCmd->setPermissionLevel((int) $data["permissionLevel"]);
-				}
+                if (isset($data["usage"])) {
+                    $newCmd->setUsage($data["usage"]);
+                }
 
-				if(isset($data["aliases"]) and is_array($data["aliases"])){
-					$aliasList = [];
-					foreach($data["aliases"] as $alias){
-						if(strpos($alias, ":") !== false){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $plugin->getDescription()->getFullName()]));
-							continue;
-						}
-						$aliasList[] = $alias;
-					}
+                if (isset($data["overloads"]) and is_array($data["overloads"])) {
+                    foreach ($data["overloads"] as $name => $d) {
+                        $params = [];
+                        if (isset($d["parameters"])) {
+                            if (is_array($d["parameters"])) {
+                                foreach ($d["parameters"] as $pn => $pd) {
+                                    if (is_array($pd)) {
+                                        $enum = null;
+                                        if (isset($pd["enum"]) and is_array($pd["enum"]) and isset($pd["enum-name"])) {
 
-					$newCmd->setAliases($aliasList);
-				}
+                                            $enum = new CommandEnum($pd["enum-name"], array_values($pd["enum"]));
+                                        }
+                                        $param = new CommandParameter($pn, CommandParameter::getTypeFromString($pd["type"] ?? "rawtext"), (bool)$pd["optional"] ?? false, CommandParameter::getFlagFromString($pd["flag"] ?? "valid"), $enum, $pd["postfix"] ?? "");
+                                    }
+                                    $params[] = $param;
+                                }
+                            }
+                        }
+                        $overload = new CommandOverload($name, $params);
+                        $newCmd->addOverload($overload);
+                    }
+                }
 
-				if(isset($data["permission"])){
-					$newCmd->setPermission($data["permission"]);
-				}
+                if (isset($data["permissionLevel"])) {
+                    $newCmd->setPermissionLevel((int)$data["permissionLevel"]);
+                }
 
-				if(isset($data["permission-message"])){
-					$newCmd->setPermissionMessage($data["permission-message"]);
-				}
+                if (isset($data["aliases"]) and is_array($data["aliases"])) {
+                    $aliasList = [];
+                    foreach ($data["aliases"] as $alias) {
+                        if (strpos($alias, ":") !== false) {
+                            $this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $plugin->getDescription()->getFullName()]));
+                            continue;
+                        }
+                        $aliasList[] = $alias;
+                    }
 
-				$pluginCmds[] = $newCmd;
-			}
-		}
+                    $newCmd->setAliases($aliasList);
+                }
 
-		return $pluginCmds;
-	}
+                if (isset($data["permission"])) {
+                    $newCmd->setPermission($data["permission"]);
+                }
+
+                if (isset($data["permission-message"])) {
+                    $newCmd->setPermissionMessage($data["permission-message"]);
+                }
+
+                $pluginCmds[] = $newCmd;
+            }
+        }
+
+        return $pluginCmds;
+    }
 
 	public function disablePlugins(){
 		foreach($this->getPlugins() as $plugin){
