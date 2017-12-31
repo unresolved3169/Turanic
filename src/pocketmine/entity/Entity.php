@@ -941,12 +941,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @return string
 	 */
 	public function getSaveId(){
-		return self::$shortNames[static::class];
+		return self::$shortNames[static::class] ?? "";
 	}
 
 	public function saveNBT(){
 		if(!($this instanceof Player)){
-			$this->namedtag->setString("id", $this->getSaveId());
+			$this->namedtag->setString("id", $this->getSaveId(), true);
 			if($this->getNameTag() !== ""){
 				$this->namedtag->setString("CustomName", $this->getNameTag());
 				$this->namedtag->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
