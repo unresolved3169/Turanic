@@ -164,7 +164,7 @@ class XPOrb extends Entity {
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_NO_AI, true);
+		$this->setGenericFlag(self::DATA_FLAG_NO_AI, true);
 		$pk = new AddEntityPacket();
 		$pk->type = XPOrb::NETWORK_ID;
 		$pk->entityRuntimeId = $this->getId();

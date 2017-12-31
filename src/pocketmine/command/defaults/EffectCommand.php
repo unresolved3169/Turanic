@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,17 +18,16 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
-
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
 use pocketmine\entity\Effect;
-use pocketmine\entity\InstantEffect;
 use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
@@ -48,6 +46,7 @@ class EffectCommand extends VanillaCommand {
 		);
 		$this->setPermission("pocketmine.command.effect;pocketmine.command.effect.other");
 
+		// TODO : OPTIMIZE ENUMS AND ADD OTHER ARGS
         $this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
         $this->getOverload("default")->setParameter(1, new CommandParameter("effect", CommandParameter::TYPE_MIXED, false, CommandParameter::FLAG_ENUM, new CommandEnum("effect", ["speed", "slowness", "haste", "fatigue", "strenght", "healing", "harming", "jump", "nausea", "regeneration", "damage_resistance", "fire_resistance", "water_breathing", "invisibility", "blindness", "night_vision", "hunger", "weakness", "poison", "wither", "health_boost", "absobtion", "saturation", "levitation", "clear"])));
 	}
@@ -60,7 +59,7 @@ class EffectCommand extends VanillaCommand {
 	 * @return bool
 	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -101,20 +100,23 @@ class EffectCommand extends VanillaCommand {
 			return true;
 		}
 
-		$duration = 300;
 		$amplification = 0;
 
-		if(count($args) >= 3){
-			$duration = (int) $args[2];
-			if(!($effect instanceof InstantEffect)){
-				$duration *= 20;
-			}
-		}elseif($effect instanceof InstantEffect){
-			$duration = 1;
-		}
+        if(count($args) >= 3){
+            $duration = ((int) $args[2]) * 20; //ticks
+        }else{
+            $duration = $effect->getDefaultDuration();
+        }
 
 		if(count($args) >= 4){
-			$amplification = (int) $args[3];
+            $amplification = (int) $args[3];
+            if($amplification > 255){
+                $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooBig", [(string) $args[3], "255"]));
+                return true;
+            }elseif($amplification < 0){
+                $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooSmall", [(string) $args[3], "0"]));
+                return true;
+            }
 		}
 
 		if(count($args) >= 5){
@@ -134,15 +136,13 @@ class EffectCommand extends VanillaCommand {
 				return true;
 			}
 
-			if($player->removeEffect($effect->getId())){
-				$sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [$effect->getName(), $player->getDisplayName()]));
-			}
+            $player->removeEffect($effect->getId());
+            $sender->sendMessage(new TranslationContainer("commands.effect.success.removed", [$effect->getName(), $player->getDisplayName()]));
 		}else{
 			$effect->setDuration($duration)->setAmplifier($amplification);
 
-			if($player->addEffect($effect)){
-				self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $effect->getId(), $effect->getAmplifier(), $player->getDisplayName(), $effect->getDuration() / 20]));
-			}
+			$player->addEffect($effect);
+            self::broadcastCommandMessage($sender, new TranslationContainer("%commands.effect.success", [$effect->getName(), $effect->getId(), $effect->getAmplifier(), $player->getDisplayName(), $effect->getDuration() / 20]));
 		}
 
 

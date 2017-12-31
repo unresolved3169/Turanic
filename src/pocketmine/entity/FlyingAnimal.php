@@ -126,14 +126,14 @@ abstract class FlyingAnimal extends Creature implements Ageable {
 
 	public function initEntity(){
 		parent::initEntity();
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY, false);
+		$this->setGenericFlag(self::DATA_FLAG_BABY, false);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isBaby(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
+		return $this->getGenericFlag(self::DATA_FLAG_BABY);
 	}
 
     /**

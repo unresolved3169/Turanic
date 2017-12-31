@@ -25,11 +25,13 @@ declare(strict_types=1);
 namespace pocketmine\entity\boss;
 
 use pocketmine\entity\Animal;
+use pocketmine\entity\behavior\{
+    LookAtPlayerBehavior, PanicBehavior, RandomLookaroundBehavior, StrollBehavior
+};
 use pocketmine\entity\Entity;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 
 class ElderGuardian extends Animal {
@@ -56,7 +58,7 @@ class ElderGuardian extends Animal {
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setMaxHealth(80);
-		$this->setDataFlag(Entity::DATA_FLAGS, Entity::DATA_FLAG_ELDER, true);
+		$this->setGenericFlag(Entity::DATA_FLAG_ELDER, true);
 		parent::initEntity();
 	}
 

@@ -66,7 +66,7 @@ class Bat extends FlyingAnimal {
 		}
 		parent::__construct($level, $nbt);
 
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_RESTING, $this->isResting());
+		$this->setGenericFlag(self::DATA_FLAG_RESTING, (bool) $this->isResting());
 	}
 
 	/**

@@ -30,4 +30,11 @@ class EntityEffectRemoveEvent extends EntityEvent implements Cancellable {
 	public function getEffect(){
 		return $this->effect;
 	}
+
+	public function setCancelled($value = true){
+        if($this->getEffect()->getDuration() <= 0){
+            throw new \InvalidStateException("Removal of expired effects cannot be cancelled");
+ 		}
+        parent::setCancelled($value);
+    }
 }

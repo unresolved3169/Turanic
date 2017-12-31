@@ -75,14 +75,14 @@ namespace {
 
 namespace pocketmine {
 
-	use pocketmine\utils\Binary;
-	use pocketmine\utils\MainLogger;
-	use pocketmine\utils\ServerKiller;
-	use pocketmine\utils\Terminal;
-	use pocketmine\utils\Utils;
-	use pocketmine\wizard\Installer;
+    use pocketmine\utils\Binary;
+    use pocketmine\utils\MainLogger;
+    use pocketmine\utils\ServerKiller;
+    use pocketmine\utils\Terminal;
+    use pocketmine\utils\Utils;
+    use pocketmine\wizard\Installer;
 
-	const VERSION = "1.2";
+    const VERSION = "1.2";
 	const API_VERSION = "3.0.1";
 	const CODENAME = "GoldenApple";
 	const TURANIC_API_VERSION = '2.0.0';
@@ -113,8 +113,8 @@ namespace pocketmine {
 	}
 
 	if(!class_exists("ClassLoader", false)){
-		require_once(\pocketmine\PATH . "src/spl/ClassLoader.php");
-		require_once(\pocketmine\PATH . "src/spl/BaseClassLoader.php");
+		require_once(\pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'spl' . DIRECTORY_SEPARATOR . 'ClassLoader.php');
+		require_once(\pocketmine\PATH .  'src' . DIRECTORY_SEPARATOR . 'spl' . DIRECTORY_SEPARATOR . 'BaseClassLoader.php');
 	}
 
 	$autoloader = new \BaseClassLoader();
@@ -135,7 +135,8 @@ namespace pocketmine {
 	ini_set("memory_limit", '-1');
 	define('pocketmine\START_TIME', microtime(true));
 
-	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
+    define('pocketmine\RESOURCE_PATH', \pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'pocketmine' . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR);
+    $opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
 	define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
 	define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);

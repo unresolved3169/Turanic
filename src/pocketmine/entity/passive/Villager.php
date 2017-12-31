@@ -25,11 +25,13 @@ declare(strict_types=1);
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Ageable;
+use pocketmine\entity\behavior\{
+    LookAtPlayerBehavior, PanicBehavior, RandomLookaroundBehavior, StrollBehavior
+};
 use pocketmine\entity\Mob;
 use pocketmine\entity\NPC;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Villager extends Mob implements NPC, Ageable {
 	
@@ -104,6 +106,6 @@ class Villager extends Mob implements NPC, Ageable {
     }
 
     public function isBaby() : bool{
-        return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_BABY);
+        return $this->getGenericFlag(self::DATA_FLAG_BABY);
     }
 }

@@ -26,12 +26,11 @@
 
 namespace pocketmine\entity;
 
-use pocketmine\entity\object\AreaEffectCloud;
 use pocketmine\block\Block;
 use pocketmine\block\Fire;
 use pocketmine\block\Portal;
-use pocketmine\block\Water;
 use pocketmine\block\SlimeBlock;
+use pocketmine\block\Water;
 use pocketmine\entity\boss\ElderGuardian;
 use pocketmine\entity\boss\EnderDragon;
 use pocketmine\entity\boss\Wither;
@@ -58,30 +57,21 @@ use pocketmine\entity\hostile\ZombieHorse;
 use pocketmine\entity\hostile\ZombieVillager;
 use pocketmine\entity\neutral\CaveSpider;
 use pocketmine\entity\neutral\Enderman;
-use pocketmine\entity\neutral\ZombiePigman;
 use pocketmine\entity\neutral\PolarBear;
 use pocketmine\entity\neutral\Spider;
+use pocketmine\entity\neutral\ZombiePigman;
+use pocketmine\entity\object\AreaEffectCloud;
 use pocketmine\entity\object\ArmorStand;
-use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\object\Boat;
-use pocketmine\entity\projectile\Egg;
-use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\object\FallingSand;
-use pocketmine\entity\projectile\FireworkRocket;
-use pocketmine\entity\projectile\FishingHook;
 use pocketmine\entity\object\FloatingText;
 use pocketmine\entity\object\Lightning;
-use pocketmine\entity\projectile\LingeringPotion;
 use pocketmine\entity\object\Minecart;
 use pocketmine\entity\object\MinecartChest;
 use pocketmine\entity\object\MinecartHopper;
 use pocketmine\entity\object\MinecartTNT;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PrimedTNT;
-use pocketmine\entity\projectile\Projectile;
-use pocketmine\entity\projectile\Snowball;
-use pocketmine\entity\projectile\ThrownExpBottle;
-use pocketmine\entity\projectile\ThrownPotion;
 use pocketmine\entity\object\XPOrb;
 use pocketmine\entity\object\Item as DroppedItem;
 use pocketmine\entity\passive\Bat;
@@ -93,6 +83,16 @@ use pocketmine\entity\passive\Rabbit;
 use pocketmine\entity\passive\Sheep;
 use pocketmine\entity\passive\Squid;
 use pocketmine\entity\passive\Villager;
+use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\projectile\Egg;
+use pocketmine\entity\projectile\EnderPearl;
+use pocketmine\entity\projectile\FireworkRocket;
+use pocketmine\entity\projectile\FishingHook;
+use pocketmine\entity\projectile\LingeringPotion;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\Snowball;
+use pocketmine\entity\projectile\ThrownExpBottle;
+use pocketmine\entity\projectile\ThrownPotion;
 use pocketmine\entity\tameable\Donkey;
 use pocketmine\entity\tameable\Horse;
 use pocketmine\entity\tameable\Llama;
@@ -126,10 +126,10 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\FloatTag;
-use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
@@ -542,7 +542,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
         $this->fireTicks = $this->namedtag->getShort("Fire", 0);
         if($this->isOnFire()){
-            $this->setDataFlag(self::DATA_FLAGS,self::DATA_FLAG_ONFIRE, true, self::DATA_TYPE_LONG);
+            $this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
         }
 
         $this->setDataProperty(self::DATA_AIR, self::DATA_TYPE_SHORT, $this->namedtag->getShort("Air", 300), false);
@@ -551,9 +551,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
-		
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_HAS_COLLISION, true);
+
+        $this->setGenericFlag(self::DATA_FLAG_AFFECTED_BY_GRAVITY, true);
+        $this->setGenericFlag(self::DATA_FLAG_HAS_COLLISION, true);
 
 		$this->chunk->addEntity($this);
 		$this->level->addEntity($this);
@@ -620,14 +620,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @return bool
 	 */
 	public function isNameTagVisible(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_SHOW_NAMETAG);
+		return $this->getGenericFlag(self::DATA_FLAG_CAN_SHOW_NAMETAG);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isNameTagAlwaysVisible(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ALWAYS_SHOW_NAMETAG);
+		return $this->getGenericFlag(self::DATA_FLAG_ALWAYS_SHOW_NAMETAG);
 	}
 
 	/**
@@ -641,43 +641,43 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @param bool $value
 	 */
 	public function setNameTagVisible($value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_SHOW_NAMETAG, $value);
+		$this->setGenericFlag(self::DATA_FLAG_CAN_SHOW_NAMETAG, $value);
 	}
 
 	/**
 	 * @param bool $value
 	 */
 	public function setNameTagAlwaysVisible($value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ALWAYS_SHOW_NAMETAG, $value);
+		$this->setGenericFlag(self::DATA_FLAG_ALWAYS_SHOW_NAMETAG, $value);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isSneaking(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING);
+		return $this->getGenericFlag( self::DATA_FLAG_SNEAKING);
 	}
 
 	/**
 	 * @param bool $value
 	 */
 	public function setSneaking($value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SNEAKING, (bool) $value);
+		$this->setGenericFlag(self::DATA_FLAG_SNEAKING, (bool) $value);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isSprinting(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING);
+		return $this->getGenericFlag(self::DATA_FLAG_SPRINTING);
 	}
 
 	/**
 	 * @param bool $value
 	 */
-	public function setSprinting($value = true){
+	public function setSprinting(bool $value = true){
 		if($value !== $this->isSprinting()){
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_SPRINTING, (bool) $value);
+			$this->setGenericFlag(self::DATA_FLAG_SPRINTING, $value);
 			$attr = $this->attributeMap->getAttribute(Attribute::MOVEMENT_SPEED);
 			$attr->setValue($value ? ($attr->getValue() * 1.3) : ($attr->getValue() / 1.3));
 		}
@@ -687,29 +687,29 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @return bool
 	 */
 	public function isGliding(){
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IDLING);
+		return $this->getGenericFlag(self::DATA_FLAG_IDLING);
 	}
 
 	/**
 	 * @param bool $value
 	 */
-	public function setGliding($value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_GLIDING, (bool) $value);
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IDLING, (bool) $value);
+	public function setGliding(bool $value = true){
+		$this->setGenericFlag(self::DATA_FLAG_GLIDING, $value);
+		$this->setGenericFlag(self::DATA_FLAG_IDLING, $value);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isImmobile() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE);
+		return $this->getGenericFlag(self::DATA_FLAG_IMMOBILE);
 	}
 
 	/**
 	 * @param bool $value
 	 */
-	public function setImmobile($value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_IMMOBILE, $value);
+	public function setImmobile(bool $value = true){
+		$this->setGenericFlag(self::DATA_FLAG_IMMOBILE, $value);
 	}
 
 	/**
@@ -718,7 +718,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @return bool
 	 */
 	public function canClimb() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_CLIMB);
+		return $this->getGenericFlag(self::DATA_FLAG_CAN_CLIMB);
 	}
 
 	/**
@@ -727,7 +727,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @param bool $value
 	 */
 	public function setCanClimb(bool $value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_CAN_CLIMB, $value);
+		$this->setGenericFlag(self::DATA_FLAG_CAN_CLIMB, $value);
 	}
 
 	/**
@@ -736,7 +736,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @return bool
 	 */
 	public function canClimbWalls() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_WALLCLIMBING);
+		return $this->getGenericFlag(self::DATA_FLAG_WALLCLIMBING);
 	}
 
 	/**
@@ -745,7 +745,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @param bool $value
 	 */
 	public function setCanClimbWalls(bool $value = true){
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_WALLCLIMBING, $value);
+		$this->setGenericFlag(self::DATA_FLAG_WALLCLIMBING, $value);
 	}
 	
 	/**
@@ -1366,11 +1366,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
             if($effect->canTick()){
                 $effect->applyEffect($this);
             }
-            $duration = $effect->getDuration() - $tickDiff;
-            if($duration <= 0){
+            $effect->setDuration(max(0, $effect->getDuration() - $tickDiff));
+            if($effect->getDuration() <= 0){
                 $this->removeEffect($effect->getId());
-            }else{
-                $effect->setDuration($duration);
             }
         }
 
@@ -1402,7 +1400,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 			if($this->fireTicks <= 0 && $this->fireTicks > -10){
 				$this->extinguish();
 			}else{
-				$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, true);
+				$this->setGenericFlag(self::DATA_FLAG_ONFIRE, true);
 				$hasUpdate = true;
 			}
 		}
@@ -1600,7 +1598,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
 	public function extinguish(){
 		$this->fireTicks = 0;
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ONFIRE, false);
+		$this->setGenericFlag(self::DATA_FLAG_ONFIRE, false);
 	}
 
 	/**
@@ -2393,6 +2391,26 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	public function getDataFlag($propertyId, $id){
 		return (((int) $this->getDataProperty($propertyId)) & (1 << $id)) > 0;
 	}
+
+    /**
+     * Wrapper around {@link Entity#getDataFlag} for generic data flag reading.
+     *
+     * @param int $flagId
+     * @return bool
+     */
+    public function getGenericFlag(int $flagId) : bool{
+        return $this->getDataFlag(self::DATA_FLAGS, $flagId);
+    }
+
+    /**
+     * Wrapper around {@link Entity#setDataFlag} for generic data flag setting.
+     *
+     * @param int  $flagId
+     * @param bool $value
+     */
+    public function setGenericFlag(int $flagId, bool $value = true){
+        $this->setDataFlag(self::DATA_FLAGS, $flagId, $value, self::DATA_TYPE_LONG);
+    }
 
 	public function __destruct(){
 		$this->close();

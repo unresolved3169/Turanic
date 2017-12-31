@@ -24,12 +24,14 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
+use pocketmine\entity\behavior\{
+    LookAtPlayerBehavior, PanicBehavior, RandomLookaroundBehavior, StrollBehavior
+};
 use pocketmine\entity\Monster;
 use pocketmine\entity\object\Lightning;
 use pocketmine\event\entity\CreeperPowerEvent;
 use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Creeper extends Monster {
 	const NETWORK_ID = self::CREEPER;
@@ -50,7 +52,7 @@ class Creeper extends Monster {
 		if(!$this->namedtag->hasTag("powered")){
 			$this->setPowered(false);
 		}
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
+		$this->setGenericFlag(self::DATA_FLAG_POWERED, $this->isPowered());
 	}
 
 	/**
@@ -73,7 +75,7 @@ class Creeper extends Monster {
 
 		if(!$ev->isCancelled()){
 			$this->namedtag->setByte("powered", (int) $powered);
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $powered);
+			$this->setGenericFlag( self::DATA_FLAG_POWERED, $powered);
 		}
 	}
 

@@ -28,13 +28,14 @@
 
 namespace pocketmine\command;
 
+use pocketmine\command\overload\{
+    CommandEnum, CommandOverload, CommandParameter
+};
 use pocketmine\event\TextContainer;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
-use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
-use pocketmine\command\overload\{CommandOverload, CommandParameter, CommandEnum};
 
 abstract class Command {
 

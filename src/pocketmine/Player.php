@@ -97,7 +97,6 @@ use pocketmine\level\Location;
 use pocketmine\level\Position;
 use pocketmine\level\WeakPosition;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
 use pocketmine\nbt\NBT;
@@ -956,7 +955,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function isUsingItem() : bool{
-		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION) && $this->startAction > -1;
+		return $this->getGenericFlag(self::DATA_FLAG_ACTION) && $this->startAction > -1;
 	}
 
 	/**
@@ -964,7 +963,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function setUsingItem(bool $value){
 		$this->startAction = $value ? $this->server->getTick() : -1;
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION, $value);
+		$this->setGenericFlag(self::DATA_FLAG_ACTION, $value);
 	}
 
 	public function getItemUseDuration() : int{
@@ -2008,23 +2007,21 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	}
 
-	/**
-	 * @param Vector3 $pos
-	 * @param		 $maxDistance
-	 * @param float $maxDiff
-	 *
-	 * @return bool
-	 */
-	public function canInteract(Vector3 $pos, $maxDistance, float $maxDiff = 0.71){
+    /**
+     * @param Vector3 $pos
+     * @param $maxDistance
+     * @return bool
+     */
+    public function canInteract(Vector3 $pos, $maxDistance){
 		$eyePos = $this->getPosition()->add(0, $this->getEyeHeight(), 0);
 		if ($eyePos->distanceSquared($pos) > $maxDistance ** 2) {
 			return false;
 		}
 
-		$dV = $this->getDirectionPlane();
-		$dot = $dV->dot(new Vector2($eyePos->x, $eyePos->z));
-		$dot1 = $dV->dot(new Vector2($pos->x, $pos->z));
-		return ($dot1 - $dot) >= -$maxDiff;
+		$dV = $this->getDirectionVector();
+		$eyeDot = $dV->dot($eyePos);
+        $targetDot = $dV->dot($pos);
+        return ($targetDot - $eyeDot) >= 0;
 	}
 
 	public function onPlayerPreLogin(){
