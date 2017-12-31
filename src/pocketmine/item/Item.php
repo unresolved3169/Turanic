@@ -49,7 +49,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\Server;
 
 class Item implements ItemIds, \JsonSerializable {
 
@@ -378,7 +377,7 @@ class Item implements ItemIds, \JsonSerializable {
 
 	private static $creative = [];
 
-	private static function initCreativeItems(){
+	public static function initCreativeItems(){
 		self::clearCreativeItems();
 
 		$degerler = ["id" => 0, "meta" => 0, "count" => 1, "ench" => []];
@@ -474,12 +473,13 @@ class Item implements ItemIds, \JsonSerializable {
      * @param int $id
      * @param int $meta
      * @param int $count
-     * @param string $tags
+     * @param $tags
      * @return Item
+     * @throws \TypeError
      */
-    public static function get(int $id, int $meta = 0, int $count = 1, string $tags = "") : Item{
+    public static function get(int $id, int $meta = 0, int $count = 1, $tags = "") : Item{
         if(!is_string($tags) and !($tags instanceof CompoundTag)){
-            Server::getInstance()->getLogger()->info("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
+            throw new \TypeError("`tags` argument must be a string or CompoundTag instance, " . (is_object($tags) ? "instance of " . get_class($tags) : gettype($tags)) . " given");
         }
 
         $item = null;
@@ -1316,19 +1316,16 @@ class Item implements ItemIds, \JsonSerializable {
         return 1;
     }
 
-	/**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+    /**
+     * @param Level $level
+     * @param Player $player
+     * @param Block $blockReplace
+     * @param Block $blockClicked
+     * @param int $face
+     * @param Vector3 $clickPos
+     * @return bool
+     */
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		return false;
 	}
 

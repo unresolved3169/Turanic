@@ -1545,40 +1545,62 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->dataPacket($pk);
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSurvival(): bool{
-		return ($this->gamemode & 0x01) === 0;
-	}
-
     /**
-     * @param bool $literal
+     * NOTE: Because Survival and Adventure Mode share some similar behaviour, this method will also return true if the player is
+     * in Adventure Mode. Supply the $literal parameter as true to force a literal Survival Mode check.
+     *
+     * @param bool $literal whether a literal check should be performed
+     *
      * @return bool
      */
-    public function isCreative(bool $literal = false): bool{
-        if ($literal) {
+    public function isSurvival(bool $literal = false) : bool{
+        if($literal){
+            return $this->gamemode === Player::SURVIVAL;
+        }else{
+            return ($this->gamemode & 0x01) === 0;
+        }
+    }
+
+    /**
+     * NOTE: Because Creative and Spectator Mode share some similar behaviour, this method will also return true if the player is
+     * in Spectator Mode. Supply the $literal parameter as true to force a literal Creative Mode check.
+     *
+     * @param bool $literal whether a literal check should be performed
+     *
+     * @return bool
+     */
+    public function isCreative(bool $literal = false) : bool{
+        if($literal){
             return $this->gamemode === Player::CREATIVE;
-        } else {
+        }else{
             return ($this->gamemode & 0x01) === 1;
         }
     }
 
-	/**
-	 * @return bool
-	 */
-	public function isSpectator(): bool{
-		return $this->gamemode === 3;
-	}
+    /**
+     * NOTE: Because Adventure and Spectator Mode share some similar behaviour, this method will also return true if the player is
+     * in Spectator Mode. Supply the $literal parameter as true to force a literal Adventure Mode check.
+     *
+     * @param bool $literal whether a literal check should be performed
+     *
+     * @return bool
+     */
+    public function isAdventure(bool $literal = false) : bool{
+        if($literal){
+            return $this->gamemode === Player::ADVENTURE;
+        }else{
+            return ($this->gamemode & 0x02) > 0;
+        }
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function isAdventure(): bool{
-		return ($this->gamemode & 0x02) > 0;
-	}
+    /**
+     * @return bool
+     */
+    public function isSpectator() : bool{
+        return $this->gamemode === Player::SPECTATOR;
+    }
 
-	/**
+    /**
 	 * @return bool
 	 */
 	public function isFireProof(): bool{
@@ -2076,7 +2098,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	public function initHumanData(){
-
+        $this->setNameTag($this->username);
 	}
 
 	protected function initEntity(){
@@ -2571,76 +2593,78 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$type = $packet->trData->actionType;
 				switch($type){
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_BLOCK:
-						$this->setUsingItem(false);
+                        $this->setUsingItem(false);
 
-						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
-						}elseif($this->isCreative()){
-							$item = $this->inventory->getItemInHand();
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
-								return true;
-							}
-						}else{
-							$item = $this->inventory->getItemInHand();
-							$oldItem = clone $item;
-							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this)){
-								if(!$item->equalsExact($oldItem)){
-									$this->inventory->setItemInHand($item);
-									$this->inventory->sendHeldItem($this->hasSpawned);
-								}
+                        if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
+                        }elseif($this->isCreative()){
+                            $item = $this->inventory->getItemInHand();
+                            if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true) === true){
+                                return true;
+                            }
+                        }elseif(!$this->inventory->getItemInHand()->equals($packet->trData->itemInHand)){
+                            $this->inventory->sendHeldItem($this);
+                        }else{
+                            $item = $this->inventory->getItemInHand();
+                            $oldItem = clone $item;
+                            if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
+                                if(!$item->equalsExact($oldItem)){
+                                    $this->inventory->setItemInHand($item);
+                                    $this->inventory->sendHeldItem($this->hasSpawned);
+                                }
 
-								return true;
-							}
-						}
+                                return true;
+                            }
+                        }
 
-						$this->inventory->sendHeldItem($this);
+                        $this->inventory->sendHeldItem($this);
 
-						if($blockVector->distanceSquared($this) > 10000){
-							return true;
-						}
+                        if($blockVector->distanceSquared($this) > 10000){
+                            return true;
+                        }
 
-						$target = $this->level->getBlockAt($blockVector->x, $blockVector->y, $blockVector->z);
-						$block = $target->getSide($face);
+                        $target = $this->level->getBlock($blockVector);
+                        $block = $target->getSide($face);
 
-						/** @var Block[] $blocks */
-						$blocks = array_merge($target->getAllSides(), $block->getAllSides()); //getAllSides() on each of these will include $target and $block because they are next to each other
+                        /** @var Block[] $blocks */
+                        $blocks = array_merge($target->getAllSides(), $block->getAllSides()); //getAllSides() on each of these will include $target and $block because they are next to each other
 
-						$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
+                        $this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_BREAK_BLOCK:
-						$this->resetCraftingGridType();
+                        $this->resetCraftingGridType();
 
-						$item = $this->inventory->getItemInHand();
-						$oldItem = clone $item;
+                        $item = $this->inventory->getItemInHand();
+                        $oldItem = clone $item;
 
-						if($this->canInteract($blockVector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 6) and $this->level->useBreakOn($blockVector, $item, $this, true)){
-							if($this->isSurvival()){
-								if(!$item->equalsExact($oldItem)){
-									$this->inventory->setItemInHand($item);
-									$this->inventory->sendHeldItem($this->hasSpawned);
-								}
+                        if($this->canInteract($blockVector->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 6) and $this->level->useBreakOn($blockVector, $item, $this, true)){
+                            if($this->isSurvival()){
+                                if(!$item->equalsExact($oldItem)){
+                                    $this->inventory->setItemInHand($item);
+                                    $this->inventory->sendHeldItem($this->hasSpawned);
+                                }
 
-								$this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
-							}
-							return true;
-						}
+                                $this->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
+                            }
+                            return true;
+                        }
 
-						$this->inventory->sendContents($this);
-						$this->inventory->sendHeldItem($this);
+                        $this->inventory->sendContents($this);
+                        $this->inventory->sendHeldItem($this);
 
 						$target = $this->level->getBlockAt($blockVector->x, $blockVector->y, $blockVector->z);
 						/** @var Block[] $blocks */
 						$blocks = $target->getAllSides();
 						$blocks[] = $target;
 
-						$this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
+                        $this->level->sendBlocks([$this], $blocks, UpdateBlockPacket::FLAG_ALL_PRIORITY);
 
-						foreach($blocks as $b){
-							$tile = $this->level->getTile($b);
-							if($tile instanceof Spawnable){
-								$tile->spawnTo($this);
-							}
-						}
+                        foreach($blocks as $b){
+                            $tile = $this->level->getTile($b);
+                            if($tile instanceof Spawnable){
+                                $tile->spawnTo($this);
+                            }
+                        }
 
 						return true;
 					case InventoryTransactionPacket::USE_ITEM_ACTION_CLICK_AIR:
@@ -3260,8 +3284,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
 				/** @var WrittenBook $newBook */
-				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1);
-				$newBook->setNamedTag($oldBook->getNamedTag());
+				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
 				$newBook->setAuthor($packet->author);
 				$newBook->setTitle($packet->title);
 				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);

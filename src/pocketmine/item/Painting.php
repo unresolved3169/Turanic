@@ -27,20 +27,8 @@ class Painting extends Item {
 		return true;
 	}
 
-	/**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($target->isTransparent() === false and $face > 1 and $block->isSolid() === false){
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+		if($blockClicked->isTransparent() === false and $face > 1 and $blockReplace->isSolid() === false){
 			$faces = [
 				2 => 1,
 				3 => 3,
@@ -84,10 +72,10 @@ class Painting extends Item {
 				$valid = true;
 				for($x = 0; $x < $motive[1] && $valid; $x++){
 					for($z = 0; $z < $motive[2] && $valid; $z++){
-						if($target->getSide($right[$face - 2], $x)->isTransparent() ||
-							$target->getSide(Vector3::SIDE_UP, $z)->isTransparent() ||
-							$block->getSide($right[$face - 2], $x)->isSolid() ||
-							$block->getSide(Vector3::SIDE_UP, $z)->isSolid()
+						if($blockClicked->getSide($right[$face - 2], $x)->isTransparent() ||
+							$blockClicked->getSide(Vector3::SIDE_UP, $z)->isTransparent() ||
+                            $blockReplace->getSide($right[$face - 2], $x)->isSolid() ||
+                            $blockReplace->getSide(Vector3::SIDE_UP, $z)->isSolid()
 						){
 							$valid = false;
 						}
@@ -101,7 +89,7 @@ class Painting extends Item {
 
 			$motive = $motives[mt_rand(0, count($validMotives) - 1)];
 
-            $nbt = Entity::createBaseNBT($target, null, $faces[$face] * 90);
+            $nbt = Entity::createBaseNBT($blockClicked, null, $faces[$face] * 90);
             $nbt->setString("Motive", $motive[0]);
 
 			$painting = Entity::createEntity("Painting", $player->getLevel(), $nbt);

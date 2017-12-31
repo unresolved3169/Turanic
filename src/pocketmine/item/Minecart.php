@@ -5,6 +5,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Minecart extends Item {
@@ -32,20 +33,8 @@ class Minecart extends Item {
 	    return 1;
     }
 
-    /**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		$minecart = Entity::createEntity("Minecart", $player->getLevel(), Entity::createBaseNBT($block->add(0,0.8,0)));
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+		$minecart = Entity::createEntity("Minecart", $player->getLevel(), Entity::createBaseNBT($blockReplace->add(0,0.8,0)));
 		if($minecart != null) $minecart->spawnToAll();
 
 		if($player->isSurvival()){

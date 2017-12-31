@@ -24,6 +24,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\event\player\PlayerGlassBottleEvent;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class GlassBottle extends Item {
@@ -44,24 +45,12 @@ class GlassBottle extends Item {
 		return true;
 	}
 
-	/**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		if($player === null or $player->isSurvival() !== true){
 			return false;
 		}
-		if($target->getId() === Block::STILL_WATER or $target->getId() === Block::WATER){
-			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerGlassBottleEvent($player, $target, $this));
+		if($blockClicked->getId() === Block::STILL_WATER or $blockClicked->getId() === Block::WATER){
+			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerGlassBottleEvent($player, $blockClicked, $this));
 			if($ev->isCancelled()){
 				return false;
 			}else{

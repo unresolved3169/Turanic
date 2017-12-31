@@ -54,24 +54,13 @@ class FlintSteel extends Tool {
 		return true;
 	}
 
-	/**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($target->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){//黑曜石 4*5最小 23*23最大
+	// TODO : OPTIMIZE
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+		if($blockClicked->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){//黑曜石 4*5最小 23*23最大
 			//$level->setBlock($block, new Fire(), true);
-			$tx = $target->getX();
-			$ty = $target->getY();
-			$tz = $target->getZ();
+			$tx = $blockClicked->getX();
+			$ty = $blockClicked->getY();
+			$tz = $blockClicked->getZ();
 			//x方向
 			$x_max = $tx;//x最大值
 			$x_min = $tx;//x最小值
@@ -153,9 +142,9 @@ class FlintSteel extends Tool {
 			//return true;
 		}
 
-		if($block->getId() === self::AIR and ($target instanceof Solid)){
-			$level->setBlock($block, Block::get(Block::FIRE), true);
-			$player->getLevel()->broadcastLevelSoundEvent($block->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
+		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
+			$level->setBlock($blockReplace, Block::get(Block::FIRE), true);
+			$player->getLevel()->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 
 			/** @var Fire $block */
 			$block = $level->getBlock($block);

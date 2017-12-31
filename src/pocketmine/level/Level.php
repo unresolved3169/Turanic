@@ -1651,129 +1651,137 @@ class Level implements ChunkManager, Metadatable{
 		return true;
 	}
 
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $facepos = null, Player $player = null): bool {
-		$target = $this->getBlock($vector);
-		$block = $target->getSide($face);
+    /**
+     * Uses a item on a position and face, placing it or activating the block
+     *
+     * @param Vector3      $vector
+     * @param Item         $item
+     * @param int          $face
+     * @param Vector3|null $clickVector
+     * @param Player|null  $player default null
+     * @param bool         $playSound Whether to play a block-place sound if the block was placed successfully.
+     *
+     * @return bool
+     */
+    public function useItemOn(Vector3 $vector, Item &$item, int $face, Vector3 $clickVector = null, Player $player = null, bool $playSound = false) : bool{
+        $blockClicked = $this->getBlock($vector);
+        $blockReplace = $blockClicked->getSide($face);
 
-		if($facepos == null){
-			$facepos = new Vector3(0.0, 0.0, 0.0);
-		}
+        if($clickVector === null){
+            $clickVector = new Vector3(0.0, 0.0, 0.0);
+        }
 
-		if ($block->y >= $this->provider->getWorldHeight() or $block->y < 0) {
-			//TODO: build height limit messages for custom world heights and mcregion cap
-			return false;
-		}
+        if($blockReplace->y >= $this->worldHeight or $blockReplace->y < 0){
+            //TODO: build height limit messages for custom world heights and mcregion cap
+            return false;
+        }
 
-		if ($target->getId() == Block::AIR) {
-			return false;
-		}
+        if($blockClicked->getId() === Block::AIR){
+            return false;
+        }
 
-		if ($player !== null) {
-			$ev = new PlayerInteractEvent($player, $item, $target, $face, $target->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-			if($this->checkSpawnProtection($player, $target)){
-				$ev->setCancelled();
-			}
+        if($player !== null){
+            $ev = new PlayerInteractEvent($player, $item, $blockClicked, $face, $blockClicked->getId() === 0 ? PlayerInteractEvent::RIGHT_CLICK_AIR : PlayerInteractEvent::RIGHT_CLICK_BLOCK);
+            if($this->checkSpawnProtection($player, $blockClicked)){
+                $ev->setCancelled(); //set it to cancelled so plugins can bypass this
+            }
 
-			if ($player->isSpectator()) {
-				$ev->setCancelled();
-			}
-			$this->server->getPluginManager()->callEvent($ev);
-			if (!$ev->isCancelled()) {
-				$target->onUpdate(self::BLOCK_UPDATE_TOUCH);
-				if (!$player->isSneaking()) {
-					if(!$player->isSneaking() and $target->canBeActivated() === true and $target->onActivate($item, $player) === true){
-						return true;
-					}
+            if($player->isAdventure(true) and !$ev->isCancelled()){
+                $canPlace = false;
+                $tag = $item->getNamedTagEntry("CanPlaceOn");
+                if($tag instanceof ListTag){
+                    foreach($tag as $v){
+                        if($v instanceof StringTag){
+                            $entry = Item::fromString($v->getValue());
+                            if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $blockClicked->getId()){
+                                $canPlace = true;
+                                break;
+                            }
+                        }
+                    }
+                }
 
-					if ($item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $facepos->x, $facepos->y, $facepos->z)) {
-						return true;
-					}
-				}
-			} else {
-				return false;
-			}
-		} elseif ($target->canBeActivated() === true and $target->onActivate($item, $player) === true) {
-			return true;
-		}
+                $ev->setCancelled(!$canPlace);
+            }
 
-		if ($item->canBePlaced()) {
-			$hand = $item->getBlock();
-			$hand->position($block);
-		} else {
-			return false;
-		}
+            $this->server->getPluginManager()->callEvent($ev);
+            if(!$ev->isCancelled()){
+                $blockClicked->onUpdate(self::BLOCK_UPDATE_TOUCH);
+                if(!$player->isSneaking() and $blockClicked->onActivate($item, $player) === true){
+                    return true;
+                }
 
-		if (!($block->canBeReplaced() === true or ($hand->getId() === Item::SLAB and $block->getId() === Item::SLAB))) {
-			return false;
-		}
+                if(!$player->isSneaking() and $item->onActivate($this, $player, $blockReplace, $blockClicked, $face, $clickVector)){
+                    return true;
+                }
+            }else{
+                return false;
+            }
+        }elseif($blockClicked->onActivate($item, $player) === true){
+            return true;
+        }
 
-		if ($target->canBeReplaced() === true) {
-			$block = $target;
-			$hand->position($block);
-		}
+        if($item->canBePlaced()){
+            $hand = $item->getBlock();
+            $hand->position($blockReplace);
+        }else{
+            return false;
+        }
 
-		if ($hand->isSolid() === true and $hand->getBoundingBox() !== null) {
-			$entities = $this->getCollidingEntities($hand->getBoundingBox());
-			foreach ($entities as $e) {
-				if ($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())) {
-					continue;
-				}
-				return false;
-			}
+        if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
+            $blockReplace = $blockClicked;
+            $hand->position($blockReplace);
+        }elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
+            return false;
+        }
 
-			if ($player !== null) {
-				if (($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001) {
-					$bb = $player->getBoundingBox()->getOffsetBoundingBox($diff->x, $diff->y, $diff->z);
-					if ($hand->getBoundingBox()->intersectsWith($bb)) {
-                        return false;
-					}
-				}
-			}
-		}
+        if($hand->isSolid()){
+            foreach($hand->getCollisionBoxes() as $collisionBox){
+                $entities = $this->getCollidingEntities($collisionBox);
+                foreach($entities as $e){
+                    if($e instanceof Arrow or $e instanceof DroppedItem or ($e instanceof Player and $e->isSpectator())){
+                        continue;
+                    }
 
-		$tag = $item->getNamedTagEntry("CanPlaceOn");
-		if ($tag instanceof ListTag) {
-			$canPlace = false;
-			foreach ($tag as $v) {
-				if ($v instanceof StringTag) {
-					$entry = Item::fromString($v->getValue());
-					if ($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $target->getId()) {
-						$canPlace = true;
-						break;
-					}
-				}
-			}
+                    return false; //Entity in block
+                }
 
-			if (!$canPlace) {
-				return false;
-			}
-		}
+                if($player !== null){
+                    if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
+                        $bb = $player->getBoundingBox()->getOffsetBoundingBox($diff->x, $diff->y, $diff->z);
+                        if($collisionBox->intersectsWith($bb)){
+                            return false; //Inside player BB
+                        }
+                    }
+                }
+            }
+        }
 
 
-		if ($player !== null) {
-			$ev = new BlockPlaceEvent($player, $hand, $block, $target, $item);
-			if (!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1) {
-				$t = new Vector2($target->x, $target->z);
-				$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
-				if (count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance) { //set it to cancelled so plugins can bypass this
-					$ev->setCancelled();
-				}
-			}
-			$this->server->getPluginManager()->callEvent($ev);
-			if ($ev->isCancelled()) {
-				return false;
-			}
+        if($player !== null){
+            $ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
+            if($this->checkSpawnProtection($player, $blockClicked)){
+                $ev->setCancelled();
+            }
 
+            $this->server->getPluginManager()->callEvent($ev);
+            if($ev->isCancelled()){
+                return false;
+            }
+        }
+
+        if(!$hand->place($item, $blockReplace, $blockClicked, $face, $clickVector->x, $clickVector->y, $clickVector->z, $player)){
+            return false;
+        }
+
+        if($playSound){
             $this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, 1, $hand->getId());
-		}
+        }
 
-		if ($hand->place($item, $block, $target, $face, $facepos->x, $facepos->y, $facepos->z, $player) === false) {
-			return false;
-		}
-		$item->pop();
+        $item->pop();
 
-		return true;
-	}
+        return true;
+    }
 
 	/**
 	 * Checks if the level spawn protection radius will prevent the player from using items or building at the specified

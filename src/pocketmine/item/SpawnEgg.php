@@ -27,6 +27,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class SpawnEgg extends Item {
@@ -47,23 +48,11 @@ class SpawnEgg extends Item {
 		return true;
 	}
 
-	/**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($target->getId() == Block::MONSTER_SPAWNER){
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+		if($blockReplace->getId() == Block::MONSTER_SPAWNER){
 			return true;
 		}else{
-            $nbt = Entity::createBaseNBT($block->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
+            $nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
 
 			if($this->hasCustomName()){
 				$nbt->setString("CustomName", $this->getCustomName());

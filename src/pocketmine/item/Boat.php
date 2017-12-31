@@ -27,6 +27,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Boat extends Item {
@@ -47,20 +48,8 @@ class Boat extends Item {
 		return true;
 	}
 
-	/**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		$realPos = $block->getSide($face);
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+		$realPos = $blockReplace->getSide($face);
 
 		$nbt = Entity::createBaseNBT($realPos->add(0.5, 0, 0.5));
 		$nbt->setInt("WoodID", $this->getDamage());
@@ -69,15 +58,7 @@ class Boat extends Item {
 		if($boat != null) $boat->spawnToAll();
 
 		if($player->isSurvival()){
-			$item = $player->getInventory()->getItemInHand();
-			$count = $item->getCount();
-			if(--$count <= 0){
-				$player->getInventory()->setItemInHand(Item::get(Item::AIR));
-				return true;
-			}
-
-			$item->setCount($count);
-			$player->getInventory()->setItemInHand($item);
+			$this->count--;
 		}
 
 		return true;

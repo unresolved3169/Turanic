@@ -56,23 +56,12 @@ class FireCharge extends Item {
 		return true;
 	}
 
-	/**
-	 * @param Level  $level
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param        $face
-	 * @param        $fx
-	 * @param        $fy
-	 * @param        $fz
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($target->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){
-			$tx = $target->getX();
-			$ty = $target->getY();
-			$tz = $target->getZ();
+	// TODO : OPTIMIZE
+	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+		if($blockClicked->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){
+			$tx = $blockClicked->getX();
+			$ty = $blockClicked->getY();
+			$tz = $blockClicked->getZ();
 			$x_max = $tx;
 			$x_min = $tx;
 			for($x = $tx + 1; $level->getBlock($this->temporalVector->setComponents($x, $ty, $tz))->getId() == Block::OBSIDIAN; $x++){
@@ -105,7 +94,7 @@ class FireCharge extends Item {
 							}
 						}
 						if($player->isSurvival()){
-							$this->useOn($block);
+							$this->useOn($blockReplace);
 							$player->getInventory()->setItemInHand($this);
 						}
 						return true;
@@ -145,7 +134,7 @@ class FireCharge extends Item {
 							}
 						}
 						if($player->isSurvival()){
-							$this->useOn($block);
+							$this->useOn($blockReplace);
 							$player->getInventory()->setItemInHand($this);
 						}
 						return true;
@@ -154,8 +143,8 @@ class FireCharge extends Item {
 			}
 		}
 
-		if($block->getId() === self::AIR and ($target instanceof Solid)){
-			$level->setBlock($block, new Fire(), true);
+		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
+			$level->setBlock($blockReplace, new Fire(), true);
 
 			/** @var Fire $block */
 			$block = $level->getBlock($block);
@@ -164,7 +153,7 @@ class FireCharge extends Item {
 			}
 
 			if($player->isSurvival()){
-				$this->useOn($block, 2);
+				$this->useOn($block);
 				$player->getInventory()->setItemInHand($this);
 			}
 

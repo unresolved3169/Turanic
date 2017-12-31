@@ -53,6 +53,7 @@ class FireworkRocket extends ProjectileItem {
     }
 
     public function onClickAir(Player $player, Vector3 $directionVector, CompoundTag $nbt = null) : bool{
+        // elytra booster
         if($player->isUseElytra()){
             $this->count--;
             $motion = $player->getDirectionVector()->multiply(1.25);
@@ -68,8 +69,8 @@ class FireworkRocket extends ProjectileItem {
         return true;
     }
 
-    public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-        $up = $block->getSide(Vector3::SIDE_UP)->add(0.5, 0, 0.5);
+    public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+        $up = $blockReplace->getSide(Vector3::SIDE_UP)->add(0.5, 0, 0.5);
 
         $nbt = Entity::createBaseNBT($up, new Vector3(0,$this->getThrowForce(),0), mt_rand(0, 360), -1*(float) (90.0 + (5.0 - 5.0/2)));
         $projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
@@ -83,9 +84,7 @@ class FireworkRocket extends ProjectileItem {
         }
         $player->getLevel()->broadcastLevelSoundEvent($up, LevelSoundEventPacket::SOUND_BLAST);
         if ($player->isSurvival()) {
-            $item = $player->getItemInHand();
-            $item->setCount($item->getCount() - 1);
-            $player->getInventory()->setItemInHand($item);
+            $this->count--;
         }
         $projectile->spawnToAll();
 

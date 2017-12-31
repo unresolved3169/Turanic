@@ -626,28 +626,28 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	/**
 	 * @return bool
 	 */
-	public function isNameTagAlwaysVisible(){
+	public function isNameTagAlwaysVisible() : bool{
 		return $this->getGenericFlag(self::DATA_FLAG_ALWAYS_SHOW_NAMETAG);
 	}
 
 	/**
 	 * @param string $name
 	 */
-	public function setNameTag($name){
+	public function setNameTag(string $name){
 		$this->setDataProperty(self::DATA_NAMETAG, self::DATA_TYPE_STRING, $name);
 	}
 
 	/**
 	 * @param bool $value
 	 */
-	public function setNameTagVisible($value = true){
+	public function setNameTagVisible(bool $value = true){
 		$this->setGenericFlag(self::DATA_FLAG_CAN_SHOW_NAMETAG, $value);
 	}
 
 	/**
 	 * @param bool $value
 	 */
-	public function setNameTagAlwaysVisible($value = true){
+	public function setNameTagAlwaysVisible(bool $value = true){
 		$this->setGenericFlag(self::DATA_FLAG_ALWAYS_SHOW_NAMETAG, $value);
 	}
 
@@ -655,7 +655,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @return bool
 	 */
 	public function isSneaking(){
-		return $this->getGenericFlag( self::DATA_FLAG_SNEAKING);
+		return $this->getGenericFlag(self::DATA_FLAG_SNEAKING);
 	}
 
 	/**
@@ -949,8 +949,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 			$this->namedtag->setString("id", $this->getSaveId());
 			if($this->getNameTag() !== ""){
 				$this->namedtag->setString("CustomName", $this->getNameTag());
-				$this->namedtag->setByte("CustomNameVisible", +$this->isNameTagVisible());
-				$this->namedtag->setByte("CustomNameAlwaysVisible", +$this->isNameTagAlwaysVisible());
+				$this->namedtag->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$this->namedtag->setByte("CustomNameAlwaysVisible", $this->isNameTagAlwaysVisible() ? 1 : 0);
 			}else{
                 $this->namedtag->removeTag("CustomName", "CustomNameVisible", "CustomNameAlwaysVisible");
 			}

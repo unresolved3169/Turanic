@@ -27,6 +27,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class ArmorStand extends Item {
@@ -45,14 +46,12 @@ class ArmorStand extends Item {
         return true;
     }
 
-    public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-        $as = Entity::createEntity("ArmorStand", $level, Entity::createBaseNBT($block->add(0.5, 0, 0.5), null, $this->getDirection($player->yaw)));
+    public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+        $as = Entity::createEntity("ArmorStand", $level, Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, $this->getDirection($player->yaw)));
 
         if ($as != null) {
             if ($player->isSurvival()) {
-                $item = $player->getItemInHand();
-                $item->setCount($item->getCount() - 1);
-                $player->getInventory()->setItemInHand($item);
+                $this->count--;
             }
             $as->spawnToAll();
             return true;
