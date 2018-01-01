@@ -45,10 +45,9 @@ class Bucket extends Item implements Consumable {
 	 * Bucket constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::BUCKET, $meta, $count, "Bucket");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::BUCKET, $meta, "Bucket");
 	}
 
 	/**

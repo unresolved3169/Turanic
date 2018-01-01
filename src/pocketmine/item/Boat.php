@@ -38,7 +38,7 @@ class Boat extends Item {
 	 * @param int $count
 	 */
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::BOAT, $meta, $count, "Boat");
+		parent::__construct(self::BOAT, $meta, "Boat");
 	}
 
 	/**

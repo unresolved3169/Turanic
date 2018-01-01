@@ -32,10 +32,9 @@ class Pufferfish extends Food{
      * RawSalmon constructor.
      *
      * @param int $meta
-     * @param int $count
      */
-    public function __construct($meta = 0, $count = 1){
-        parent::__construct(self::PUFFERFISH, $meta, $count, "Pufferfish");
+    public function __construct(int $meta = 0){
+        parent::__construct(self::PUFFERFISH, $meta, "Pufferfish");
     }
 
     /**

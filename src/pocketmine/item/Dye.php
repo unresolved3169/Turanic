@@ -49,14 +49,13 @@ class Dye extends Item {
 	 * Dye constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		if($meta === 3){
+	public function __construct(int $meta = 0){
+		if($meta === self::BROWN){
 			$this->block = Block::get(Item::COCOA_BLOCK);
-			parent::__construct(self::DYE, 3, $count, "Cocoa Beans");
+			parent::__construct(self::DYE, self::BROWN, "Cocoa Beans");
 		}else{
-			parent::__construct(self::DYE, $meta, $count, $this->getNameByMeta($meta));
+			parent::__construct(self::DYE, $meta, $this->getNameByMeta($meta));
 		}
 	}
 

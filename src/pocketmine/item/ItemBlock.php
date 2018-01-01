@@ -30,37 +30,25 @@ use pocketmine\block\Block;
  * Class used for Items that can be Blocks
  */
 class ItemBlock extends Item {
+
     /**
-     * ItemBlock constructor.
-     *
-     * @param int $id
-     * @param int $meta
-     * @param int $count
+     * @param int      $blockId
+     * @param int      $meta usually 0-15 (placed blocks may only have meta values 0-15)
      * @param int|null $itemId
      */
-	public function __construct(int $id, $meta = 0, int $count = 1, int $itemId = null){
-		$this->block = $block = Block::get($id, $meta & 0xf);
-		parent::__construct($itemId ?? $block->getId(), $block->getDamage(), $count, $block->getName());
-	}
+    public function __construct(int $blockId, int $meta = 0, int $itemId = null){
+        $this->block = Block::get($blockId, $meta & 0xf);
+        parent::__construct($itemId ?? $this->block->getId(), $meta, $this->block->getName());
+    }
 
-	/**
-	 * @param int $meta
-	 */
-	public function setDamage(int $meta){
-		$this->meta = $meta !== -1 ? $meta & 0xf : -1;
-		$this->block->setDamage($this->meta !== -1 ? $this->meta : 0);
-	}
+    public function setDamage(int $meta) : Item{
+        $this->block->setDamage($meta !== -1 ? $meta & 0xf : 0);
+        return parent::setDamage($meta);
+    }
 
-	public function __clone(){
-		$this->block = clone $this->block;
-	}
-
-	/**
-	 * @return Block
-	 */
-	public function getBlock() : Block{
-		return $this->block;
-	}
+    public function getBlock() : Block{
+        return clone $this->block;
+    }
 
 	public function getFuelTime(): int{
         return $this->block->getFuelTime();

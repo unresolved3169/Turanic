@@ -18,7 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\item;
 
@@ -28,10 +30,9 @@ class Egg extends ProjectileItem {
 	 * Egg constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::EGG, $meta, $count, "Egg");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::EGG, $meta, "Egg");
 	}
 
     public function getProjectileEntityType() : string{

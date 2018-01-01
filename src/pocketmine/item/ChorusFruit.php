@@ -34,10 +34,9 @@ class ChorusFruit extends Food {
 	 * ChorusFruit constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::CHORUS_FRUIT, 0, $count, "Chorus Fruit");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::CHORUS_FRUIT, 0, "Chorus Fruit");
 	}
 
 	/**

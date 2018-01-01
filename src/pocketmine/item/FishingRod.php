@@ -18,7 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\item;
 
@@ -33,10 +35,9 @@ class FishingRod extends ProjectileItem {
 	 * FishingRod constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::FISHING_ROD, 0, $count, "Fishing Rod");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::FISHING_ROD, 0, "Fishing Rod");
 	}
 
     public function getProjectileEntityType() : string{

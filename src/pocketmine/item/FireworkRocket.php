@@ -36,8 +36,8 @@ use pocketmine\Player;
 
 class FireworkRocket extends ProjectileItem {
 
-    public function __construct($meta = 0, $count = 1){
-        parent::__construct(self::FIREWORK, $meta, $count, "Firework Rocket");
+    public function __construct(int $meta = 0){
+        parent::__construct(self::FIREWORK, $meta, "Firework Rocket");
     }
 
     public function getProjectileEntityType(): string{

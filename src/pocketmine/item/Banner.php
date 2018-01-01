@@ -38,9 +38,9 @@ class Banner extends Item{
     const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
     const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-    public function __construct($meta = 0, $count = 1){
+    public function __construct(int $meta = 0){
         $this->block = Block::get(Block::STANDING_BANNER);
-        parent::__construct(self::BANNER, $meta, 1, "Banner");
+        parent::__construct(self::BANNER, $meta, "Banner");
     }
 
     public function getMaxStackSize() : int{

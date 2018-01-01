@@ -20,14 +20,16 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
 
 class PoisonousPotato extends Food {
 
-    public function __construct($meta = 0, $count = 1){
-        parent::__construct(self::POISONOUS_POTATO, $meta, $count, "Poisonous Potato");
+    public function __construct(int $meta = 0){
+        parent::__construct(self::POISONOUS_POTATO, $meta, "Poisonous Potato");
     }
 
     /**

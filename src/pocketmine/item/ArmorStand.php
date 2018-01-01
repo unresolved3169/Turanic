@@ -39,7 +39,7 @@ class ArmorStand extends Item {
      * @param int $count
      */
     public function __construct($meta = 0, $count = 1){
-        parent::__construct(self::ARMOR_STAND, $meta, $count, "Armor Stand");
+        parent::__construct(self::ARMOR_STAND, $meta, "Armor Stand");
     }
 
     public function canBeActivated(): bool{

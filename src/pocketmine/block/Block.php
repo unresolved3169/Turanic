@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 /**
  * All Block classes are in here
@@ -78,6 +78,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		if(self::$list === null){
 			self::$list = new \SplFixedArray(256);
 			self::$fullList = new \SplFixedArray(4096);
+
 			self::$light = new \SplFixedArray(256);
 			self::$lightFilter = new \SplFixedArray(256);
 			self::$solid = new \SplFixedArray(256);
@@ -322,7 +323,8 @@ class Block extends Position implements BlockIds, Metadatable{
             ATEUPD_BLOCK
             BLOCK_MOVED_BY_PISTON
             OBSERVER
-            STRUCTURE_BLOCK*/
+            STRUCTURE_BLOCK
+            RESERVED6 */
             foreach(self::$list as $id => $block){
                 if($block === null){
                     self::registerBlock(new UnknownBlock($id));
@@ -331,6 +333,19 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 	}
 
+    /**
+     * Registers a block type into the index. Plugins may use this method to register new block types or override
+     * existing ones.
+     *
+     * NOTE: If you are registering a new block type, you will need to add it to the creative inventory yourself - it
+     * will not automatically appear there.
+     *
+     * @param Block $block
+     * @param bool  $override Whether to override existing registrations
+     *
+     * @throws \RuntimeException if something attempted to override an already-registered block without specifying the
+     * $override parameter.
+     */
     public static function registerBlock(Block $block, bool $override = false){
         $id = $block->getId();
 
@@ -376,23 +391,23 @@ class Block extends Position implements BlockIds, Metadatable{
         return false;
     }
 
-	/**
-	 * @param int      $id
-	 * @param int      $meta
-	 * @param Position $pos
-	 *
-	 * @return Block
-	 */
-	public static function get($id, $meta = 0, Position $pos = null){
-		if($id > 0xff){
-			trigger_error("BlockID cannot be higher than 255, defaulting to 0", E_USER_NOTICE);
-			$id = 0;
-		}
+    /**
+     * Returns a new Block instance with the specified ID, meta and position.
+     *
+     * @param int      $id
+     * @param int      $meta
+     * @param Position $pos
+     *
+     * @return Block
+     */
+	public static function get(int $id, int $meta = 0, Position $pos = null) : Block{
+        if($meta < 0 or $meta > 0xf){
+            throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
+        }
 
         try{
             if(self::$fullList !== null){
                 $block = clone self::$fullList[($id << 4) | $meta];
-                $block->setDamage($meta);
             }else{
                 $block = new UnknownBlock($id, $meta);
             }
@@ -400,14 +415,14 @@ class Block extends Position implements BlockIds, Metadatable{
             throw new \InvalidArgumentException("Block ID $id is out of bounds");
         }
 
-		if($pos !== null){
-			$block->x = $pos->x;
-			$block->y = $pos->y;
-			$block->z = $pos->z;
-			$block->level = $pos->level;
-		}
+        if($pos !== null){
+            $block->x = $pos->x;
+            $block->y = $pos->y;
+            $block->z = $pos->z;
+            $block->level = $pos->level;
+        }
 
-		return $block;
+        return $block;
 	}
 
     /**
@@ -717,7 +732,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @param int $meta
 	 */
 	final public function setDamage($meta){
-		$this->meta = $meta & 0x0f;
+        if($meta < 0 or $meta > 0xf){
+            throw new \InvalidArgumentException("Block damage values must be 0-15, not $meta");
+        }
+        $this->meta = $meta;
 	}
 
 	/**

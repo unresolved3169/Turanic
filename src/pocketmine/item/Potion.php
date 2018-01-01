@@ -28,6 +28,8 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\Living;
 use pocketmine\utils\Color;
 
+
+// TODO : OPTIMIZE
 class Potion extends Item implements Consumable {
 
 	//No effects
@@ -127,10 +129,9 @@ class Potion extends Item implements Consumable {
 	 * Potion constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::POTION, $meta, $count, self::getNameByMeta($meta));
+	public function __construct(int $meta = 0){
+		parent::__construct(self::POTION, $meta, self::getNameByMeta($meta));
 	}
 
 	/**

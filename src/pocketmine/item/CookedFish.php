@@ -30,10 +30,9 @@ class CookedFish extends Food {
 	 * CookedFish constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::COOKED_FISH, $meta, $count, "Cooked Fish");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::COOKED_FISH, $meta, "Cooked Fish");
 	}
 
 	/**

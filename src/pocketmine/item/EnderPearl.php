@@ -18,7 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\item;
 
@@ -32,10 +34,9 @@ class EnderPearl extends ProjectileItem {
 	 * EnderPearl constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(Item::ENDER_PEARL, $meta, $count, "Ender Pearl");
+	public function __construct(int $meta = 0){
+		parent::__construct(Item::ENDER_PEARL, $meta, "Ender Pearl");
 	}
 
 	/**

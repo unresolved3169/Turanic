@@ -34,8 +34,8 @@ abstract class TieredTool extends Tool{
     /** @var int */
     protected $tier;
 
-    public function __construct(int $id, int $meta, int $count = 1, string $name, int $tier){
-        parent::__construct($id, $meta, $count, $name);
+    public function __construct(int $id, int $meta, string $name, int $tier){
+        parent::__construct($id, $meta, $name);
         $this->tier = $tier;
     }
 

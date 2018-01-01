@@ -30,10 +30,9 @@ class RawSalmon extends Food{
      * RawSalmon constructor.
      *
      * @param int $meta
-     * @param int $count
      */
-    public function __construct($meta = 0, $count = 1){
-        parent::__construct(self::RAW_SALMON, $meta, $count, "Raw Salmon");
+    public function __construct(int $meta = 0){
+        parent::__construct(self::RAW_SALMON, $meta, "Raw Salmon");
     }
 
     /**

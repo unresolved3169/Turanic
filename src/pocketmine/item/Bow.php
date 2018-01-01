@@ -32,14 +32,9 @@ use pocketmine\level\sound\LaunchSound;
 use pocketmine\Player;
 
 class Bow extends Tool {
-	/**
-	 * Bow constructor.
-	 *
-	 * @param int $meta
-	 * @param int $count
-	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::BOW, $meta, $count, "Bow");
+
+	public function __construct(int $meta = 0){
+		parent::__construct(self::BOW, $meta, "Bow");
 	}
 
     public function onReleaseUsing(Player $player) : bool{

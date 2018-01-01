@@ -203,7 +203,7 @@ interface ItemIds extends BlockIds {
 	const ACACIA_DOOR = 430;
 	const DARK_OAK_DOOR = 431;
 	const CHORUS_FRUIT = 432;
-	const POPPED_CHORUS_FRUIT = 433;
+	const POPPED_CHORUS_FRUIT = 433, CHORUS_FRUIT_POPPED = 433;
 
 	const DRAGONS_BREATH = 437;
 	const SPLASH_POTION = 438;

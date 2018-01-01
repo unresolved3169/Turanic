@@ -35,10 +35,9 @@ class SpawnEgg extends Item {
 	 * SpawnEgg constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::SPAWN_EGG, $meta, $count, "Spawn Egg");
+	public function __construct(int $meta = 0){
+		parent::__construct(self::SPAWN_EGG, $meta, "Spawn Egg");
 	}
 
 	/**

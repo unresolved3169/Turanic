@@ -18,7 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\item;
 
@@ -33,10 +35,9 @@ class SplashPotion extends ProjectileItem {
 	 * SplashPotion constructor.
 	 *
 	 * @param int $meta
-	 * @param int $count
 	 */
-	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::SPLASH_POTION, $meta, $count, $this->getNameByMeta($meta));
+	public function __construct(int $meta = 0){
+		parent::__construct(self::SPLASH_POTION, $meta, $this->getNameByMeta($meta));
 	}
 
 	/**
