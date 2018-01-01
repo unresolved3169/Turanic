@@ -31,7 +31,8 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ShortTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 
 class MobSpawner extends Spawnable {
@@ -50,23 +51,24 @@ class MobSpawner extends Spawnable {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-		if(!$nbt->hasTag(self::TAG_ENTITY_ID, IntTag::class)){
-			$nbt->setInt(self::TAG_ENTITY_ID, 0);
+	    // TODO : Optimize et ve yenile
+		if(!$nbt->hasTag(self::TAG_ENTITY_ID, StringTag::class)){
+			$nbt->setString(self::TAG_ENTITY_ID, "0");
 		}
-		if(!$nbt->hasTag(self::TAG_SPAWN_COUNT, IntTag::class)){
-			$nbt->setInt(self::TAG_SPAWN_COUNT, 4);
+		if(!$nbt->hasTag(self::TAG_SPAWN_COUNT, ShortTag::class)){
+			$nbt->setShort(self::TAG_SPAWN_COUNT, 4);
 		}
-        if(!$nbt->hasTag(self::TAG_SPAWN_RANGE, IntTag::class)){
-			$nbt->setInt(self::TAG_SPAWN_RANGE, 4);
+        if(!$nbt->hasTag(self::TAG_SPAWN_RANGE, ShortTag::class)){
+			$nbt->setShort(self::TAG_SPAWN_RANGE, 4);
 		}
-		if(!$nbt->hasTag(self::TAG_MIN_SPAWN_DELAY, IntTag::class)){
-			$nbt->setInt(self::TAG_MIN_SPAWN_DELAY, 200);
+		if(!$nbt->hasTag(self::TAG_MIN_SPAWN_DELAY, ShortTag::class)){
+			$nbt->setShort(self::TAG_MIN_SPAWN_DELAY, 200);
 		}
-		if(!$nbt->hasTag(self::TAG_MAX_SPAWN_DELAY, IntTag::class)){
-			$nbt->setInt(self::TAG_MAX_SPAWN_DELAY, 799);
+		if(!$nbt->hasTag(self::TAG_MAX_SPAWN_DELAY, ShortTag::class)){
+			$nbt->setShort(self::TAG_MAX_SPAWN_DELAY, 799);
 		}
-		if(!$nbt->hasTag(self::TAG_DELAY, IntTag::class)){
-			$nbt->setInt("Delay", mt_rand($nbt->getInt(self::TAG_MIN_SPAWN_DELAY), $nbt->getInt(self::TAG_MAX_SPAWN_DELAY)));
+		if(!$nbt->hasTag(self::TAG_DELAY, ShortTag::class)){
+			$nbt->setShort(self::TAG_DELAY, mt_rand($nbt->getInt(self::TAG_MIN_SPAWN_DELAY), $nbt->getInt(self::TAG_MAX_SPAWN_DELAY)));
 		}
 		parent::__construct($level, $nbt);
 		if($this->getEntityId() > 0){
@@ -78,14 +80,14 @@ class MobSpawner extends Spawnable {
 	 * @return int|null
 	 */
 	public function getEntityId(){
-		return $this->namedtag->getInt(self::TAG_ENTITY_ID);
+		return (int) $this->namedtag->getString(self::TAG_ENTITY_ID);
 	}
 
 	/**
 	 * @param int $id
 	 */
 	public function setEntityId(int $id){
-		$this->namedtag->setInt(self::TAG_ENTITY_ID, $id);
+		$this->namedtag->setString(self::TAG_ENTITY_ID, "$id");
 		$this->onChanged();
 		$this->scheduleUpdate();
 	}
@@ -94,70 +96,70 @@ class MobSpawner extends Spawnable {
 	 * @return null
 	 */
 	public function getSpawnCount(){
-		return $this->namedtag->getInt(self::TAG_SPAWN_COUNT);
+		return $this->namedtag->getShort(self::TAG_SPAWN_COUNT);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setSpawnCount(int $value){
-		$this->namedtag->setInt(self::TAG_SPAWN_COUNT, $value);
+		$this->namedtag->setShort(self::TAG_SPAWN_COUNT, $value);
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getSpawnRange(){
-		return $this->namedtag->getInt(self::TAG_SPAWN_RANGE);
+		return $this->namedtag->getShort(self::TAG_SPAWN_RANGE);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setSpawnRange(int $value){
-		$this->namedtag->setInt(self::TAG_SPAWN_RANGE, $value);
+		$this->namedtag->setShort(self::TAG_SPAWN_RANGE, $value);
 	}
 
 	/**
 	 * @return null
 	 */
 	public function getMinSpawnDelay(){
-		return $this->namedtag->getInt(self::TAG_MIN_SPAWN_DELAY);
+		return $this->namedtag->getShort(self::TAG_MIN_SPAWN_DELAY);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setMinSpawnDelay(int $value){
-		$this->namedtag->setInt(self::TAG_MIN_SPAWN_DELAY, $value);
+		$this->namedtag->setShort(self::TAG_MIN_SPAWN_DELAY, $value);
 	}
 
 	/**
 	 * @return null
 	 */
 	public function getMaxSpawnDelay(){
-		return $this->namedtag->getInt(self::TAG_MAX_SPAWN_DELAY);
+		return $this->namedtag->getShort(self::TAG_MAX_SPAWN_DELAY);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setMaxSpawnDelay(int $value){
-		$this->namedtag->setInt(self::TAG_MAX_SPAWN_DELAY, $value);
+		$this->namedtag->setShort(self::TAG_MAX_SPAWN_DELAY, $value);
 	}
 
 	/**
 	 * @return null
 	 */
 	public function getDelay(){
-		return $this->namedtag->getInt(self::TAG_DELAY);
+		return $this->namedtag->getShort(self::TAG_DELAY);
 	}
 
 	/**
 	 * @param int $value
 	 */
 	public function setDelay(int $value){
-		$this->namedtag->setInt(self::TAG_DELAY, $value);
+		$this->namedtag->setShort(self::TAG_DELAY, $value);
 	}
 
 	/**
