@@ -38,25 +38,14 @@ class Lava extends Liquid {
 
 	protected $id = self::FLOWING_LAVA;
 
-	/**
-	 * Lava constructor.
-	 *
-	 * @param int $meta
-	 */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 15;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Lava";
 	}
@@ -121,18 +110,6 @@ class Lava extends Liquid {
 		$entity->resetFallDistance();
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$ret = $this->getLevel()->setBlock($this, $this, true, false);
 		$this->getLevel()->scheduleUpdate($this, $this->tickRate());
