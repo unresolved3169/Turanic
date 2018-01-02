@@ -2340,7 +2340,7 @@ class Server{
 		if(!file_exists($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic"))
 			@mkdir($this->getPluginPath() . DIRECTORY_SEPARATOR . "Turanic");
 		
-		$this->packetWorker = new ServerPacketWorker($this->getLoader());
+		//$this->packetWorker = new ServerPacketWorker($this->getLoader());
 
 		$this->tickProcessor();
 		$this->forceShutdown();
