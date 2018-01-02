@@ -2718,7 +2718,7 @@ class Server{
 			$player->checkNetwork();
 		}
 		
-		while(strlen($str = $this->packetWorker->readThreadToMainPacket()) > 0){
+		/*while(strlen($str = $this->packetWorker->readThreadToMainPacket()) > 0){
 			$data = unserialize($str);
 			$batch = new BatchPacket;
 			$batch->payload = $data["payload"];
@@ -2736,7 +2736,7 @@ class Server{
 					}
 				}
 			}
-		}
+		}*/
 
 		if(($this->tickCounter & 0b1111) === 0){
 			$this->titleTick();

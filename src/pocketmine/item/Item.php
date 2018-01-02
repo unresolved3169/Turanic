@@ -1348,7 +1348,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 *
 	 * @return bool
 	 */
-	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true, $checkCount = false) : bool{
+	public final function equals(Item $item, bool $checkDamage = true, bool $checkCompound = false, $checkCount = false) : bool{
 		if($this->id === $item->getId() and ($checkDamage === false or $this->getDamage() === $item->getDamage()) and ($checkCount === false or $this->getCount() === $item->getCount())){
 			if($checkCompound){
 				if($item->getCompoundTag() === $this->getCompoundTag()){
@@ -1371,7 +1371,7 @@ class Item implements ItemIds, \JsonSerializable {
      * @return bool
      */
     final public function equalsExact(Item $other) : bool{
-        return $this->equals($other, true, true) and $this->count === $other->count;
+        return $this->equals($other, true, false) and $this->count === $other->count;
     }
 
 	/**
