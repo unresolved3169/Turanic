@@ -89,6 +89,14 @@ abstract class Liquid extends Transparent {
         return [];
     }
 
+    abstract public function getStillForm() : Block;
+
+	abstract public function getFlowingForm() : Block;
+
+    abstract public function getBucketFillSound() : int;
+
+	abstract public function getBucketEmptySound() : int;
+
     /**
 	 * @return float|int
 	 */

@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
 class Water extends Liquid {
@@ -66,4 +67,20 @@ class Water extends Liquid {
 
 		return $ret;
 	}
+
+    public function getStillForm(): Block{
+        return Block::get(Block::STILL_WATER, $this->meta);
+    }
+
+    public function getFlowingForm(): Block{
+        return Block::get(Block::FLOWING_WATER, $this->meta);
+    }
+
+    public function getBucketFillSound(): int{
+        return LevelSoundEventPacket::SOUND_BUCKET_FILL_WATER;
+    }
+
+    public function getBucketEmptySound(): int{
+        return LevelSoundEventPacket::SOUND_BUCKET_EMPTY_WATER;
+    }
 }
