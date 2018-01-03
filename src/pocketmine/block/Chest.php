@@ -141,21 +141,6 @@ class Chest extends Transparent {
 	}
 
 	/**
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	public function onBreak(Item $item){
-		$t = $this->getLevel()->getTile($this);
-		if($t instanceof TileChest){
-			$t->unpair();
-		}
-		$this->getLevel()->setBlock($this, new Air(), true, true);
-
-		return true;
-	}
-
-	/**
 	 * @param Item        $item
 	 * @param Player|null $player
 	 *
