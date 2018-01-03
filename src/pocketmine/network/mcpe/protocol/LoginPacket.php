@@ -127,4 +127,8 @@ class LoginPacket extends DataPacket{
 	protected function encodePayload(){
 		//TODO
 	}
+
+    public function mayHaveUnreadBytes() : bool{
+        return $this->protocol !== null and !in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS);
+    }
 }

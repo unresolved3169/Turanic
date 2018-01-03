@@ -3359,13 +3359,19 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
 	public function handleBatch(BatchPacket $packet) : bool{
+        if($packet->payload === ""){
+            return false;
+        }
+
 		foreach($packet->getPackets() as $buf){
-			$pk = $this->server->getNetwork()->getPacket(ord($buf[0]));
-			if($pk instanceof DataPacket and !($pk instanceof BatchPacket)){
-				$pk->setBuffer($buf, 1);
-				$pk->decode();
-				$this->handleDataPacket($pk);
-			}
+			$pk = $this->server->getNetwork()->getPacketById(ord($buf{0}));
+
+            if(!$pk->canBeBatched()){
+                throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");
+            }
+
+            $pk->setBuffer($buf, 1);
+            $this->handleDataPacket($pk);
 		}
 		return true;
 	}
@@ -3382,8 +3388,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         $timings = Timings::getReceiveDataPacketTimings($packet);
-
         $timings->startTiming();
+
+        $packet->decode();
+        if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
+            $remains = substr($packet->buffer, $packet->offset);
+            $this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));
+        }
 
         $this->server->getPluginManager()->callEvent($ev = new DataPacketReceiveEvent($this, $packet));
         if ($ev->isCancelled()) {

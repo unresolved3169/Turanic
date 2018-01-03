@@ -281,7 +281,11 @@ abstract class DataPacket extends BinaryStream{
 		}
 	}
 
-	/**
+    public function mayHaveUnreadBytes() : bool{
+	    return false;
+    }
+
+    /**
 	 * Reads and returns an EntityUniqueID
 	 * @return int
 	 */
