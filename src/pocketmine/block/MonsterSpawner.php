@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\Player;
@@ -82,12 +83,12 @@ class MonsterSpawner extends Solid {
 	public function onActivate(Item $item, Player $player = null){
 		if($this->getDamage() == 0){
 			if($item->getId() == Item::SPAWN_EGG){
-				$tile = $this->getLevel()->getTile($this);
-				if($tile instanceof MobSpawner){
-					$this->meta = $item->getDamage();
-					//$this->getLevel()->setBlock($this, $this, true, false);
-					$tile->setEntityId($this->meta);
+				$tile = $this->getLevel()->getTileAt($this->x, $this->y, $this->z);
+				if(!($tile instanceof MobSpawner)){
+                    $tile = Tile::createTile(Tile::MOB_SPAWNER, $this->getLevel(), MobSpawner::createNBT($this));
 				}
+				$this->meta = $item->getDamage();
+				$tile->setEntityId($item->getDamage());
 				return true;
 			}
 		}
@@ -119,7 +120,15 @@ class MonsterSpawner extends Solid {
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		return [];
+        $tile = $this->getLevel()->getTileAt($this->x, $this->y, $this->z);
+        if(!$tile instanceof MobSpawner) return [];
+        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
+            return [
+                [$this->id, $tile->getEntityId(), 1] // TODO : ADD NBT
+            ];
+        }else{
+            return [];
+        }
 	}
 
 	public function canHarvestWithHand(): bool{
