@@ -27,6 +27,7 @@ namespace pocketmine\block;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\BrewingStand as TileBrewingStand;
 use pocketmine\tile\Tile;
@@ -115,16 +116,21 @@ class BrewingStand extends Transparent {
 	 */
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
-			//TODO lock
-			if($player->isCreative() and $player->getServer()->limitedCreative){
-				return true;
-			}
 			$t = $this->getLevel()->getTile($this);
 			if($t instanceof TileBrewingStand){
 				$brewingStand = $t;
 			}else{
 				$brewingStand = Tile::createTile(Tile::BREWING_STAND, $this->getLevel(), TileBrewingStand::createNBT($this));
 			}
+
+            if($player->isCreative() and $player->getServer()->limitedCreative){
+                return true;
+            }
+
+            if($brewingStand->namedtag->hasTag("Lock", StringTag::class) and $brewingStand->namedtag->getString("Lock") !== $item->getCustomName()){
+                return true;
+            }
+
 			$player->addWindow($brewingStand->getInventory());
 		}
 		return true;
