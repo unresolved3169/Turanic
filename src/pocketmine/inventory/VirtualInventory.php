@@ -20,6 +20,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\inventory;
 
 use pocketmine\Player;
@@ -50,7 +52,7 @@ class VirtualInventory extends CustomInventory {
     }
 
     public function getName(): string{
-        return "VirtualHolder";
+        return "TuranicVirtualInventory";
     }
 
     public function getDefaultSize(): int{

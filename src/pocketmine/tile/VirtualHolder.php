@@ -26,40 +26,27 @@ namespace pocketmine\tile;
 
 use pocketmine\block\Block;
 use pocketmine\inventory\VirtualInventory;
+use pocketmine\inventory\InventoryHolder;
+use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\Player;
 
-// TODO : OPTIMIZE
-class VirtualHolder extends Chest {
+class VirtualHolder extends Spawnable implements InventoryHolder, Container, Nameable {
+    use NameableTrait, ContainerTrait;
 
     protected $inventory;
     protected $cevir;
 
-    public function __construct(Player $o, $name = "Virtual"){
-        if(($o->y - 2) <= 0){
-            return false;
-        }
-        parent::__construct($o->level, new CompoundTag("", [
-            new StringTag("id", Tile::VIRTUAL_HOLDER),
-            new StringTag("CustomName", $name),
-            new IntTag("x", (int) $o->x),
-            new IntTag("y", (int) $o->y - 2),
-            new IntTag("z", (int) $o->z)]));
+    public function __construct(Level $level, CompoundTag $nbt){
+        parent::__construct($level, $nbt);
         $this->inventory = new VirtualInventory($this);
+        $this->loadItems();
         $this->cevir = Block::get($this->getBlock()->getId(), $this->getBlock()->getDamage());
-
-        $pk = new UpdateBlockPacket();
-        $pk->x = $this->x;
-        $pk->y = $this->y;
-        $pk->z = $this->z;
-        $pk->blockId = 54;
-        $pk->blockData = 0;
-        $pk->flags = UpdateBlockPacket::FLAG_ALL;
-        $o->dataPacket($pk);
-        $this->spawnTo($o);
         return $this;
     }
 
@@ -76,7 +63,65 @@ class VirtualHolder extends Chest {
         }
     }
 
+    public function spawnTo(Player $player){
+        $pk = new UpdateBlockPacket();
+        $pk->x = $this->x;
+        $pk->y = $this->y;
+        $pk->z = $this->z;
+        $pk->blockId = 54;
+        $pk->blockData = 0;
+        $pk->flags = UpdateBlockPacket::FLAG_ALL;
+        $player->dataPacket($pk);
+        return parent::spawnTo($player);
+    }
+
     public function spawnToAll(){
     	
+    }
+
+    /**
+     * @return int
+     */
+    public function getSize(): int {
+        return 27;
+    }
+
+    /**
+     * @return VirtualInventory
+     */
+    public function getRealInventory(){
+        return $this->inventory;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultName(): string{
+        return "Turanic Virtual Holder";
+    }
+
+    public function addAdditionalSpawnData(CompoundTag $nbt){
+        if($this->hasName()) {
+            $nbt->setTag($this->namedtag->getTag("CustomName"));
+        }
+    }
+
+    public function saveNBT(){
+        parent::saveNBT();
+        $this->saveItems();
+    }
+
+    /**
+     * @param CompoundTag $nbt
+     * @param Vector3 $pos
+     * @param null $face
+     * @param Item|null $item
+     * @param null $player
+     */
+    protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, $face = null, $item = null, $player = null){
+        $nbt->setTag(new ListTag(Container::TAG_ITEMS, [], NBT::TAG_Compound));
+        if($item !== null and $item->hasCustomName()){
+            $nbt->setString("CustomName", $item->getCustomName());
+        }
     }
 }

@@ -168,6 +168,7 @@ use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\tile\CommandBlock as TileCommandBlock;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
+use pocketmine\tile\VirtualHolder;
 use pocketmine\tile\ItemFrame;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
@@ -4545,5 +4546,30 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             // Minecart
         }
         return true;
+    }
+
+    /**
+     * @param string $name
+     * @param array $inventory
+     * @param CompoundTag|null $nbt
+     * @return bool
+     */
+    public function addVirtualInventory(string $name = "Turanic Virtual Inventory", array $inventory = [], CompoundTag $nbt = null) {
+	    if($nbt == null){
+	        if($this->y - 2 <= 0){
+	            return false;
+            }
+	        $nbt = VirtualHolder::createNBT($this->subtract(0, 2, 0));
+        }
+	    $tile = Tile::createTile(Tile::VIRTUAL_HOLDER, $this->level, $nbt);
+	    if($tile instanceof VirtualHolder){
+	        $tile->setName($name);
+	        $inv = $tile->getInventory();
+	        $inv->setContents($inventory);
+	        $tile->spawnTo($this);
+	        $this->addWindow($inv);
+	        return true;
+        }
+        return false;
     }
 }
