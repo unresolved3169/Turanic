@@ -30,7 +30,6 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-// TODO : OPTIMIZE
 class Painting extends Item {
 
 	public function __construct(int $meta = 0){
@@ -73,7 +72,7 @@ class Painting extends Item {
 				["Stage", 2, 2],
 				["Void", 2, 2],
 				["SkullAndRoses", 2, 2],
-				//array("Wither", 2, 2),
+				["Wither", 2, 2],
 				["Fighters", 4, 2],
 				["Skeleton", 4, 3],
 				["DonkeyKong", 4, 3],
@@ -104,7 +103,7 @@ class Painting extends Item {
 				}
 			}
 
-			$motive = $motives[mt_rand(0, count($validMotives) - 1)];
+			$motive = $validMotives[array_rand($validMotives)];
 
             $nbt = Entity::createBaseNBT($blockClicked, null, $faces[$face] * 90);
             $nbt->setString("Motive", $motive[0]);
@@ -113,15 +112,7 @@ class Painting extends Item {
 			if($painting != null) $painting->spawnToAll();
 
 			if($player->isSurvival()){
-				$item = $player->getInventory()->getItemInHand();
-				$count = $item->getCount();
-				if(--$count <= 0){
-					$player->getInventory()->setItemInHand(Item::get(Item::AIR));
-					return true;
-				}
-
-				$item->setCount($count);
-				$player->getInventory()->setItemInHand($item);
+				$this->count--;
 			}
 
 			return true;

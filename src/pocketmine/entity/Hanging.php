@@ -20,9 +20,20 @@
  *
  */
 
-namespace pocketmine\entity;
+declare(strict_types=1);
 
+namespace pocketmine\entity;
 
 abstract class Hanging extends Entity implements Attachable {
 
+    public function getDrops(){
+        return [];
+    }
+
+    public function kill(){
+        parent::kill();
+        foreach($this->getDrops() as $item){
+            $this->getLevel()->dropItem($this, $item);
+        }
+    }
 }

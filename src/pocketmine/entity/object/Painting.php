@@ -35,14 +35,17 @@ use pocketmine\Player;
 class Painting extends Hanging {
 	const NETWORK_ID = self::PAINTING;
 
+	const TAG_MOTIVE = "Motive";
+
+	/** @var int */
 	private $motive;
 
 	public function initEntity(){
 		$this->setMaxHealth(1);
 		parent::initEntity();
 
-		if(isset($this->namedtag->Motive)){
-			$this->motive = $this->namedtag["Motive"];
+		if($this->namedtag->hasTag(self::TAG_MOTIVE)){
+			$this->motive = $this->namedtag->getString(self::TAG_MOTIVE);
 		}else $this->close();
 	}
 
