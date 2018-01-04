@@ -400,7 +400,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	public $passenger = null;
 	public $vehicle = null;
 
-	/** @var Chunk */
+	/** @var Chunk|null */
 	public $chunk;
 
 	protected $lastDamageCause = null;
@@ -513,7 +513,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		$this->namedtag = $nbt;
 
 		$this->chunk = $level->getChunk($this->namedtag["Pos"][0] >> 4, $this->namedtag["Pos"][2] >> 4, true);
-		assert($this->chunk !== null);
+        if($this->chunk === null){
+            throw new \InvalidStateException("Cannot create entities in unloaded chunks");
+ 		}
+
 		$this->setLevel($level);
 		$this->server = $level->getServer();
 
@@ -1041,7 +1044,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if(!isset($this->hasSpawned[$player->getLoaderId()]) and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
+		if(!isset($this->hasSpawned[$player->getLoaderId()]) and $this->chunk !== null and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
 			$this->hasSpawned[$player->getLoaderId()] = $player;
 		}
 	}
@@ -1451,22 +1454,26 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
     }
 
     protected function broadcastMovement(){
-        $pk = new MoveEntityPacket();
-        $pk->entityRuntimeId = $this->id;
-        $pk->position = $this->getOffsetPosition($this);
-        $pk->yaw = $this->yaw;
-        $pk->pitch = $this->pitch;
-        $pk->headYaw = $this->yaw; //TODO
+        if($this->chunk !== null) {
+            $pk = new MoveEntityPacket();
+            $pk->entityRuntimeId = $this->id;
+            $pk->position = $this->getOffsetPosition($this);
+            $pk->yaw = $this->yaw;
+            $pk->pitch = $this->pitch;
+            $pk->headYaw = $this->yaw; //TODO
 
-        $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+            $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+        }
     }
 
     protected function broadcastMotion(){
-        $pk = new SetEntityMotionPacket();
-        $pk->entityRuntimeId = $this->id;
-        $pk->motion = $this->getMotion();
+        if($this->chunk !== null) {
+            $pk = new SetEntityMotionPacket();
+            $pk->entityRuntimeId = $this->id;
+            $pk->motion = $this->getMotion();
 
-        $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+            $this->level->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $pk);
+        }
     }
 
 	/**

@@ -180,7 +180,9 @@ abstract class Tile extends Position {
 		$this->server = $level->getServer();
 		$this->setLevel($level);
         $this->chunk = $level->getChunk($this->namedtag->getInt("x") >> 4, $this->namedtag->getInt("z") >> 4, false);
-		assert($this->chunk !== null);
+        if($this->chunk === null){
+            throw new \InvalidStateException("Cannot create tiles in unloaded chunks");
+ 		}
 
 		$this->name = "";
 		$this->id = Tile::$tileCount++;

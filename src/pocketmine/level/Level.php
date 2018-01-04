@@ -175,6 +175,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var LevelProvider */
 	private $provider;
+    /** @var int */
+	private $providerGarbageCollectionTicker = 0;
 
 	/** @var ChunkLoader[] */
 	private $loaders = [];
@@ -805,6 +807,10 @@ class Level implements ChunkManager, Metadatable{
 		$this->weather->tick();
 
 		$this->unloadChunks();
+        if(++$this->providerGarbageCollectionTicker >= 6000){
+            $this->provider->doGarbageCollection();
+            $this->providerGarbageCollectionTicker = 0;
+        }
 
 		//Do block updates
 		$this->timings->doTickPending->startTiming();
@@ -1686,24 +1692,6 @@ class Level implements ChunkManager, Metadatable{
                 $ev->setCancelled(); //set it to cancelled so plugins can bypass this
             }
 
-            if($player->isAdventure(true) and !$ev->isCancelled()){
-                $canPlace = false;
-                $tag = $item->getNamedTagEntry("CanPlaceOn");
-                if($tag instanceof ListTag){
-                    foreach($tag as $v){
-                        if($v instanceof StringTag){
-                            $entry = Item::fromString($v->getValue());
-                            if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $blockClicked->getId()){
-                                $canPlace = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                $ev->setCancelled(!$canPlace);
-            }
-
             $this->server->getPluginManager()->callEvent($ev);
             if(!$ev->isCancelled()){
                 $blockClicked->onUpdate(self::BLOCK_UPDATE_TOUCH);
@@ -1795,7 +1783,9 @@ class Level implements ChunkManager, Metadatable{
 	public function checkSpawnProtection(Player $player, Vector3 $vector) : bool{
 		if(!$player->isOp() and ($distance = $this->server->getSpawnRadius()) > -1){
 			$t = new Vector2($vector->x, $vector->z);
-			$s = new Vector2($this->getSpawnLocation()->x, $this->getSpawnLocation()->z);
+
+            $spawnLocation = $this->getSpawnLocation();
+            $s = new Vector2($spawnLocation->x, $spawnLocation->z);
 			if(count($this->server->getOps()->getAll()) > 0 and $t->distance($s) <= $distance){
 				return true;
 			}
@@ -2180,11 +2170,12 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * Gets the Chunk object
+	 * Returns the chunk at the specified X/Z coordinates. If the chunk is not loaded, attempts to (synchronously!!!)
+     * load it.
 	 *
 	 * @param int $x
 	 * @param int $z
-	 * @param bool $create Whether to generate the chunk if it does not exist
+	 * @param bool $create Whether to create an empty chunk as a placeholder if the chunk does not exist
 	 *
 	 * @return Chunk
 	 */
@@ -2259,6 +2250,10 @@ class Level implements ChunkManager, Metadatable{
 		if ($chunk === null) {
 			return;
 		}
+
+        $chunk->setX($chunkX);
+        $chunk->setZ($chunkZ);
+
 		$index = Level::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
 		if ($unload and $oldChunk !== null) {
@@ -2565,13 +2560,15 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
+     * Attempts to load a chunk from the level provider (if not already loaded).
+     *
 	 * @param int $x
 	 * @param int $z
-	 * @param bool $generate
+	 * @param bool $create Whether to create an empty chunk to load if the chunk cannot be loaded from disk.
 	 *
-	 * @return bool
+	 * @return bool if loading the chunk was successful
 	 */
-	public function loadChunk(int $x, int $z, bool $generate = true): bool {
+	public function loadChunk(int $x, int $z, bool $create = true): bool {
 		if (isset($this->chunks[$index = Level::chunkHash($x, $z)])) {
 			return true;
 		}
@@ -2580,9 +2577,9 @@ class Level implements ChunkManager, Metadatable{
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
-		$chunk = $this->provider->getChunk($x, $z, $generate);
+		$chunk = $this->provider->getChunk($x, $z, $create);
 		if ($chunk === null) {
-			if ($generate) {
+			if ($create) {
 				throw new \InvalidStateException("Could not create new Chunk");
 			}
 			return false;
@@ -2629,65 +2626,63 @@ class Level implements ChunkManager, Metadatable{
 		unset($this->unloadQueue[Level::chunkHash($x, $z)]);
 	}
 
-	public function unloadChunk(int $x, int $z, bool $safe = true, bool $trySave = true): bool {
-		if (($safe === true and $this->isChunkInUse($x, $z))) {
-			return false;
-		}
+	public function unloadChunk(int $x, int $z, bool $safe = true, bool $trySave = true): bool{
+        if (($safe === true and $this->isChunkInUse($x, $z))) {
+            return false;
+        }
 
-		if (!$this->isChunkLoaded($x, $z)) {
-			return true;
-		}
+        if (!$this->isChunkLoaded($x, $z)) {
+            return true;
+        }
 
-		$this->timings->doChunkUnload->startTiming();
+        $this->timings->doChunkUnload->startTiming();
 
-		$index = Level::chunkHash($x, $z);
+        $index = Level::chunkHash($x, $z);
 
-		$chunk = $this->chunks[$index] ?? null;;
+        $chunk = $this->chunks[$index] ?? null;;
 
-		if ($chunk !== null) {
-			$this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($this, $chunk));
-			if ($ev->isCancelled()) {
-				$this->timings->doChunkUnload->stopTiming();
-				return false;
-			}
-		}
+        if ($chunk !== null) {
+            $this->server->getPluginManager()->callEvent($ev = new ChunkUnloadEvent($this, $chunk));
+            if ($ev->isCancelled()) {
+                $this->timings->doChunkUnload->stopTiming();
+                return false;
+            }
+        }
 
-		try {
-			if ($chunk !== null) {
-				if ($trySave and $this->getAutoSave() and $chunk->isGenerated()) {
-					$entities = 0;
-					foreach ($chunk->getEntities() as $e) {
-						if ($e instanceof Player) {
-							continue;
-						}
-						++$entities;
-					}
+        try {
+            if ($trySave and $this->getAutoSave() and $chunk->isGenerated()) {
+                $entities = 0;
+                foreach ($chunk->getEntities() as $e) {
+                    if ($e instanceof Player) {
+                        continue;
+                    }
+                    ++$entities;
+                }
 
-					if ($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0) {
-						$this->provider->setChunk($x, $z, $chunk);
-						$this->provider->saveChunk($x, $z);
-					}
-				}
+                if ($chunk->hasChanged() or count($chunk->getTiles()) > 0 or $entities > 0) {
+                    $this->provider->setChunk($x, $z, $chunk);
+                    $this->provider->saveChunk($x, $z);
+                }
+            }
 
-				foreach ($this->getChunkLoaders($x, $z) as $loader) {
-					$loader->onChunkUnloaded($chunk);
-				}
-			}
-			$this->provider->unloadChunk($x, $z, $safe);
-		} catch (\Throwable $e) {
-			$logger = $this->server->getLogger();
-			$logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));
-			$logger->logException($e);
-		}
+            foreach ($this->getChunkLoaders($x, $z) as $loader) {
+                $loader->onChunkUnloaded($chunk);
+            }
+            $this->provider->unloadChunk($x, $z, $safe);
+        } catch (\Throwable $e) {
+            $logger = $this->server->getLogger();
+            $logger->error($this->server->getLanguage()->translateString("pocketmine.level.chunkUnloadError", [$e->getMessage()]));
+            $logger->logException($e);
+        }
 
-		unset($this->chunks[$index]);
-		unset($this->chunkTickList[$index]);
-		unset($this->chunkCache[$index]);
+        unset($this->chunks[$index]);
+        unset($this->chunkTickList[$index]);
+        unset($this->chunkCache[$index]);
 
-		$this->timings->doChunkUnload->stopTiming();
+        $this->timings->doChunkUnload->stopTiming();
 
-		return true;
-	}
+        return true;
+    }
 
 	/**
 	 * Returns true if the spawn is part of the spawn
@@ -2698,8 +2693,9 @@ class Level implements ChunkManager, Metadatable{
 	 * @return bool
 	 */
 	public function isSpawnChunk(int $X, int $Z): bool {
-		$spawnX = $this->provider->getSpawn()->getX() >> 4;
-		$spawnZ = $this->provider->getSpawn()->getZ() >> 4;
+        $spawn = $this->provider->getSpawn();
+        $spawnX = $spawn->x >> 4;
+        $spawnZ = $spawn->z >> 4;
 
 		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}

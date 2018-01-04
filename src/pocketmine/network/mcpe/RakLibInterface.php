@@ -173,7 +173,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 			try{
 				if($packet->buffer !== ""){
 					$pk = $this->getPacket($packet->buffer);
-					$pk->decode();
                     $this->players[$identifier]->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
@@ -335,12 +334,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	 * @return null|DataPacket
 	 */
 	private function getPacket($buffer){
-		$pid = ord($buffer{0});
-		if(($data = $this->network->getPacket($pid)) === null){
-			return null;
-		}
-		$data->setBuffer($buffer, 1);
-
-		return $data;
+		return $this->network::getPacket($buffer, 1);
 	}
 }

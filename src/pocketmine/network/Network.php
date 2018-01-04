@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 /**
  * Network-related classes
@@ -84,6 +87,7 @@ use pocketmine\network\mcpe\protocol\ShowStoreOfferPacket;
 use pocketmine\network\mcpe\protocol\SimpleEventPacket;
 use pocketmine\network\mcpe\protocol\StructureBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
+use pocketmine\network\mcpe\protocol\UnknownPacket;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateEquipPacket;
 use pocketmine\network\mcpe\protocol\WSConnectPacket;
@@ -137,14 +141,13 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\Server;
-use pocketmine\utils\MainLogger;
 
 class Network {
 
 	public static $BATCH_THRESHOLD = 512;
 
 	/** @var \SplFixedArray */
-	private $packetPool;
+	protected static $packetPool;
 
 	/** @var Server */
 	private $server;
@@ -273,10 +276,10 @@ class Network {
 	}
 
 	/**
-	 * @param DataPacket $class
+	 * @param DataPacket $packet
 	 */
-	public function registerPacket(DataPacket $class){
-		$this->packetPool[$class->pid()] = $class;
+	public static function registerPacket(DataPacket $packet){
+		static::$packetPool[$packet->pid()] = clone $packet;
 	}
 
 	/**
@@ -287,18 +290,20 @@ class Network {
 	}
 
 	/**
-	 * @param $id
+	 * @param $pid
 	 *
 	 * @return DataPacket
 	 */
-	public function getPacket($id){
-		/** @var DataPacket $class */
-		$class = $this->packetPool[$id] ?? null;
-		if($class !== null){
-			return clone $class;
-		}
-		return null;
+	public static function getPacketById(int $pid){
+		return isset(static::$packetPool[$pid]) ? clone static::$packetPool[$pid] : new UnknownPacket();
 	}
+
+	public static function getPacket(string $buffer, int $offset = 0) : DataPacket{
+        $pk = static::getPacketById(ord($buffer{0}));
+        $pk->setBuffer($buffer, $offset);
+
+        return $pk;
+    }
 
 
 	/**
@@ -339,7 +344,7 @@ class Network {
      *
      */
     private function registerPackets(){
-		$this->packetPool = new \SplFixedArray(256);
+		static::$packetPool = new \SplFixedArray(256);
 
         static::registerPacket(new LoginPacket());
         static::registerPacket(new PlayStatusPacket());

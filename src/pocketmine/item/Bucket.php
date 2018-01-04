@@ -54,7 +54,7 @@ class Bucket extends Item implements Consumable {
 	 * @return int
 	 */
 	public function getMaxStackSize() : int{
-		return 1;
+        return $this->meta === Block::AIR ? 16 : 1; //empty buckets stack to 16
 	}
 
 	/**
@@ -69,14 +69,24 @@ class Bucket extends Item implements Consumable {
 
 		if($targetBlock instanceof Air){
 			if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
-				$result = clone $this;
-				$result->setDamage($blockClicked->getId());
+                $stack = clone $this;
+
+                $resultItem = $stack->pop();
+                $resultItem->setDamage($blockClicked->getFlowingForm()->getId());
 				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $result));
 				if(!$ev->isCancelled()){
 					$player->getLevel()->setBlock($blockClicked, Block::get(Block::AIR), true, true);
+                    $player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
 					if($player->isSurvival()){
-						$player->getInventory()->setItemInHand($ev->getItem());
-					}
+                        if($stack->getCount() === 0){
+                            $player->getInventory()->setItemInHand($ev->getItem());
+                        }else{
+                            $player->getInventory()->setItemInHand($stack);
+                            $player->getInventory()->addItem($ev->getItem());
+                        }
+					}else{
+                        $player->getInventory()->addItem($ev->getItem());
+                    }
 					return true;
 				}else{
 					$player->getInventory()->sendContents($player);
@@ -90,8 +100,10 @@ class Bucket extends Item implements Consumable {
 				//Only disallow water placement in the Nether, allow other liquids to be placed
 				//In vanilla, water buckets are emptied when used in the Nether, but no water placed.
 				if(!($player->getLevel()->getDimension() === Level::DIMENSION_NETHER and $targetBlock->getId() === self::WATER)){
-					$player->getLevel()->setBlock($blockReplace, $targetBlock, true, true);
+					$player->getLevel()->setBlock($blockReplace, $targetBlock->getFlowingForm(), true, true);
+                    $player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $targetBlock->getBucketEmptySound());
 				}
+
 				if($player->isSurvival()){
 					$player->getInventory()->setItemInHand($ev->getItem());
 				}

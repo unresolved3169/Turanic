@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\level\Level;
 use pocketmine\Player;
 use pocketmine\tile\Chest;
 
@@ -110,13 +111,13 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	public function onOpen(Player $who) {
 		parent::onOpen($who);
 
-		if(count($this->getViewers()) === 1){
+		if(count($this->getViewers()) === 1 and ($level = $this->right->getHolder()->getLevel()) instanceof Level){
 			$this->broadcastBlockEventPacket($this->right->getHolder(), true);
 		}
 	}
 
 	public function onClose(Player $who) {
-		if(count($this->getViewers()) === 1){
+		if(count($this->getViewers()) === 1 and ($level = $this->right->getHolder()->getLevel()) instanceof Level){
 			$this->broadcastBlockEventPacket($this->right->getHolder(), false);
 		}
 		parent::onClose($who);

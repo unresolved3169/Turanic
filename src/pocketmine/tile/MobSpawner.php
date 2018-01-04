@@ -68,7 +68,7 @@ class MobSpawner extends Spawnable {
 			$nbt->setShort(self::TAG_MAX_SPAWN_DELAY, 799);
 		}
 		if(!$nbt->hasTag(self::TAG_DELAY, ShortTag::class)){
-			$nbt->setShort(self::TAG_DELAY, mt_rand($nbt->getInt(self::TAG_MIN_SPAWN_DELAY), $nbt->getInt(self::TAG_MAX_SPAWN_DELAY)));
+			$nbt->setShort(self::TAG_DELAY, mt_rand($nbt->getShort(self::TAG_MIN_SPAWN_DELAY), $nbt->getShort(self::TAG_MAX_SPAWN_DELAY)));
 		}
 		parent::__construct($level, $nbt);
 		if($this->getEntityId() > 0){
@@ -93,7 +93,7 @@ class MobSpawner extends Spawnable {
 	}
 
 	/**
-	 * @return null
+	 * @return int
 	 */
 	public function getSpawnCount(){
 		return $this->namedtag->getShort(self::TAG_SPAWN_COUNT);
@@ -121,7 +121,7 @@ class MobSpawner extends Spawnable {
 	}
 
 	/**
-	 * @return null
+	 * @return int
 	 */
 	public function getMinSpawnDelay(){
 		return $this->namedtag->getShort(self::TAG_MIN_SPAWN_DELAY);
@@ -135,7 +135,7 @@ class MobSpawner extends Spawnable {
 	}
 
 	/**
-	 * @return null
+	 * @return int
 	 */
 	public function getMaxSpawnDelay(){
 		return $this->namedtag->getShort(self::TAG_MAX_SPAWN_DELAY);
@@ -149,7 +149,7 @@ class MobSpawner extends Spawnable {
 	}
 
 	/**
-	 * @return null
+	 * @return int
 	 */
 	public function getDelay(){
 		return $this->namedtag->getShort(self::TAG_DELAY);
@@ -200,9 +200,9 @@ class MobSpawner extends Spawnable {
 
 		$this->timings->startTiming();
 
-		if(!($this->chunk instanceof Chunk)){
+		if(!($this->chunk instanceof Chunk))
 			return false;
-		}
+
 		if($this->canUpdate()){
 			if($this->getDelay() <= 0){
 				$success = 0;
@@ -214,8 +214,7 @@ class MobSpawner extends Spawnable {
 						$success++;
 						$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityGenerateEvent($pos, $this->getEntityId(), EntityGenerateEvent::CAUSE_MOB_SPAWNER));
 						if(!$ev->isCancelled()){
-						    $nbt = Entity::createBaseNBT($pos, null, mt_rand() / mt_getrandmax() * 360);
-							$entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), $nbt);
+                            $entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), Entity::createBaseNBT($target->add(0.5, 0, 0.5), null, lcg_value() * 360, 0));
 							$entity->spawnToAll();
 						}
 					}
@@ -235,5 +234,10 @@ class MobSpawner extends Spawnable {
 
 	public function addAdditionalSpawnData(CompoundTag $nbt){
         $nbt->setTag($this->namedtag->getTag(self::TAG_ENTITY_ID));
+        $nbt->setTag($this->namedtag->getTag(self::TAG_DELAY));
+        $nbt->setTag($this->namedtag->getTag(self::TAG_SPAWN_COUNT));
+        $nbt->setTag($this->namedtag->getTag(self::TAG_SPAWN_RANGE));
+        $nbt->setTag($this->namedtag->getTag(self::TAG_MIN_SPAWN_DELAY));
+        $nbt->setTag($this->namedtag->getTag(self::TAG_MAX_SPAWN_DELAY));
     }
 }
