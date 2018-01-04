@@ -45,6 +45,7 @@ class FishingHook extends Projectile {
 	public $attractTimer = 100;
 	public $coughtTimer = 0;
 	public $damageRod = false;
+	public $shootingEntity;
 
 	public function initEntity(){
 		parent::initEntity();
