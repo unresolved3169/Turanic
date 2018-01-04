@@ -28,11 +28,11 @@ use pocketmine\math\Vector3;
 
 abstract class Mob extends Creature{
 
-    public $behaviors = [];
+    protected $behaviors = [];
     /** @var Behavior | null */
-    public $currentBehavior = null;
+    protected $currentBehavior = null;
     public $random;
-    public $behaviorsEnabled = false;
+    protected $behaviorsEnabled = false;
 
     public function initEntity(){
         parent::initEntity();
@@ -104,5 +104,13 @@ abstract class Mob extends Creature{
 
     public function removeBehavior(int $key){
         unset($this->behaviors[$key]);
+    }
+    
+    public function isBehaviorsEnabled() : bool{
+    	return $this->behaviorsEnabled;
+    }
+    
+    public function setBehaviorsEnabled(bool $value = true){
+    	$this->behaviorsEnabled = $value;
     }
 }
