@@ -33,8 +33,6 @@ use pocketmine\Player;
 use pocketmine\entity\Entity;
 use pocketmine\utils\TextFormat;
 
-// TODO : OPTIMIZE
-
 class SummonCommand extends VanillaCommand {
 
 	/**
@@ -50,7 +48,8 @@ class SummonCommand extends VanillaCommand {
 		);
 		$this->setPermission("pocketmine.command.summon");
 
-		$this->getOverload("default")->setParameter(0, new CommandParameter("mob", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("mob", Entity::getEntityNames())));
+		$this->getOverload("default")->setParameter(0, new CommandParameter("entityType", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("mob", Entity::getEntityNames())));
+		$this->getOverload("default")->setParameter(1, new CommandParameter("spawnPos", CommandParameter::TYPE_POSITION, true));
 	}
 
 	/**
@@ -70,11 +69,8 @@ class SummonCommand extends VanillaCommand {
 			return true;
 		}
 
-		$x = 0;
-		$y = 0;
-		$z = 0;
-		if(count($args) == 4 or count($args) == 5){            //position is set
-			//TODO:simpilify them to one piece of code
+		$x = $y = $z = 0;
+		if(count($args) == 4 or count($args) == 5){  //position is set
 			//Code for setting $x
 			if(is_numeric($args[1])){                            //x is given directly
 				$x = $args[1];
