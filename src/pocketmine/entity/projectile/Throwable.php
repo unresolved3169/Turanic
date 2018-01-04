@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,20 +18,35 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\level\particle\ItemBreakParticle;
-use pocketmine\item\Item as ItemItem;
+abstract class Throwable extends Projectile{
 
-class Snowball extends Throwable {
-	const NETWORK_ID = self::SNOWBALL;
+    public $width = 0.25;
+    public $height = 0.25;
 
-	public function hitParticles(){
-        $this->level->addParticle(new ItemBreakParticle($this->add(0, 1, 0), ItemItem::get(ItemItem::SNOWBALL)));
+    protected $gravity = 0.03;
+    protected $drag = 0.01;
+
+    public function entityBaseTick(int $tickDiff = 1) : bool{
+        if($this->closed){
+            return false;
+        }
+
+        $hasUpdate = parent::entityBaseTick($tickDiff);
+
+        if($this->age > 1200 or $this->isCollided){
+            $this->hitParticles();
+            $this->flagForDespawn();
+            $hasUpdate = true;
+        }
+
+        return $hasUpdate;
     }
+
+    abstract public function hitParticles();
 }

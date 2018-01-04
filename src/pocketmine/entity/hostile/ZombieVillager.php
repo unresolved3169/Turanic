@@ -24,8 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class ZombieVillager extends Zombie {
@@ -52,20 +50,5 @@ class ZombieVillager extends Zombie {
 	 */
 	public function getName() : string{
 		return "Zombie Villager";
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = ZombieVillager::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

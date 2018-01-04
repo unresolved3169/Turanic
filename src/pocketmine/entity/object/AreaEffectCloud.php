@@ -152,18 +152,6 @@ class AreaEffectCloud extends Entity {
         return $hasUpdate;
     }
 
-    public function spawnTo(Player $player){
-        $pk = new AddEntityPacket();
-        $pk->type = AreaEffectCloud::NETWORK_ID;
-        $pk->entityRuntimeId = $this->getId();
-        $pk->position = $this;
-        $pk->motion = $this->getMotion();
-        $pk->metadata = $this->dataProperties;
-        $player->dataPacket($pk);
-
-        parent::spawnTo($player);
-    }
-
     public function getName(){
         return "Area Effect Cloud";
     }

@@ -32,7 +32,6 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
@@ -112,23 +111,6 @@ class Sheep extends Animal implements Colorable {
      */
     public function setColor(int $color){
         $this->namedtag->setByte("Color", $color);
-    }
-
-    /**
-     * @param Player $player
-     */
-    public function spawnTo(Player $player){
-        $pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-        $pk->type = Sheep::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-        $pk->yaw = $this->yaw;
-        $pk->pitch = $this->pitch;
-        $pk->metadata = $this->dataProperties;
-        $player->dataPacket($pk);
-
-        parent::spawnTo($player);
     }
 
     /**

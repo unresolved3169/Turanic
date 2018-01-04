@@ -62,23 +62,18 @@ class Painting extends Hanging {
 		return true;
 	}
 
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddPaintingPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->direction = $this->getDirection();
-		$pk->title = $this->motive;
-		$player->dataPacket($pk);
+	protected function sendSpawnPacket(Player $player){
+        $pk = new AddPaintingPacket();
+        $pk->entityRuntimeId = $this->getId();
+        $pk->x = $this->x;
+        $pk->y = $this->y;
+        $pk->z = $this->z;
+        $pk->direction = $this->getDirection();
+        $pk->title = $this->motive;
+        $player->dataPacket($pk);
+    }
 
-		parent::spawnTo($player);
-	}
-
-	protected function updateMovement(){
+    protected function updateMovement(){
 		//Nothing to update, paintings cannot move.
 	}
 

@@ -63,7 +63,7 @@ class VirtualHolder extends Spawnable implements InventoryHolder, Container, Nam
         }
     }
 
-    public function spawnTo(Player $player){
+    public function spawnTo(Player $player) : bool{
         $pk = new UpdateBlockPacket();
         $pk->x = $this->x;
         $pk->y = $this->y;

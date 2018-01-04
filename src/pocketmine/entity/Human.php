@@ -759,34 +759,36 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if($player !== $this and !isset($this->hasSpawned[$player->getLoaderId()])){
-			$this->hasSpawned[$player->getLoaderId()] = $player;
-
-			if($this->skin === null or !$this->skin->isValid()){
-				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
-			}
-
-			$pk = new AddPlayerPacket();
-			$pk->uuid = $this->getUniqueId();
-			$pk->username = $this->getName();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->position = $this->asVector3();
-			$pk->motion = $this->getMotion();
-			$pk->yaw = $this->yaw;
-			$pk->pitch = $this->pitch;
-			$pk->item = $this->getInventory()->getItemInHand();
-			$pk->metadata = $this->dataProperties;
-			$player->dataPacket($pk);
-
-			$this->inventory->sendArmorContents($player);
-
-			if(!($this instanceof Player)){
-				$this->sendSkin([$player]);
-			}
-		}
+        if($player !== $this){
+            parent::spawnTo($player);
+        }
 	}
 
-	public function close(){
+	protected function sendSpawnPacket(Player $player){
+        if(!$this->skin->isValid()){
+            throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+ 		}
+
+        $pk = new AddPlayerPacket();
+        $pk->uuid = $this->getUniqueId();
+        $pk->username = $this->getName();
+        $pk->entityRuntimeId = $this->getId();
+        $pk->position = $this->asVector3();
+        $pk->motion = $this->getMotion();
+        $pk->yaw = $this->yaw;
+        $pk->pitch = $this->pitch;
+        $pk->item = $this->getInventory()->getItemInHand();
+        $pk->metadata = $this->dataProperties;
+        $player->dataPacket($pk);
+
+        $this->inventory->sendArmorContents($player);
+
+        if(!($this instanceof Player)){
+            $this->sendSkin([$player]);
+        }
+    }
+
+    public function close(){
 		if(!$this->closed){
 			if(!($this instanceof Player) or $this->spawned){
 				$this->inventory->removeAllViewers(true);

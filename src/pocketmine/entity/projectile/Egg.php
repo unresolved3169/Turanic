@@ -27,8 +27,6 @@ namespace pocketmine\entity\projectile;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Egg extends Projectile {
 	const NETWORK_ID = self::EGG;
@@ -72,20 +70,5 @@ class Egg extends Projectile {
 		$this->timings->stopTiming();
 
 		return $hasUpdate;
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = Egg::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

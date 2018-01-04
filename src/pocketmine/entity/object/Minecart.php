@@ -495,23 +495,6 @@ class Minecart extends Vehicle {
         return $nearestRail;
     }
 
-    /**
-     * @param Player $player
-     */
-    public function spawnTo(Player $player){
-        $pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-        $pk->type = Minecart::NETWORK_ID;
-        $pk->position = $this->getPosition()->add(0,$this->getEyeHeight() - 1.2, 0);
-        $pk->motion = $this->getMotion();
-        $pk->yaw = 0;
-        $pk->pitch = 0;
-        $pk->metadata = $this->dataProperties;
-        $player->dataPacket($pk);
-
-        parent::spawnTo($player);
-    }
-
     /*public function attack($damage, EntityDamageEvent $source){
         parent::attack($damage, $source);
 

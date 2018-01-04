@@ -28,7 +28,6 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class LingeringPotion extends Projectile {
@@ -89,18 +88,6 @@ class LingeringPotion extends Projectile {
         }
 
         return parent::onUpdate($currentTick);
-    }
-
-    public function spawnTo(Player $player){
-        $pk = new AddEntityPacket();
-        $pk->type = LingeringPotion::NETWORK_ID;
-        $pk->entityRuntimeId = $this->getId();
-        $pk->position = $this;
-        $pk->motion = $this->getMotion();
-        $pk->metadata = $this->dataProperties;
-        $player->dataPacket($pk);
-
-        parent::spawnTo($player);
     }
 
     public function onCollideWithPlayer(Player $player): bool{

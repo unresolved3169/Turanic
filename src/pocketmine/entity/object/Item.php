@@ -113,7 +113,7 @@ class Item extends Entity {
 
 		$hasUpdate = $this->entityBaseTick($tickDiff);
 
-		if($this->isAlive()){
+		if(!$this->isFlaggedForDespawn()){
 
 			if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
 				$this->pickupDelay -= $tickDiff;
@@ -152,7 +152,7 @@ class Item extends Entity {
 				if($ev->isCancelled()){
 					$this->age = 0;
 				}else{
-					$this->kill();
+					$this->flagForDespawn();
 					$hasUpdate = true;
 				}
 			}
@@ -244,19 +244,15 @@ class Item extends Entity {
 	/**
 	 * @param Player $player
 	 */
-	public function spawnTo(Player $player){
-		$pk = new AddItemEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
-		$pk->item = $this->getItem();
-		$player->dataPacket($pk);
+	protected function sendSpawnPacket(Player $player){
+        $pk = new AddItemEntityPacket();
+        $pk->entityRuntimeId = $this->getId();
+        $pk->position = $this->asVector3();
+        $pk->motion = $this->getMotion();
+        $pk->item = $this->getItem();
+        $pk->metadata = $this->dataProperties;
 
-		$this->sendData($player);
-
-		parent::spawnTo($player);
+        $player->dataPacket($pk);
 	}
 
 	public function onCollideWithPlayer(Player $player): bool{

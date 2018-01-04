@@ -31,10 +31,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\Player;
 use pocketmine\Server;
 
 class FireworkRocket extends Projectile{
@@ -107,17 +105,6 @@ class FireworkRocket extends Projectile{
 
         $this->timings->stopTiming();
         return true;
-    }
-
-    public function spawnTo(Player $player){
-        $pk = new AddEntityPacket();
-        $pk->type = FireworkRocket::NETWORK_ID;
-        $pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->asVector3();
-        $pk->motion = $this->getMotion();
-        $pk->metadata = $this->dataProperties;
-        $player->dataPacket($pk);
-        parent::spawnTo($player);
     }
 
 }

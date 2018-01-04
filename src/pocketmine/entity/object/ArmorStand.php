@@ -30,7 +30,6 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
@@ -141,19 +140,9 @@ class ArmorStand extends Entity {
     }
 
     public function spawnTo(Player $player){
-        $pk = new AddEntityPacket();
-        $pk->type = self::NETWORK_ID;
-        $pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-        $pk->yaw = $this->yaw;
-        $pk->pitch = $this->pitch;
-        $pk->metadata = $this->dataProperties;
-        $player->dataPacket($pk);
-
+        parent::spawnTo($player);
         $this->sendArmorItems($player);
         $this->sendHandItem($player);
-        parent::spawnTo($player);
     }
 
     public function sendHandItem(Player $player) {

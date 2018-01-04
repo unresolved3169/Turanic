@@ -27,8 +27,6 @@ namespace pocketmine\entity\passive;
 use pocketmine\entity\FlyingAnimal;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Bat extends FlyingAnimal {
 
@@ -93,22 +91,5 @@ class Bat extends FlyingAnimal {
 			$this->kill();
 		}
 		return parent::onUpdate($currentTick);
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-        $pk->type = Bat::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

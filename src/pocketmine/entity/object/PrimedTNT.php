@@ -32,8 +32,6 @@ use pocketmine\level\Explosion;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class PrimedTNT extends Entity implements Explosive {
 	const NETWORK_ID = self::TNT;
@@ -151,7 +149,7 @@ class PrimedTNT extends Entity implements Explosive {
 			$this->fuse -= $tickDiff;
 
 			if($this->fuse <= 0){
-				$this->kill();
+				$this->flagForDespawn();
 				$this->explode();
 			}
 
@@ -171,20 +169,5 @@ class PrimedTNT extends Entity implements Explosive {
 			}
 			$explosion->explodeB();
 		}
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = PrimedTNT::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

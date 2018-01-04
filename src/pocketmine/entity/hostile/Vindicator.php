@@ -26,8 +26,6 @@ namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Monster;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class Vindicator extends Monster {
@@ -53,23 +51,6 @@ class Vindicator extends Monster {
 		$this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setMaxHealth(24);
 		parent::initEntity();
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-		$pk->type = Vindicator::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 
 	/**

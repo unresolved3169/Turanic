@@ -49,6 +49,11 @@ abstract class Living extends Entity implements Damageable {
 
 	protected $attackTime = 0;
 
+    /** @var int */
+	public $deadTicks = 0;
+    /** @var int */
+    protected $maxDeadTicks = 20;
+
 	protected $invisible = false;
 	protected $jumpVelocity = 0.42;
 
@@ -222,7 +227,18 @@ abstract class Living extends Entity implements Damageable {
 		}
 	}
 
-	/**
+	protected function onDeathUpdate(int $tickDiff): bool{
+        if($this->deadTicks < $this->maxDeadTicks){
+            $this->deadTicks += $tickDiff;
+            if($this->deadTicks >= $this->maxDeadTicks){
+                //TODO: spawn experience orbs here
+            }
+        }
+
+        return $this->deadTicks >= 20;
+    }
+
+    /**
 	 * @param int $tickDiff
 	 *
 	 * @return bool

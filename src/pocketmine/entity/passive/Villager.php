@@ -30,8 +30,6 @@ use pocketmine\entity\behavior\{
 };
 use pocketmine\entity\Mob;
 use pocketmine\entity\NPC;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Villager extends Mob implements NPC, Ageable {
 	
@@ -74,22 +72,6 @@ class Villager extends Mob implements NPC, Ageable {
 	 */
 	public function getName() : string{
 		return "Villager";
-	}
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-		$pk->type = Villager::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 
     /**

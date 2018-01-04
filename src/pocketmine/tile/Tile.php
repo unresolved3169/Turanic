@@ -41,6 +41,11 @@ use pocketmine\Player;
 
 abstract class Tile extends Position {
 
+    const TAG_ID = "id";
+    const TAG_X = "x";
+    const TAG_Y = "y";
+    const TAG_Z = "z";
+
     const BANNER = "Banner";
     const BEACON = "Beacon";
     const BED = "Bed";
@@ -203,11 +208,26 @@ abstract class Tile extends Position {
 	}
 
 	public function saveNBT(){
-		$this->namedtag->setString("id", static::getSaveId());
-		$this->namedtag->setInt("x", $this->x);
-		$this->namedtag->setInt("y", $this->y);
-		$this->namedtag->setInt("z", $this->z);
+        $this->namedtag->setString(self::TAG_ID, static::getSaveId());
+        $this->namedtag->setInt(self::TAG_X, $this->x);
+        $this->namedtag->setInt(self::TAG_Y, $this->y);
+        $this->namedtag->setInt(self::TAG_Z, $this->z);
 	}
+
+    public function getNBT() : CompoundTag{
+        return $this->namedtag;
+    }
+
+    public function getCleanedNBT(){
+        $this->saveNBT();
+        $tag = clone $this->namedtag;
+        $tag->removeTag(self::TAG_X, self::TAG_Y, self::TAG_Z, self::TAG_ID);
+        if($tag->getCount() > 0){
+            return $tag;
+        }else{
+            return null;
+        }
+    }
 
     /**
      * Creates and returns a CompoundTag containing the necessary information to spawn a tile of this type.
@@ -221,10 +241,10 @@ abstract class Tile extends Position {
      */
     public static function createNBT(Vector3 $pos, $face = null, $item = null, $player = null) : CompoundTag{
         $nbt = new CompoundTag("", [
-            new StringTag("id", static::getSaveId()),
-            new IntTag("x", (int) $pos->x),
-            new IntTag("y", (int) $pos->y),
-            new IntTag("z", (int) $pos->z)
+            new StringTag(self::TAG_ID, static::getSaveId()),
+            new IntTag(self::TAG_X, (int) $pos->x),
+            new IntTag(self::TAG_Y, (int) $pos->y),
+            new IntTag(self::TAG_Z, (int) $pos->z)
         ]);
         static::createAdditionalNBT($nbt, $pos, $face, $item, $player);
         if($item !== null){
@@ -295,23 +315,8 @@ abstract class Tile extends Position {
 	public function getName() : string{
 		return $this->name;
 	}
-
-    public function getCleanedNBT(){
-        $this->saveNBT();
-        $tag = clone $this->namedtag;
-        $tag->removeTag("x", "y", "z", "id");
-        if($tag->getCount() > 0){
-            return $tag;
-        }else{
-            return null;
-        }
-    }
     
     public function isClosed() : bool{
     	return $this->closed;
-    }
-
-    public function getNBT() : CompoundTag{
-        return $this->namedtag;
     }
 }

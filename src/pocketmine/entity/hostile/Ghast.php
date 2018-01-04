@@ -25,8 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\FlyingAnimal;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Ghast extends FlyingAnimal {
 	const NETWORK_ID = self::GHAST;
@@ -44,22 +42,5 @@ class Ghast extends FlyingAnimal {
 	public function initEntity(){
 		$this->setMaxHealth(10);
 		parent::initEntity();
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = Ghast::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

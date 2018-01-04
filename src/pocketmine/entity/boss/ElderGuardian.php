@@ -30,9 +30,6 @@ use pocketmine\entity\behavior\{
 };
 use pocketmine\entity\Entity;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
-
 
 class ElderGuardian extends Animal {
 	const NETWORK_ID = self::ELDER_GUARDIAN;
@@ -60,23 +57,6 @@ class ElderGuardian extends Animal {
 		$this->setMaxHealth(80);
 		$this->setGenericFlag(Entity::DATA_FLAG_ELDER, true);
 		parent::initEntity();
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = ElderGuardian::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 
     /**

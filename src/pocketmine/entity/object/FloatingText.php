@@ -94,7 +94,7 @@ class FloatingText extends Entity {
         return false;
     }
 
-    public function spawnTo(Player $player){
+    protected function sendSpawnPacket(Player $player){
         $pk = new AddPlayerPacket();
         $pk->uuid = UUID::fromRandom();
         $pk->username = "";
@@ -103,7 +103,5 @@ class FloatingText extends Entity {
         $pk->item = ItemItem::get(ItemItem::AIR, 0, 0);
         $pk->metadata = $this->dataProperties;
         $player->dataPacket($pk);
-
-        parent::spawnTo($player);
     }
 }

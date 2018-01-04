@@ -30,8 +30,6 @@ use pocketmine\entity\behavior\{
 use pocketmine\entity\Monster;
 use pocketmine\entity\object\Lightning;
 use pocketmine\event\entity\CreeperPowerEvent;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Creeper extends Monster {
 	const NETWORK_ID = self::CREEPER;
@@ -84,22 +82,5 @@ class Creeper extends Monster {
 	 */
 	public function isPowered() : bool{
 		return (bool) $this->namedtag["powered"];
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-		$pk->type = Creeper::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

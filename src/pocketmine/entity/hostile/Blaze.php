@@ -28,7 +28,6 @@ use pocketmine\entity\Monster;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class Blaze extends Monster {
@@ -44,22 +43,6 @@ class Blaze extends Monster {
 	 */
 	public function getName() : string{
 		return "Blaze";
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-        $pk->type = self::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-		parent::spawnTo($player);
 	}
 
     /**

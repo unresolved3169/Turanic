@@ -323,7 +323,7 @@ class Config {
 		return $this->nestedCache[$key] = $base;
 	}
 
-    public function removeNested(string $key) : void{
+    public function removeNested(string $key) {
         $this->nestedCache = [];
         $this->changed = true;
 

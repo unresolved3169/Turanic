@@ -130,6 +130,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MoveEntityPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
@@ -142,6 +143,8 @@ use pocketmine\Server;
 use pocketmine\utils\Color;
 
 abstract class Entity extends Location implements Metadatable, EntityIds {
+
+    const MOTION_THRESHOLD = 0.00001;
 
 	const NETWORK_ID = -1;
 
@@ -456,8 +459,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
 	protected $isStatic = false;
 
+    /** @var bool */
+    private $savedWithChunk = true;
+
+    /** @var bool */
 	public $isCollided = false;
+	/** @var bool */
 	public $isCollidedHorizontally = false;
+	/** @var bool */
 	public $isCollidedVertically = false;
 
 	public $noDamageTicks;
@@ -473,9 +482,12 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	/** @var Server */
 	protected $server;
 
+	/** @var bool */
 	public $closed = false;
+	/** @var bool */
+    private $needsDespawn = false;
 
-	/** @var \pocketmine\event\TimingsHandler */
+    /** @var \pocketmine\event\TimingsHandler */
 	protected $timings;
 	protected $isPlayer = false;
 
@@ -742,51 +754,83 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		return $this->getGenericFlag(self::DATA_FLAG_WALLCLIMBING);
 	}
 
-	/**
-	 * Sets whether the entity is climbing a block. If true, the entity can climb anything.
-	 *
-	 * @param bool $value
-	 */
-	public function setCanClimbWalls(bool $value = true){
-		$this->setGenericFlag(self::DATA_FLAG_WALLCLIMBING, $value);
-	}
-	
-	/**
-	 * Returns the entity ID of the owning entity, or null if the entity doesn't have an owner.
-	 * @return int|string|null
-	 */
-	public function getOwningEntityId(){
-		return $this->getDataProperty(self::DATA_OWNER_EID);
-	}
-	
-	/**
-	 * Returns the owning entity, or null if the entity was not found.
-	 * @return Entity|null
-	 */
-	public function getOwningEntity(){
-		$eid = $this->getOwningEntityId();
-		if($eid !== null){
-			return $this->server->findEntity($eid, $this->level);
-		}
-		return null;
-	}
+    /**
+     * Returns the entity ID of the owning entity, or null if the entity doesn't have an owner.
+     * @return int|null
+     */
+    public function getOwningEntityId(){
+        return $this->getDataProperty(self::DATA_OWNER_EID);
+    }
 
     /**
-     * Sets the owner of the entity.
+     * Returns the owning entity, or null if the entity was not found.
+     * @return Entity|null
+     */
+    public function getOwningEntity(){
+        $eid = $this->getOwningEntityId();
+        if($eid !== null){
+            return $this->server->findEntity($eid, $this->level);
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the owner of the entity. Passing null will remove the current owner.
      *
-     * @param Entity $owner
+     * @param Entity|null $owner
      *
-     * @return bool
      * @throws \InvalidArgumentException if the supplied entity is not valid
      */
-	public function setOwningEntity(Entity $owner){
-		if($owner->closed){
-			throw new \InvalidArgumentException("Supplied owning entity is garbage and cannot be used");
-		}
-		
-		$this->setDataProperty(self::DATA_OWNER_EID, self::DATA_TYPE_LONG, $owner->getId());
-		return true;
-	}
+    public function setOwningEntity(Entity $owner = null){
+        if($owner === null){
+            $this->removeDataProperty(self::DATA_OWNER_EID);
+        }elseif($owner->closed){
+            throw new \InvalidArgumentException("Supplied owning entity is garbage and cannot be used");
+        }else{
+            $this->setDataProperty(self::DATA_OWNER_EID, self::DATA_TYPE_LONG, $owner->getId());
+        }
+    }
+
+    /**
+     * Returns the entity ID of the entity's target, or null if it doesn't have a target.
+     * @return int|null
+     */
+    public function getTargetEntityId(){
+        return $this->getDataProperty(self::DATA_TARGET_EID);
+    }
+
+    /**
+     * Returns the entity's target entity, or null if not found.
+     * This is used for things like hostile mobs attacking entities, and for fishing rods reeling hit entities in.
+     *
+     * @return Entity|null
+     */
+    public function getTargetEntity(){
+        $eid = $this->getTargetEntityId();
+        if($eid !== null){
+            return $this->server->findEntity($eid, $this->level);
+        }
+
+        return null;
+    }
+
+    /**
+     * Sets the entity's target entity. Passing null will remove the current target.
+     *
+     * @param Entity|null $target
+     *
+     * @throws \InvalidArgumentException if the target entity is not valid
+     */
+    public function setTargetEntity(Entity $target = null){
+        if($target === null){
+            $this->removeDataProperty(self::DATA_TARGET_EID);
+        }elseif($target->closed){
+            throw new \InvalidArgumentException("Supplied target entity is garbage and cannot be used");
+        }else{
+            $this->setDataProperty(self::DATA_TARGET_EID, self::DATA_TYPE_LONG, $target->getId());
+        }
+    }
 
 
 	/**
@@ -938,6 +982,24 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		]);
 	}
 
+    /**
+     * Returns whether this entity will be saved when its chunk is unloaded.
+     * @return bool
+     */
+    public function canSaveWithChunk() : bool{
+        return $this->savedWithChunk;
+    }
+
+    /**
+     * Sets whether this entity will be saved when its chunk is unloaded. This can be used to prevent the entity being
+     * saved to disk.
+     *
+     * @param bool $value
+     */
+    public function setCanSaveWithChunk(bool $value){
+        $this->savedWithChunk = $value;
+    }
+
 	/**
 	 * Returns the short save name
 	 *
@@ -1040,13 +1102,34 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		return $this->hasSpawned;
 	}
 
+    /**
+     * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
+     *
+     * @param Player $player
+     */
+    protected function sendSpawnPacket(Player $player){
+        $pk = new AddEntityPacket();
+        $pk->entityRuntimeId = $this->getId();
+        $pk->type = static::NETWORK_ID;
+        $pk->position = $this->asVector3();
+        $pk->motion = $this->getMotion();
+        $pk->yaw = $this->yaw;
+        $pk->pitch = $this->pitch;
+        $pk->attributes = $this->attributeMap->getAll();
+        $pk->metadata = $this->dataProperties;
+
+        $player->dataPacket($pk);
+    }
+
 	/**
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if(!isset($this->hasSpawned[$player->getLoaderId()]) and $this->chunk !== null and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
-			$this->hasSpawned[$player->getLoaderId()] = $player;
-		}
+        if(!isset($this->hasSpawned[$player->getLoaderId()]) and $this->chunk !== null and isset($player->usedChunks[Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())])){
+            $this->hasSpawned[$player->getLoaderId()] = $player;
+
+            $this->sendSpawnPacket($player);
+        }
 	}
 
 	/**
@@ -1505,36 +1588,45 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 			return false;
 		}
 
+        $tickDiff = $currentTick - $this->lastUpdate;
+        if($tickDiff <= 0){
+            if(!$this->justCreated){
+                $this->server->getLogger()->debug("Expected tick difference of at least 1, got $tickDiff for " . get_class($this));
+            }
+
+            return true;
+        }
+
         $this->lastUpdate = $currentTick;
+
+        if($this->needsDespawn){
+            $this->close();
+            return false;
+        }
 
 		if(!$this->isAlive()){
 			++$this->deadTicks;
 			if($this->deadTicks >= 25){
 				$this->despawnFromAll();
 				if(!$this->isPlayer){
-					$this->close();
+					$this->flagForDespawn();
 				}
 			}
 
-			return $this->deadTicks < 20;
+			return true;
 		}
 
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0){
-			return false;
-		}
-        
 		$this->timings->startTiming();
 
-		$hasUpdate = $this->entityBaseTick($tickDiff);
+        Timings::$timerEntityBaseTick->startTiming();
+        $hasUpdate = $this->entityBaseTick($tickDiff);
+        Timings::$timerEntityBaseTick->stopTiming();
 
 		$this->updateMovement();
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return $hasUpdate;
-		//return !($this instanceof Player);
 	}
 
    /**
@@ -1691,7 +1783,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
      * @param Player $player
      * @return bool
      */
-	public function onCollideWithPlayer(Player $player) : bool{
+	public function onCollideWithPlayer(Player $player){
         return false;
 	}
 
@@ -1728,15 +1820,15 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	/**
 	 * @return Position
 	 */
-	public function getPosition(){
-		return new Position($this->x, $this->y, $this->z, $this->level);
+	public function getPosition() : Position{
+		return $this->asPosition();
 	}
 
 	/**
 	 * @return Location
 	 */
-	public function getLocation(){
-		return new Location($this->x, $this->y, $this->z, $this->yaw, $this->pitch, $this->level);
+	public function getLocation() : Location{
+		return $this->asLocation();
 	}
 
 	/**
@@ -2133,6 +2225,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		}
 	}
 
+    /**
+     * Called to tick entities while dead. Returns whether the entity should be flagged for despawn yet.
+     *
+     * @param int $tickDiff
+     * @return bool
+     */
+    protected function onDeathUpdate(int $tickDiff) : bool{
+        return true;
+    }
+
 	/**
 	 * @param Vector3|Position|Location $pos
 	 * @param float|null                $yaw
@@ -2204,6 +2306,17 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 			$this->despawnFrom($player);
 		}
 	}
+
+    /**
+     * Flags the entity to be removed from the world on the next tick.
+     */
+    public function flagForDespawn(){
+        $this->needsDespawn = true;
+    }
+
+    public function isFlaggedForDespawn() : bool{
+        return $this->needsDespawn;
+    }
 
 	public function close(){
 		if(!$this->closed){
@@ -2365,6 +2478,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	public function getDataProperty($id){
 		return isset($this->dataProperties[$id]) ? $this->dataProperties[$id][1] : null;
 	}
+
+    public function removeDataProperty(int $id){
+        unset($this->dataProperties[$id]);
+    }
 
 	/**
 	 * @param int $id

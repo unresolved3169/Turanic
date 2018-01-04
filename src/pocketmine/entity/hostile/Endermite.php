@@ -25,8 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Monster;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Endermite extends Monster {
 	const NETWORK_ID = self::ENDERMITE;
@@ -46,22 +44,5 @@ class Endermite extends Monster {
 	public function initEntity(){
 		$this->setMaxHealth(8);
 		parent::initEntity();
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = Endermite::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

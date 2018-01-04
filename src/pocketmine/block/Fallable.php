@@ -25,47 +25,37 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\Player;
 
 abstract class Fallable extends Solid {
-
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$ret = $this->getLevel()->setBlock($this, $this, true, true);
-
-		return $ret;
-	}
 
 	/**
 	 * @param int $type
 	 */
 	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$down = $this->getSide(Vector3::SIDE_DOWN);
-			if($down->getId() === self::AIR or  $down instanceof Liquid or $down instanceof Fire){
-			    $this->level->setBlock($this, Block::get(Block::AIR), true, true);
-			    $nbt = Entity::createBaseNBT($this->add(0.5,0,0.5));
-			    $nbt->setInt("TileID", $this->getId());
-			    $nbt->setByte("Data", $this->getDamage());
+        if($type === Level::BLOCK_UPDATE_NORMAL){
+            $down = $this->getSide(Vector3::SIDE_DOWN);
+            if($down->getId() === self::AIR or $down instanceof Liquid or $down instanceof Fire){
+                $this->level->setBlock($this, Block::get(Block::AIR), true);
 
-				$fall = Entity::createEntity("FallingSand", $this->getLevel(), $nbt);
+                $nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5));
+                $nbt->setInt("TileID", $this->getId());
+                $nbt->setByte("Data", $this->getDamage());
 
-				if($fall != null) $fall->spawnToAll();
-			}
-		}
+                $fall = Entity::createEntity("FallingSand", $this->getLevel(), $nbt);
+
+                if($fall !== null){
+                    $fall->spawnToAll();
+                }
+            }
+        }
 	}
+
+    /**
+     * @return null|Block
+     */
+    public function tickFalling(){
+        return null;
+    }
 }

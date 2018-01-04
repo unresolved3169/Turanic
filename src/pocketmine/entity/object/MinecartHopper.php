@@ -44,21 +44,4 @@ class MinecartHopper extends Minecart {
 	public function getType() : int{
 		return self::TYPE_HOPPER;
 	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-		$pk->type = MinecartHopper::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = 0;
-		$pk->pitch = 0;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		Entity::spawnTo($player);
-	}
 }

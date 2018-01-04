@@ -52,7 +52,7 @@ abstract class ProjectileItem extends Item{
 		if($projectile instanceof Projectile){
 			$player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
 			if($projectileEv->isCancelled()){
-                $projectile->kill();
+                $projectile->flagForDespawn();
                 return false;
 			}else{
 			    if($this->getProjectileEntityType() == "FishingHook") $player->setFishingHook($projectile);

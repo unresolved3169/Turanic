@@ -25,7 +25,6 @@ namespace pocketmine\level\format\io;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
-use pocketmine\nbt\NBT;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\FullChunkDataPacket;
 use pocketmine\scheduler\AsyncTask;
@@ -34,57 +33,65 @@ use pocketmine\tile\Spawnable;
 
 class ChunkRequestTask extends AsyncTask{
 
-	protected $levelId;
+    protected $levelId;
 
-	protected $chunk;
-	protected $chunkX;
-	protected $chunkZ;
+    protected $chunk;
+    protected $chunkX;
+    protected $chunkZ;
 
-	protected $tiles;
+    protected $tiles;
 
-	protected $compressionLevel;
+    protected $compressionLevel;
 
-	public function __construct(Level $level, Chunk $chunk){
-		$this->levelId = $level->getId();
-		$this->compressionLevel = $level->getServer()->networkCompressionLevel;
+    public function __construct(Level $level, Chunk $chunk){
+        $this->levelId = $level->getId();
+        $this->compressionLevel = $level->getServer()->networkCompressionLevel;
 
-		$this->chunk = $chunk->fastSerialize();
-		$this->chunkX = $chunk->getX();
-		$this->chunkZ = $chunk->getZ();
+        $this->chunk = $chunk->fastSerialize();
+        $this->chunkX = $chunk->getX();
+        $this->chunkZ = $chunk->getZ();
 
-		//TODO: serialize tiles with chunks
-		$tiles = "";
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		foreach($chunk->getTiles() as $tile){
-			if($tile instanceof Spawnable){
-				$nbt->setData($tile->getSpawnCompound());
-				$tiles .= $nbt->write(true);
-			}
-		}
+        //TODO: serialize tiles with chunks
+        $tiles = "";
+        foreach($chunk->getTiles() as $tile){
+            if($tile instanceof Spawnable){
+                $tiles .= $tile->getSerializedSpawnCompound();
+            }
+        }
 
-		$this->tiles = $tiles;
-	}
+        $this->tiles = $tiles;
+    }
 
-	public function onRun(){
-		$chunk = Chunk::fastDeserialize($this->chunk);
-		
-		$result = $chunk->networkSerialize() . $this->tiles;
+    public function onRun(){
+        $chunk = Chunk::fastDeserialize($this->chunk);
 
-		$this->setResult($result, false);
-	}
+        $pk = new FullChunkDataPacket();
+        $pk->chunkX = $this->chunkX;
+        $pk->chunkZ = $this->chunkZ;
+        $pk->data = $chunk->networkSerialize() . $this->tiles;
 
-	public function onCompletion(Server $server){
-		$level = $server->getLevel($this->levelId);
-		if($level instanceof Level){
-			if($this->hasResult()){
-				$result = $this->getResult();
-				$level->chunkRequestCallback($this->chunkX, $this->chunkZ, $result);
-			}else{
-				$server->getLogger()->error("Chunk request for level #" . $this->levelId . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
-			}
-		}else{
-			$server->getLogger()->debug("Dropped chunk task due to level not loaded");
-		}
-	}
+        $batch = new BatchPacket();
+        $batch->addPacket($pk);
+        $batch->setCompressionLevel($this->compressionLevel);
+        $batch->encode();
+
+        $this->setResult($batch->buffer, false);
+    }
+
+    public function onCompletion(Server $server){
+        $level = $server->getLevel($this->levelId);
+        if($level instanceof Level){
+            if($this->hasResult()){
+                $batch = new BatchPacket($this->getResult());
+                assert(strlen($batch->buffer) > 0);
+                $batch->isEncoded = true;
+                $level->chunkRequestCallback($this->chunkX, $this->chunkZ, $batch);
+            }else{
+                $server->getLogger()->error("Chunk request for level #" . $this->levelId . ", x=" . $this->chunkX . ", z=" . $this->chunkZ . " doesn't have any result data");
+            }
+        }else{
+            $server->getLogger()->debug("Dropped chunk task due to level not loaded");
+        }
+    }
 
 }

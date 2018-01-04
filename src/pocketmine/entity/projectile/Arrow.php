@@ -28,14 +28,13 @@ use pocketmine\entity\Entity;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
-use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\MobSpellParticle;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\Server;
 
 class Arrow extends Projectile {
 	const NETWORK_ID = self::ARROW;
@@ -45,13 +44,10 @@ class Arrow extends Projectile {
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
-
-	protected $damage = 2;
 	
 	protected $sound = true;
-	
-	protected $isCritical;
 	protected $potionId = 0;
+    protected $damage = 2;
 
 	/**
 	 * Arrow constructor.
@@ -62,20 +58,30 @@ class Arrow extends Projectile {
 	 * @param bool        $critical
 	 */
 	public function __construct(Level $level, CompoundTag $nbt, Entity $shootingEntity = null, bool $critical = false){
-		$this->isCritical = $critical;
 		if(!isset($nbt->Potion)){
 			$nbt->setShort("Potion", 0);
 		}
 		parent::__construct($level, $nbt, $shootingEntity);
 		$this->potionId = $this->namedtag->getShort("Potion", 0);
+        $this->setCritical($critical);
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isCritical() : bool{
-		return $this->isCritical;
-	}
+    public function isCritical() : bool{
+        return $this->getGenericFlag(self::DATA_FLAG_CRITICAL);
+    }
+
+    public function setCritical(bool $value = true){
+        $this->setGenericFlag(self::DATA_FLAG_CRITICAL, $value);
+    }
+
+    public function getResultDamage() : int{
+        $base = parent::getResultDamage();
+        if($this->isCritical()){
+            return ($base + mt_rand(0, (int) ($base / 2) + 1));
+        }else{
+            return $base;
+        }
+    }
 
 	/**
 	 * @return int
@@ -84,88 +90,63 @@ class Arrow extends Projectile {
 		return $this->potionId;
 	}
 
-	/**
-	 * @param $currentTick
-	 *
-	 * @return bool
-	 */
-	public function onUpdate(int $currentTick){
-		if($this->closed){
-			return false;
-		}
-
-		$this->timings->startTiming();
-
-		$hasUpdate = parent::onUpdate($currentTick);
-
-       if(!$this->hadCollision and $this->isCritical){
-			$this->level->addParticle(new CriticalParticle($this->add(
-				$this->width / 2 + mt_rand(-100, 100) / 500,
-				$this->height / 2 + mt_rand(-100, 100) / 500,
-				$this->width / 2 + mt_rand(-100, 100) / 500)));
-		}elseif($this->onGround){
-			$this->isCritical = false;
-			if($this->sound === true and $this->level !== null){ //Prevents error of $this->level returning null
-				$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW_HIT);
-				$this->sound = false;
-			}
-		}
-
-		if($this->potionId != 0){
-			if(!$this->onGround or ($this->onGround and ($currentTick % 4) == 0)){
-				$color = Potion::getColor($this->potionId - 1)->toArray();
-				$this->level->addParticle(new MobSpellParticle($this->add(
-					$this->width / 2 + mt_rand(-100, 100) / 500,
-					$this->height / 2 + mt_rand(-100, 100) / 500,
-					$this->width / 2 + mt_rand(-100, 100) / 500), $color[0], $color[1], $color[2]));
-			}
-			$hasUpdate = true;
-		}
-
-		if($this->age > 1200){
-			$this->kill();
-			$hasUpdate = true;
-		}
-
-		$this->timings->stopTiming();
-
-		return $hasUpdate;
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = Arrow::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
-	}
-
-	public function onCollideWithPlayer(Player $player): bool{
-        if(!$this->hadCollision){
+    public function entityBaseTick(int $tickDiff = 1) : bool{
+        if($this->closed){
             return false;
         }
+
+        $hasUpdate = parent::entityBaseTick($tickDiff);
+
+        if($this->onGround or $this->hadCollision){
+            $this->setCritical(false);
+            if($this->sound === true and $this->level !== null){ //Prevents error of $this->level returning null
+                $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_BOW_HIT);
+                $this->sound = false;
+            }
+        }
+
+        if($this->potionId != 0){
+            if(!$this->onGround or ($this->onGround and (Server::getInstance()->getTick() % 4) == 0)){
+                $color = Potion::getColor($this->potionId - 1)->toArray();
+                $this->level->addParticle(new MobSpellParticle($this->add(
+                    $this->width / 2 + mt_rand(-100, 100) / 500,
+                    $this->height / 2 + mt_rand(-100, 100) / 500,
+                    $this->width / 2 + mt_rand(-100, 100) / 500), $color[0], $color[1], $color[2]));
+            }
+            $hasUpdate = true;
+        }
+
+        if($this->age > 1200){
+            $this->flagForDespawn();
+            $hasUpdate = true;
+        }
+
+        return $hasUpdate;
+    }
+
+	public function onCollideWithPlayer(Player $player){
+        if(!$this->hadCollision){
+            return;
+        }
+
         $item = ItemItem::get(ItemItem::ARROW, 0, 1);
+
         $playerInventory = $player->getInventory();
         if($player->isSurvival() and !$playerInventory->canAddItem($item)){
-            return false;
+            return;
         }
+
         $this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($playerInventory, $this));
         if($ev->isCancelled()){
-            return false;
+            return;
         }
+
         $pk = new TakeItemEntityPacket();
         $pk->eid = $player->getId();
         $pk->target = $this->getId();
         $this->server->broadcastPacket($this->getViewers(), $pk);
+
         $playerInventory->addItem(clone $item);
-        $this->kill();
-        return true;
+        $this->flagForDespawn();
 	}
 }

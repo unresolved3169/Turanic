@@ -25,8 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\entity\neutral;
 
 use pocketmine\entity\Monster;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class CaveSpider extends Monster {
 	const NETWORK_ID = self::CAVE_SPIDER;
@@ -41,22 +39,5 @@ class CaveSpider extends Monster {
 	 */
 	public function getName() : string{
 		return "Cave Spider";
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-		$pk->type = CaveSpider::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

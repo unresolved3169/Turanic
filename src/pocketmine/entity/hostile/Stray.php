@@ -26,7 +26,6 @@ namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\Player;
 
@@ -46,16 +45,6 @@ class Stray extends Skeleton {
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = Stray::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
 		Entity::spawnTo($player);
 
 		$pk = new MobEquipmentPacket();

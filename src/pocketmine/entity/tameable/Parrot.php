@@ -29,8 +29,6 @@ use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Parrot extends FlyingAnimal {
 
@@ -88,22 +86,5 @@ class Parrot extends FlyingAnimal {
         ];
 
         return $drops;
-    }
-
-    /**
-     * @param Player $player
-     */
-    public function spawnTo(Player $player){
-        $pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-        $pk->type = Parrot::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-        $pk->yaw = $this->yaw;
-        $pk->pitch = $this->pitch;
-        $pk->metadata = $this->dataProperties;
-        $player->dataPacket($pk);
-
-        parent::spawnTo($player);
     }
 }

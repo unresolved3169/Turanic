@@ -61,29 +61,6 @@ class Zombie extends Monster {
 		return "Zombie";
 	}
 
-	/**
-	 * @param $currentTick
-	 *
-	 * @return bool
-	 */
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-        $pk->entityRuntimeId = $this->getId();
-		$pk->type = Zombie::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
-	}
-
     /**
      * @return array|ItemItem[]
      * @throws \TypeError

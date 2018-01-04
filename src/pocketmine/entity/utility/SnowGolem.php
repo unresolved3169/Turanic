@@ -25,8 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\entity\utility;
 
 use pocketmine\entity\Animal;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
 class SnowGolem extends Animal {
@@ -52,22 +50,5 @@ class SnowGolem extends Animal {
 	 */
 	public function getName(){
 		return "Snow Golem";
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = self::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }

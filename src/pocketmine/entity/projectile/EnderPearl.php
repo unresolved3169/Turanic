@@ -28,7 +28,6 @@ use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class EnderPearl extends Projectile {
@@ -57,9 +56,9 @@ class EnderPearl extends Projectile {
 	public function teleportShooter(){
 		if(!$this->hasTeleportedShooter){
 			$this->hasTeleportedShooter = true;
-			if($this->shootingEntity instanceof Player and $this->y > 0){
-                $this->shootingEntity->teleport($this->getPosition());
-                $this->getLevel()->addSound(new EndermanTeleportSound($this->getPosition()), array($this->shootingEntity));
+			if($this->getOwningEntity() instanceof Player and $this->y > 0){
+                $this->getOwningEntity()->teleport($this->getPosition());
+                $this->getLevel()->addSound(new EndermanTeleportSound($this->getPosition()), array($this->getOwningEntity()));
             }
 
 			$this->kill();
@@ -88,20 +87,6 @@ class EnderPearl extends Projectile {
 		$this->timings->stopTiming();
 
 		return $hasUpdate;
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = EnderPearl::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-		parent::spawnTo($player);
 	}
 
 }

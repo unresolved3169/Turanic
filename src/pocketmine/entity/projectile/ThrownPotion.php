@@ -29,7 +29,6 @@ use pocketmine\item\Potion;
 use pocketmine\level\Level;
 use pocketmine\level\particle\SpellParticle;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class ThrownPotion extends Projectile {
@@ -85,7 +84,7 @@ class ThrownPotion extends Projectile {
                     $p->addEffect($effect);
                 }
             }
-            $this->kill();
+            $this->flagForDespawn();
         }
 
         $hasUpdate =  parent::onUpdate($currentTick);
@@ -93,21 +92,6 @@ class ThrownPotion extends Projectile {
 		$this->timings->stopTiming();
 
 		return $hasUpdate;
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->type = ThrownPotion::NETWORK_ID;
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 
 	public function onCollideWithPlayer(Player $player): bool{

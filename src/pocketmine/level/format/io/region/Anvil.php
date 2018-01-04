@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,7 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,27 +31,26 @@ use pocketmine\level\format\SubChunk;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\IntArrayTag;
-use pocketmine\Player;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\utils\MainLogger;
 
 class Anvil extends McRegion{
 
-	const REGION_FILE_EXTENSION = "mca";
+    const REGION_FILE_EXTENSION = "mca";
 
-	public function nbtSerialize(Chunk $chunk) : string{
-		$nbt = new CompoundTag("Level", []);
-		$nbt->setInt("xPos", $chunk->getX());
-		$nbt->setInt("zPos", $chunk->getZ());
+    public function nbtSerialize(Chunk $chunk) : string{
+        $nbt = new CompoundTag("Level", []);
+        $nbt->setInt("xPos", $chunk->getX());
+        $nbt->setInt("zPos", $chunk->getZ());
 
-		$nbt->setByte("V", 1);
-		$nbt->setLong("LastUpdate", 0); //TODO
-		$nbt->setLong("InhabitedTime", 0); //TODO
-		$nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
-		$nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
+        $nbt->setByte("V", 1);
+        $nbt->setLong("LastUpdate", 0); //TODO
+        $nbt->setLong("InhabitedTime", 0); //TODO
+        $nbt->setByte("TerrainPopulated", $chunk->isPopulated() ? 1 : 0);
+        $nbt->setByte("LightPopulated", $chunk->isLightPopulated() ? 1 : 0);
 
-		$subChunks = [];
+        $subChunks = [];
         foreach($chunk->getSubChunks() as $y => $subChunk){
             if($subChunk->isEmpty()){
                 continue;
@@ -68,33 +65,31 @@ class Anvil extends McRegion{
         $nbt->setByteArray("Biomes", $chunk->getBiomeIdArray());
         $nbt->setIntArray("HeightMap", $chunk->getHeightMapArray());
 
-		$entities = [];
+        $entities = [];
 
-		foreach($chunk->getEntities() as $entity){
-			if(!($entity instanceof Player) and !$entity->isClosed()){
-				$entity->saveNBT();
-				$entities[] = $entity->namedtag;
-			}
-		}
+        foreach($chunk->getSavableEntities() as $entity){
+            $entity->saveNBT();
+            $entities[] = $entity->namedtag;
+        }
 
-		$nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
+        $nbt->setTag(new ListTag("Entities", $entities, NBT::TAG_Compound));
 
-		$tiles = [];
-		foreach($chunk->getTiles() as $tile){
-			$tile->saveNBT();
-			$tiles[] = $tile->namedtag;
-		}
+        $tiles = [];
+        foreach($chunk->getTiles() as $tile){
+            $tile->saveNBT();
+            $tiles[] = $tile->namedtag;
+        }
 
-		$nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
+        $nbt->setTag(new ListTag("TileEntities", $tiles, NBT::TAG_Compound));
 
-		//TODO: TileTicks
+        //TODO: TileTicks
 
-		$writer = new NBT(NBT::BIG_ENDIAN);
-		$nbt->setName("Level");
-		$writer->setData(new CompoundTag("", [$nbt]));
+        $writer = new NBT(NBT::BIG_ENDIAN);
+        $nbt->setName("Level");
+        $writer->setData(new CompoundTag("", [$nbt]));
 
-		return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
-	}
+        return $writer->writeCompressed(ZLIB_ENCODING_DEFLATE, RegionLoader::$COMPRESSION_LEVEL);
+    }
 
     protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
         return new CompoundTag("", [
@@ -105,8 +100,8 @@ class Anvil extends McRegion{
         ]);
     }
 
-	public function nbtDeserialize(string $data){
-		$nbt = new NBT(NBT::BIG_ENDIAN);
+    public function nbtDeserialize(string $data){
+        $nbt = new NBT(NBT::BIG_ENDIAN);
         try{
             $nbt->readCompressed($data);
 
@@ -147,7 +142,7 @@ class Anvil extends McRegion{
             MainLogger::getLogger()->logException($e);
             return null;
         }
-	}
+    }
 
     protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
         return new SubChunk(
@@ -158,17 +153,17 @@ class Anvil extends McRegion{
         );
     }
 
-	public static function getProviderName() : string{
-		return "anvil";
-	}
+    public static function getProviderName() : string{
+        return "anvil";
+    }
 
-	public static function getPcWorldFormatVersion() : int{
-		return 19133; //anvil
-	}
+    public static function getPcWorldFormatVersion() : int{
+        return 19133; //anvil
+    }
 
-	public function getWorldHeight() : int{
-		//TODO: add world height options
-		return 256;
-	}
+    public function getWorldHeight() : int{
+        //TODO: add world height options
+        return 256;
+    }
 
 }

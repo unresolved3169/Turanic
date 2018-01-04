@@ -324,8 +324,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	private $ping = 0;
 
-    public $dropContents = [];
-
     /** @var CraftingTransaction|null */
     public $craftingTransaction = null;
 
@@ -616,16 +614,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @param Player $player
 	 */
 	public function spawnTo(Player $player){
-		if ($this->spawned and $player->spawned and $this->isAlive() and $player->isAlive() and $player->getLevel() === $this->level and $player->canSee($this) and !$this->isSpectator()) {
-			parent::spawnTo($player);
-		}
+        if($this->spawned and $player->spawned and $this->isAlive() and $player->isAlive() and $player->getLevel() === $this->level and $player->canSee($this) and !$this->isSpectator()){
+            parent::spawnTo($player);
+        }
 	}
 
 	/**
 	 * @return Server
 	 */
-	public function getServer()
-	{
+	public function getServer(){
 		return $this->server;
 	}
 
@@ -1141,7 +1138,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		foreach($this->usedChunks as $index => $c){
 			Level::getXZ($index, $chunkX, $chunkZ);
 			foreach($this->level->getChunkEntities($chunkX, $chunkZ) as $entity){
-				if($entity !== $this and !$entity->isClosed() and $entity->isAlive()){
+				if($entity !== $this and !$entity->isClosed() and $entity->isAlive() and !$entity->isFlaggedForDespawn()){
 					$entity->spawnTo($this);
 				}
 			}
@@ -1683,21 +1680,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	}
 
 	protected function checkNearEntities(){
-        $pickup = false;
         foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
             $entity->scheduleUpdate();
-            if(!$entity->isAlive()){
+
+            if(!$entity->isAlive() or $entity->isFlaggedForDespawn()){
                 continue;
             }
 
-            $pickup = $entity->onCollideWithPlayer($this);
-		}
-
-        if(!$pickup){
-            foreach($this->dropContents as $item){
-                $this->dropItem($item);
-            }
-            $this->dropContents = [];
+            $entity->onCollideWithPlayer($this);
         }
 	}
 
@@ -3799,7 +3789,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		return [];
 	}
 
-	/**
+	public function canSaveWithChunk(): bool{
+        return false;
+    }
+
+    public function setCanSaveWithChunk(bool $value){
+        throw new \BadMethodCallException("Players can't be saved with chunks");
+    }
+
+    /**
 	 * Handles player data saving
 	 *
 	 * @param bool $async
@@ -4006,7 +4004,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 	}
 
-	/**
+	protected function onDeathUpdate(int $tickDiff): bool{
+        if(parent::onDeathUpdate($tickDiff)){
+            $this->despawnFromAll(); //non-player entities rely on close() to do this for them
+        }
+
+        return false; //never flag players for despawn
+    }
+
+    /**
 	 * @param EntityDamageEvent $source
 	 * @return bool
 	 */

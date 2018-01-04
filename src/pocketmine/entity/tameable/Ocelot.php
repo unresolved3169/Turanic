@@ -26,10 +26,7 @@ namespace pocketmine\entity\tameable;
 
 use pocketmine\entity\Animal;
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class Ocelot extends Animal {
 	const NETWORK_ID = self::OCELOT;
@@ -80,22 +77,5 @@ class Ocelot extends Animal {
 	 */
 	public function getCatType() : int{
 		return $this->namedtag->getByte("CatType");
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = self::NETWORK_ID;
-        $pk->position = $this->getPosition();
-        $pk->motion = $this->getMotion();
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
-
-		parent::spawnTo($player);
 	}
 }
