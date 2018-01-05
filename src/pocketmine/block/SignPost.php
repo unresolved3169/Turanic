@@ -29,10 +29,8 @@ use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\tile\Sign as TileSign;
-use pocketmine\tile\Tile;
 
-class SignPost extends Transparent {
+class SignPost extends Transparent{
 
 	protected $id = self::SIGN_POST;
 
@@ -41,7 +39,7 @@ class SignPost extends Transparent {
 	 *
 	 * @param int $meta
 	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
@@ -66,39 +64,21 @@ class SignPost extends Transparent {
 		return "Sign Post";
 	}
 
-	/**
-	 * @return null
-	 */
-	public function getBoundingBox(){
-		return null;
-	}
+	protected function recalculateBoundingBox(){
+        return null;
+    }
 
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		if($face !== Vector3::SIDE_DOWN){
 
-
 			if($face === Vector3::SIDE_UP){
-				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
+				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
 				$this->getLevel()->setBlock($block, $this, true);
 			}else{
 				$this->meta = $face;
-				$this->getLevel()->setBlock($block, new WallSign($this->meta), true);
+				$this->getLevel()->setBlock($block, Block::get(Block::WALL_SIGN, $this->meta), true);
 			}
-
-			Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
 
 			return true;
 		}
@@ -129,7 +109,7 @@ class SignPost extends Transparent {
 	 */
 	public function getDrops(Item $item) : array{
 		return [
-			[Item::SIGN, 0, 1],
+			[Item::SIGN, 0, 1]
 		];
 	}
 
@@ -139,4 +119,8 @@ class SignPost extends Transparent {
 	public function getToolType(){
 		return Tool::TYPE_AXE;
 	}
+
+	public function getVariantBitmask(): int{
+        return 0;
+    }
 }
