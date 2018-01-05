@@ -64,14 +64,18 @@ class Item implements ItemIds, \JsonSerializable {
         if($tag === ""){
             throw new \InvalidArgumentException("No NBT data found in supplied string");
         }
+
         if(self::$cachedParser === null){
             self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
         }
+
         self::$cachedParser->read($tag);
         $data = self::$cachedParser->getData();
+
         if(!($data instanceof CompoundTag)){
             throw new \InvalidArgumentException("Invalid item NBT string given, it could not be deserialized");
         }
+
         return $data;
 	}
 
@@ -91,7 +95,7 @@ class Item implements ItemIds, \JsonSerializable {
 
 
 	/** @var \SplFixedArray */
-	public static $list = null;
+	private static $list = null;
 	protected $block;
 	protected $id;
 	protected $meta;
@@ -328,12 +332,6 @@ class Item implements ItemIds, \JsonSerializable {
             self::registerItem(new MusicDiscWard());
             self::registerItem(new MusicDisc11());
             self::registerItem(new MusicDiscWait());
-
-			for($i = 0; $i < 256; ++$i){
-				if(Block::$list[$i] !== null){
-					self::$list[$i] = Block::$list[$i];
-				}
-			}
 		}
 
 		self::initCreativeItems();

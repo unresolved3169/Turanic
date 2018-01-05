@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -32,7 +32,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class Vine extends Transparent {
+class Vine extends Flowable {
 
     const FLAG_SOUTH = 0x01;
     const FLAG_WEST = 0x02;
@@ -41,60 +41,42 @@ class Vine extends Transparent {
 
 	protected $id = self::VINE;
 
-	/**
-	 * Vine constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSolid(){
-		return false;
-	}
-
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Vines";
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getHardness(){
 		return 0.2;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canPassThrough(){
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasEntityCollision(){
 		return true;
 	}
 
-	/**
-	 * @param Entity $entity
-	 */
+    public function canBeClimbed() : bool{
+        return true;
+    }
+
+    public function ticksRandomly() : bool{
+        return true;
+    }
+
+    public function canBeReplaced() : bool{
+        return true;
+    }
+
 	public function onEntityCollide(Entity $entity){
 		$entity->resetFallDistance();
 	}
 
-	/**
-	 * @return AxisAlignedBB
-	 */
 	protected function recalculateBoundingBox(){
         $minX = 1;
         $minY = 1;
@@ -136,6 +118,7 @@ class Vine extends Transparent {
         }
 
         //TODO: Missing NORTH check
+
         if(!$flag and $this->getSide(Vector3::SIDE_UP)->isSolid()){
             $minY = min($minY, 0.9375);
             $maxY = 1;
@@ -155,19 +138,6 @@ class Vine extends Transparent {
         );
 	}
 
-
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
         if (!$target->isSolid() or $face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN) {
             return false;
@@ -218,11 +188,10 @@ class Vine extends Transparent {
         return false;
     }
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
+    public function getVariantBitmask() : int{
+        return 0;
+    }
+
 	public function getDrops(Item $item) : array{
 		if($item->isShears()){
 			return [
@@ -233,14 +202,7 @@ class Vine extends Transparent {
 		}
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getToolType(){
-		return Tool::TYPE_SHEARS;
+		return Tool::TYPE_AXE;
 	}
-
-	public function canBeClimbed(): bool{
-        return true;
-    }
 }

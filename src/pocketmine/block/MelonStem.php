@@ -106,4 +106,8 @@ class MelonStem extends Crops {
     public function getPickedItem(): Item{
         return Item::get(Item::MELON_SEEDS);
     }
+
+    public function ticksRandomly(): bool{
+        return true;
+    }
 }

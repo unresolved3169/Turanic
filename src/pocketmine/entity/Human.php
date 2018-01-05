@@ -36,6 +36,7 @@ use pocketmine\item\Consumable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\level\Level;
 use pocketmine\math\Math;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -653,13 +654,13 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 			}elseif($food === 0){
 				$this->foodTickTimer++;
 				if($this->foodTickTimer >= 80){
-					$diff = $this->server->getDifficulty();
+					$diff = $this->level->getDifficulty();
 					$can = false;
-					if($diff === 1){
+					if($diff === Level::DIFFICULTY_EASY){
 						$can = $health > 10;
-					}elseif($diff === 2){
+					}elseif($diff === Level::DIFFICULTY_NORMAL){
 						$can = $health > 1;
-					}elseif($diff === 3){
+					}elseif($diff === Level::DIFFICULTY_HARD){
 						$can = true;
 					}
 					if($can){

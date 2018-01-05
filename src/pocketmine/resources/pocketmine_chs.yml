@@ -108,8 +108,6 @@ player:
  anti-cheat:
   #当设置为 false 时，将会尝试阻止疾跑和穿墙作弊。可能导致与某些尚未适配的方块有关的问题。
   allow-movement-cheats: false
-  #当设置为 false 时，将会检查玩家破坏方块的时间，阻止相关作弊。可能导致与某些尚未适配的方块有关的问题。
-  allow-instabreak: false
 
 level-settings:
  #创建地图时使用的默认格式

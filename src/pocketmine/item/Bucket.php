@@ -65,55 +65,52 @@ class Bucket extends Item implements Consumable {
 	}
 
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
-		$targetBlock = Block::get($this->meta);
+        $resultBlock = Block::get($this->meta);
 
-		if($targetBlock instanceof Air){
-			if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
+        if($resultBlock instanceof Air){
+            if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
                 $stack = clone $this;
 
                 $resultItem = $stack->pop();
                 $resultItem->setDamage($blockClicked->getFlowingForm()->getId());
-				$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $result));
-				if(!$ev->isCancelled()){
-					$player->getLevel()->setBlock($blockClicked, Block::get(Block::AIR), true, true);
+                $player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem));
+                if(!$ev->isCancelled()){
+                    $player->getLevel()->setBlock($blockClicked, Block::get(Block::AIR), true, true);
                     $player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
-					if($player->isSurvival()){
+                    if($player->isSurvival()){
                         if($stack->getCount() === 0){
                             $player->getInventory()->setItemInHand($ev->getItem());
                         }else{
                             $player->getInventory()->setItemInHand($stack);
                             $player->getInventory()->addItem($ev->getItem());
                         }
-					}else{
+                    }else{
                         $player->getInventory()->addItem($ev->getItem());
                     }
-					return true;
-				}else{
-					$player->getInventory()->sendContents($player);
-				}
-			}
-		}elseif($targetBlock instanceof Liquid){
-			$result = clone $this;
-			$result->setDamage(0);
-			$player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, $result));
-			if(!$ev->isCancelled()){
-				//Only disallow water placement in the Nether, allow other liquids to be placed
-				//In vanilla, water buckets are emptied when used in the Nether, but no water placed.
-				if(!($player->getLevel()->getDimension() === Level::DIMENSION_NETHER and $targetBlock->getId() === self::WATER)){
-					$player->getLevel()->setBlock($blockReplace, $targetBlock->getFlowingForm(), true, true);
-                    $player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $targetBlock->getBucketEmptySound());
-				}
 
-				if($player->isSurvival()){
-					$player->getInventory()->setItemInHand($ev->getItem());
-				}
-				return true;
-			}else{
-				$player->getInventory()->sendContents($player);
-			}
-		}
+                    return true;
+                }else{
+                    $player->getInventory()->sendContents($player);
+                }
+            }
+        }elseif($resultBlock instanceof Liquid){
+            $resultItem = clone $this;
+            $resultItem->setDamage(0);
+            $player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, $resultItem));
+            if(!$ev->isCancelled()){
+                $player->getLevel()->setBlock($blockReplace, $resultBlock->getFlowingForm(), true, true);
+                $player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
-		return false;
+                if($player->isSurvival()){
+                    $player->getInventory()->setItemInHand($ev->getItem());
+                }
+                return true;
+            }else{
+                $player->getInventory()->sendContents($player);
+            }
+        }
+
+        return false;
 	}
 
 	public function getFuelTime(): int{

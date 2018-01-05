@@ -2,15 +2,12 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
  *      | | | | | '__/ _` | '_ \| |/ __|
  *      | | |_| | | | (_| | | | | | (__
  *      |_|\__,_|_|  \__,_|_| |_|_|\___|
- *
- *
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine;
 
@@ -32,14 +30,16 @@ use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\utils\Utils;
 use raklib\RakLib;
 
-class CrashDump {
+class CrashDump{
 
 	/** @var Server */
 	private $server;
 	private $fp;
 	private $time;
 	private $data = [];
-	private $encodedData = null;
+    /** @var string */
+	private $encodedData = "";
+	/** @var string */
 	private $path;
 
 	/**
@@ -68,6 +68,10 @@ class CrashDump {
 
 		$this->generalData();
 		$this->pluginsData();
+
+        $this->extraData();
+
+        $this->encodeData();
 	}
 
 	/**
@@ -90,6 +94,18 @@ class CrashDump {
 	public function getData(){
 		return $this->data;
 	}
+
+    private function encodeData(){
+        $this->addLine();
+        $this->addLine("----------------------REPORT THE DATA BELOW THIS LINE-----------------------");
+        $this->addLine();
+        $this->addLine("===BEGIN CRASH DUMP===");
+        $this->encodedData = zlib_encode(json_encode($this->data, JSON_UNESCAPED_SLASHES), ZLIB_ENCODING_DEFLATE, 9);
+        foreach(str_split(base64_encode($this->encodedData), 76) as $line){
+            $this->addLine($line);
+        }
+        $this->addLine("===END CRASH DUMP===");
+    }
 
 	private function pluginsData(){
 		if(class_exists("pocketmine\\plugin\\PluginManager", false)){
@@ -115,82 +131,109 @@ class CrashDump {
 		}
 	}
 
-	private function baseCrash(){
-		global $lastExceptionError, $lastError;
+    private function extraData(){
+        global $arguments;
 
-		if(isset($lastExceptionError)){
-			$error = $lastExceptionError;
-		}else{
-			$error = (array) error_get_last();
-			$error["trace"] = @getTrace(3);
-			$errorConversion = [
-				E_ERROR => "E_ERROR",
-				E_WARNING => "E_WARNING",
-				E_PARSE => "E_PARSE",
-				E_NOTICE => "E_NOTICE",
-				E_CORE_ERROR => "E_CORE_ERROR",
-				E_CORE_WARNING => "E_CORE_WARNING",
-				E_COMPILE_ERROR => "E_COMPILE_ERROR",
-				E_COMPILE_WARNING => "E_COMPILE_WARNING",
-				E_USER_ERROR => "E_USER_ERROR",
-				E_USER_WARNING => "E_USER_WARNING",
-				E_USER_NOTICE => "E_USER_NOTICE",
-				E_STRICT => "E_STRICT",
-				E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
-				E_DEPRECATED => "E_DEPRECATED",
-				E_USER_DEPRECATED => "E_USER_DEPRECATED",
-			];
-			$error["fullFile"] = $error["file"];
-			$error["file"] = cleanPath($error["file"]);
-			$error["type"] = isset($errorConversion[$error["type"]]) ? $errorConversion[$error["type"]] : $error["type"];
-			if(($pos = strpos($error["message"], "\n")) !== false){
-				$error["message"] = substr($error["message"], 0, $pos);
-			}
-		}
+        if($this->server->getProperty("auto-report.send-settings", true) !== false){
+            $this->data["parameters"] = (array) $arguments;
+            $this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
+            $this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
+            $this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
+        }else{
+            $this->data["pocketmine.yml"] = "";
+            $this->data["server.properties"] = "";
+            $this->data["parameters"] = [];
+        }
+        $extensions = [];
+        foreach(get_loaded_extensions() as $ext){
+            $extensions[$ext] = phpversion($ext);
+        }
+        $this->data["extensions"] = $extensions;
 
-		if(isset($lastError)){
-			$this->data["lastError"] = $lastError;
-		}
+        if($this->server->getProperty("auto-report.send-phpinfo", true) !== false){
+            ob_start();
+            phpinfo();
+            $this->data["phpinfo"] = ob_get_contents();
+            ob_end_clean();
+        }
+    }
 
-		$this->data["error"] = $error;
-		unset($this->data["error"]["fullFile"]);
-		unset($this->data["error"]["trace"]);
-		$this->addLine("Error: " . $error["message"]);
-		$this->addLine("File: " . $error["file"]);
-		$this->addLine("Line: " . $error["line"]);
-		$this->addLine("Type: " . $error["type"]);
+    private function baseCrash(){
+        global $lastExceptionError, $lastError;
 
-		if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "src/raklib/") === false and file_exists($error["fullFile"])){
-			$this->addLine();
-			$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
-			$this->data["plugin"] = true;
+        if(isset($lastExceptionError)){
+            $error = $lastExceptionError;
+        }else{
+            $error = (array) error_get_last();
+            $error["trace"] = getTrace(4); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
+            $errorConversion = [
+                E_ERROR => "E_ERROR",
+                E_WARNING => "E_WARNING",
+                E_PARSE => "E_PARSE",
+                E_NOTICE => "E_NOTICE",
+                E_CORE_ERROR => "E_CORE_ERROR",
+                E_CORE_WARNING => "E_CORE_WARNING",
+                E_COMPILE_ERROR => "E_COMPILE_ERROR",
+                E_COMPILE_WARNING => "E_COMPILE_WARNING",
+                E_USER_ERROR => "E_USER_ERROR",
+                E_USER_WARNING => "E_USER_WARNING",
+                E_USER_NOTICE => "E_USER_NOTICE",
+                E_STRICT => "E_STRICT",
+                E_RECOVERABLE_ERROR => "E_RECOVERABLE_ERROR",
+                E_DEPRECATED => "E_DEPRECATED",
+                E_USER_DEPRECATED => "E_USER_DEPRECATED"
+            ];
+            $error["fullFile"] = $error["file"];
+            $error["file"] = cleanPath($error["file"]);
+            $error["type"] = $errorConversion[$error["type"]] ?? $error["type"];
+            if(($pos = strpos($error["message"], "\n")) !== false){
+                $error["message"] = substr($error["message"], 0, $pos);
+            }
+        }
 
-			$reflection = new \ReflectionClass(PluginBase::class);
-			$file = $reflection->getProperty("file");
-			$file->setAccessible(true);
-			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
-				$filePath = \pocketmine\cleanPath($file->getValue($plugin));
-				if(strpos($error["file"], $filePath) === 0){
-					$this->data["plugin"] = $plugin->getName();
-					$this->addLine("BAD PLUGIN : " . $plugin->getDescription()->getFullName());
-					break;
-				}
-			}
-		}else{
-			$this->data["plugin"] = false;
-		}
+        if(isset($lastError)){
+            $this->data["lastError"] = $lastError;
+        }
 
-		$this->addLine();
-		$this->addLine("Code:");
-		$this->data["code"] = [];
+        $this->data["error"] = $error;
+        unset($this->data["error"]["fullFile"]);
+        unset($this->data["error"]["trace"]);
+        $this->addLine("Error: " . $error["message"]);
+        $this->addLine("File: " . $error["file"]);
+        $this->addLine("Line: " . $error["line"]);
+        $this->addLine("Type: " . $error["type"]);
 
-		$this->addLine();
-		$this->addLine("Backtrace:");
-		foreach(($this->data["trace"] = $error["trace"]) as $line){
-			$this->addLine($line);
-		}
-		$this->addLine();
-	}
+        if(strpos($error["file"], "src/pocketmine/") === false and strpos($error["file"], "src/raklib/") === false and file_exists($error["fullFile"])){
+            $this->addLine();
+            $this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
+            $this->data["plugin"] = true;
+
+            $reflection = new \ReflectionClass(PluginBase::class);
+            $file = $reflection->getProperty("file");
+            $file->setAccessible(true);
+            foreach($this->server->getPluginManager()->getPlugins() as $plugin){
+                $filePath = \pocketmine\cleanPath($file->getValue($plugin));
+                if(strpos($error["file"], $filePath) === 0){
+                    $this->data["plugin"] = $plugin->getName();
+                    $this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
+                    break;
+                }
+            }
+        }else{
+            $this->data["plugin"] = false;
+        }
+
+        $this->addLine();
+        $this->addLine("Code:");
+        $this->data["code"] = [];
+
+        $this->addLine();
+        $this->addLine("Backtrace:");
+        foreach(($this->data["trace"] = $error["trace"]) as $line){
+            $this->addLine($line);
+        }
+        $this->addLine();
+    }
 
 	private function generalData(){
 		$this->data["general"] = [];

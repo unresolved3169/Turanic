@@ -27,6 +27,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\generator\object\Tree;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
@@ -40,108 +41,74 @@ class Sapling extends Flowable {
 
 	protected $id = self::SAPLING;
 
-	/**
-	 * Sapling constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canBeActivated() : bool{
 		return true;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
-		static $names = [
-			0 => "Oak Sapling",
-			1 => "Spruce Sapling",
-			2 => "Birch Sapling",
-			3 => "Jungle Sapling",
-			4 => "Acacia Sapling",
-			5 => "Dark Oak Sapling",
-			6 => "",
-			7 => "",
-		];
-		return $names[$this->getVariant()] ?? "Unknown";
+        static $names = [
+            0 => "Oak Sapling",
+            1 => "Spruce Sapling",
+            2 => "Birch Sapling",
+            3 => "Jungle Sapling",
+            4 => "Acacia Sapling",
+            5 => "Dark Oak Sapling"
+        ];
+        return $names[$this->getVariant()] ?? "Unknown";
 	}
 
+    public function ticksRandomly() : bool{
+        return true;
+    }
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$down = $this->getSide(0);
-		if($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::FARMLAND or $down->getId() === self::PODZOL){
-			$this->getLevel()->setBlock($block, $this, true, true);
+        $down = $this->getSide(Vector3::SIDE_DOWN);
+        if($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::FARMLAND){
+            $this->getLevel()->setBlock($block, $this, true, true);
 
-			return true;
-		}
+            return true;
+        }
 
-		return false;
+        return false;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
-		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
-			//TODO: change log type
-			Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant(), false);
-			if(($player->gamemode & 0x01) === 0){
-				$item->count--;
-			}
+        if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
+            //TODO: change log type
+            Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant());
 
-			return true;
-		}
+            $item->count--;
+
+            return true;
+        }
 
 		return false;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent() === true){
-				$this->getLevel()->useBreakOn($this);
+			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
+                $this->getLevel()->useBreakOn($this);
 
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
+                return Level::BLOCK_UPDATE_NORMAL;
+            }
 		}elseif($type === Level::BLOCK_UPDATE_RANDOM){ //Growth
 			if(mt_rand(1, 7) === 1){
-				if(($this->meta & 0x08) === 0x08){
-					Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant(), false);
-				}else{
-					$this->meta |= 0x08;
-					$this->getLevel()->setBlock($this, $this, true);
+                if(($this->meta & 0x08) === 0x08){
+                    Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant());
+                }else{
+                    $this->meta |= 0x08;
+                    $this->getLevel()->setBlock($this, $this, true);
 
-					return Level::BLOCK_UPDATE_RANDOM;
-				}
-			}else{
-				return Level::BLOCK_UPDATE_RANDOM;
-			}
+                    return Level::BLOCK_UPDATE_RANDOM;
+                }
+            }else{
+                return Level::BLOCK_UPDATE_RANDOM;
+            }
 		}
 
 		return false;

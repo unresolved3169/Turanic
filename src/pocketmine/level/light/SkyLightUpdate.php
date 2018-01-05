@@ -22,21 +22,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\level\light;
 
-#include <rules/DataPacket.h>
+class SkyLightUpdate extends LightUpdate {
 
-class SetTimePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::SET_TIME_PACKET;
+    public function getLight(int $x, int $y, int $z) : int{
+        return $this->subChunkHandler->currentSubChunk->getBlockSkyLight($x & 0x0f, $y & 0x0f, $z & 0x0f);
+    }
 
-	/** @var int */
-	public $time;
-
-	protected function decodePayload(){
-		$this->time = $this->getVarInt();
-	}
-
-	protected function encodePayload(){
-		$this->putVarInt($this->time);
-	}
+    public function setLight(int $x, int $y, int $z, int $level){
+        $this->subChunkHandler->currentSubChunk->setBlockSkyLight($x & 0x0f, $y & 0x0f, $z & 0x0f, $level);
+    }
 }

@@ -489,7 +489,7 @@ class Server{
 	 * @return bool
 	 */
 	public function getGenerateStructures(){
-		return $this->getConfigBoolean("generate-structures", true);
+		return $this->getConfigBool("generate-structures", true);
 	}
 
 	/**
@@ -503,7 +503,7 @@ class Server{
 	 * @return bool
 	 */
 	public function getForceGamemode(){
-		return $this->getConfigBoolean("force-gamemode", false);
+		return $this->getConfigBool("force-gamemode", false);
 	}
 
 	/**
@@ -561,48 +561,29 @@ class Server{
 		return -1;
 	}
 
-	/**
-	 * @param string $str
-	 *
-	 * @return int
-	 */
-	public static function getDifficultyFromString($str){
-		switch(strtolower(trim($str))){
-			case "0":
-			case "peaceful":
-			case "p":
-				return 0;
-
-			case "1":
-			case "easy":
-			case "e":
-				return 1;
-
-			case "2":
-			case "normal":
-			case "n":
-				return 2;
-
-			case "3":
-			case "hard":
-			case "h":
-				return 3;
-		}
-		return -1;
+    /**
+     * @deprecated Moved to {@link Level#getDifficultyFromString}
+     *
+     * @param string $str
+     * @return int
+     */
+	public static function getDifficultyFromString(string $str) : int{
+        return Level::getDifficultyFromString($str);
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getDifficulty(){
+    /**
+     * Returns Server global difficulty. Note that this may be overridden in individual Levels.
+     * @return int
+     */
+	public function getDifficulty() : int{
 		return $this->getConfigInt("difficulty", 1);
 	}
 
 	/**
 	 * @return bool
 	 */
-	public function hasWhitelist(){
-		return $this->getConfigBoolean("white-list", false);
+	public function hasWhitelist() : bool{
+		return $this->getConfigBool("white-list", false);
 	}
 
 	/**
@@ -616,14 +597,14 @@ class Server{
 	 * @return bool
 	 */
 	public function getAllowFlight(){
-		return $this->getConfigBoolean("allow-flight", false);
+		return $this->getConfigBool("allow-flight", false);
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isHardcore(){
-		return $this->getConfigBoolean("hardcore", false);
+		return $this->getConfigBool("hardcore", false);
 	}
 
 	/**
@@ -1039,24 +1020,29 @@ class Server{
 		return $this->expCache[$level];
 	}
 
-	/**
-	 * @param Level $level
-	 * @param bool  $forceUnload
-	 *
-	 * @return bool
-	 */
-	public function unloadLevel(Level $level, $forceUnload = false){
-		if($level === $this->getDefaultLevel() and !$forceUnload){
-			throw new \InvalidStateException("The default level cannot be unloaded while running, please switch levels.");
-		}
-		if($level->unload($forceUnload) === true){
-			unset($this->levels[$level->getId()]);
+    /**
+     * @param Level $level
+     * @param bool  $forceUnload
+     *
+     * @return bool
+     *
+     * @throws \InvalidStateException
+     */
+    public function unloadLevel(Level $level, bool $forceUnload = false) : bool{
+        if($level === $this->getDefaultLevel() and !$forceUnload){
+            throw new \InvalidStateException("The default level cannot be unloaded while running, please switch levels.");
+        }
 
-			return true;
-		}
+        return $level->unload($forceUnload);
+    }
 
-		return false;
-	}
+    /**
+     * @internal
+     * @param Level $level
+     */
+    public function removeLevel(Level $level){
+        unset($this->levels[$level->getId()]);
+    }
 
 	/**
 	 * Loads a level from the data directory
@@ -1125,73 +1111,71 @@ class Server{
      * @throws \Exception
      */
     public function generateLevel($name, $seed = null, $generator = null, $options = []){
-		if(trim($name) === "" or $this->isLevelGenerated($name)){
-			return false;
-		}
+        if(trim($name) === "" or $this->isLevelGenerated($name)){
+            return false;
+        }
 
-		$seed = $seed === null ? Binary::readInt(random_bytes(4)) : (int) $seed;
+        $seed = $seed ?? Binary::readInt(random_bytes(4));
 
-		if(!isset($options["preset"])){
-			$options["preset"] = $this->getConfigString("generator-settings", "");
-		}
+        if(!isset($options["preset"])){
+            $options["preset"] = $this->getConfigString("generator-settings", "");
+        }
 
-		if(!($generator !== null and class_exists($generator, true) and is_subclass_of($generator, Generator::class))){
-			$generator = Generator::getGenerator($this->getLevelType());
-		}
+        if(!($generator !== null and class_exists($generator, true) and is_subclass_of($generator, Generator::class))){
+            $generator = Generator::getGenerator($this->getLevelType());
+        }
 
-		if(($provider = LevelProviderManager::getProviderByName($providerName = $this->getProperty("level-settings.default-format", "pmanvil"))) === null){
-			$provider = LevelProviderManager::getProviderByName($providerName = "pmanvil");
-		}
+        if(($provider = LevelProviderManager::getProviderByName($providerName = $this->getProperty("level-settings.default-format", "pmanvil"))) === null){
+            $provider = LevelProviderManager::getProviderByName($providerName = "pmanvil");
+        }
 
-		try{
-			$path = $this->getDataPath() . "worlds/" . $name . "/";
-			/** @var \pocketmine\level\format\io\LevelProvider $provider */
-			$provider::generate($path, $name, $seed, $generator, $options);
+        try{
+            $path = $this->getDataPath() . "worlds/" . $name . "/";
+            /** @var LevelProvider $provider */
+            $provider::generate($path, $name, $seed, $generator, $options);
 
-			$level = new Level($this, $name, $path, $provider);
-			$this->levels[$level->getId()] = $level;
+            $level = new Level($this, $name, $path, (string) $provider);
+            $this->levels[$level->getId()] = $level;
 
-			$level->initLevel();
+            $level->initLevel();
 
-			$level->setTickRate($this->baseTickRate);
-		}catch(\Throwable $e){
-			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.generateError", [$name, $e->getMessage()]));
-			if($this->logger instanceof MainLogger){
-				$this->logger->logException($e);
-			}
-			return false;
-		}
+            $level->setTickRate($this->baseTickRate);
+        }catch(\Throwable $e){
+            $this->logger->error($this->getLanguage()->translateString("pocketmine.level.generationError", [$name, $e->getMessage()]));
+            $this->logger->logException($e);
+            return false;
+        }
 
-		$this->getPluginManager()->callEvent(new LevelInitEvent($level));
+        $this->getPluginManager()->callEvent(new LevelInitEvent($level));
 
-		$this->getPluginManager()->callEvent(new LevelLoadEvent($level));
+        $this->getPluginManager()->callEvent(new LevelLoadEvent($level));
 
-		$this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
+        $this->getLogger()->notice($this->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
         $spawnLocation = $level->getSpawnLocation();
         $centerX = $spawnLocation->x >> 4;
         $centerZ = $spawnLocation->z >> 4;
 
-		$order = [];
+        $order = [];
 
-		for($X = -3; $X <= 3; ++$X){
-			for($Z = -3; $Z <= 3; ++$Z){
-				$distance = $X ** 2 + $Z ** 2;
-				$chunkX = $X + $centerX;
-				$chunkZ = $Z + $centerZ;
-				$index = Level::chunkHash($chunkX, $chunkZ);
-				$order[$index] = $distance;
-			}
-		}
+        for($X = -3; $X <= 3; ++$X){
+            for($Z = -3; $Z <= 3; ++$Z){
+                $distance = $X ** 2 + $Z ** 2;
+                $chunkX = $X + $centerX;
+                $chunkZ = $Z + $centerZ;
+                $index = Level::chunkHash($chunkX, $chunkZ);
+                $order[$index] = $distance;
+            }
+        }
 
-		asort($order);
+        asort($order);
 
-		foreach($order as $index => $distance){
-			Level::getXZ($index, $chunkX, $chunkZ);
-			$level->populateChunk($chunkX, $chunkZ, true);
-		}
+        foreach($order as $index => $distance){
+            Level::getXZ($index, $chunkX, $chunkZ);
+            $level->populateChunk($chunkX, $chunkZ, true);
+        }
 
-		return true;
+        return true;
 	}
 
 	/**
@@ -1272,72 +1256,84 @@ class Server{
 		return $this->propertyCache[$variable] === null ? $defaultValue : $this->propertyCache[$variable];
 	}
 
-	/**
-	 * @param string $variable
-	 * @param string $value
-	 */
-	public function setConfigString($variable, $value){
-		$this->properties->set($variable, $value);
-	}
+    /**
+     * @param string $variable
+     * @param string $value
+     */
+    public function setConfigString(string $variable, string $value){
+        $this->properties->set($variable, $value);
+    }
 
-	/**
-	 * @param string $variable
-	 * @param int	$defaultValue
-	 *
-	 * @return int
-	 */
-	public function getConfigInt($variable, $defaultValue = 0){
-		$v = getopt("", ["$variable::"]);
-		if(isset($v[$variable])){
-			return (int) $v[$variable];
-		}
+    /**
+     * @param string $variable
+     * @param int    $defaultValue
+     *
+     * @return int
+     */
+    public function getConfigInt(string $variable, int $defaultValue = 0) : int{
+        $v = getopt("", ["$variable::"]);
+        if(isset($v[$variable])){
+            return (int) $v[$variable];
+        }
 
-		return $this->properties->exists($variable) ? (int) $this->properties->get($variable) : (int) $defaultValue;
-	}
+        return $this->properties->exists($variable) ? (int) $this->properties->get($variable) : $defaultValue;
+    }
 
-	/**
-	 * @param string $variable
-	 * @param int	$value
-	 */
-	public function setConfigInt($variable, $value){
-		$this->properties->set($variable, (int) $value);
-	}
+    /**
+     * @param string $variable
+     * @param int    $value
+     */
+    public function setConfigInt(string $variable, int $value){
+        $this->properties->set($variable, $value);
+    }
 
-	/**
-	 * @param string  $variable
-	 * @param boolean $defaultValue
-	 *
-	 * @return boolean
-	 */
-	public function getConfigBoolean($variable, $defaultValue = false){
-		$v = getopt("", ["$variable::"]);
-		if(isset($v[$variable])){
-			$value = $v[$variable];
-		}else{
-			$value = $this->properties->exists($variable) ? $this->properties->get($variable) : $defaultValue;
-		}
+    /**
+     * @param string $variable
+     * @param bool   $defaultValue
+     *
+     * @return bool
+     */
+    public function getConfigBool(string $variable, bool $defaultValue = false) : bool{
+        $v = getopt("", ["$variable::"]);
+        if(isset($v[$variable])){
+            $value = $v[$variable];
+        }else{
+            $value = $this->properties->exists($variable) ? $this->properties->get($variable) : $defaultValue;
+        }
 
-		if(is_bool($value)){
-			return $value;
-		}
-		switch(strtolower($value)){
-			case "on":
-			case "true":
-			case "1":
-			case "yes":
-				return true;
-		}
+        if(is_bool($value)){
+            return $value;
+        }
+        switch(strtolower($value)){
+            case "on":
+            case "true":
+            case "1":
+            case "yes":
+                return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * @param string $variable
-	 * @param bool   $value
-	 */
-	public function setConfigBool($variable, $value){
-		$this->properties->set($variable, $value == true ? "1" : "0");
-	}
+    /**
+     * @deprecated
+     *
+     * @param string $variable
+     * @param bool   $defaultValue
+     *
+     * @return bool
+     */
+    public function getConfigBoolean(string $variable, bool $defaultValue = false) : bool{
+        return $this->getConfigBool($variable, $defaultValue);
+    }
+
+    /**
+     * @param string $variable
+     * @param bool   $value
+     */
+    public function setConfigBool(string $variable, bool $value){
+        $this->properties->set($variable, $value == true ? "1" : "0");
+    }
 
 	/**
 	 * @param string $name
@@ -1708,7 +1704,7 @@ class Server{
 				"view-distance" => 8
 			]);
 
-			$onlineMode = $this->getConfigBoolean("xbox-auth", true);
+			$onlineMode = $this->getConfigBool("xbox-auth", true);
 			if(!extension_loaded("openssl")){
 				$this->logger->warning("OpenSSL extension not found");
 				$this->logger->warning("Please configure OpenSSL extension for PHP if you want to use Xbox Live authentication or global resource pack.");
@@ -1749,7 +1745,7 @@ class Server{
 
 			$this->scheduler = new ServerScheduler();
 
-			if($this->getConfigBoolean("enable-rcon", false) === true){
+			if($this->getConfigBool("enable-rcon", false) === true){
 				$this->rcon = new RCON($this, $this->getConfigString("rcon.password", ""), $this->getConfigInt("rcon.port", $this->getPort()), ($ip = $this->getIp()) != "" ? $ip : "0.0.0.0", $this->getConfigInt("rcon.threads", 1), $this->getConfigInt("rcon.clients-per-thread", 50));
 			}
 
@@ -1773,10 +1769,10 @@ class Server{
 			$this->banByCID->load();
 
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
-			$this->setAutoSave($this->getConfigBoolean("auto-save", true));
+			$this->setAutoSave($this->getConfigBool("auto-save", true));
 
-			if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
-				$this->setConfigInt("difficulty", 3);
+			if($this->getConfigBool("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
+				$this->setConfigInt("difficulty", Level::DIFFICULTY_HARD);
 			}
 
 			if(\pocketmine\DEBUG >= 0){
@@ -1852,22 +1848,31 @@ class Server{
 			Generator::addGenerator(Normal2::class, "normal2");
 			Generator::addGenerator(Ender::class, "ender");
 
-			foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
-				if($this->loadLevel($name) === false){
-					$seed = $options["seed"] ?? time();
-					$options = explode(":", $this->getProperty("worlds.$name.generator", Generator::getGenerator("default")));
-					$generator = Generator::getGenerator(array_shift($options));
-					if(count($options) > 0){
-						$options = [
-							"preset" => implode(":", $options),
-						];
-					}else{
-						$options = [];
-					}
+            foreach((array) $this->getProperty("worlds", []) as $name => $options){
+                if(!is_array($options)){
+                    continue;
+                }
+                if($this->loadLevel($name) === false){
+                    $seed = $options["seed"] ?? time();
+                    if(is_string($seed) and !is_numeric($seed)){
+                        $seed = Utils::javaStringHash($seed);
+                    }elseif(!is_int($seed)){
+                        $seed = (int) $seed;
+                    }
 
-					$this->generateLevel($name, $seed, $generator, $options);
-				}
-			}
+                    if(isset($options["generator"])){
+                        $generatorOptions = explode(":", $options["generator"]);
+                        $generator = Generator::getGenerator(array_shift($generatorOptions));
+                        if(count($options) > 0){
+                            $options["preset"] = implode(":", $generatorOptions);
+                        }
+                    }else{
+                        $generator = Generator::getGenerator("default");
+                    }
+
+                    $this->generateLevel($name, $seed, $generator, $options);
+                }
+            }
 
 			if($this->getDefaultLevel() === null){
 				$default = $this->getConfigString("level-name", "world");
@@ -2203,8 +2208,8 @@ class Server{
 		$this->loadAdvancedConfig();
 		$this->maxPlayers = $this->getConfigInt("max-players", 20);
 
-		if($this->getConfigBoolean("hardcore", false) === true and $this->getDifficulty() < 3){
-			$this->setConfigInt("difficulty", 3);
+		if($this->getConfigBool("hardcore", false) === true and $this->getDifficulty() < Level::DIFFICULTY_HARD){
+			$this->setConfigInt("difficulty", Level::DIFFICULTY_HARD);
 		}
 
 		$this->banByIP->load();
@@ -2312,7 +2317,7 @@ class Server{
 	 * Starts the PocketMine-MP server and starts processing ticks and packets
 	 */
 	public function start(){
-		if($this->getConfigBoolean("enable-query", true) === true){
+		if($this->getConfigBool("enable-query", true) === true){
 			$this->queryHandler = new QueryHandler();
 		}
 

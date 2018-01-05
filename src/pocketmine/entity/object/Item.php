@@ -90,79 +90,44 @@ class Item extends Entity {
 		}
 	}
 
-	/**
-	 * @param $currentTick
-	 *
-	 * @return bool
-	 */
-	public function onUpdate(int $currentTick){
-		if($this->closed){
-			return false;
-		}
+    public function entityBaseTick(int $tickDiff = 1) : bool{
+        if($this->closed){
+            return false;
+        }
 
-		$this->age++;
+        $hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0 and !$this->justCreated){
-			return true;
-		}
+        if(!$this->isFlaggedForDespawn()){
+            if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
+                $this->pickupDelay -= $tickDiff;
+                if($this->pickupDelay < 0){
+                    $this->pickupDelay = 0;
+                }
+            }
 
-		$this->lastUpdate = $currentTick;
+            if($this->age > 6000){
+                $this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
+                if($ev->isCancelled()){
+                    $this->age = 0;
+                }else{
+                    $this->flagForDespawn();
+                    $hasUpdate = true;
+                }
+            }
 
-		$this->timings->startTiming();
+        }
 
-		$hasUpdate = $this->entityBaseTick($tickDiff);
+        return $hasUpdate;
+    }
 
-		if(!$this->isFlaggedForDespawn()){
+    protected function tryChangeMovement(){
+        $this->checkObstruction($this->x, $this->y, $this->z);
+        parent::tryChangeMovement();
+    }
 
-			if($this->pickupDelay > 0 and $this->pickupDelay < 32767){ //Infinite delay
-				$this->pickupDelay -= $tickDiff;
-				if($this->pickupDelay < 0){
-					$this->pickupDelay = 0;
-				}
-			}
-
-			$this->motionY -= $this->gravity;
-
-			if($this->checkObstruction($this->x, $this->y, $this->z)){
-				$hasUpdate = true;
-			}
-
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-			$friction = 1 - $this->drag;
-
-			if($this->onGround and (abs($this->motionX) > 0.00001 or abs($this->motionZ) > 0.00001)){
-				$friction = $this->getLevel()->getBlock($this->temporalVector->setComponents((int) floor($this->x), (int) floor($this->y - 1), (int) floor($this->z) - 1))->getFrictionFactor() * $friction;
-			}
-
-			$this->motionX *= $friction;
-			$this->motionY *= 1 - $this->drag;
-			$this->motionZ *= $friction;
-
-			if($this->onGround){
-				$this->motionY *= -0.5;
-			}
-
-			if($currentTick % 5 == 0)
-				$this->updateMovement();
-
-			if($this->age > 2000){
-				$this->server->getPluginManager()->callEvent($ev = new ItemDespawnEvent($this));
-				if($ev->isCancelled()){
-					$this->age = 0;
-				}else{
-					$this->flagForDespawn();
-					$hasUpdate = true;
-				}
-			}
-
-		}
-
-		$this->timings->stopTiming();
-
-		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
-	}
+    protected function applyDragBeforeGravity() : bool{
+        return true;
+    }
 
 	public function saveNBT(){
         parent::saveNBT();
@@ -181,7 +146,7 @@ class Item extends Entity {
 	/**
 	 * @return ItemItem
 	 */
-	public function getItem(){
+	public function getItem() : ItemItem{
 		return $this->item;
 	}
 	
@@ -195,49 +160,49 @@ class Item extends Entity {
 	 *
 	 * @return bool
 	 */
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) : bool{
 		return false;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getPickupDelay(){
+	public function getPickupDelay() : int{
 		return $this->pickupDelay;
 	}
 
 	/**
 	 * @param int $delay
 	 */
-	public function setPickupDelay($delay){
+	public function setPickupDelay(int $delay){
 		$this->pickupDelay = $delay;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getOwner(){
+	public function getOwner() : string{
 		return $this->owner;
 	}
 
 	/**
 	 * @param string $owner
 	 */
-	public function setOwner($owner){
+	public function setOwner(string $owner){
 		$this->owner = $owner;
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getThrower(){
+	public function getThrower() : string{
 		return $this->thrower;
 	}
 
 	/**
 	 * @param string $thrower
 	 */
-	public function setThrower($thrower){
+	public function setThrower(string $thrower){
 		$this->thrower = $thrower;
 	}
 
@@ -255,20 +220,23 @@ class Item extends Entity {
         $player->dataPacket($pk);
 	}
 
-	public function onCollideWithPlayer(Player $player): bool{
+	public function onCollideWithPlayer(Player $player){
         if($this->getPickupDelay() > 0){
-            return false;
+            return;
         }
 
         $item = $this->getItem();
         $playerInventory = $player->getInventory();
+
         if(!($item instanceof ItemItem) or ($player->isSurvival() and !$playerInventory->canAddItem($item))){
-            return false;
+            return;
         }
+
         $this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($playerInventory, $this));
         if($ev->isCancelled()){
-            return false;
+            return;
         }
+
         switch($item->getId()){
             case ItemItem::WOOD:
                 $player->awardAchievement("mineWood");
@@ -277,12 +245,13 @@ class Item extends Entity {
                 $player->awardAchievement("diamond");
                 break;
         }
+
         $pk = new TakeItemEntityPacket();
         $pk->eid = $player->getId();
         $pk->target = $this->getId();
         $this->server->broadcastPacket($this->getViewers(), $pk);
+
         $playerInventory->addItem(clone $item);
-        $this->kill();
-        return true;
+        $this->flagForDespawn();
     }
 }

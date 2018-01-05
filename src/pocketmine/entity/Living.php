@@ -166,14 +166,14 @@ abstract class Living extends Entity implements Damageable {
 			}
 
 			if($e->isOnFire() and !($e instanceof Player)){
-				$this->setOnFire(2 * $this->server->getDifficulty());
+				$this->setOnFire(2 * $this->level->getDifficulty());
 			}
 
 			$deltaX = $this->x - $e->x;
 			$deltaZ = $this->z - $e->z;
 			$this->knockBack($e, $source->getDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 			if($e instanceof Husk){
-				$this->addEffect(Effect::getEffect(Effect::HUNGER)->setDuration(7 * 20 * $this->server->getDifficulty()));
+				$this->addEffect(Effect::getEffect(Effect::HUNGER)->setDuration(7 * 20 * $this->level->getDifficulty()));
 			}
 		}
 

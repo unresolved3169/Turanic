@@ -165,4 +165,8 @@ class CocoaBlock extends Solid {
 		}
 		return $drops;
 	}
+
+    public function ticksRandomly(): bool{
+        return true;
+    }
 }

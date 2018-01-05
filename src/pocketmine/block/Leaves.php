@@ -28,6 +28,7 @@ use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
 
@@ -43,46 +44,26 @@ class Leaves extends Transparent {
 
 	protected $id = self::LEAVES;
 
-	/**
-	 * Leaves constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getHardness(){
 		return 0.2;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getToolType(){
 		return Tool::TYPE_SHEARS;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBurnChance() : int{
 		return 30;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBurnAbility() : int{
 		return 60;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		static $names = [
 			self::OAK => "Oak Leaves",
@@ -93,85 +74,79 @@ class Leaves extends Transparent {
 		return $names[$this->getVariant()];
 	}
 
-	/**
-	 * @param Block $pos
-	 * @param array $visited
-	 * @param       $distance
-	 * @param       $check
-	 * @param null  $fromSide
-	 *
-	 * @return bool
-	 */
-	private function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
-		++$check;
-		$index = $pos->x . "." . $pos->y . "." . $pos->z;
-		if(isset($visited[$index])){
-			return false;
-		}
-		if($pos->getId() === static::WOOD_TYPE){
-			return true;
-		}elseif($pos->getId() === $this->id and $distance < 3){
-			$visited[$index] = true;
-			$down = $pos->getSide(0)->getId();
-			if($down === static::WOOD_TYPE){
-				return true;
-			}
-			if($fromSide === null){
-				for($side = 2; $side <= 5; ++$side){
-					if($this->findLog($pos->getSide($side), $visited, $distance + 1, $check, $side) === true){
-						return true;
-					}
-				}
-			}else{ //No more loops
-				switch($fromSide){
-					case 2:
-						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}
-						break;
-					case 3:
-						if($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}
-						break;
-					case 4:
-						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}
-						break;
-					case 5:
-						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}
-						break;
-				}
-			}
-		}
+    public function diffusesSkyLight() : bool{
+        return true;
+    }
 
-		return false;
+    public function ticksRandomly() : bool{
+        return true;
+    }
+
+	private function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
+        ++$check;
+        $index = $pos->x . "." . $pos->y . "." . $pos->z;
+        if(isset($visited[$index])){
+            return false;
+        }
+        if($pos->getId() === $this->woodType){
+            return true;
+        }elseif($pos->getId() === $this->id and $distance < 3){
+            $visited[$index] = true;
+            $down = $pos->getSide(Vector3::SIDE_DOWN)->getId();
+            if($down === $this->woodType){
+                return true;
+            }
+            if($fromSide === null){
+                for($side = 2; $side <= 5; ++$side){
+                    if($this->findLog($pos->getSide($side), $visited, $distance + 1, $check, $side) === true){
+                        return true;
+                    }
+                }
+            }else{ //No more loops
+                switch($fromSide){
+                    case 2:
+                        if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }
+                        break;
+                    case 3:
+                        if($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }
+                        break;
+                    case 4:
+                        if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }
+                        break;
+                    case 5:
+                        if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $check, $fromSide) === true){
+                            return true;
+                        }
+                        break;
+                }
+            }
+        }
+
+        return false;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(($this->meta & 0b00001100) === 0){
@@ -199,18 +174,6 @@ class Leaves extends Transparent {
 		return false;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool|void
-	 */
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
 		$this->meta |= 0x04;
 		$this->getLevel()->setBlock($this, $this, true);

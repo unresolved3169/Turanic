@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\level;
 
@@ -97,7 +100,7 @@ class Explosion {
 							$vBlock->x = $pointerX >= $x ? $x : $x - 1;
 							$vBlock->y = $pointerY >= $y ? $y : $y - 1;
 							$vBlock->z = $pointerZ >= $z ? $z : $z - 1;
-							if($vBlock->y < 0 or $vBlock->y >= Level::Y_MAX){
+                            if(!$this->level->isInWorld($vBlock->x, $vBlock->y, $vBlock->z)){
 								break;
 							}
 							$block = $this->level->getBlock($vBlock);
@@ -200,7 +203,7 @@ class Explosion {
 
 			$pos = new Vector3($block->x, $block->y, $block->z);
 
-			for($side = 0; $side < 5; $side++){
+			for($side = 0; $side <= 5; $side++){
 				$sideBlock = $pos->getSide($side);
 				if(!isset($this->affectedBlocks[$index = Level::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
 					$this->level->getServer()->getPluginManager()->callEvent($ev = new BlockUpdateEvent($this->level->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z)));

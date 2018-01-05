@@ -97,7 +97,7 @@ abstract class Spawnable extends Tile {
             }
 
             self::$nbtWriter->setData($this->getSpawnCompound());
-            $this->spawnCompoundCache = self::$nbtWriter->write();
+            $this->spawnCompoundCache = self::$nbtWriter->write(true);
         }
 
         return $this->spawnCompoundCache;

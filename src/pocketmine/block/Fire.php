@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -40,11 +43,6 @@ class Fire extends Flowable {
 	/** @var Vector3 */
 	private $temporalVector = null;
 
-	/**
-	 * Fire constructor.
-	 *
-	 * @param int $meta
-	 */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 		if($this->temporalVector === null){
@@ -52,44 +50,31 @@ class Fire extends Flowable {
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function hasEntityCollision(){
 		return true;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Fire Block";
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getLightLevel(){
 		return 15;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
 	public function isBreakable(Item $item){
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canBeReplaced(){
 		return true;
 	}
 
-	/**
+	public function ticksRandomly(): bool{
+        return true;
+    }
+
+    /**
 	 * @param Entity $entity
 	 */
 	public function onEntityCollide(Entity $entity){
@@ -112,11 +97,6 @@ class Fire extends Flowable {
 		}
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		return [];
 	}
@@ -132,7 +112,7 @@ class Fire extends Flowable {
 				$this->getLevel()->setBlock($this, new Air(), true);
 				return Level::BLOCK_UPDATE_NORMAL;
 			}elseif($type == Level::BLOCK_UPDATE_NORMAL or $type == Level::BLOCK_UPDATE_RANDOM){
-				$this->getLevel()->scheduleUpdate($this, $this->getTickRate() + mt_rand(0, 10));
+				$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->getTickRate() + mt_rand(0, 10));
 			}elseif($type == Level::BLOCK_UPDATE_SCHEDULED and $this->getLevel()->getServer()->fireSpread){
 				$forever = $this->getSide(Vector3::SIDE_DOWN)->getId() == Block::NETHERRACK;
 
@@ -159,7 +139,7 @@ class Fire extends Flowable {
 						$this->getLevel()->setBlock($this, $this, true);
 					}
 
-					$this->getLevel()->scheduleUpdate($this, $this->getTickRate() + mt_rand(0, 10));
+					$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->getTickRate() + mt_rand(0, 10));
 
 					if(!$forever and !$this->canNeighborBurn()){
 						if(!$this->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() or $meta > 3){
@@ -199,7 +179,7 @@ class Fire extends Flowable {
 											$damage = min(15, $meta + mt_rand(0, 5) / 4);
 
 											$this->getLevel()->setBlock($this->temporalVector->setComponents($x, $y, $z), new Fire($damage), true);
-											$this->getLevel()->scheduleUpdate($this->temporalVector, $this->getTickRate());
+											$this->getLevel()->scheduleDelayedBlockUpdate($this->temporalVector, $this->getTickRate());
 										}
 									}
 								}
@@ -219,28 +199,6 @@ class Fire extends Flowable {
 		return 30;
 	}
 
-	/*public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			for($s = 0; $s <= 5; ++$s){
-				$side = $this->getSide($s);
-				if($side->getId() !== self::AIR and !($side instanceof Liquid)){
-					return false;
-				}
-			}
-			$this->getLevel()->setBlock($this, new Air(), true);
-
-			return Level::BLOCK_UPDATE_NORMAL;
-		}elseif($type === Level::BLOCK_UPDATE_RANDOM){
-			if($this->getSide(0)->getId() !== self::NETHERRACK){
-				$this->getLevel()->setBlock($this, new Air(), true);
-
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
-
-		return false;
-	}*/
-
 	/**
 	 * @param Block $block
 	 * @param int   $bound
@@ -256,7 +214,7 @@ class Fire extends Flowable {
 				$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new BlockBurnEvent($block));
 				if(!$ev->isCancelled()){
 					$this->getLevel()->setBlock($block, $fire = new Fire($meta), true);
-					$this->getLevel()->scheduleUpdate($block, $fire->getTickRate());
+					$this->getLevel()->scheduleDelayedBlockUpdate($block, $fire->getTickRate());
 				}
 			}else{
 				$this->getLevel()->setBlock($this, new Air(), true);

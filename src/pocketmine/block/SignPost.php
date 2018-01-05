@@ -29,10 +29,14 @@ use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
+use pocketmine\tile\Sign as TileSign;
+use pocketmine\tile\Tile;
 
 class SignPost extends Transparent{
 
 	protected $id = self::SIGN_POST;
+
+	protected $itemId = Item::SIGN;
 
 	/**
 	 * SignPost constructor.
@@ -70,9 +74,11 @@ class SignPost extends Transparent{
 
 
 	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($face !== Vector3::SIDE_DOWN){
+        if($face !== Vector3::SIDE_DOWN){
 
-			if($face === Vector3::SIDE_UP){
+            Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
+
+            if($face === Vector3::SIDE_UP){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
 				$this->getLevel()->setBlock($block, $this, true);
 			}else{
@@ -100,17 +106,6 @@ class SignPost extends Transparent{
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[Item::SIGN, 0, 1]
-		];
 	}
 
 	/**

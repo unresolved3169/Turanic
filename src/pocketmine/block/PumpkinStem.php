@@ -106,4 +106,8 @@ class PumpkinStem extends Crops {
     public function getPickedItem(): Item{
         return Item::get(Item::PUMPKIN_SEEDS);
     }
+
+    public function ticksRandomly(): bool{
+        return true;
+    }
 }

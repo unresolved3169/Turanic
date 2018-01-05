@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\level;
 
@@ -26,74 +29,65 @@ use pocketmine\Server;
 
 class WeakPosition extends Position {
 
-	protected $levelId = -1;
+    protected $levelId = -1;
 
-	/**
-	 * @param int   $x
-	 * @param int   $y
-	 * @param int   $z
-	 * @param Level $level
-	 */
-	public function __construct($x = 0, $y = 0, $z = 0, Level $level = null){
-		$this->x = $x;
-		$this->y = $y;
-		$this->z = $z;
-		$this->levelId = ($level !== null ? $level->getId() : -1);
-	}
+    /**
+     * @param int   $x
+     * @param int   $y
+     * @param int   $z
+     * @param Level $level
+     */
+    public function __construct($x = 0, $y = 0, $z = 0, Level $level = null){
+        $this->x = $x;
+        $this->y = $y;
+        $this->z = $z;
+        $this->levelId = ($level !== null ? $level->getId() : -1);
+    }
 
-	/**
-	 * @param Vector3    $pos
-	 * @param Level|null $level
-	 *
-	 * @return WeakPosition
-	 */
-	public static function fromObject(Vector3 $pos, Level $level = null){
-		return new WeakPosition($pos->x, $pos->y, $pos->z, $level);
-	}
+    public static function fromObject(Vector3 $pos, Level $level = null){
+        return new WeakPosition($pos->x, $pos->y, $pos->z, $level);
+    }
 
-	/**
-	 * @return Level|null
-	 */
-	public function getLevel(){
-		return Server::getInstance()->getLevel($this->levelId);
-	}
+    /**
+     * @return Level|null
+     */
+    public function getLevel(){
+        return Server::getInstance()->getLevel($this->levelId);
+    }
 
-	/**
-	 * @param Level|null $level
-	 *
-	 * @return $this
-	 *
-	 * @throws \InvalidArgumentException if the specified Level has been closed
-	 */
-	public function setLevel(Level $level = null){
-		if($level !== null and $level->isClosed()){
-			throw new \InvalidArgumentException("Specified level has been unloaded and cannot be used");
-		}
+    /**
+     * @param Level|null $level
+     *
+     * @return $this
+     *
+     * @throws \InvalidArgumentException if the specified Level has been closed
+     */
+    public function setLevel(Level $level = null){
+        if($level !== null and $level->isClosed()){
+            throw new \InvalidArgumentException("Specified level has been unloaded and cannot be used");
+        }
 
-		$this->levelId = ($level !== null ? $level->getId() : -1);
-		return $this;
-	}
+        $this->levelId = ($level !== null ? $level->getId() : -1);
+        return $this;
+    }
 
-	/**
-	 * Returns a side Vector
-	 *
-	 * @param int $side
-	 * @param int $step
-	 *
-	 * @return WeakPosition
-	 *
-	 * @throws LevelException
-	 */
-	public function getSide($side, $step = 1){
-		assert($this->isValid());
+    /**
+     * Returns a side Vector
+     *
+     * @param int $side
+     * @param int $step
+     *
+     * @return WeakPosition
+     *
+     * @throws LevelException
+     */
+    public function getSide($side, $step = 1){
+        assert($this->isValid());
 
-		return WeakPosition::fromObject(parent::getSide($side, $step), $this->level);
-	}
+        return WeakPosition::fromObject(parent::getSide($side, $step), $this->level);
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString(){
-		return "Weak" . parent::__toString();
-	}
+    public function __toString(){
+        return "Weak" . parent::__toString();
+    }
 }

@@ -32,6 +32,7 @@ use pocketmine\level\Explosion;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class PrimedTNT extends Entity implements Explosive {
 	const NETWORK_ID = self::TNT;
@@ -48,24 +49,11 @@ class PrimedTNT extends Entity implements Explosive {
 
 	private $dropItem = true;
 
-	/**
-	 * PrimedTNT constructor.
-	 *
-	 * @param Level       $level
-	 * @param CompoundTag $nbt
-	 * @param bool        $dropItem
-	 */
 	public function __construct(Level $level, CompoundTag $nbt, bool $dropItem = true){
 		parent::__construct($level, $nbt);
 		$this->dropItem = $dropItem;
 	}
 
-
-    /**
-     * @param EntityDamageEvent $source
-     * @return bool|void
-     * @internal param float $damage
-     */
 	public function attack(EntityDamageEvent $source){
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
 			parent::attack($source);
@@ -75,89 +63,49 @@ class PrimedTNT extends Entity implements Explosive {
 	protected function initEntity(){
 		parent::initEntity();
 
-		if($this->namedtag->hasTag("Fuse", ShortTag::class)){
+        if($this->namedtag->hasTag("Fuse", ShortTag::class)){
             $this->fuse = $this->namedtag->getShort("Fuse");
-		}else{
-			$this->fuse = 80;
-		}
+        }else{
+            $this->fuse = 80;
+        }
 
-		$this->setGenericFlag(self::DATA_FLAG_IGNITED, true);
-		$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
+        $this->setGenericFlag(self::DATA_FLAG_IGNITED, true);
+        $this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
+
+        $this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_IGNITE);
 	}
 
-
-	/**
-	 * @param Entity $entity
-	 *
-	 * @return bool
-	 */
 	public function canCollideWith(Entity $entity){
 		return false;
 	}
 
 	public function saveNBT(){
 		parent::saveNBT();
-		$this->namedtag->getShort("Fuse", $this->fuse);
+		$this->namedtag->getShort("Fuse", $this->fuse, true); //older versions incorrectly saved this as a byte
 	}
 
-	/**
-	 * @param $currentTick
-	 *
-	 * @return bool
-	 */
-	public function onUpdate(int $currentTick){
+    public function entityBaseTick(int $tickDiff = 1) : bool{
+        if($this->closed){
+            return false;
+        }
 
-		if($this->closed){
-			return false;
-		}
+        $hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->timings->startTiming();
+        if($this->fuse % 5 === 0){ //don't spam it every tick, it's not necessary
+            $this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
+        }
 
-		$tickDiff = $currentTick - $this->lastUpdate;
-		if($tickDiff <= 0 and !$this->justCreated){
-			return true;
-		}
+        if(!$this->isFlaggedForDespawn()){
+            $this->fuse -= $tickDiff;
 
-		if($this->fuse % 5 === 0){ //don't spam it every tick, it's not necessary
-			$this->setDataProperty(self::DATA_FUSE_LENGTH, self::DATA_TYPE_INT, $this->fuse);
-		}
+            if($this->fuse <= 0){
+                $this->flagForDespawn();
+                $this->explode();
+            }
+        }
 
-		$this->lastUpdate = $currentTick;
-
-		$hasUpdate = $this->entityBaseTick($tickDiff);
-
-		if($this->isAlive()){
-
-			$this->motionY -= $this->gravity;
-
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-			$friction = 1 - $this->drag;
-
-			$this->motionX *= $friction;
-			$this->motionY *= $friction;
-			$this->motionZ *= $friction;
-
-			$this->updateMovement();
-
-			if($this->onGround){
-				$this->motionY *= -0.5;
-				$this->motionX *= 0.7;
-				$this->motionZ *= 0.7;
-			}
-
-			$this->fuse -= $tickDiff;
-
-			if($this->fuse <= 0){
-				$this->flagForDespawn();
-				$this->explode();
-			}
-
-		}
-
-
-		return $hasUpdate or $this->fuse >= 0 or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
-	}
+        return $hasUpdate or $this->fuse >= 0;
+    }
 
 	public function explode(){
 		$this->server->getPluginManager()->callEvent($ev = new ExplosionPrimeEvent($this, 4, $this->dropItem));

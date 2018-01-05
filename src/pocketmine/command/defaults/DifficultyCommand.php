@@ -29,6 +29,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
 use pocketmine\event\TranslationContainer;
+use pocketmine\level\Level;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
 use pocketmine\Server;
 
@@ -69,18 +70,19 @@ class DifficultyCommand extends VanillaCommand {
 			return false;
 		}
 
-		$difficulty = Server::getDifficultyFromString($args[0]);
+		$difficulty = Level::getDifficultyFromString($args[0]);
 
 		if($sender->getServer()->isHardcore()){
-			$difficulty = 3;
+			$difficulty = Level::DIFFICULTY_HARD;
 		}
 
 		if($difficulty !== -1){
 			$sender->getServer()->setConfigInt("difficulty", $difficulty);
 
-			$pk = new SetDifficultyPacket();
-			$pk->difficulty = $sender->getServer()->getDifficulty();
-			$sender->getServer()->broadcastPacket($sender->getServer()->getOnlinePlayers(), $pk);
+            //TODO: add per-world support
+            foreach($sender->getServer()->getLevels() as $level){
+                $level->setDifficulty($difficulty);
+            }
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.difficulty.success", [$difficulty]));
 		}else{

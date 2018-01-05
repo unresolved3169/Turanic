@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -30,7 +30,6 @@ use pocketmine\level\Level;
 use pocketmine\level\weather\Weather;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\utils\Color;
 
 class Farmland extends Solid {
 
@@ -41,7 +40,7 @@ class Farmland extends Solid {
 	 *
 	 * @param int $meta
 	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
@@ -70,19 +69,20 @@ class Farmland extends Solid {
 		return Tool::TYPE_SHOVEL;
 	}
 
-	/**
-	 * @return AxisAlignedBB
-	 */
-	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x,
-			$this->y,
-			$this->z,
-			$this->x + 1,
-			$this->y + 0.9375,
-			$this->z + 1
-		);
-	}
+	public function ticksRandomly(): bool{
+        return true;
+    }
+
+    protected function recalculateBoundingBox(){
+        return new AxisAlignedBB(
+            $this->x,
+            $this->y,
+            $this->z,
+            $this->x + 1,
+            $this->y + 1, //TODO: this should be 0.9375, but MCPE currently treats them as a full block (https://bugs.mojang.com/browse/MCPE-12109)
+            $this->z + 1
+        );
+    }
 
 	/**
 	 * @param Item $item
@@ -96,67 +96,47 @@ class Farmland extends Solid {
 	}
 
 	public function onUpdate($type){
-	    if($type == Level::BLOCK_UPDATE_RANDOM){
-	        $up = $this->getSide(1);
-            $x = $this->x;
-            $y = $this->y;
-            $z = $this->z;
-            $v = new Vector3($x, $y, $z);
-            if($up instanceof Crops){
-                return 0;
-            }
-            if($up->isSolid()){
-	            $this->level->setBlock($this, new Dirt(), true, true);
-                return Level::BLOCK_UPDATE_RANDOM;
-	        }
+        if($type === Level::BLOCK_UPDATE_NORMAL and $this->getSide(Vector3::SIDE_UP)->isSolid()){
+            $this->level->setBlock($this, Block::get(Block::DIRT), true);
+            return $type;
+        }elseif($type === Level::BLOCK_UPDATE_RANDOM){
+            if(!$this->canHydrate()){
+                if($this->meta > 0){
+                    $this->meta--;
+                    $this->level->setBlock($this, $this, false, false);
+                }else{
+                    $this->level->setBlock($this, Block::get(Block::DIRT), false, true);
+                }
 
-	        $found = false;
-            if($this->level->getWeather()->getWeather() == Weather::RAIN){
-                $found = true;
-            }else{
-                for($x = $this->x - 4; $x <= $this->x + 4; $x++){
-                    for($z = $this->z - 4; $z <= $this->z + 4; $z++){
-                        for($y = $this->y; $y <= $this->y + 1; $y++){
-                            if($this->x == $x && $this->y == $y && $this->z == $z){
-                                continue;
-                            }
-                            $v = new Vector3($x, $y, $z);
-                            $blockid = $this->level->getBlockIdAt($v->getFloorX(), $v->getFloorY(), $v->getFloorZ());
-                            switch($blockid){
-                                case self::WATER:
-                                case self::STILL_WATER:
-                                    $found = true;
-                                    break;
-                            }
-                            if($found) break;
-                        }
+                return $type;
+            }elseif($this->meta < 7){
+                $this->meta = 7;
+                $this->level->setBlock($this, $this, false, false);
+
+                return $type;
+            }
+        }
+
+        return false;
+    }
+
+    protected function canHydrate() : bool{
+        if($this->level->getWeather()->getWeather() == Weather::RAINY){
+            return true;
+        }
+        $start = $this->add(-4, 0, -4);
+        $end = $this->add(4, 1, 4);
+        for($y = $start->y; $y <= $end->y; ++$y){
+            for($z = $start->z; $z <= $end->z; ++$z){
+                for($x = $start->x; $x <= $end->x; ++$x){
+                    $id = $this->level->getBlockIdAt($x, $y, $z);
+                    if($id === Block::STILL_WATER or $id === Block::FLOWING_WATER){
+                        return true;
                     }
                 }
             }
-
-            $block = $this->level->getBlock($v->setComponents($x, $y - 1, $z));
-            if($found || $block instanceof Water){
-                if($this->meta < 7){
-                    $this->meta = 7;
-                    $this->level->setBlock($this, $this, true, false);
-                }
-                return Level::BLOCK_UPDATE_RANDOM;
-            }
-
-            if($this->meta > 0){
-                $this->meta--;
-                $this->level->setBlock($this, $this, true, false);
-            }else{
-                $this->level->setBlock($this, new Dirt(), true, true);
-            }
-
-            return Level::BLOCK_UPDATE_RANDOM;
         }
 
-        return 0;
-    }
-
-    public function getColor(){
-	    return new Color(183, 106, 47);
+        return false;
     }
 }

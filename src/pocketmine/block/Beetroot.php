@@ -63,4 +63,8 @@ class Beetroot extends Crops {
 	public function getPickedItem(): Item{
         return Item::get(Item::BEETROOT_SEEDS);
     }
+
+    public function ticksRandomly(): bool{
+        return true;
+    }
 }

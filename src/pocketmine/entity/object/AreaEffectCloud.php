@@ -96,14 +96,14 @@ class AreaEffectCloud extends Entity {
         $this->setDataProperty(self::DATA_POTION_AMBIENT, self::DATA_TYPE_BYTE, 1);
     }
 
-    public function onUpdate(int $tick){
+    public function entityBaseTick(int $tickDiff = 1){
         if($this->closed){
             return false;
         }
 
         $this->timings->startTiming();
 
-        $hasUpdate = parent::onUpdate($tick);
+        $hasUpdate = parent::entityBaseTick($tickDiff);
 
         if($this->age > $this->Duration || $this->PotionId == 0 || $this->Radius <= 0){
             $this->close();

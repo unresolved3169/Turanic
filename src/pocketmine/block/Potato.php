@@ -65,4 +65,8 @@ class Potato extends Crops {
     public function getPickedItem(): Item{
         return Item::get(Item::POTATO);
     }
+
+    public function ticksRandomly(): bool{
+        return true;
+    }
 }

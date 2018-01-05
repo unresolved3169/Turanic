@@ -180,7 +180,7 @@ class LevelDB extends BaseLevelProvider{
         $levelData = new CompoundTag("", [
             //Vanilla fields
             new IntTag("DayCycleStopTime", -1),
-            new IntTag("Difficulty", Server::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
+            new IntTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
             new ByteTag("ForceGameType", 0),
             new IntTag("GameType", 0),
             new IntTag("Generator", $generatorType),

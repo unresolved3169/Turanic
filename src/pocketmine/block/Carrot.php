@@ -64,4 +64,8 @@ class Carrot extends Crops {
     public function getPickedItem(): Item{
         return Item::get(Item::CARROT);
     }
+
+    public function ticksRandomly(): bool{
+        return true;
+    }
 }

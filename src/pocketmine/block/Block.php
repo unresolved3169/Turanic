@@ -43,9 +43,9 @@ use pocketmine\plugin\Plugin;
 class Block extends Position implements BlockIds, Metadatable{	
 
 	/** @var \SplFixedArray */
-	public static $list = null;
+	private static $list = null;
 	/** @var \SplFixedArray */
-	public static $fullList = null;
+    private static $fullList = null;
 
 	/** @var \SplFixedArray */
 	public static $light = null;
@@ -370,17 +370,6 @@ class Block extends Position implements BlockIds, Metadatable{
     }
 
     /**
-     * Returns whether a specified block ID is already registered in the block.
-     *
-     * @param int $id
-     * @return bool
-     */
-    public static function isRegistered(int $id) : bool{
-        $b = self::$list[$id];
-        return $b !== null and !($b instanceof UnknownBlock);
-    }
-
-    /**
      * @return bool
      */
     public function canHarvestWithHand() : bool{
@@ -493,6 +482,15 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function onBreak(Item $item){
 		return $this->getLevel()->setBlock($this, new Air(), true, true);
 	}
+
+    /**
+     * Returns whether random block updates will be done on this block.
+     *
+     * @return bool
+     */
+    public function ticksRandomly() : bool{
+        return false;
+    }
 
 	/**
 	 * Fires a block update on the Block
@@ -1017,5 +1015,24 @@ class Block extends Position implements BlockIds, Metadatable{
      */
     public function getFuelTime() : int{
         return 0;
+    }
+
+    /**
+     * @internal
+     * @return \SplFixedArray
+     */
+	public static function getBlockStatesArray() : \SplFixedArray{
+        return self::$fullList;
+ 	}
+
+    /**
+     * Returns whether a specified block ID is already registered in the block.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public static function isRegistered(int $id) : bool{
+        $b = self::$list[$id];
+        return $b !== null and !($b instanceof UnknownBlock);
     }
 }

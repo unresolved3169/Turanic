@@ -209,7 +209,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	public $spawned = false;
 	public $loggedIn = false;
 	public $gamemode;
-	public $lastBreak;
 
 	protected $windowCnt = 2;
 	/** @var \SplObjectStorage<Inventory> */
@@ -280,7 +279,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	protected $muted = false;
 
 	protected $allowMovementCheats = false;
-	protected $allowInstaBreak = false;
 
 	private $needACK = [];
 
@@ -461,7 +459,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return bool
 	 */
 	public function isBanned(){
-		return $this->server->getNameBans()->isBanned(strtolower($this->getName()));
+		return $this->server->getNameBans()->isBanned($this->iusername);
 	}
 
 	/**
@@ -480,7 +478,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 * @return bool
 	 */
 	public function isWhitelisted(): bool{
-		return $this->server->isWhitelisted(strtolower($this->getName()));
+		return $this->server->isWhitelisted($this->iusername);
 	}
 
 	/**
@@ -488,9 +486,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function setWhitelisted($value){
 		if ($value === true) {
-			$this->server->addWhitelist(strtolower($this->getName()));
+			$this->server->addWhitelist($this->iusername);
 		} else {
-			$this->server->removeWhitelist(strtolower($this->getName()));
+			$this->server->removeWhitelist($this->iusername);
 		}
 	}
 
@@ -525,8 +523,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/**
 	 * @param $value
 	 */
-	public function setAllowFlight($value){
-		$this->allowFlight = (bool)$value;
+	public function setAllowFlight(bool $value){
+		$this->allowFlight = $value;
 		$this->sendSettings();
 	}
 
@@ -594,20 +592,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	 */
 	public function setAllowMovementCheats(bool $value = false){
 		$this->allowMovementCheats = $value;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function allowInstaBreak(): bool{
-		return $this->allowInstaBreak;
-	}
-
-	/**
-	 * @param bool $value
-	 */
-	public function setAllowInstaBreak(bool $value = false){
-		$this->allowInstaBreak = $value;
 	}
 
 	/**
@@ -835,7 +819,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->perm = new PermissibleBase($this);
 		$this->namedtag = new CompoundTag();
 		$this->server = Server::getInstance();
-		$this->lastBreak = PHP_INT_MAX;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->clientID = $clientID;
@@ -852,7 +835,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->creationTime = microtime(true);
 
 		$this->allowMovementCheats = (bool)$this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
-		$this->allowInstaBreak = (bool)$this->server->getProperty("player.anti-cheat.allow-instabreak", false);
 
 		/**
 		 * A CustomForm about Turanic
@@ -995,6 +977,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->usedChunks = [];
 			$this->level->sendTime();
             $targetLevel->getWeather()->sendWeather($this);
+            $this->level->sendDifficulty($this);
+
 			return true;
 		}
 		return false;
@@ -1369,7 +1353,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		$this->setSpawn($pos);
 
-		$this->level->sleepTicks = 60;
+		$this->level->setSleepTicks(60);
 
 
 		return true;
@@ -1403,7 +1387,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
 			$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);
 
-			$this->level->sleepTicks = 0;
+			$this->level->setSleepTicks(0);
 
 			$pk = new AnimatePacket();
 			$pk->entityRuntimeId = $this->id;
@@ -1828,7 +1812,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->newPosition = null;
 	}
 
-	public function tryChangeMovement(){
+	protected function tryChangeMovement(){
 	}
 
 	/**
@@ -2729,7 +2713,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if(!$this->canInteract($target, 8)){
 							$cancelled = true;
 						}elseif($target instanceof Player){
-							if($this->server->getConfigBoolean("pvp") !== true){
+							if($this->server->getConfigBoolean("pvp") !== true or $this->level->getDifficulty() === Level::DIFFICULTY_PEACEFUL){
 								$cancelled = true;
 							}
 
@@ -2919,7 +2903,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         switch ($packet->action) {
             case PlayerActionPacket::ACTION_START_BREAK:
-                if ($this->lastBreak !== PHP_INT_MAX or $pos->distanceSquared($this) > 10000) {
+                if ($pos->distanceSquared($this) > 10000) {
                     break;
                 }
                 $target = $this->level->getBlockAt($pos->x, $pos->y, $pos->z);
@@ -2945,12 +2929,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int)(65535 / $breakTime));
                     }
                 }
-                $this->lastBreak = microtime(true);
                 break;
-
-            /** @noinspection PhpMissingBreakStatementInspection */
             case PlayerActionPacket::ACTION_ABORT_BREAK:
-                $this->lastBreak = PHP_INT_MAX;
             case PlayerActionPacket::ACTION_STOP_BREAK:
                 $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
                 break;
@@ -4578,4 +4558,5 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
         return false;
     }
+
 }
