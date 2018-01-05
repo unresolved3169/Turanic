@@ -23,7 +23,8 @@
 namespace pocketmine\level;
 
 use pocketmine\Player;
-use pocketmine\entity\Creature;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Mob;
 
 /**
  * Based on MiNET
@@ -39,13 +40,13 @@ class EntityManager{
 	
 	public function despawnMobs(int $tick){
 		if($tick % 400 == 0) {
-            foreach ($this->level->getEntities() as $e) {
-                if ($e instanceof Player) continue;
-                if ($e instanceof Creature) {
-                    if (count($e->getViewers()) == 0) {
-                        $e->close();
-                    }
-                }
+            $targetEntities = array_filter($this->level->getEntities(),
+            function(Entity $e){
+            	return $e instanceof Mob and count($e->getViewers()) === 0 and $e->isBehaviorsEnabled();
+            }); // scan wandering mobs
+            
+            foreach($targetEntities as $target){
+            	$target->close();
             }
         }
 	}
