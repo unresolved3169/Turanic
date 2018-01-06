@@ -106,10 +106,10 @@ class Sugarcane extends Flowable {
         return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         $down = $this->getSide(Vector3::SIDE_DOWN);
         if($down->getId() === self::SUGARCANE_BLOCK){
-            $this->getLevel()->setBlock($block, Block::get(Block::SUGARCANE_BLOCK), true);
+            $this->getLevel()->setBlock($blockReplace, Block::get(Block::SUGARCANE_BLOCK), true);
 
             return true;
         }elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
@@ -118,7 +118,7 @@ class Sugarcane extends Flowable {
             $block2 = $down->getSide(Vector3::SIDE_WEST);
             $block3 = $down->getSide(Vector3::SIDE_EAST);
             if(($block0 instanceof Water) or ($block1 instanceof Water) or ($block2 instanceof Water) or ($block3 instanceof Water)){
-                $this->getLevel()->setBlock($block, Block::get(Block::SUGARCANE_BLOCK), true);
+                $this->getLevel()->setBlock($blockReplace, Block::get(Block::SUGARCANE_BLOCK), true);
 
                 return true;
             }

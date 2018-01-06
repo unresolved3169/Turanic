@@ -42,15 +42,15 @@ class SnowLayer extends Flowable {
 		return "Snow Layer";
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.1;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
@@ -58,10 +58,10 @@ class SnowLayer extends Flowable {
         return true;
     }
 
-    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-        if($block->getSide(Vector3::SIDE_DOWN)->isSolid()){
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+        if($blockReplace->getSide(Vector3::SIDE_DOWN)->isSolid()){
             //TODO: fix placement
-            $this->getLevel()->setBlock($block, $this, true);
+            $this->getLevel()->setBlock($blockReplace, $this, true);
 
             return true;
         }

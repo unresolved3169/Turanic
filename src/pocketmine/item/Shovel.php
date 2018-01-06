@@ -41,7 +41,7 @@ class Shovel extends TieredTool {
         return $this->tier;
     }
 
-    public function getAttackDamage() : int{
+    public function getAttackPoints() : int{
         return self::getBaseDamageFromTier($this->tier) - 3;
     }
 }

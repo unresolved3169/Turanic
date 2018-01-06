@@ -40,8 +40,6 @@ class Zombie extends Monster {
 	public $width = 0.6;
 	public $height = 0;
 
-	public $dropExp = [5, 5];
-
 	public $drag = 0.2;
 	public $gravity = 0.3;
 	
@@ -94,4 +92,15 @@ class Zombie extends Monster {
 
 		return $drops;
 	}
+
+    /**
+     * @return bool
+     */
+    public function isBaby(){
+        return $this->getGenericFlag(self::DATA_FLAG_BABY);
+    }
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? 5 : 12;
+    }
 }

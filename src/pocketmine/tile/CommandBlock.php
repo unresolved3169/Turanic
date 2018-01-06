@@ -260,7 +260,7 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
      *
      * @return PermissionAttachment
      */
-    public function addAttachment(Plugin $plugin, $name = null, $value = null){
+    public function addAttachment(Plugin $plugin, string $name = null, bool $value = null){
         return $this->permission->addAttachment($plugin, $name, $value);
     }
 
@@ -300,7 +300,7 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
      *
      * @return void
      */
-    public function setOp($value){
+    public function setOp(bool $value){
     }
 
     public function getIdByBlockType($type){

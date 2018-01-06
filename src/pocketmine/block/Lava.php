@@ -26,10 +26,12 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\Player;
@@ -93,16 +95,18 @@ class Lava extends Liquid {
 	 */
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;
-		$ProtectL = 0;
-		if(!$entity->hasEffect(Effect::FIRE_RESISTANCE)){
-			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
-			if($entity->attack($ev) === true){
-				$ev->useArmors();
-			}
-			$ProtectL = $ev->getFireProtectL();
+
+		$damage = true;
+		if($entity instanceof Living and !$entity->hasEffect(Effect::FIRE_RESISTANCE)){
+            $damage = false;
 		}
 
-		$ev = new EntityCombustByBlockEvent($this, $entity, 15, $ProtectL);
+		if($damage){
+            $ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
+            $entity->attack($ev);
+        }
+
+        $ev = new EntityCombustByBlockEvent($this, $entity, 15);
 		Server::getInstance()->getPluginManager()->callEvent($ev);
 		if(!$ev->isCancelled()){
 			$entity->setOnFire($ev->getDuration());
@@ -111,9 +115,9 @@ class Lava extends Liquid {
 		$entity->resetFallDistance();
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$ret = $this->getLevel()->setBlock($this, $this, true, false);
-		$this->getLevel()->scheduleUpdate($this, $this->tickRate());
+		$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 
 		return $ret;
 	}

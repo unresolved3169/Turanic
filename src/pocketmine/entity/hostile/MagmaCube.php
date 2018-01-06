@@ -27,8 +27,6 @@ namespace pocketmine\entity\hostile;
 class MagmaCube extends Slime {
 	const NETWORK_ID = self::MAGMA_CUBE;
 
-	public $dropExp = [1, 4];
-
     /**
 	 * @return string
 	 */

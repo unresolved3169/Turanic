@@ -37,8 +37,6 @@ class Pig extends Animal {
 
 	public $width = 0.3;
 	public $height = 0;
-
-	public $dropExp = [1, 3];
 	
 	public $drag = 0.2;
 	public $gravity = 0.3;
@@ -76,4 +74,8 @@ class Pig extends Animal {
 
 		return [];
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

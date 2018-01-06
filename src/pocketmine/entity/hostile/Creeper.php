@@ -36,8 +36,6 @@ class Creeper extends Monster {
 	const DATA_SWELL = 19;
 	const DATA_SWELL_OLD = 20;
 	const DATA_SWELL_DIRECTION = 21;
-
-	public $dropExp = [5, 5];
 	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
@@ -83,4 +81,8 @@ class Creeper extends Monster {
 	public function isPowered() : bool{
 		return (bool) $this->namedtag["powered"];
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

@@ -38,26 +38,15 @@ class SignPost extends Transparent{
 
 	protected $itemId = Item::SIGN;
 
-	/**
-	 * SignPost constructor.
-	 *
-	 * @param int $meta
-	 */
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
@@ -73,20 +62,20 @@ class SignPost extends Transparent{
     }
 
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         if($face !== Vector3::SIDE_DOWN){
-
-            Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
 
             if($face === Vector3::SIDE_UP){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0F;
-				$this->getLevel()->setBlock($block, $this, true);
+				$this->getLevel()->setBlock($blockReplace, $this, true);
 			}else{
 				$this->meta = $face;
-				$this->getLevel()->setBlock($block, Block::get(Block::WALL_SIGN, $this->meta), true);
+				$this->getLevel()->setBlock($blockReplace, Block::get(Block::WALL_SIGN, $this->meta), true);
 			}
 
-			return true;
+            Tile::createTile(Tile::SIGN, $this->getLevel(), TileSign::createNBT($this, $face, $item, $player));
+
+            return true;
 		}
 
 		return false;
@@ -111,7 +100,7 @@ class SignPost extends Transparent{
 	/**
 	 * @return int
 	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 

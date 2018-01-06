@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 
@@ -61,9 +62,9 @@ class Water extends Liquid {
 		$entity->resetFallDistance();
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$ret = $this->getLevel()->setBlock($this, $this, true, false);
-		$this->getLevel()->scheduleUpdate($this, $this->tickRate());
+		$this->getLevel()->scheduleDelayedBlockUpdate($this, $this->tickRate());
 
 		return $ret;
 	}

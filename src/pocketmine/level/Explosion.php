@@ -174,9 +174,7 @@ class Explosion {
 					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}
 
-				if($entity->attack($ev) === true){
-					$ev->useArmors();
-				}
+                $entity->attack($ev);
 				$entity->setMotion($motion->multiply($impact));
 			}
 		}

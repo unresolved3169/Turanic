@@ -43,4 +43,8 @@ class Ghast extends FlyingAnimal {
 		$this->setMaxHealth(10);
 		parent::initEntity();
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

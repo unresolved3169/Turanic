@@ -34,17 +34,11 @@ class IronTrapdoor extends Trapdoor {
 		return "Iron Trapdoor";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getResistance(){
+	public function getResistance() : float{
 		return 25;
 	}
 

@@ -49,8 +49,6 @@ class Rabbit extends Animal {
 	const TYPE_KILLER_BUNNY = 99;
 
 	public $height = 0.5;
-
-	public $dropExp = [1, 3];
 	
 	public $drag = 0.2;
 	public $gravity = 0.3;
@@ -132,5 +130,7 @@ class Rabbit extends Animal {
 		return $drops;
 	}
 
-
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

@@ -150,12 +150,12 @@ abstract class Armor extends Item {
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function getArmorValue(){
-		return false;
-	}
+    /**
+     * @return int
+     */
+    public function getDefensePoints() : int{
+        return 0;
+    }
 
 	/**
 	 * @return bool

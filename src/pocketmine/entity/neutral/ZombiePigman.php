@@ -41,8 +41,6 @@ class ZombiePigman extends Monster {
 
 	public $drag = 0.2;
 	public $gravity = 0.3;
-
-	public $dropExp = [5, 5];
 	
 	public function initEntity(){
 			$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
@@ -94,4 +92,15 @@ class ZombiePigman extends Monster {
 		}
 		return [];
 	}
+
+    /**
+     * @return bool
+     */
+    public function isBaby(){
+        return $this->getGenericFlag(self::DATA_FLAG_BABY);
+    }
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? 5 : 12;
+    }
 }

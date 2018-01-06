@@ -33,8 +33,6 @@ class Guardian extends Animal {
 
 	public $width = 0.95;
 	public $height = 0;
-
-	public $dropExp = [5, 5];
 	
 	public $drag = 0.2;
 	public $gravity = 0.3;
@@ -67,4 +65,8 @@ class Guardian extends Animal {
 
 		return $drops;
 	}
+
+    public function getXpDropAmount(): int{
+        return 10;
+    }
 }

@@ -61,13 +61,6 @@ class Noteblock extends Solid implements ElectricalAppliance {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
 	 * @return int
 	 */
 	public function getStrength(){

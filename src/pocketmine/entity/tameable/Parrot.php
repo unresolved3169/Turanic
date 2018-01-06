@@ -42,8 +42,6 @@ class Parrot extends FlyingAnimal {
     public $width = 0.5;
     public $height = 0.9;
 
-    public $dropExp = [1, 3];
-
     public $drag = 0.2;
     public $gravity = 0.3;
 
@@ -86,5 +84,9 @@ class Parrot extends FlyingAnimal {
         ];
 
         return $drops;
+    }
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
     }
 }

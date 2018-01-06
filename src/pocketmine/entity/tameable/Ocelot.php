@@ -41,8 +41,6 @@ class Ocelot extends Animal {
 	public $width = 0.312;
 	public $height = 0;
 
-	public $dropExp = [1, 3];
-
 	/**
 	 * @return string
 	 */
@@ -78,4 +76,8 @@ class Ocelot extends Animal {
 	public function getCatType() : int{
 		return $this->namedtag->getByte("CatType");
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

@@ -36,8 +36,6 @@ class ElderGuardian extends Animal {
 
 	public $width = 1.45;
 	public $height = 0;
-
-	public $dropExp = [5, 5];
 	
 	public $drag = 0.2;
 	public $gravity = 0.3;
@@ -71,4 +69,8 @@ class ElderGuardian extends Animal {
 
 		return $drops;
 	}
+
+	public function getXpDropAmount(): int{
+        return 10;
+    }
 }

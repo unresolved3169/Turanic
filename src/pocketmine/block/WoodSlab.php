@@ -27,6 +27,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class WoodSlab extends Transparent {
@@ -90,62 +91,50 @@ class WoodSlab extends Transparent {
 		}
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta &= 0x07;
 		if($face === 0){
-            if($target->getId() === $this->id and ($target->getDamage() & 0x08) === 0x08 and $target->getVariant() === $this->getVariant()){
-                $this->getLevel()->setBlock($target, Block::get(self::DOUBLE_WOODEN_SLAB, $this->getVariant()), true);
+            if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and $blockClicked->getVariant() === $this->getVariant()){
+                $this->getLevel()->setBlock($blockClicked, Block::get(self::DOUBLE_WOODEN_SLAB, $this->getVariant()), true);
 
 				return true;
-			}elseif($block->getId() === self::WOOD_SLAB and $block->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+			}elseif($blockReplace->getId() === self::WOOD_SLAB and $blockReplace->getVariant() === $this->getVariant()){
+				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 				return true;
 			}else{
 				$this->meta |= 0x08;
 			}
 		}elseif($face === 1){
-			if($target->getId() === self::WOOD_SLAB and ($target->getDamage() & 0x08) === 0 and $target->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+			if($blockClicked->getId() === self::WOOD_SLAB and ($blockClicked->getDamage() & 0x08) === 0 and $blockClicked->getVariant() === $this->getVariant()){
+				$this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 				return true;
-			}elseif($block->getId() === self::WOOD_SLAB and $block->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+			}elseif($blockReplace->getId() === self::WOOD_SLAB and $blockReplace->getVariant() === $this->getVariant()){
+				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
-			if($block->getId() === self::WOOD_SLAB){
-				if($block->getVariant() === $this->meta){
-					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+			if($blockReplace->getId() === self::WOOD_SLAB){
+				if($blockReplace->getVariant() === $this->meta){
+					$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 					return true;
 				}
 
 				return false;
 			}else{
-				if($fy > 0.5){
+				if($clickVector->y > 0.5){
 					$this->meta |= 0x08;
 				}
 			}
 		}
 
-		if($block->getId() === self::WOOD_SLAB and $target->getVariant() !== $this->getVariant()){
+		if($blockReplace->getId() === self::WOOD_SLAB and $blockClicked->getVariant() !== $this->getVariant()){
 			return false;
 		}
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}

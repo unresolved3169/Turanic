@@ -33,8 +33,6 @@ class Wither extends FlyingAnimal {
 	public $width = 0.72;
 	public $height = 0;
 
-	public $dropExp = 50;
-
 	/**
 	 * @return string
 	 */
@@ -57,4 +55,8 @@ class Wither extends FlyingAnimal {
 		$drops = [ItemItem::get(ItemItem::NETHER_STAR, 0, 1)];
 		return $drops;
 	}
+
+	public function getXpDropAmount(): int{
+        return 50;
+    }
 }

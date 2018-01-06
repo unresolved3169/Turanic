@@ -90,4 +90,8 @@ class Villager extends Mob implements NPC, Ageable {
     public function isBaby() : bool{
         return $this->getGenericFlag(self::DATA_FLAG_BABY);
     }
+
+    public function getXpDropAmount(): int{
+        return 0;
+    }
 }

@@ -25,10 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\entity\projectile\ProjectileSource;
+use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
-use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\inventory\EnderChestInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
@@ -37,13 +37,14 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
-use pocketmine\math\Math;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
@@ -70,7 +71,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	public $width = 0.6;
 	public $height = 1.8;
 	public $eyeHeight = 1.62;
-	public $baseOffset = 1.62;
 	
 	/** @var Skin */
 	protected $skin;
@@ -78,8 +78,82 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	protected $foodTickTimer = 0;
 
 	protected $totalXp = 0;
-	protected $xpSeed = 0;
+	protected $xpSeed;
 	protected $xpCooldown = 0;
+
+    public $baseOffset = 1.62;
+
+    public function __construct(Level $level, CompoundTag $nbt){
+        if($this->skin === null){
+            $skinTag = $nbt->getCompoundTag("Skin");
+            if($skinTag === null or !self::isValidSkin($skinTag->getString("Data", "", true))){
+                throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+            }
+        }
+
+        parent::__construct($level, $nbt);
+    }
+
+    /**
+     * Checks the length of a supplied skin bitmap and returns whether the length is valid.
+     *
+     * @param string $skin
+     *
+     * @return bool
+     */
+    public static function isValidSkin(string $skin) : bool{
+        return strlen($skin) === 64 * 64 * 4 or strlen($skin) === 64 * 32 * 4;
+    }
+
+    /**
+     * @return UUID|null
+     */
+    public function getUniqueId(){
+        return $this->uuid;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRawUniqueId() : string{
+        return $this->rawUUID;
+    }
+
+    /**
+     * Returns a Skin object containing information about this human's skin.
+     * @return Skin
+     */
+    public function getSkin() : Skin{
+        return $this->skin;
+    }
+
+    /**
+     * Sets the human's skin. This will not send any update to viewers, you need to do that manually using
+     * {@link sendSkin}.
+     *
+     * @param Skin $skin
+     */
+    public function setSkin(Skin $skin){
+        if(!$skin->isValid()){
+            throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
+        }
+
+        $this->skin = $skin;
+        $this->skin->debloatGeometryData();
+    }
+
+    /**
+     * Sends the human's skin to the specified list of players. If null is given for targets, the skin will be sent to
+     * all viewers.
+     *
+     * @param Player[]|null $targets
+     */
+    public function sendSkin(array $targets = null){
+        $pk = new PlayerSkinPacket();
+        $pk->uuid = $this->getUniqueId();
+        $pk->skin = $this->skin;
+        $this->server->broadcastPacket($targets ?? $this->hasSpawned, $pk);
+    }
 
 	public function jump(){
 		parent::jump();
@@ -90,440 +164,308 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		}
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getSkinData(){
-		return $this->skin->getSkinData();
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getSkinId(){
-		return $this->skin->getSkinId();
-	}
-
-	/**
-	 * @return UUID|null
-	 */
-	public function getUniqueId(){
-		return $this->uuid;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getRawUniqueId(){
-		return $this->rawUUID;
-	}
-	
-	/**
-	 * Sets the human's skin. This will not send any update to viewers, you need to do that manually using
-	 * {@link sendSkin}.
-	 *
-	 * @param Skin $skin
-	 */
-	public function setSkin(Skin $skin){
-		if(!$skin->isValid()){
-			throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
-		}
-		$skin->debloatGeometryData();
-		$this->skin = $skin;
-	}
-
-	/**
-	 * @param Player[] $targets
-	 */
-	public function sendSkin(array $targets){
-		$pk = new PlayerSkinPacket();
-		$pk->uuid = $this->getUniqueId();
-		$pk->skin = $this->skin;
-		$this->server->broadcastPacket($targets, $pk);
-	}
-	
-	public function getSkin() : Skin{
-		return $this->skin;
-	}
-	
-	/**
-	 * @return float
-	 */
-	public function getFood() : float{
-		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
-	}
-
-	/**
-	 * WARNING: This method does not check if full and may throw an exception if out of bounds.
-	 * Use {@link Human::addFood()} for this purpose
-	 *
-	 * @param float $new
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function setFood(float $new){
-		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
-		$old = $attr->getValue();
-		$attr->setValue($new);
-		// ranges: 18-20 (regen), 7-17 (none), 1-6 (no sprint), 0 (health depletion)
-		foreach([17, 6, 0] as $bound){
-			if(($old > $bound) !== ($new > $bound)){
-				$reset = true;
-			}
-		}
-		if(isset($reset)){
-			$this->foodTickTimer = 0;
-		}
-
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getMaxFood() : float{
-		return $this->attributeMap->getAttribute(Attribute::HUNGER)->getMaxValue();
-	}
-
-	/**
-	 * @param float $amount
-	 */
-	public function addFood(float $amount){
-		$attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
-		$amount += $attr->getValue();
-		$amount = max(min($amount, $attr->getMaxValue()), $attr->getMinValue());
-		$this->setFood($amount);
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getSaturation() : float{
-		return $this->attributeMap->getAttribute(Attribute::SATURATION)->getValue();
-	}
-
-	/**
-	 * WARNING: This method does not check if saturated and may throw an exception if out of bounds.
-	 * Use {@link Human::addSaturation()} for this purpose
-	 *
-	 * @param float $saturation
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function setSaturation(float $saturation){
-		$this->attributeMap->getAttribute(Attribute::SATURATION)->setValue($saturation);
-	}
-
-	/**
-	 * @param float $amount
-	 */
-	public function addSaturation(float $amount){
-		$attr = $this->attributeMap->getAttribute(Attribute::SATURATION);
-		$attr->setValue($attr->getValue() + $amount, true);
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getExhaustion() : float{
-		return $this->attributeMap->getAttribute(Attribute::EXHAUSTION)->getValue();
-	}
-
-	/**
-	 * WARNING: This method does not check if exhausted and does not consume saturation/food.
-	 * Use {@link Human::exhaust()} for this purpose.
-	 *
-	 * @param float $exhaustion
-	 */
-	public function setExhaustion(float $exhaustion){
-		$this->attributeMap->getAttribute(Attribute::EXHAUSTION)->setValue($exhaustion);
-	}
-
-	/**
-	 * Increases a human's exhaustion level.
-	 *
-	 * @param float $amount
-	 * @param int   $cause
-	 *
-	 * @return float the amount of exhaustion level increased
-	 */
-	public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerExhaustEvent($this, $amount, $cause));
-		if($ev->isCancelled()){
-			return 0.0;
-		}
-
-		$exhaustion = $this->getExhaustion();
-		$exhaustion += $ev->getAmount();
-
-		while($exhaustion >= 4.0){
-			$exhaustion -= 4.0;
-
-			$saturation = $this->getSaturation();
-			if($saturation > 0){
-				$saturation = max(0, $saturation - 1.0);
-				$this->setSaturation($saturation);
-			}else{
-				$food = $this->getFood();
-				if($food > 0){
-				    $check = true;
-					if($this instanceof Player && $this->isCreative()){
-					    $check = false;
-                    }
-                    if($check){
-                        $food--;
-                        $this->setFood($food);
-                    }
-				}
-			}
-		}
-		$this->setExhaustion($exhaustion);
-
-		return $ev->getAmount();
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getXpLevel() : int{
-		return (int) $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->getValue();
-	}
-
-	/**
-	 * @param int $level
-	 *
-	 * @return bool
-	 */
-	public function setXpLevel(int $level) : bool{
-		$this->server->getPluginManager()->callEvent($ev = new PlayerExperienceChangeEvent($this, $level, $this->getXpProgress()));
-		if(!$ev->isCancelled()){
-			$this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($ev->getExpLevel());
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @param int $level
-	 *
-	 * @return bool
-	 */
-	public function addXpLevel(int $level) : bool{
-		return $this->setXpLevel($this->getXpLevel() + $level);
-	}
-
-	/**
-	 * @param int $level
-	 *
-	 * @return bool
-	 */
-	public function takeXpLevel(int $level) : bool{
-		return $this->setXpLevel($this->getXpLevel() - $level);
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getXpProgress() : float{
-		return $this->attributeMap->getAttribute(Attribute::EXPERIENCE)->getValue();
-	}
-
-	/**
-	 * @param float $progress
-	 *
-	 * @return bool
-	 */
-	public function setXpProgress(float $progress) : bool{
-		$this->attributeMap->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
-		return true;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getTotalXp() : int{
-		return $this->totalXp;
-	}
-
-	/**
-	 * Changes the total exp of a player
-	 *
-	 * @param int  $xp
-	 * @param bool $syncLevel This will reset the level to be in sync with the total. Usually you don't want to do this,
-	 *						because it'll mess up use of xp in anvils and enchanting tables.
-	 *
-	 * @return bool
-	 */
-	public function setTotalXp(int $xp, bool $syncLevel = false) : bool{
-		$xp &= 0x7fffffff;
-		if($xp === $this->totalXp){
-			return false;
-		}
-		if(!$syncLevel){
-			$level = $this->getXpLevel();
-			$diff = $xp - $this->totalXp + $this->getFilledXp();
-			if($diff > 0){ //adding xp
-				while($diff > ($v = self::getLevelXpRequirement($level))){
-					$diff -= $v;
-					if(++$level >= 21863){
-						$diff = $v; //fill exp bar
-						break;
-					}
-				}
-			}else{ //taking xp
-				while($diff < ($v = self::getLevelXpRequirement($level - 1))){
-					$diff += $v;
-					if(--$level <= 0){
-						$diff = 0;
-						break;
-					}
-				}
-			}
-			$progress = ($diff / $v);
-		}else{
-			$values = self::getLevelFromXp($xp);
-			$level = $values[0];
-			$progress = $values[1];
-		}
-
-		$this->server->getPluginManager()->callEvent($ev = new PlayerExperienceChangeEvent($this, intval($level), $progress));
-		if(!$ev->isCancelled()){
-			$this->totalXp = $xp;
-			$this->setXpLevel($ev->getExpLevel());
-			$this->setXpProgress($ev->getProgress());
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @param int  $xp
-	 * @param bool $syncLevel
-	 *
-	 * @return bool
-	 */
-	public function addXp(int $xp, bool $syncLevel = false) : bool{
-		return $this->setTotalXp($this->totalXp + $xp, $syncLevel);
-	}
-
-	/**
-	 * @param int  $xp
-	 * @param bool $syncLevel
-	 *
-	 * @return bool
-	 */
-	public function takeXp(int $xp, bool $syncLevel = false) : bool{
-		return $this->setTotalXp($this->totalXp - $xp, $syncLevel);
-	}
-
-    /**
-     * @return float
-     */
-	public function getRemainderXp() : float{
-		return self::getLevelXpRequirement($this->getXpLevel()) - $this->getFilledXp();
-	}
-
-    /**
-     * @return float
-     */
-	public function getFilledXp() : float{
-		return self::getLevelXpRequirement($this->getXpLevel()) * $this->getXpProgress();
-	}
-
-	/**
-	 * @return float
-	 */
-	public function recalculateXpProgress() : float{
-		$this->setXpProgress($progress = $this->getRemainderXp() / self::getLevelXpRequirement($this->getXpLevel()));
-		return $progress;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getXpSeed() : int{
-		//TODO: use this for randomizing enchantments in enchanting tables
-		return $this->xpSeed;
-	}
-
-	public function resetXpCooldown(){
-		$this->xpCooldown = microtime(true);
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function canPickupXp() : bool{
-		return microtime(true) - $this->xpCooldown > 0.5;
-	}
-
-	/**
-	 * Returns the total amount of exp required to reach the specified level.
-	 *
-	 * @param int $level
-	 *
-	 * @return int
-	 */
-	public static function getTotalXpRequirement(int $level) : int{
-		if($level <= 16){
-			return ($level ** 2) + (6 * $level);
-		}elseif($level <= 31){
-			return (2.5 * ($level ** 2)) - (40.5 * $level) + 360;
-		}elseif($level <= 21863){
-			return (4.5 * ($level ** 2)) - (162.5 * $level) + 2220;
-		}
-		return PHP_INT_MAX; //prevent float returns for invalid levels on 32-bit systems
-	}
-
-	/**
-	 * Returns the amount of exp required to complete the specified level.
-	 *
-	 * @param int $level
-	 *
-	 * @return int
-	 */
-	public static function getLevelXpRequirement(int $level) {
-        if ($level <= 16) {
-            return (2 * $level) + 7;
-        } elseif ($level <= 32) {
-            return (5 * $level) - 38;
-        }
-        return $level ** 2 * 4.5 - 162.5 * $level + 2220;
+    public function getFood() : float{
+        return $this->attributeMap->getAttribute(Attribute::HUNGER)->getValue();
     }
 
-	/**
-	 * Converts a quantity of exp into a level and a progress percentage
-	 *
-	 * @param int $xp
-	 *
-	 * @return int[]
-	 */
-	public static function getLevelFromXp(int $xp) : array{
-		$xp &= 0x7fffffff;
+    /**
+     * WARNING: This method does not check if full and may throw an exception if out of bounds.
+     * Use {@link Human::addFood()} for this purpose
+     *
+     * @param float $new
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setFood(float $new){
+        $attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
+        $old = $attr->getValue();
+        $attr->setValue($new);
 
-		/** These values are correct up to and including level 16 */
-		$a = 1;
-		$b = 6;
-		$c = -$xp;
-		if($xp > self::getTotalXpRequirement(16)){
-			/** Modify the coefficients to fit the relevant equation */
-			if($xp <= self::getTotalXpRequirement(31)){
-				/** Levels 16-31 */
-				$a = 2.5;
-				$b = -40.5;
-				$c += 360;
-			}else{
-				/** Level 32+ */
-				$a = 4.5;
-				$b = -162.5;
-				$c += 2220;
-			}
-		}
+        $reset = false;
+        // ranges: 18-20 (regen), 7-17 (none), 1-6 (no sprint), 0 (health depletion)
+        foreach([17, 6, 0] as $bound){
+            if(($old > $bound) !== ($new > $bound)){
+                $reset = true;
+                break;
+            }
+        }
+        if($reset){
+            $this->foodTickTimer = 0;
+        }
 
-		$answer = max(Math::solveQuadratic($a, $b, $c)); //Use largest result value
-		$level = floor($answer);
-		$progress = $answer - $level;
-		return [$level, $progress];
-	}
+    }
+
+    public function getMaxFood() : float{
+        return $this->attributeMap->getAttribute(Attribute::HUNGER)->getMaxValue();
+    }
+
+    public function addFood(float $amount){
+        $attr = $this->attributeMap->getAttribute(Attribute::HUNGER);
+        $amount += $attr->getValue();
+        $amount = max(min($amount, $attr->getMaxValue()), $attr->getMinValue());
+        $this->setFood($amount);
+    }
+
+    public function getSaturation() : float{
+        return $this->attributeMap->getAttribute(Attribute::SATURATION)->getValue();
+    }
+
+    /**
+     * WARNING: This method does not check if saturated and may throw an exception if out of bounds.
+     * Use {@link Human::addSaturation()} for this purpose
+     *
+     * @param float $saturation
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function setSaturation(float $saturation){
+        $this->attributeMap->getAttribute(Attribute::SATURATION)->setValue($saturation);
+    }
+
+    public function addSaturation(float $amount){
+        $attr = $this->attributeMap->getAttribute(Attribute::SATURATION);
+        $attr->setValue($attr->getValue() + $amount, true);
+    }
+
+    public function getExhaustion() : float{
+        return $this->attributeMap->getAttribute(Attribute::EXHAUSTION)->getValue();
+    }
+
+    /**
+     * WARNING: This method does not check if exhausted and does not consume saturation/food.
+     * Use {@link Human::exhaust()} for this purpose.
+     *
+     * @param float $exhaustion
+     */
+    public function setExhaustion(float $exhaustion){
+        $this->attributeMap->getAttribute(Attribute::EXHAUSTION)->setValue($exhaustion);
+    }
+
+    /**
+     * Increases a human's exhaustion level.
+     *
+     * @param float $amount
+     * @param int   $cause
+     *
+     * @return float the amount of exhaustion level increased
+     */
+    public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
+        $this->server->getPluginManager()->callEvent($ev = new PlayerExhaustEvent($this, $amount, $cause));
+        if($ev->isCancelled()){
+            return 0.0;
+        }
+
+        $exhaustion = $this->getExhaustion();
+        $exhaustion += $ev->getAmount();
+
+        while($exhaustion >= 4.0){
+            $exhaustion -= 4.0;
+
+            $saturation = $this->getSaturation();
+            if($saturation > 0){
+                $saturation = max(0, $saturation - 1.0);
+                $this->setSaturation($saturation);
+            }else{
+                $food = $this->getFood();
+                if($food > 0){
+                    $food--;
+                    $this->setFood($food);
+                }
+            }
+        }
+        $this->setExhaustion($exhaustion);
+
+        return $ev->getAmount();
+    }
+
+    public function consumeObject(Consumable $consumable) : bool{
+        if($consumable instanceof FoodSource){
+            if($consumable->requiresHunger() and $this->getFood() >= $this->getMaxFood()){
+                return false;
+            }
+
+            $this->addFood($consumable->getFoodRestore());
+            $this->addSaturation($consumable->getSaturationRestore());
+        }
+
+        return parent::consumeObject($consumable);
+    }
+
+    /**
+     * Returns the player's experience level.
+     * @return int
+     */
+    public function getXpLevel() : int{
+        return (int) $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->getValue();
+    }
+
+    /**
+     * Sets the player's experience level. This does not affect their total XP or their XP progress.
+     *
+     * @param int $level
+     */
+    public function setXpLevel(int $level){
+        $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
+    }
+
+    /**
+     * Adds a number of XP levels to the player.
+     *
+     * @param int  $amount
+     * @param bool $playSound
+     */
+    public function addXpLevels(int $amount, bool $playSound = true){
+        $oldLevel = $this->getXpLevel();
+        $this->setXpLevel($oldLevel + $amount);
+
+        if($playSound){
+            $newLevel = $this->getXpLevel();
+            if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
+                $this->playLevelUpSound($newLevel);
+            }
+        }
+    }
+
+    /**
+     * Subtracts a number of XP levels from the player.
+     * @param int $amount
+     */
+    public function subtractXpLevels(int $amount){
+        $this->setXpLevel($this->getXpLevel() - $amount);
+    }
+
+    /**
+     * Returns a value between 0.0 and 1.0 to indicate how far through the current level the player is.
+     * @return float
+     */
+    public function getXpProgress() : float{
+        return $this->attributeMap->getAttribute(Attribute::EXPERIENCE)->getValue();
+    }
+
+    /**
+     * Sets the player's progress through the current level to a value between 0.0 and 1.0.
+     *
+     * @param float $progress
+     */
+    public function setXpProgress(float $progress){
+        $this->attributeMap->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
+    }
+
+    /**
+     * Returns the number of XP points the player has progressed into their current level.
+     * @return int
+     */
+    public function getRemainderXp() : int{
+        return (int) (ExperienceUtils::getXpToCompleteLevel($this->getXpLevel()) * $this->getXpProgress());
+    }
+
+    /**
+     * Returns the amount of XP points the player currently has, calculated from their current level and progress
+     * through their current level. This will be reduced by enchanting deducting levels and is used to calculate the
+     * amount of XP the player drops on death.
+     *
+     * @return int
+     */
+    public function getCurrentTotalXp() : int{
+        return ExperienceUtils::getXpToReachLevel($this->getXpLevel()) + $this->getRemainderXp();
+    }
+
+    /**
+     * Sets the current total of XP the player has, recalculating their XP level and progress.
+     * Note that this DOES NOT update the player's lifetime total XP.
+     *
+     * @param int $amount
+     */
+    public function setCurrentTotalXp(int $amount){
+        $newLevel = ExperienceUtils::getLevelFromXp($amount);
+
+        $this->setXpLevel((int) $newLevel);
+        $this->setXpProgress($newLevel - ((int) $newLevel));
+    }
+
+    /**
+     * Adds an amount of XP to the player, recalculating their XP level and progress. XP amount will be added to the
+     * player's lifetime XP.
+     *
+     * @param int  $amount
+     * @param bool $playSound Whether to play level-up and XP gained sounds.
+     */
+    public function addXp(int $amount, bool $playSound = true){
+        $this->totalXp += $amount;
+
+        $oldLevel = $this->getXpLevel();
+        $oldTotal = $this->getCurrentTotalXp();
+
+        $this->setCurrentTotalXp($oldTotal + $amount);
+
+        if($playSound){
+            $newLevel = $this->getXpLevel();
+
+            if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
+                $this->playLevelUpSound($newLevel);
+            }elseif($this->getCurrentTotalXp() > $oldTotal){
+                $this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ORB, mt_rand());
+            }
+        }
+    }
+
+    private function playLevelUpSound(int $newLevel){
+        $volume = 0x10000000 * (min(30, $newLevel) / 5); //No idea why such odd numbers, but this works...
+        $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, 1, (int) $volume);
+    }
+
+    /**
+     * Takes an amount of XP from the player, recalculating their XP level and progress.
+     * @param int $amount
+     */
+    public function subtractXp(int $amount){
+        $this->addXp(-$amount);
+    }
+
+    /**
+     * Returns the total XP the player has collected in their lifetime. Resets when the player dies.
+     * XP levels being removed in enchanting do not reduce this number.
+     *
+     * @return int
+     */
+    public function getLifetimeTotalXp(){
+        return $this->totalXp;
+    }
+
+    /**
+     * Sets the lifetime total XP of the player. This does not recalculate their level or progress. Used for player
+     * score when they die. (TODO: add this when MCPE supports it)
+     *
+     * @param int $amount
+     */
+    public function setLifetimeTotalXp(int $amount){
+        if($amount < 0){
+            throw new \InvalidArgumentException("XP must be greater than 0");
+        }
+
+        $this->totalXp = $amount;
+    }
+
+    /**
+     * Returns whether the human can pickup XP orbs (checks cooldown time)
+     * @return bool
+     */
+    public function canPickupXp() : bool{
+        return $this->xpCooldown === 0;
+    }
+
+    /**
+     * Sets the duration in ticks until the human can pick up another XP orb.
+     *
+     * @param int $value
+     */
+    public function resetXpCooldown(int $value = 2){
+        $this->xpCooldown = $value;
+    }
+
+    public function getXpDropAmount() : int{
+        return (int) min(100, $this->getCurrentTotalXp());
+    }
 
 	/**
 	 * @return PlayerInventory
@@ -561,12 +503,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         $this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
     }
 
-	protected function initEntity(){
-		$this->setDataFlag(self::DATA_PLAYER_FLAGS, self::DATA_PLAYER_FLAG_SLEEP, false, self::DATA_TYPE_BYTE);
-		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
+    protected function initEntity(){
+        $this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
+        $this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
 
-		$this->inventory = new PlayerInventory($this);
-        $this->enderChestInventory = new EnderChestInventory($this, $this->namedtag->getListTag("EnderChestInventory"));
+        $this->inventory = new PlayerInventory($this);
+        $this->enderChestInventory = new EnderChestInventory($this);
         $this->initHumanData();
 
         $inventoryTag = $this->namedtag->getListTag("Inventory");
@@ -585,9 +527,17 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
             }
         }
 
+        $enderChestInventoryTag = $this->namedtag->getListTag("EnderChestInventory");
+        if($enderChestInventoryTag !== null){
+            /** @var CompoundTag $item */
+            foreach($enderChestInventoryTag as $i => $item){
+                $this->enderChestInventory->setItem($item->getByte("Slot"), ItemItem::nbtDeserialize($item));
+            }
+        }
+
         $this->inventory->setHeldItemIndex($this->namedtag->getInt("SelectedInventorySlot", 0), false);
 
-		parent::initEntity();
+        parent::initEntity();
 
         $this->setFood((float) $this->namedtag->getInt("foodLevel", (int) $this->getFood(), true));
         $this->setExhaustion($this->namedtag->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
@@ -601,9 +551,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         if($this->namedtag->hasTag("XpSeed", IntTag::class)){
             $this->xpSeed = $this->namedtag->getInt("XpSeed");
         }else{
-            $this->xpSeed = rand(PHP_INT_MIN, PHP_INT_MAX);
+            $this->xpSeed = random_int(INT32_MIN, INT32_MAX);
         }
-	}
+    }
 
 	public function getAbsorption() : float{
 		return $this->attributeMap->getAttribute(Attribute::ABSORPTION)->getValue();
@@ -613,124 +563,122 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		$this->attributeMap->getAttribute(Attribute::ABSORPTION)->setValue($absorption);
 	}
 
-	protected function addAttributes(){
-		parent::addAttributes();
+    protected function addAttributes(){
+        parent::addAttributes();
 
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HEALTH));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::MOVEMENT_SPEED));
-		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::ABSORPTION));
-	}
+        $this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::SATURATION));
+        $this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXHAUSTION));
+        $this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::HUNGER));
+        $this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE_LEVEL));
+        $this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
+    }
 
-	/**
-	 * @param int $tickDiff
-	 * @param int $EnchantL
-	 *
-	 * @return bool
-	 */
-	public function entityBaseTick(int $tickDiff = 1, $EnchantL = 0){
-		if($this->getInventory() instanceof PlayerInventory){
-			$EnchantL = $this->getInventory()->getHelmet()->getEnchantmentLevel(Enchantment::TYPE_WATER_BREATHING);
-		}
-		$this->maxAir = 400 + $EnchantL * 300;
-		$hasUpdate = parent::entityBaseTick($tickDiff);
-		$this->maxAir = 400;
+    public function entityBaseTick(int $tickDiff = 1) : bool{
+        $hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if($this->isAlive()){
-			$food = $this->getFood();
-			$health = $this->getHealth();
-			if($food >= 18){
-				$this->foodTickTimer++;
-				if($this->foodTickTimer >= 80 and $health < $this->getMaxHealth()){
-					$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-					$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
-					$this->foodTickTimer = 0;
+        $this->doFoodTick($tickDiff);
 
-				}
-			}elseif($food === 0){
-				$this->foodTickTimer++;
-				if($this->foodTickTimer >= 80){
-					$diff = $this->level->getDifficulty();
-					$can = false;
-					if($diff === Level::DIFFICULTY_EASY){
-						$can = $health > 10;
-					}elseif($diff === Level::DIFFICULTY_NORMAL){
-						$can = $health > 1;
-					}elseif($diff === Level::DIFFICULTY_HARD){
-						$can = true;
-					}
-					if($can){
-						$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
-					}
-				}
-			}
-			if($food <= 6){
-				if($this->isSprinting()){
-					$this->setSprinting(false);
-				}
-			}
-		}
+        if($this->xpCooldown > 0){
+            $this->xpCooldown--;
+        }
 
-		return $hasUpdate;
-	}
+        return $hasUpdate;
+    }
 
-	/**
-	 * @return string
-	 */
+    public function doFoodTick(int $tickDiff = 1){
+        if($this->isAlive()){
+            $food = $this->getFood();
+            $health = $this->getHealth();
+            $difficulty = $this->level->getDifficulty();
+
+            $this->foodTickTimer += $tickDiff;
+            if($this->foodTickTimer >= 80){
+                $this->foodTickTimer = 0;
+            }
+
+            if($difficulty === Level::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
+                if($food < 20){
+                    $this->addFood(1.0);
+                }
+                if($this->foodTickTimer % 20 === 0 and $health < $this->getMaxHealth()){
+                    $this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
+                }
+            }
+
+            if($this->foodTickTimer === 0){
+                if($food >= 18){
+                    if($health < $this->getMaxHealth()){
+                        $this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
+                        $this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
+                    }
+                }elseif($food <= 0){
+                    if(($difficulty === 1 and $health > 10) or ($difficulty === 2 and $health > 1) or $difficulty === 3){
+                        $this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
+                    }
+                }
+            }
+
+            if($food <= 6){
+                if($this->isSprinting()){
+                    $this->setSprinting(false);
+                }
+            }
+        }
+    }
+
+    protected function doAirSupplyTick(int $tickDiff){
+        //TODO: allow this to apply to other mobs
+        if(($ench = $this->inventory->getHelmet()->getEnchantment(Enchantment::RESPIRATION)) === null or
+            lcg_value() <= (1 / ($ench->getLevel() + 1))){
+            parent::doAirSupplyTick($tickDiff);
+        }
+    }
+
 	public function getName(){
 		return $this->getNameTag();
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getDrops(){
         return $this->inventory !== null ? array_values($this->inventory->getContents()) : [];
 	}
 
 	public function saveNBT(){
-		parent::saveNBT();
+        parent::saveNBT();
 
-        //Food
         $this->namedtag->setInt("foodLevel", (int) $this->getFood(), true);
         $this->namedtag->setFloat("foodExhaustionLevel", $this->getExhaustion(), true);
         $this->namedtag->setFloat("foodSaturationLevel", $this->getSaturation(), true);
         $this->namedtag->setInt("foodTickTimer", $this->foodTickTimer);
 
-        //Xp
         $this->namedtag->setInt("XpLevel", $this->getXpLevel());
-        $this->namedtag->setInt("XpTotal", $this->getTotalXp());
         $this->namedtag->setFloat("XpP", $this->getXpProgress());
-        $this->namedtag->setInt("XpSeed", $this->getXpSeed());
+        $this->namedtag->setInt("XpTotal", $this->totalXp);
+        $this->namedtag->setInt("XpSeed", $this->xpSeed);
 
         $inventoryTag = new ListTag("Inventory", [], NBT::TAG_Compound);
         $this->namedtag->setTag($inventoryTag);
-		if($this->inventory !== null){
-			//Normal inventory
-			$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
-			for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
-				$item = $this->inventory->getItem($slot - 9);
-				if($item->getId() !== ItemItem::AIR){
-					$inventoryTag[$slot] = $item->nbtSerialize($slot);
-				}
-			}
+        if($this->inventory !== null){
+            //Normal inventory
+            $slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
+            for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
+                $item = $this->inventory->getItem($slot - 9);
+                if(!$item->isNull()){
+                    $inventoryTag[$slot] = $item->nbtSerialize($slot);
+                }
+            }
 
-			//Armor
-			for($slot = 100; $slot < 104; ++$slot){
-				$item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
-				if($item instanceof ItemItem and $item->getId() !== ItemItem::AIR){
-					$inventoryTag[$slot] = $item->nbtSerialize($slot);
-				}
-			}
+            //Armor
+            for($slot = 100; $slot < 104; ++$slot){
+                $item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
+                if(!$item->isNull()){
+                    $inventoryTag[$slot] = $item->nbtSerialize($slot);
+                }
+            }
 
-			$this->namedtag->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
-		}
+            $this->namedtag->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
+        }
 
-		if($this->enderChestInventory !== null){
+        if($this->enderChestInventory !== null){
             /** @var CompoundTag[] $items */
             $items = [];
 
@@ -743,9 +691,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
             }
 
             $this->namedtag->setTag(new ListTag("EnderChestInventory", $items, NBT::TAG_Compound));
-		}
+        }
 
-		if($this->skin instanceof Skin){
+        if($this->skin !== null){
             $this->namedtag->setTag(new CompoundTag("Skin", [
                 new StringTag("Data", $this->skin->getSkinData()),
                 new StringTag("Name", $this->skin->getSkinId()),
@@ -753,7 +701,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
                 new StringTag("GeometryName", $this->skin->getGeometryName()),
                 new StringTag("GeometryData", $this->skin->getGeometryData()),
             ]));
-		}
+        }
 	}
 
 	/**
@@ -768,7 +716,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	protected function sendSpawnPacket(Player $player){
         if(!$this->skin->isValid()){
             throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
- 		}
+        }
 
         $pk = new AddPlayerPacket();
         $pk->uuid = $this->getUniqueId();
@@ -790,29 +738,52 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     }
 
     public function close(){
-		if(!$this->closed){
-			if(!($this instanceof Player) or $this->spawned){
-				$this->inventory->removeAllViewers(true);
-				$this->inventory = null;
-			}
-			parent::close();
-		}
+        if(!$this->closed){
+            if($this->inventory !== null){
+                $this->inventory->removeAllViewers(true);
+                $this->inventory = null;
+            }
+            if($this->enderChestInventory !== null){
+                $this->enderChestInventory->removeAllViewers(true);
+                $this->enderChestInventory = null;
+            }
+            parent::close();
+        }
 	}
 
-	public function isHungry(){
-	    return !($this->getFood() >= $this->getMaxFood());
+    /**
+     * Wrapper around {@link Entity#getDataFlag} for player-specific data flag reading.
+     *
+     * @param int $flagId
+     * @return bool
+     */
+    public function getPlayerFlag(int $flagId) : bool{
+        return $this->getDataFlag(self::DATA_PLAYER_FLAGS, $flagId);
     }
 
-	public function consumeObject(Consumable $consumable): bool{
-	    if($consumable instanceof FoodSource){
-            if($consumable->requiresHunger() and !$this->isHungry()){
-                return false;
- 			}
+    /**
+     * Wrapper around {@link Entity#setDataFlag} for player-specific data flag setting.
+     *
+     * @param int  $flagId
+     * @param bool $value
+     */
+    public function setPlayerFlag(int $flagId, bool $value = true){
+        $this->setDataFlag(self::DATA_PLAYER_FLAGS, $flagId, $value, self::DATA_TYPE_BYTE);
+    }
 
-            $this->addFood($consumable->getFoodRestore());
-            $this->addSaturation($consumable->getSaturationRestore());
-        }
+    /**
+     * @deprecated Please use $this->getSkin()->getSkinData();
+     * @return mixed
+     */
+    public function getSkinData(){
+        return $this->skin->getSkinData();
+    }
 
-        return parent::consumeObject($consumable);
+    /**
+     * @deprecated Please use $this->getSkin()->getSkinId();
+     * @return mixed
+     */
+    public function getSkinId(){
+        return $this->skin->getSkinId();
     }
 }

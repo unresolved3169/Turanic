@@ -33,8 +33,6 @@ class Wolf extends Animal {
 
 	public $width = 0.3;
 	public $height = 0;
-
-	public $dropExp = [1, 3];
 	
 	public $drag = 0.2;
 	public $gravity = 0.3;
@@ -54,4 +52,8 @@ class Wolf extends Animal {
 	public function getName() : string{
 		return "Wolf";
 	}
+
+    public function getXpDropAmount(): int{
+        return mt_rand(1,3); // excludes baby animals
+    }
 }

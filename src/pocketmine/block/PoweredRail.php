@@ -35,40 +35,28 @@ class PoweredRail extends Rail {
 	    return true; // TODO
     }
 
-	/**
-	 * PoweredRail constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
-		$this->meta = $meta;//0,1,2,3,4,5
+	public function __construct(int $meta = 0){
+		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "PoweredRail";
 	}
 
-	/**
-	 * @return bool
-	 */
 	protected function update(){
 
 		return true;
 	}
 
-	/**
-	 * @param Rail $block
-	 *
-	 * @return bool
-	 */
+    /**
+     * @param Rail $block
+     * @return bool|Vector3[]
+     */
 	public function canConnect(Rail $block){
 		if($this->distanceSquared($block) > 2){
 			return false;
 		}
-		/** @var Vector3 [] $blocks */
+		/** @var Vector3[] $blocks */
 		if(count($blocks = self::check($this)) == 2){
 			return false;
 		}
@@ -137,19 +125,7 @@ class PoweredRail extends Rail {
 		return true;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param             $face
-	 * @param             $fx
-	 * @param             $fy
-	 * @param             $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$downBlock = $this->getSide(Vector3::SIDE_DOWN);
 
 		if($downBlock instanceof Rail or !$this->isBlock($downBlock)){//判断是否可以放置

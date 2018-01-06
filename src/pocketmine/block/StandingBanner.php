@@ -40,15 +40,15 @@ class StandingBanner extends Transparent{
 
 	protected $itemId = Item::BANNER;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1;
 	}
 
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
@@ -60,14 +60,14 @@ class StandingBanner extends Transparent{
 		return null;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         if ($face !== Vector3::SIDE_DOWN) {
             if($face === Vector3::SIDE_UP and $player !== null){
                 $this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
-                $this->getLevel()->setBlock($block, $this, true);
+                $this->getLevel()->setBlock($blockReplace, $this, true);
             }else{
                 $this->meta = $face;
-                $this->getLevel()->setBlock($block, Block::get(Block::WALL_BANNER, $this->meta), true);
+                $this->getLevel()->setBlock($blockReplace, Block::get(Block::WALL_BANNER, $this->meta), true);
             }
 
             Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
@@ -88,7 +88,7 @@ class StandingBanner extends Transparent{
 		return false;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 

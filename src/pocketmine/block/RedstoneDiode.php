@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -50,7 +52,7 @@ abstract class RedstoneDiode extends Flowable {
         }
     }
 
-    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         if($this->getSide(self::SIDE_DOWN)->isTransparent()){
             return false;
         }
@@ -58,9 +60,9 @@ abstract class RedstoneDiode extends Flowable {
         if($player instanceof Player){
             $this->meta = ((int) $player->getDirection() + 5) % 4;
         }
-        $this->getLevel()->setBlock($block, $this, true, true);
+        $this->getLevel()->setBlock($blockReplace, $this, true, true);
         if($this->shouldBePowered()){
-            $this->level->scheduleUpdate($this, 1);
+            $this->level->scheduleDelayedBlockUpdate($this, 1);
         }
 
         return true;
@@ -81,7 +83,7 @@ abstract class RedstoneDiode extends Flowable {
                         $this->level->updateAroundRedstone($this->getSide(static::getOppositeSide($this->getFacing())));
 
                         if (!$shouldBePowered) {
-                            $this->level->scheduleUpdate($this->getPowered(), $this->getDelay());
+                            $this->level->scheduleDelayedBlockUpdate($this->getPowered(), $this->getDelay());
                         }
                     }
                 }
@@ -105,7 +107,7 @@ abstract class RedstoneDiode extends Flowable {
             $shouldPowered = $this->shouldBePowered();
 
             if (($this->isPowered && !$shouldPowered || !$this->isPowered && $shouldPowered) && !$this->level->isUpdateScheduled($this, $this)) {
-                $this->level->scheduleUpdate($this, $this->getDelay());
+                $this->level->scheduleDelayedBlockUpdate($this, $this->getDelay());
             }
         }
     }
@@ -163,10 +165,6 @@ abstract class RedstoneDiode extends Flowable {
 
     public function getWeakPower(int $side): int{
         return !$this->isPowered() ? 0 : ($this->getFacing() == $side ? $this->getRedstoneSignal() : 0);
-    }
-
-    public function canBeActivated(): bool{
-        return true;
     }
 
     /**

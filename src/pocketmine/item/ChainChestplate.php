@@ -58,7 +58,7 @@ class ChainChestplate extends Armor {
 	/**
 	 * @return int
 	 */
-	public function getArmorValue(){
+	public function getDefensePoints() : int{
 		return 5;
 	}
 

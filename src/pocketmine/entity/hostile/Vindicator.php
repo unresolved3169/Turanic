@@ -34,9 +34,6 @@ class Vindicator extends Monster {
 	public $width = 0.6;
 	public $height = 0;
 
-	public $dropExp = [5, 5];
-
-
 	/**
 	 * @return string
 	 */
@@ -63,4 +60,8 @@ class Vindicator extends Monster {
 
 		return $drops;
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

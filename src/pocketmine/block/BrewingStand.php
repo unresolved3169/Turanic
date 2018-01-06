@@ -36,84 +36,35 @@ class BrewingStand extends Transparent {
 
 	protected $id = self::BREWING_STAND_BLOCK;
 
-	/**
-	 * BrewingStand constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($block->getSide(Vector3::SIDE_DOWN)->isTransparent() === false){
-			$this->getLevel()->setBlock($block, $this, true, true);
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if($blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent() === false){
+			$bool = $this->getLevel()->setBlock($blockReplace, $this, true, true);
             Tile::createTile(Tile::BREWING_STAND, $this->getLevel(), TileBrewingStand::createNBT($this, $face, $item, $player));
-			return true;
+			return $bool;
 		}
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
 	}
 
-    /**
-     * @return bool
-     */
     public function canHarvestWithHand(): bool{
         return false;
 	}
 
-    /**
-	 * @return float
-	 */
-	public function getResistance(){
-		return 2.5;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 1;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Brewing Stand";
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
 			$t = $this->getLevel()->getTile($this);
@@ -136,11 +87,6 @@ class BrewingStand extends Transparent {
 		return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		$drops = [];
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){

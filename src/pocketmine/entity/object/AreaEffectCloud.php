@@ -156,7 +156,7 @@ class AreaEffectCloud extends Entity {
         return "Area Effect Cloud";
     }
 
-    public function canCollideWith(Entity $entity){
+    public function canCollideWith(Entity $entity) : bool{
         return $entity instanceof Living;
     }
 }

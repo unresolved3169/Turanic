@@ -28,6 +28,7 @@ use pocketmine\inventory\EnchantInventory;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
 use pocketmine\tile\EnchantTable;
@@ -36,23 +37,14 @@ class EnchantingTable extends Transparent {
 
 	protected $id = self::ENCHANTING_TABLE;
 
-	/**
-	 * EnchantingTable constructor.
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 12;
 	}
 
-	/**
-	 * @return AxisAlignedBB
-	 */
 	public function getBoundingBox(){
 		return new AxisAlignedBB(
 			$this->x,
@@ -64,66 +56,29 @@ class EnchantingTable extends Transparent {
 		);
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$this->getLevel()->setBlock($block, $this, true, true);
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
         Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel(), EnchantTable::createNBT($this, $face, $item, $player));
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getResistance(){
+	public function getResistance() : float{
 		return 6000;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Enchanting Table";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
         if (!$this->getLevel()->getServer()->enchantingTableEnabled) {
             return true;
@@ -143,11 +98,6 @@ class EnchantingTable extends Transparent {
         return true;
     }
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [

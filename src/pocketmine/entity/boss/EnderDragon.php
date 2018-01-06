@@ -30,8 +30,6 @@ class EnderDragon extends Monster {
 
 	const NETWORK_ID = self::ENDER_DRAGON;
 
-	public $dropExp = [500, 12, 000];//TODO: Add death animation and exp drop.
-
 	public function initEntity(){
 		$this->setMaxHealth(200);
 		parent::initEntity();
@@ -43,5 +41,9 @@ class EnderDragon extends Monster {
 	public function getName() : string{
 		return "Ender Dragon";
 	}
+
+	public function getXpDropAmount(): int{
+        return 12000;
+    }
 
 }

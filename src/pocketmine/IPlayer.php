@@ -2,15 +2,12 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
  *      | | | | | '__/ _` | '_ \| |/ __|
  *      | | |_| | | | (_| | | | | | (__
  *      |_|\__,_|_|  \__,_|_| |_|_|\___|
- *
- *
  *
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine;
 
@@ -48,7 +46,7 @@ interface IPlayer extends ServerOperator {
 	/**
 	 * @param bool $banned
 	 */
-	public function setBanned($banned);
+	public function setBanned(bool $banned);
 
 	/**
 	 * @return bool
@@ -58,7 +56,7 @@ interface IPlayer extends ServerOperator {
 	/**
 	 * @param bool $value
 	 */
-	public function setWhitelisted($value);
+	public function setWhitelisted(bool $value);
 
 	/**
 	 * @return Player|null

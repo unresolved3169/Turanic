@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Tile;
 use pocketmine\tile\CommandBlock as TileCB;
@@ -33,41 +34,23 @@ use pocketmine\tile\CommandBlock as TileCB;
 class CommandBlock extends Solid {
 	protected $id = self::COMMAND_BLOCK;
 
-	/**
-	 * CommandBlock constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Command Block";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return -1;
 	}
 
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
         return false;
     }
 
-    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         if(!($player instanceof Player) && !$player->isOp() && !$player->isCreative()){
             return false;
         }
@@ -90,9 +73,9 @@ class CommandBlock extends Solid {
             5 => 1
         ];
         $this->meta = $faces[$f];
-        $this->level->setBlock($this, $this);
+        $bool = $this->level->setBlock($this, $this);
         Tile::createTile(Tile::COMMAND_BLOCK, $this->level, TileCB::createNBT($this, $face, $item, $player));
-        return true;
+        return $bool;
     }
 
     public function onActivate(Item $item, Player $player = null){
@@ -124,7 +107,7 @@ class CommandBlock extends Solid {
         return $this->level->getTile($this);
     }
 
-    public function getResistance(){
+    public function getResistance() : float{
         return 18000000;
     }
 

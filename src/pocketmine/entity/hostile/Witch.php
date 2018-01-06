@@ -29,8 +29,6 @@ use pocketmine\entity\Monster;
 class Witch extends Monster {
 	const NETWORK_ID = self::WITCH;
 
-	public $dropExp = [5, 5];
-
 	/**
 	 * @return string
 	 */
@@ -50,4 +48,8 @@ class Witch extends Monster {
 		//TODO
 		return [];
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

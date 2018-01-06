@@ -67,7 +67,7 @@ class ConsoleCommandSender implements CommandSender {
 	 *
 	 * @return \pocketmine\permission\PermissionAttachment
 	 */
-	public function addAttachment(Plugin $plugin, $name = null, $value = null){
+	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null){
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
@@ -137,7 +137,7 @@ class ConsoleCommandSender implements CommandSender {
 	/**
 	 * @param bool $value
 	 */
-	public function setOp($value){
+	public function setOp(bool $value){
 
 	}
 

@@ -35,87 +35,44 @@ use pocketmine\level\sound\ExplodeSound;
 use pocketmine\level\sound\GraySplashSound;
 use pocketmine\level\sound\SpellSound;
 use pocketmine\level\sound\SplashSound;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\tile\Cauldron as TileCauldron;
 use pocketmine\tile\Tile;
 use pocketmine\utils\Color;
 
+// TODO : NEED UPDATE
 class Cauldron extends Solid {
 
 	protected $id = self::CAULDRON_BLOCK;
 
-	/**
-	 * Cauldron constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Cauldron";
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         Tile::createTile(Tile::CAULDRON, $this->getLevel(), TileCauldron::createNBT($this, $face, $item, $player));
 
-		$this->getLevel()->setBlock($block, $this, true, true);
-		return true;
+		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
 	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new Air(), true);
-		return true;
+		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
@@ -130,27 +87,15 @@ class Cauldron extends Solid {
 		$this->getLevel()->setBlock($this, $this, true);//Undo the damage value
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isEmpty(){
 		return $this->meta === 0x00;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isFull(){
 		return $this->meta === 0x06;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Item $item, Player $player = null){//@author iTX. rewrite @Dog194
+	public function onActivate(Item $item, Player $player = null){
 		$tile = $this->getLevel()->getTile($this);
 		if(!($tile instanceof TileCauldron)){
 			return false;
@@ -319,11 +264,6 @@ class Cauldron extends Solid {
 		return true;
 	}
 
-	/**
-	 * @param Item   $item
-	 * @param Player $player
-	 * @param Item   $result
-	 */
 	public function addItem(Item $item, Player $player, Item $result){
 		if($item->getCount() <= 1){
 			$player->getInventory()->setItemInHand($result);
@@ -339,9 +279,6 @@ class Cauldron extends Solid {
 		}
 	}
 
-    /**
-     * @return bool
-     */
     public function canHarvestWithHand(): bool{
         return false;
     }

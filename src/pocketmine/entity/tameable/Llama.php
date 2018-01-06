@@ -41,7 +41,6 @@ class Llama extends Animal {
 	public $width = 0.3;
 	public $height = 0;
 
-	public $dropExp = [1, 3];
 	public $drag = 0.2;
 	public $gravity = 0.3;
 
@@ -73,4 +72,8 @@ class Llama extends Animal {
 
 		return $drops;
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

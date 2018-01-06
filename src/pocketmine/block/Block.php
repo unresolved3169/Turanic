@@ -427,23 +427,21 @@ class Block extends Position implements BlockIds, Metadatable{
         $this->itemId = $itemId;
 	}
 
-	/**
-	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
-	 *
-	 * @param Item   $item
-	 * @param Block  $block
-	 * @param Block  $target
-	 * @param int    $face
-	 * @param float  $fx
-	 * @param float  $fy
-	 * @param float  $fz
-	 * @param Player $player = null
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		return $this->getLevel()->setBlock($this, $this, true, true);
-	}
+    /**
+     * Places the Block, using block space and block target, and side. Returns if the block has been placed.
+     *
+     * @param Item        $item
+     * @param Block       $blockReplace
+     * @param Block       $blockClicked
+     * @param int         $face
+     * @param Vector3     $clickVector
+     * @param Player|null $player
+     *
+     * @return bool
+     */
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+        return $this->getLevel()->setBlock($this, $this, true, true);
+    }
 
 	public function clearCaches(){
 	    $this->boundingBox = null;
@@ -471,6 +469,28 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function getToolHarvestLevel() : int{
         return 0;
  	}
+
+    /**
+     * Returns whether the specified item is the proper tool to use for breaking this block. This checks tool type and
+     * harvest level requirement.
+     *
+     * In most cases this is also used to determine whether block drops should be created or not, except in some
+     * special cases such as vines.
+     *
+     * @param Item $tool
+     *
+     * @return bool
+     */
+    public function isCompatibleWithTool(Item $tool) : bool{
+        if($this->getHardness() < 0){
+            return false;
+        }
+
+        $toolType = $this->getToolType();
+        $harvestLevel = $this->getToolHarvestLevel();
+        return $toolType === Tool::TYPE_NONE or $harvestLevel === 0 or (
+                ($toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $harvestLevel);
+    }
 
 	/**
 	 * Do the actions needed so the block is broken with the Item
@@ -662,15 +682,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	/**
-	 * AKA: Block->isActivable
-	 *
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return false;
-	}
-
 	public function activate(){ // TODO : remove
 		return false;
 	}
@@ -813,6 +824,16 @@ class Block extends Position implements BlockIds, Metadatable{
 
 		return Block::get(Item::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
 	}
+
+    /**
+     * Returns a list of blocks that this block is part of. In most cases, only contains the block itself, but in cases
+     * such as double plants, beds and doors, will contain both halves.
+     *
+     * @return Block[]
+     */
+    public function getAffectedBlocks() : array{
+        return [$this];
+    }
 
 	/**
 	 * @return string

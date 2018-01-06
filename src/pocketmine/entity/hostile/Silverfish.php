@@ -29,12 +29,14 @@ use pocketmine\entity\Monster;
 class Silverfish extends Monster {
 	const NETWORK_ID = self::SILVERFISH;
 
-	public $dropExp = [5, 5];
-
 	/**
 	 * @return string
 	 */
 	public function getName() : string{
 		return "Silverfish";
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

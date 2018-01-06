@@ -2,30 +2,36 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Tool;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class DoublePlant extends Flowable {
+    const BITFLAG_TOP = 0x08;
 
 	protected $id = self::DOUBLE_PLANT;
 
@@ -36,25 +42,14 @@ class DoublePlant extends Flowable {
 	const ROSE_BUSH = 4;
 	const PEONY = 5;
 
-	/**
-	 * DoublePlant constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeReplaced(){
-		return true;
+	public function canBeReplaced() : bool{
+        return $this->meta === 2 or $this->meta === 3; //grass or fern
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		static $names = [
 			0 => "Sunflower",
@@ -67,45 +62,48 @@ class DoublePlant extends Flowable {
 		return $names[$this->getVariant()] ?? "";
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate($type){
-		if($type === Level::BLOCK_UPDATE_NORMAL){
-			if($this->getSide(0)->isTransparent() === true && !$this->getSide(0) instanceof DoublePlant){ //Replace with common break method
-				$this->getLevel()->setBlock($this, new Air(), false, false);
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+        $id = $blockReplace->getSide(Vector3::SIDE_DOWN)->getId();
+        if(($id === Block::GRASS or $id === Block::DIRT) and $blockReplace->getSide(Vector3::SIDE_UP)->canBeReplaced()){
+            $this->getLevel()->setBlock($blockReplace, $this, false, false);
+            $this->getLevel()->setBlock($blockReplace->getSide(Vector3::SIDE_UP), Block::get($this->id, $this->meta | self::BITFLAG_TOP), false, false);
 
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
-		}
+            return true;
+        }
 
-		return false;
+        return false;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		$down = $this->getSide(0);
-		$up = $this->getSide(1);
-		if($down->getId() === self::GRASS or $down->getId() === self::DIRT){
-			$this->getLevel()->setBlock($block, $this, true);
-			$this->getLevel()->setBlock($up, Block::get($this->id, $this->meta ^ 0x08), true);
-			return true;
-		}
-		return false;
-	}
+    /**
+     * Returns whether this double-plant has a corresponding other half.
+     * @return bool
+     */
+    public function isValidHalfPlant() : bool{
+        if($this->meta & self::BITFLAG_TOP){
+            $other = $this->getSide(Vector3::SIDE_DOWN);
+        }else{
+            $other = $this->getSide(Vector3::SIDE_UP);
+        }
+
+        return (
+            $other->getId() === $this->getId() and
+            $other->getVariant() === $this->getVariant() and
+            ($other->getDamage() & self::BITFLAG_TOP) !== ($this->getDamage() & self::BITFLAG_TOP)
+        );
+    }
+
+    public function onUpdate($type){
+        if($type === Level::BLOCK_UPDATE_NORMAL){
+            $down = $this->getSide(Vector3::SIDE_DOWN);
+            if(!$this->isValidHalfPlant() or (($this->meta & self::BITFLAG_TOP) === 0 and $down->isTransparent())){
+                $this->getLevel()->useBreakOn($this);
+
+                return Level::BLOCK_UPDATE_NORMAL;
+            }
+        }
+
+        return false;
+    }
 
 	/**
 	 * @param Item $item
@@ -130,16 +128,39 @@ class DoublePlant extends Flowable {
 		}
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
+    public function getVariantBitmask() : int{
+        return 0x07;
+    }
+
+    public function getToolType() : int{
+        return ($this->meta === 2 or $this->meta === 3) ? Tool::TYPE_SHEARS : Tool::TYPE_NONE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return ($this->meta === 2 or $this->meta === 3) ? 1 : 0; //only grass or fern require shears
+    }
+
 	public function getDrops(Item $item) : array{
-		if(($this->meta & 0x08) !== 0x08){
-			return [[Item::DOUBLE_PLANT, $this->meta, 1]];
-		}else{
-			return [];
-		}
+        if($this->meta & self::BITFLAG_TOP){
+            if($this->isCompatibleWithTool($item)){
+                return parent::getDrops($item);
+            }
+
+            if(mt_rand(0, 24) === 0){
+                return [
+                    [Item::SEEDS, 0, 1]
+                ];
+            }
+        }
+
+        return [];
 	}
+
+    public function getAffectedBlocks() : array{
+        if($this->isValidHalfPlant()){
+            return [$this, $this->getSide(($this->meta & self::BITFLAG_TOP) !== 0 ? Vector3::SIDE_DOWN : Vector3::SIDE_UP)];
+        }
+
+        return parent::getAffectedBlocks();
+    }
 }

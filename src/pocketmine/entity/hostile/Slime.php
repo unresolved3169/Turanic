@@ -41,8 +41,6 @@ class Slime extends Monster {
 
 	public $width = 0.3;
 	public $height = 0;
-
-	public $dropExp = [1, 4];
 	
 	public $drag = 0.2;
 	public $gravity = 0.3;
@@ -115,6 +113,18 @@ class Slime extends Monster {
                 return 6;
         }
         return 3;
+    }
+
+    public function getXpDropAmount(): int{
+        switch($this->slimeSize){
+            case self::SIZE_TINY:
+                return 1;
+            case self::SIZE_SMALL:
+                return 2;
+            case self::SIZE_BIG:
+                return 4;
+        }
+        return parent::getXpDropAmount();
     }
 
     public function saveNBT(){

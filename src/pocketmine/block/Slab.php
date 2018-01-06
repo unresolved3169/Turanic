@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -30,6 +32,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
+// TODO : UPDATE!?!?!?
 class Slab extends Transparent {
 
 	const STONE = 0;
@@ -43,25 +46,14 @@ class Slab extends Transparent {
 
 	protected $id = self::SLAB;
 
-	/**
-	 * Slab constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		static $names = [
 			0 => "Stone",
@@ -123,63 +115,51 @@ class Slab extends Transparent {
 		}
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta &= 0x07;
 		if($face === 0){
-			if($target->getId() === self::SLAB and ($target->getDamage() & 0x08) === 0x08 and ($target->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+			if($blockClicked->getId() === self::SLAB and ($blockClicked->getDamage() & 0x08) === 0x08 and ($blockClicked->getDamage() & 0x07) === ($this->meta & 0x07)){
+				$this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
-			}elseif($block->getId() === self::SLAB and ($block->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+			}elseif($blockReplace->getId() === self::SLAB and ($blockReplace->getDamage() & 0x07) === ($this->meta & 0x07)){
+				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}else{
 				$this->meta |= 0x08;
 			}
 		}elseif($face === 1){
-			if($target->getId() === self::SLAB and ($target->getDamage() & 0x08) === 0 and ($target->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+			if($blockClicked->getId() === self::SLAB and ($blockClicked->getDamage() & 0x08) === 0 and ($blockClicked->getDamage() & 0x07) === ($this->meta & 0x07)){
+				$this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
-			}elseif($block->getId() === self::SLAB and ($block->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+			}elseif($blockReplace->getId() === self::SLAB and ($blockReplace->getDamage() & 0x07) === ($this->meta & 0x07)){
+				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}
 			//TODO: check for collision
 		}else{
-			if($block->getId() === self::SLAB){
-				if(($block->getDamage() & 0x07) === ($this->meta & 0x07)){
-					$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+			if($blockReplace->getId() === self::SLAB){
+				if(($blockReplace->getDamage() & 0x07) === ($this->meta & 0x07)){
+					$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 					return true;
 				}
 
 				return false;
 			}else{
-				if($fy > 0.5){
+				if($clickVector->y > 0.5){
 					$this->meta |= 0x08;
 				}
 			}
 		}
 
-		if($block->getId() === self::SLAB and ($target->getDamage() & 0x07) !== ($this->meta & 0x07)){
+		if($blockReplace->getId() === self::SLAB and ($blockClicked->getDamage() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}

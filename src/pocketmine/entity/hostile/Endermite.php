@@ -32,8 +32,6 @@ class Endermite extends Monster {
 	public $width = 0.3;
 	public $height = 0;
 
-	public $dropExp = [5, 5];
-
 	/**
 	 * @return string
 	 */
@@ -45,4 +43,8 @@ class Endermite extends Monster {
 		$this->setMaxHealth(8);
 		parent::initEntity();
 	}
+
+    public function getXpDropAmount(): int{
+        return 3;
+    }
 }

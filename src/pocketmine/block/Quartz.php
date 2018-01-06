@@ -22,10 +22,14 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Quartz extends Solid {
@@ -35,28 +39,20 @@ class Quartz extends Solid {
 	const QUARTZ_PILLAR = 2;
 	const QUARTZ_PILLAR2 = 3;
 
-
+    const NORMAL = self::QUARTZ_NORMAL;
+    const CHISELED = self::QUARTZ_CHISELED;
+    const PILLAR = self::QUARTZ_PILLAR;
+    
 	protected $id = self::QUARTZ_BLOCK;
-
-	/**
-	 * Quartz constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
-
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	
+	public function getHardness() : float{
 		return 0.8;
 	}
-
-	/**
-	 * @return string
-	 */
+	
 	public function getName() : string{
 		static $names = [
 			0 => "Quartz Block",
@@ -64,22 +60,10 @@ class Quartz extends Solid {
 			2 => "Quartz Pillar",
 			3 => "Quartz Block",
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->meta & 0x03] ?? "Unknown";
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($this->meta === 1 or $this->meta === 2){
 			//Quartz pillar block and chiselled quartz have different orientations
 			$faces = [
@@ -92,27 +76,29 @@ class Quartz extends Solid {
 			];
 			$this->meta = ($this->meta & 0x03) | $faces[$face];
 		}
-		$this->getLevel()->setBlock($block, $this, true, true);
-		return true;
+		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
+	
+	public function getToolHarvestLevel(): int{
+        return TieredTool::TIER_WOODEN;
+    }
+    
+    public function getVariantBitmask(): int{
+        return 0x03;
+    }
 
-	/**
+    /**
 	 * @param Item $item
 	 *
 	 * @return array
 	 */
 	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return [
-				[Item::QUARTZ_BLOCK, $this->meta & 0x03, 1],
-			];
+		if($this->isCompatibleWithTool($item)){
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}

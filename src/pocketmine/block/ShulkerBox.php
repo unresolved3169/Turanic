@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Tool;
@@ -37,11 +39,11 @@ class ShulkerBox extends Transparent {
 
     protected $id = self::SHULKER_BOX;
 
-    public function __construct($meta = 0){
+    public function __construct(int $meta = 0){
  		$this->meta = $meta;
  	}
 
- 	public function getToolType(){
+ 	public function getToolType() : int{
         return Tool::TYPE_PICKAXE;
     }
 
@@ -67,9 +69,10 @@ class ShulkerBox extends Transparent {
         return $names[$this->meta & 0x0f];
     }
 
-    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         $this->getLevel()->setBlock($this, $this, true, true);
         Tile::createTile(Tile::SHULKER_BOX, $this->getLevel(), TileShulkerBox::createNBT($this, $face, $item, $player));
+        return true;
     }
 
     public function onActivate(Item $item, Player $player = null){
@@ -115,12 +118,8 @@ class ShulkerBox extends Transparent {
         return true;
     }
 
-    public function getHardness(){
+    public function getHardness() : float{
         return 6;
-    }
-
-    public function canBeActivated(): bool{
-        return true;
     }
 
     public function getDrops(Item $item): array{

@@ -49,15 +49,15 @@ class Vine extends Flowable {
 		return "Vines";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.2;
 	}
 
-	public function canPassThrough(){
+	public function canPassThrough() : bool{
 		return true;
 	}
 
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
@@ -138,8 +138,8 @@ class Vine extends Flowable {
         );
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-        if (!$target->isSolid() or $face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN) {
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+        if (!$blockClicked->isSolid() or $face === Vector3::SIDE_UP or $face === Vector3::SIDE_DOWN) {
             return false;
         }
         $faces = [
@@ -149,10 +149,10 @@ class Vine extends Flowable {
             Vector3::SIDE_EAST => self::FLAG_WEST
         ];
         $this->meta = $faces[$face] ?? 0;
-        if ($block->getId() === $this->getId()) {
-            $this->meta |= $block->meta;
+        if ($blockReplace->getId() === $this->getId()) {
+            $this->meta |= $blockReplace->meta;
         }
-        $this->getLevel()->setBlock($block, $this, true, true);
+        $this->getLevel()->setBlock($blockReplace, $this, true, true);
         return true;
     }
 
@@ -202,7 +202,7 @@ class Vine extends Flowable {
 		}
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 }

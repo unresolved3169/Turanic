@@ -34,7 +34,6 @@ use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAt
 class Skeleton extends Monster implements ProjectileSource {
 	const NETWORK_ID = self::SKELETON;
 
-	public $dropExp = [5, 5];
 	public $drag = 0.2;
 	public $gravity = 0.3;
 	
@@ -78,4 +77,8 @@ class Skeleton extends Monster implements ProjectileSource {
 
 		return $drops;
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

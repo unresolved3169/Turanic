@@ -59,7 +59,7 @@ class LeatherTunic extends Armor {
 	/**
 	 * @return int
 	 */
-	public function getArmorValue(){
+	public function getDefensePoints() : int{
 		return 3;
 	}
 

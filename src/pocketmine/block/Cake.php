@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\entity\Effect;
 use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
@@ -37,39 +36,18 @@ class Cake extends Transparent implements FoodSource {
 
 	protected $id = self::CAKE_BLOCK;
 
-	/**
-	 * Cake constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Cake Block";
 	}
 
-	/**
-	 * @return AxisAlignedBB
-	 */
 	protected function recalculateBoundingBox(){
 
         $f = $this->getDamage() * 0.125; //1 slice width
@@ -84,34 +62,15 @@ class Cake extends Transparent implements FoodSource {
         );
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() !== self::AIR){
-			$this->getLevel()->setBlock($block, $this, true, true);
-
-			return true;
+			return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 		}
 
 		return false;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
@@ -124,21 +83,10 @@ class Cake extends Transparent implements FoodSource {
 		return false;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		return [];
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
         if($player !== null){
             $player->consumeObject($this);
@@ -166,9 +114,6 @@ class Cake extends Transparent implements FoodSource {
 		return 0.4;
 	}
 
-	/**
-	 * @return Air|Cake
-	 */
 	public function getResidue(){
 		$clone = clone $this;
 		$clone->meta++;
@@ -178,9 +123,6 @@ class Cake extends Transparent implements FoodSource {
 		return $clone;
 	}
 
-	/**
-	 * @return Effect[]
-	 */
 	public function getAdditionalEffects() : array{
 		return [];
 	}

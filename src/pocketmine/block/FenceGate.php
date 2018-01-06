@@ -28,35 +28,19 @@ use pocketmine\item\Item;
 use pocketmine\item\Tool;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class FenceGate extends Transparent implements ElectricalAppliance {
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
-
-	/**
-	 * @return null|AxisAlignedBB
-	 */
 	protected function recalculateBoundingBox(){
 		if(($this->getDamage() & 0x04) > 0){
 			return null;
@@ -84,54 +68,18 @@ class FenceGate extends Transparent implements ElectricalAppliance {
 		}
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta = ($player instanceof Player ? ($player->getDirection() - 1) & 0x03 : 0);
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}
 
-	public function getVariantBitmask(): int{
+	public function getVariantBitmask() : int{
 	    return 0;
     }
 
-    /**
-	 * @return bool
-	 */
-	public function isOpened(){
-		return (($this->getDamage() & 0x04) > 0);
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->id, 0, 1],
-		];
-	}
-
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		$this->meta = (($this->meta ^ 0x04) & ~0x02);
 
 		if($player !== null){
@@ -143,7 +91,7 @@ class FenceGate extends Transparent implements ElectricalAppliance {
 		return true;
 	}
 
-	public function getFuelTime(): int{
+	public function getFuelTime() : int{
         return 300;
     }
 }

@@ -28,9 +28,8 @@ use pocketmine\item\Item;
 
 class Leaves2 extends Leaves {
 
-	const WOOD_TYPE = self::WOOD2;
-
 	protected $id = self::LEAVES2;
+    protected $woodType = self::WOOD2;
 
 	/**
 	 * Leaves2 constructor.

@@ -23,40 +23,26 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
+// TODO : UPDATE
 class RedstoneTorch extends Flowable {
 
 	protected $id = self::REDSTONE_TORCH;
 
-	/**
-	 * RedstoneTorch constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 7;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Redstone Torch";
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
 	public function onBreak(Item $item){
 		$this->getLevel()->setBlock($this, new Air(), true, true);
 		$faces = [
@@ -73,19 +59,7 @@ class RedstoneTorch extends Flowable {
         }
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$below = $this->getSide(0);
         $faces = [
             1 => 5,
@@ -95,9 +69,9 @@ class RedstoneTorch extends Flowable {
             5 => 1,
         ];
 
-        if(!$target->isTransparent() and $face !== 0){
+        if(!$blockClicked->isTransparent() and $face !== 0){
 			$this->meta = $faces[$face];
-			$this->getLevel()->setBlock($block, $this, true, true);
+			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 			foreach($faces as $face){
                 $this->level->updateAround($this->getSide($face));
@@ -105,7 +79,7 @@ class RedstoneTorch extends Flowable {
 			return true;
 		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLE_WALL){
 			$this->meta = 0;
-			$this->getLevel()->setBlock($block, $this, true, true);
+			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
             foreach($faces as $face){
                 $this->level->updateAround($this->getSide($face));
@@ -124,22 +98,12 @@ class RedstoneTorch extends Flowable {
         return true;
     }
 
-    /**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		return [
 			[Item::LIT_REDSTONE_TORCH, 0, 1],
 		];
 	}
 
-	/**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
 	public function isActivated(Block $from = null){
 		return true;
 	}

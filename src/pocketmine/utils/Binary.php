@@ -31,6 +31,14 @@ class Binary {
 	const BIG_ENDIAN = 0x00;
 	const LITTLE_ENDIAN = 0x01;
 
+    public static function unsignByte(int $value) : int{
+        return $value & 0xff;
+    }
+
+    public static function signByte(int $value) : int{
+        return $value << 56 >> 56;
+    }
+
 	/**
 	 * Reads a 3-byte big-endian number
 	 *

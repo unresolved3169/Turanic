@@ -40,9 +40,8 @@ class Leaves extends Transparent {
 	const ACACIA = 0;
 	const DARK_OAK = 1;
 
-	const WOOD_TYPE = self::WOOD;
-
 	protected $id = self::LEAVES;
+    protected $woodType = self::WOOD;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -174,9 +173,9 @@ class Leaves extends Transparent {
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta |= 0x04;
-		$this->getLevel()->setBlock($this, $this, true);
+		return $this->getLevel()->setBlock($this, $this, true);
 	}
 
     public function getDrops(Item $item) : array{

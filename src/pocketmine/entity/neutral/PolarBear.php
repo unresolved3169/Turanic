@@ -24,11 +24,11 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\neutral;
 
-use pocketmine\entity\Monster;
+use pocketmine\entity\Animal;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior, PanicBehavior};
 
-class PolarBear extends Monster {
+class PolarBear extends Animal {
 	const NETWORK_ID = self::POLAR_BEAR;
 
 	public $width = 0.6;
@@ -66,4 +66,8 @@ class PolarBear extends Monster {
 		$drops[] = ItemItem::get(ItemItem::RAW_FISH, 0, mt_rand(0, 2));
 		return $drops;
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

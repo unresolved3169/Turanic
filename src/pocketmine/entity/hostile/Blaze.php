@@ -36,8 +36,6 @@ class Blaze extends Monster {
 	public $width = 0.3;
 	public $height = 0;
 
-	public $dropExp = [10, 10];
-
 	/**
 	 * @return string
 	 */
@@ -63,4 +61,8 @@ class Blaze extends Monster {
 		return [];
 
 	}
+
+	public function getXpDropAmount(): int{
+        return 10;
+    }
 }

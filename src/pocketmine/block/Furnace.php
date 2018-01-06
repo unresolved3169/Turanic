@@ -37,7 +37,7 @@ class Furnace extends BurningFurnace {
 		return "Furnace";
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
         return 0;
     }
 

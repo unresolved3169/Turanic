@@ -33,18 +33,9 @@ use pocketmine\Server;
 
 abstract class Crops extends Flowable {
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-        if($block->getSide(Vector3::SIDE_DOWN)->getId() === Block::FARMLAND){
-            $this->getLevel()->setBlock($block, $this, true, true);
-
-            return true;
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+        if($blockReplace->getSide(Vector3::SIDE_DOWN)->getId() === Block::FARMLAND){
+            return $this->getLevel()->setBlock($blockReplace, $this, true, true);
         }
 
         return false;

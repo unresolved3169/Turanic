@@ -78,10 +78,6 @@ class DragonEgg extends Fallable {
 		return false;
 	}
 
-	public function canBeActivated(): bool{
-        return true;
-    }
-
     /**
      * @param Item $item
      * @param Player|null $player

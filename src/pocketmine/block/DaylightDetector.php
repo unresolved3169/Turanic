@@ -62,13 +62,6 @@ class DaylightDetector extends Transparent {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
 	 * @return DLDetector|null
 	 */
 	protected function getTile(){

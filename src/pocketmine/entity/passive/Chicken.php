@@ -34,8 +34,6 @@ class Chicken extends Animal {
 
 	public $width = 0.6;
 	public $height = 0;
-
-	public $dropExp = [1, 3];
 	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
@@ -63,4 +61,8 @@ class Chicken extends Animal {
 
 		return $drops;
 	}
+
+	public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

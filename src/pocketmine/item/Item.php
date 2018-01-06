@@ -1248,10 +1248,10 @@ class Item implements ItemIds, \JsonSerializable {
 	}
 
 	/**
-	 * @return bool
+	 * @return int
 	 */
-	public function getArmorValue(){
-		return false;
+	public function getDefensePoints() : int{
+		return 0;
 	}
 
 	/**
@@ -1285,7 +1285,7 @@ class Item implements ItemIds, \JsonSerializable {
 	/**
 	 * @return int
 	 */
-	public function getAttackDamage(){
+	public function getAttackPoints() : int{
 		return 1;
 	}
 
@@ -1295,7 +1295,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return float|int
 	 */
 	public function getModifyAttackDamage(Entity $target){
-		$rec = $this->getAttackDamage();
+		$rec = $this->getAttackPoints();
 		$sharpL = $this->getEnchantmentLevel(Enchantment::TYPE_WEAPON_SHARPNESS);
 		if($sharpL > 0){
 			$rec += 0.5 * ($sharpL + 1);

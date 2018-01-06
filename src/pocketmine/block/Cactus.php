@@ -43,11 +43,11 @@ class Cactus extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.4;
 	}
 
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
@@ -72,9 +72,7 @@ class Cactus extends Transparent{
 
 	public function onEntityCollide(Entity $entity){
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
-		if($entity->attack($ev) === true){
-			$ev->useArmors();
-		}
+        $entity->attack($ev);
 	}
 
 	public function onUpdate($type){
@@ -114,7 +112,7 @@ class Cactus extends Transparent{
 		return false;
 	}
 
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         $down = $this->getSide(Vector3::SIDE_DOWN);
         if($down->getId() === self::SAND or $down->getId() === self::CACTUS){
             $block0 = $this->getSide(Vector3::SIDE_NORTH);

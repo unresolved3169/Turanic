@@ -39,7 +39,7 @@ class Sword extends TieredTool {
         return Tool::TYPE_SWORD;
     }
 
-    public function getAttackDamage() : int{
+    public function getAttackPoints() : int{
         return self::getBaseDamageFromTier($this->tier);
     }
 

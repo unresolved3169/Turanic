@@ -24,6 +24,7 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\level\sound\ButtonClickSound;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Lever extends Flowable {
@@ -36,13 +37,6 @@ class Lever extends Flowable {
 	 */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
 	}
 
 	/**
@@ -81,20 +75,8 @@ class Lever extends Flowable {
 		return false;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if(!$target->isTransparent() && $target->isSolid()){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if(!$blockClicked->isTransparent() && $blockClicked->isSolid()){
 			$faces = [
 				3 => 3,
 				2 => 4,
@@ -110,7 +92,7 @@ class Lever extends Flowable {
 			}else{
 				$this->meta = $faces[$face];
 			}
-			$this->getLevel()->setBlock($block, $this, true, true);
+			$this->getLevel()->setBlock($blockReplace, $this, true, true);
 			return true;
 		}
 		return false;

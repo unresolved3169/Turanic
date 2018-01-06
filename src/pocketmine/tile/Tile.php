@@ -316,16 +316,4 @@ abstract class Tile extends Position {
 	public function getName() : string{
 		return $this->name;
 	}
-
-	// TODO : REMOVE (junk)
-    public static function createTileFromPosition(string $type, Position $pos, ...$args){
-        $nbt = new CompoundTag("", [
-            new StringTag("id", $type),
-            new IntTag("x", (int) $pos->x),
-            new IntTag("y", (int) $pos->y),
-            new IntTag("z", (int) $pos->z),
-        ]);
-
-        return self::createTile($type, $pos->level, $nbt, ...$args);
-    }
 }

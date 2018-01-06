@@ -32,8 +32,6 @@ class Husk extends Zombie {
 	public $width = 0.6;
 	public $height = 0;
 	
-	public $dropExp = [5, 5];
-	
 	public $drag = 0.2;
 	public $gravity = 0.3;
 	
@@ -52,4 +50,8 @@ class Husk extends Zombie {
 	public function getName() : string{
 		return "Husk";
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

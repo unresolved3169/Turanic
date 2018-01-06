@@ -22,10 +22,13 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Redstone extends Solid {
@@ -36,8 +39,8 @@ class Redstone extends Solid {
         return true;
     }
 
-    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-        parent::place($item, $block, $target, $face, $fx, $fy, $fz, $player);
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+        parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
         $kontrol = false;
         foreach ([self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST] as $side) {
             /** @var RedstoneWire $wire */
@@ -51,26 +54,18 @@ class Redstone extends Solid {
         }
         if(!$kontrol)
             $this->level->updateAroundRedstone($this);
-
+        return true;
     }
 
-    /**
-	 * Redstone constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getResistance(){
+	public function getResistance() : float{
         return 10;
     }
 
-    /**
-     * @return int
-     */
-    public function getHardness(){
+    public function getHardness() : float{
         return 5;
     }
 
@@ -89,39 +84,22 @@ class Redstone extends Solid {
 		return Block::getBoundingBox();
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeFlowedInto(){
+	public function canBeFlowedInto() : bool{
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSolid(){
+	public function isSolid() : bool{
 		return true;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Block of Redstone";
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [

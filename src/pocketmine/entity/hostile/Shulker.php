@@ -35,9 +35,6 @@ class Shulker extends Monster {
 	public $width = 0.5;
 	public $height = 0;
 
-	public $dropExp = [5, 5];
-
-
 	/**
 	 * @return string
 	 */
@@ -66,4 +63,8 @@ class Shulker extends Monster {
 
 		return $drops;
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

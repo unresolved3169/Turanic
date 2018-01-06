@@ -32,8 +32,6 @@ use pocketmine\Player;
 class Stray extends Skeleton {
 	const NETWORK_ID = self::STRAY;
 
-	public $dropExp = [5, 5];
-
 	/**
 	 * @return string
 	 */
@@ -54,4 +52,8 @@ class Stray extends Skeleton {
 
 		$player->dataPacket($pk);
 	}
+
+    public function getXpDropAmount(): int{
+        return 5;
+    }
 }

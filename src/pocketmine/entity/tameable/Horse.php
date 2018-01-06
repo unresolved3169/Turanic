@@ -52,7 +52,7 @@ class Horse extends Animal{
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, rand(0, 4));
-                $this->setMaxHealth(30);
+        $this->setMaxHealth(30);
 		parent::initEntity();
 	}
 
@@ -82,5 +82,9 @@ class Horse extends Animal{
 			$player->dataPacket($pk);
 		}
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 
 }

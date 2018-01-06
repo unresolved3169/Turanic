@@ -74,7 +74,7 @@ class PermissibleBase implements Permissible {
 	 *
 	 * @throws \Throwable
 	 */
-	public function setOp($value){
+	public function setOp(bool $value){
 		if($this->opable === null){
 			throw new \LogicException("Cannot change op value as no ServerOperator is set");
 		}else{
@@ -126,7 +126,7 @@ class PermissibleBase implements Permissible {
 	 *
 	 * @throws PluginException
 	 */
-	public function addAttachment(Plugin $plugin, $name = null, $value = null){
+	public function addAttachment(Plugin $plugin, string $name = null, bool $value = null){
 		if($plugin === null){
 			throw new PluginException("Plugin cannot be null");
 		}elseif(!$plugin->isEnabled()){

@@ -58,13 +58,6 @@ class TNT extends Solid implements ElectricalAppliance {
 		return 0;
 	}
 
-    /**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
 	/**
 	 * @return int
 	 */

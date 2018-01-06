@@ -40,8 +40,6 @@ class Squid extends WaterAnimal implements Ageable {
 	public $width = 0.95;
 	public $height = 0.95;
 
-	public $dropExp = [1, 3];
-
 	/** @var Vector3 */
 	public $swimDirection = null;
 	public $swimSpeed = 0.1;
@@ -183,4 +181,8 @@ class Squid extends WaterAnimal implements Ageable {
 
 		return [];
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

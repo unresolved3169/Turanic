@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -31,28 +33,14 @@ use pocketmine\Player;
 class WoodenButton extends Flowable {
 	protected $id = self::WOODEN_BUTTON;
 
-	/**
-	 * WoodenButton constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getResistance(){
-        return 2.5;
-    }
-
-    public function getHardness(){
+	public function getHardness() : float{
         return 0.5;
     }
 
-    /**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 	    switch($type){
             case Level::BLOCK_UPDATE_NORMAL:
@@ -79,62 +67,29 @@ class WoodenButton extends Flowable {
 		return false;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Wooden Button";
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($target->isTransparent() === false){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if($blockClicked->isTransparent() === false){
 			$this->meta = $face;
-			$this->getLevel()->setBlock($block, $this, true, false);
+			$this->getLevel()->setBlock($blockClicked, $this, true, false);
 			return true;
 		}
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
 	public function isActivated(Block $from = null){
 		return (($this->meta & 0x08) === 0x08);
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		if(!$this->isActivated()){
 			$this->meta ^= 0x08;
 			$this->level->setBlock($this, $this, true, false);
 			$this->level->addSound(new ButtonClickSound($this));
-			$this->level->scheduleUpdate($this, 30);
+			$this->level->scheduleDelayedBlockUpdate($this, 30);
 			$this->level->updateAroundRedstone($this);
 			$this->level->updateAroundRedstone($this->getSide($this->getOpposite()));
 		}

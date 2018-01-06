@@ -1,31 +1,31 @@
 <?php
 
-/**
+/*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link   http://www.pocketmine.net/
- *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
+
 declare(strict_types=1);
 
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
-use pocketmine\inventory\PlayerInventory;
-use pocketmine\Player;
 
 /**
  * Called when an entity takes damage.
@@ -39,6 +39,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
     const MODIFIER_PROTECTION = 3;
     const MODIFIER_STRENGTH = 4;
     const MODIFIER_WEAKNESS = 5;
+    const MODIFIER_ABSORPTION = 5;
 
     const CAUSE_CONTACT = 0;
     const CAUSE_ENTITY_ATTACK = 1;
@@ -56,16 +57,14 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
     const CAUSE_MAGIC = 13;
     const CAUSE_CUSTOM = 14;
     const CAUSE_STARVATION = 15;
-
     const CAUSE_LIGHTNING = 16;
 
-
+    /** @var int */
     private $cause;
-    private $fireProtectL = 0;
     /** @var array */
     private $modifiers;
+    /** @var float[] */
     private $originals;
-    private $usedArmors = [];
 
 
     /**
@@ -90,27 +89,6 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
         if(!isset($this->modifiers[self::MODIFIER_BASE])){
             throw new \InvalidArgumentException("BASE Damage modifier missing");
-        }
-
-        if($entity instanceof Player and $entity->getInventory() instanceof PlayerInventory){
-            switch($cause) {
-                case self::CAUSE_CONTACT:
-                case self::CAUSE_ENTITY_ATTACK:
-                case self::CAUSE_PROJECTILE:
-                case self::CAUSE_FIRE:
-                case self::CAUSE_LAVA:
-                case self::CAUSE_BLOCK_EXPLOSION:
-                case self::CAUSE_ENTITY_EXPLOSION:
-                case self::CAUSE_LIGHTNING:
-                    $points = 0;
-                    foreach ($entity->getInventory()->getArmorContents() as $index => $i) {
-                        if ($i->isArmor()) {
-                            $points += $i->getArmorValue();
-                            $this->usedArmors[$index] = 1;
-                        }
-                    }
-                    break;
-            }
         }
     }
 
@@ -166,37 +144,25 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
     }
 
     /**
-     * notice: $usedArmors $index->$cost
-     * $index: the $index of ArmorInventory
-     * $cost:  the num of durability cost
-     */
-    public function getUsedArmors(){
-        return $this->usedArmors;
-    }
-
-    /**
-     * @return Int $fireProtectL
-     */
-    public function getFireProtectL(){
-        return $this->fireProtectL;
-    }
-
-    /**
+     * Returns whether an entity can use armour points to reduce this type of damage.
      * @return bool
      */
-    public function useArmors(){
-        if($this->entity instanceof Player){
-            if($this->entity->isSurvival() and $this->entity->isAlive()){
-                foreach($this->usedArmors as $index => $cost){
-                    $i = $this->entity->getInventory()->getArmorItem($index);
-                    if($i->isArmor()){
-                        $this->entity->getInventory()->damageArmor($index, $cost);
-                    }
-                }
-            }
-            return true;
+    public function canBeReducedByArmor() : bool{
+        switch($this->cause){
+            case self::CAUSE_FIRE_TICK:
+            case self::CAUSE_SUFFOCATION:
+            case self::CAUSE_DROWNING:
+            case self::CAUSE_STARVATION:
+            case self::CAUSE_FALL:
+            case self::CAUSE_VOID:
+            case self::CAUSE_MAGIC:
+            case self::CAUSE_SUICIDE:
+                //TODO: lightning
+                return false;
+
         }
-        return false;
+
+        return true;
     }
 
 }

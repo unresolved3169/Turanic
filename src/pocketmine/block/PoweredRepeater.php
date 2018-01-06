@@ -46,13 +46,6 @@ class PoweredRepeater extends RedstoneDiode {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
 	 * @return int
 	 */
 	public function getStrength(){

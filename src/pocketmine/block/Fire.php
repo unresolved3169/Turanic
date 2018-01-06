@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\entity\Living;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Effect;
 use pocketmine\entity\Entity;
@@ -78,16 +79,17 @@ class Fire extends Flowable {
 	 * @param Entity $entity
 	 */
 	public function onEntityCollide(Entity $entity){
-		$ProtectL = 0;
-		if(!$entity->hasEffect(Effect::FIRE_RESISTANCE)){
-			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
-			if($entity->attack($ev) === true){
-				$ev->useArmors();
-			}
-			$ProtectL = $ev->getFireProtectL();
+	    $damage = true;
+		if($entity instanceof Living and !$entity->hasEffect(Effect::FIRE_RESISTANCE)){
+			$damage = false;
 		}
 
-		$ev = new EntityCombustByBlockEvent($this, $entity, 8, $ProtectL);
+		if($damage){
+            $ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
+            $entity->attack($ev);
+        }
+
+		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
 		if($entity instanceof Arrow){
 			$ev->setCancelled();
 		}

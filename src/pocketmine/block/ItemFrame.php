@@ -35,36 +35,16 @@ use pocketmine\tile\Tile;
 
 class ItemFrame extends Flowable {
 	protected $id = Block::ITEM_FRAME_BLOCK;
+	protected $itemId = Item::ITEM_FRAME;
 
-	/**
-	 * ItemFrame constructor.
-	 *
-	 * @param int $meta
-	 */
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Item Frame";
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		if(!(($tile = $this->level->getTile($this)) instanceof TileItemFrame)){
 		    /** @var TileItemFrame $tile */
@@ -77,19 +57,14 @@ class ItemFrame extends Flowable {
 		}elseif(!$item->isNull()){
             $tile->setItem($item->pop());
             $this->getLevel()->addSound(new ItemFrameAddItemSound($this));
-            if($item->getId() === Item::FILLED_MAP){
+            /*if($item->getId() === Item::FILLED_MAP){
                 $tile->setMapID($item->getMapId()); // TODO
-            }
+            }*/
         }
 
 		return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed
-	 */
 	public function onBreak(Item $item){
 	    /** @var TileItemFrame $tile */
 		if(($tile = $this->level->getTile($this)) instanceof TileItemFrame){
@@ -101,11 +76,6 @@ class ItemFrame extends Flowable {
 		return parent::onBreak($item);
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$sides = [
@@ -122,20 +92,8 @@ class ItemFrame extends Flowable {
 		return false;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
-		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP or !$target->isSolid()){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+		if($face === Vector3::SIDE_DOWN or $face === Vector3::SIDE_UP or !$blockClicked->isSolid()){
 			return false;
 		}
 
@@ -147,23 +105,12 @@ class ItemFrame extends Flowable {
 		];
 
 		$this->meta = $faces[$face];
-		$this->level->setBlock($block, $this, true, true);
+		$this->level->setBlock($blockReplace, $this, true, true);
 
         Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this, $face, $item, $player));
 
 		return true;
 
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[Item::ITEM_FRAME, 0, 1]
-		];
 	}
 
 }

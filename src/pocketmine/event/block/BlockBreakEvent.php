@@ -2,22 +2,25 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link   http://www.pocketmine.net/
- *
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
+
+declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
@@ -27,79 +30,89 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 
 class BlockBreakEvent extends BlockEvent implements Cancellable {
-	public static $handlerList = null;
+    public static $handlerList = null;
 
-	/** @var \pocketmine\Player */
-	protected $player;
+    /** @var Player */
+    protected $player;
 
-	/** @var \pocketmine\item\Item */
-	protected $item;
+    /** @var Item */
+    protected $item;
 
-	/** @var bool */
-	protected $instaBreak = false;
-	protected $blockDrops = [];
+    /** @var bool */
+    protected $instaBreak = false;
+    /** @var Item[] */
+    protected $blockDrops = [];
 
-	/**
-	 * BlockBreakEvent constructor.
-	 *
-	 * @param Player $player
-	 * @param Block  $block
-	 * @param Item   $item
-	 * @param bool   $instaBreak
-	 */
-	public function __construct(Player $player, Block $block, Item $item, $instaBreak = false){
-		$this->block = $block;
-		$this->item = $item;
-		$this->player = $player;
-		$this->instaBreak = (bool) $instaBreak;
-		$drops = $player->isSurvival() ? $block->getDrops($item) : [];
-		if($drops != null && is_numeric($drops[0]))
-			$this->blockDrops[] = Item::get($drops[0], $drops[1], $drops[2]);
-		else
-			foreach($drops as $i){
-				$this->blockDrops[] = Item::get($i[0], $i[1], $i[2]);
-			}
-	}
+    /**
+     * @param Player $player
+     * @param Block  $block
+     * @param Item   $item
+     * @param bool   $instaBreak
+     * @param Item[] $drops
+     */
+    public function __construct(Player $player, Block $block, Item $item, bool $instaBreak = false, array $drops){
+        parent::__construct($block);
+        $this->item = $item;
+        $this->player = $player;
 
-	/**
-	 * @return Player
-	 */
-	public function getPlayer(){
-		return $this->player;
-	}
+        $this->instaBreak = $instaBreak;
+        $this->setDrops($drops);
+    }
 
-	/**
-	 * @return Item
-	 */
-	public function getItem(){
-		return $this->item;
-	}
+    /**
+     * Returns the player who is destroying the block.
+     * @return Player
+     */
+    public function getPlayer() : Player{
+        return $this->player;
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function getInstaBreak(){
-		return $this->instaBreak;
-	}
+    /**
+     * Returns the item used to destroy the block.
+     * @return Item
+     */
+    public function getItem() : Item{
+        return $this->item;
+    }
 
-	/**
-	 * @return Item[]
-	 */
-	public function getDrops(){
-		return $this->blockDrops;
-	}
+    /**
+     * Returns whether the block may be broken in less than the amount of time calculated. This is usually true for
+     * creative players.
+     *
+     * @return bool
+     */
+    public function getInstaBreak() : bool{
+        return $this->instaBreak;
+    }
 
-	/**
-	 * @param Item[] $drops
-	 */
-	public function setDrops(array $drops){
-		$this->blockDrops = $drops;
-	}
+    /**
+     * @param bool $instaBreak
+     */
+    public function setInstaBreak(bool $instaBreak){
+        $this->instaBreak = $instaBreak;
+    }
 
-	/**
-	 * @param bool $instaBreak
-	 */
-	public function setInstaBreak($instaBreak){
-		$this->instaBreak = (bool) $instaBreak;
-	}
+
+    /**
+     * @return Item[]
+     */
+    public function getDrops() : array{
+        return $this->blockDrops;
+    }
+
+    /**
+     * @param Item[] $drops
+     */
+    public function setDrops(array $drops){
+        $this->setDropsVariadic(...$drops);
+    }
+
+    /**
+     * Variadic hack for easy array member type enforcement.
+     *
+     * @param Item[] ...$drops
+     */
+    public function setDropsVariadic(Item ...$drops){
+        $this->blockDrops = $drops;
+    }
 }

@@ -25,6 +25,7 @@
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class RedSandstoneSlab extends Slab {
@@ -38,56 +39,36 @@ class RedSandstoneSlab extends Slab {
 		return "Red Sandstone Slab";
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param             $face
-	 * @param             $fx
-	 * @param             $fy
-	 * @param             $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($face === 0){
-			if($target->getId() === self::RED_SANDSTONE_SLAB and ($target->getDamage() & 0x08) === 0x08){
-				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
-
-				return true;
-			}elseif($block->getId() === self::RED_SANDSTONE_SLAB){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
-
-				return true;
+			if($blockClicked->getId() === self::RED_SANDSTONE_SLAB and ($blockClicked->getDamage() & 0x08) === 0x08){
+				return $this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
+			}elseif($blockReplace->getId() === self::RED_SANDSTONE_SLAB){
+				return $this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
 			}else{
 				$this->meta |= 0x08;
 			}
 		}elseif($face === 1){
-			if($target->getId() === self::RED_SANDSTONE_SLAB and ($target->getDamage() & 0x08) === 0){
-				$this->getLevel()->setBlock($target, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
-
-				return true;
-			}elseif($block->getId() === self::RED_SANDSTONE_SLAB){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
-
-				return true;
+			if($blockClicked->getId() === self::RED_SANDSTONE_SLAB and ($blockClicked->getDamage() & 0x08) === 0){
+				return $this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
+			}elseif($blockReplace->getId() === self::RED_SANDSTONE_SLAB){
+				return $this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
 			}
 			//TODO: check for collision
 		}else{
-			if($block->getId() === self::RED_SANDSTONE_SLAB){
-				$this->getLevel()->setBlock($block, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
+			if($blockReplace->getId() === self::RED_SANDSTONE_SLAB){
+				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_RED_SANDSTONE_SLAB, $this->meta), true);
 			}else{
-				if($fy > 0.5){
+				if($clickVector->y > 0.5){
 					$this->meta |= 0x08;
 				}
 			}
 		}
 
-		if($block->getId() === self::RED_SANDSTONE_SLAB and ($target->getDamage() & 0x07) !== ($this->meta & 0x07)){
+		if($blockReplace->getId() === self::RED_SANDSTONE_SLAB and ($blockClicked->getDamage() & 0x07) !== ($this->meta & 0x07)){
 			return false;
 		}
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}

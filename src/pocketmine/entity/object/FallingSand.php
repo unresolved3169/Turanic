@@ -76,7 +76,7 @@ class FallingSand extends Entity {
 	 *
 	 * @return bool
 	 */
-	public function canCollideWith(Entity $entity){
+	public function canCollideWith(Entity $entity) : bool{
 		return false;
 	}
 

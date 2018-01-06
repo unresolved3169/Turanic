@@ -37,32 +37,18 @@ class Skull extends Flowable {
 
 	protected $id = self::SKULL_BLOCK;
 
-	/**
-	 * SkullBlock constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Mob Head";
 	}
 
-	/**
-	 * @return AxisAlignedBB
-	 */
 	protected function recalculateBoundingBox(){
 		$x1 = $x2 = $z1 = $z2 = 0;
 		switch($this->meta){
@@ -111,33 +97,16 @@ class Skull extends Flowable {
 		);
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         if($face === Vector3::SIDE_DOWN){
             return false;
         }
         $this->meta = $face;
-        $this->getLevel()->setBlock($block, $this, true);
+        $this->getLevel()->setBlock($blockReplace, $this, true);
         Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this, $face, $item, $player));
         return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileSkull){

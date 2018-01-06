@@ -129,4 +129,8 @@ class Sheep extends Animal implements Colorable {
 		}
 		return [];
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

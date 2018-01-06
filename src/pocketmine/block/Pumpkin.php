@@ -27,69 +27,41 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Pumpkin extends Solid {
 
 	protected $id = self::PUMPKIN;
 
-    /**
-     * Pumpkin constructor.
-     *
-     * @param int $meta
-     */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isHelmet(){
+	public function isHelmet() : bool{
 		return true;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Pumpkin";
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		if($player instanceof Player){
 			$this->meta = ((int) $player->getDirection() + 1) % 4;
 		}
-		$this->getLevel()->setBlock($block, $this, true, true);
+		$this->getLevel()->setBlock($blockReplace, $this, true, true);
 		if($player != null){
-			if($this->checkSnowGolem($player, $block)) return true;
-			$this->checkIronGolem($player,$block);
+			if($this->checkSnowGolem($player, $blockReplace)) return true;
+			$this->checkIronGolem($player,$blockReplace);
 		}
 
 		return true;
@@ -118,7 +90,7 @@ class Pumpkin extends Solid {
     }
 
     public function checkIronGolem(Player $player, Block $block) : bool{
-	    // TODO : Add Achievement (Body Guarc)
+	    // TODO : Add Achievement (Body Guard)
         if($player->getServer()->allowIronGolem){
             $level = $this->getLevel();
             $block0 = $level->getBlock($block->add(0, -1, 0));

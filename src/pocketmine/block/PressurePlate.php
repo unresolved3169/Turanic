@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
@@ -37,16 +39,11 @@ abstract class PressurePlate extends Flowable {
     protected $onPitch;
     protected $offPitch;
 
-	/**
-	 * PressurePlate constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function canPassThrough(){
+	public function canPassThrough() : bool{
         return true;
     }
 
@@ -117,22 +114,10 @@ abstract class PressurePlate extends Flowable {
 		return true;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Block       $block
-	 * @param Block       $target
-	 * @param int         $face
-	 * @param float       $fx
-	 * @param float       $fy
-	 * @param float       $fz
-	 * @param Player|null $player
-	 *
-	 * @return bool|void
-	 */
-	public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$below = $this->getSide(Vector3::SIDE_DOWN);
-		if($below->isTransparent()) return;
-		$this->getLevel()->setBlock($block, $this, true, false);
+		if($below->isTransparent()) return false;
+		return $this->getLevel()->setBlock($blockReplace, $this, true, false);
 	}
 
 	/**

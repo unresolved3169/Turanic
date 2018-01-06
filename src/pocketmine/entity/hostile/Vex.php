@@ -30,11 +30,8 @@ use pocketmine\entity\behavior\{StrollBehavior, RandomLookaroundBehavior, LookAt
 class Vex extends Monster {
 	const NETWORK_ID = self::VEX;
 
-
 	public $width = 0.6;
 	public $height = 0;
-
-	public $dropExp = [5, 5];
 
 	/**
 	 * @return string
@@ -51,4 +48,8 @@ class Vex extends Monster {
 		$this->setMaxHealth(14);
 		parent::initEntity();
 	}
+
+    public function getXpDropAmount(): int{
+        return 3;
+    }
 }

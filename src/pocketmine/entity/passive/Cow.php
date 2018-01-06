@@ -40,8 +40,6 @@ class Cow extends Animal {
 
 	public $drag = 0.2;
 	public $gravity = 0.3;
-
-	public $dropExp = [1, 3];
 	
 	public function initEntity(){
 		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
@@ -77,4 +75,8 @@ class Cow extends Animal {
 
 		return [];
 	}
+
+    public function getXpDropAmount(): int{
+        return !$this->isBaby() ? mt_rand(1,3) : 0;
+    }
 }

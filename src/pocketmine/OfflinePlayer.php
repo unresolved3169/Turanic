@@ -83,7 +83,7 @@ class OfflinePlayer implements IPlayer, Metadatable {
 	/**
 	 * @param bool $value
 	 */
-	public function setOp($value){
+	public function setOp(bool $value){
 		if($value === $this->isOp()){
 			return;
 		}

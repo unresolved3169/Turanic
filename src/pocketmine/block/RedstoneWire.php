@@ -24,6 +24,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class RedstoneWire extends Flowable {
@@ -35,43 +36,22 @@ class RedstoneWire extends Flowable {
 
     protected $id = self::REDSTONE_WIRE;
 
-    /**
-     * RedstoneWire constructor.
-     *
-     * @param int $meta
-     */
-    public function __construct($meta = 0){
+    public function __construct(int $meta = 0){
         $this->meta = $meta;
     }
 
-    /**
-     * @return string
-     */
     public function getName() : string{
         return "Redstone Wire";
     }
 
-    /**
-     * @return int
-     */
     public function getStrength(){
         return $this->meta;
     }
 
-    /**
-     * @param Block|null $from
-     *
-     * @return bool
-     */
     public function isActivated(Block $from = null){
         return ($this->meta > 0);
     }
 
-    /**
-     * @param int $type
-     *
-     * @return bool|int
-     */
     public function onUpdate($type){
         switch($type){
             case Level::BLOCK_UPDATE_NORMAL:
@@ -101,23 +81,12 @@ class RedstoneWire extends Flowable {
         return true;
     }
 
-    /**
-     * @param Item $item
-     * @param Block $block
-     * @param Block $target
-     * @param int $face
-     * @param float $fx
-     * @param float $fy
-     * @param float $fz
-     * @param Player|null $player
-     *
-     * @return bool|void
-     */
-    public function place(Item $item, Block $block, Block $target, $face, $fx, $fy, $fz, Player $player = null){
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         if(!$this->cantBePlacedOn()){
-            $this->getLevel()->setBlock($block, $this, true, false);
+            $this->getLevel()->setBlock($blockReplace, $this, true, false);
             $this->calcSignal(15, self::PLACE);
         }
+        return true;
     }
 
     public function updateNormalWire(Block $block, $strength, $type, array $hasUpdated){

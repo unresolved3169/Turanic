@@ -90,7 +90,7 @@ class FloatingText extends Entity {
         return false;
     }
 
-    public function canCollideWith(Entity $entity){
+    public function canCollideWith(Entity $entity) : bool{
         return false;
     }
 

@@ -31,7 +31,7 @@ class LitPumpkin extends Pumpkin implements SolidLight {
 	/**
 	 * @return int
 	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 15;
 	}
 
@@ -42,7 +42,7 @@ class LitPumpkin extends Pumpkin implements SolidLight {
 		return "Jack o'Lantern";
 	}
 
-	public function isHelmet(){
+	public function isHelmet() : bool{
         return false;
     }
 }
