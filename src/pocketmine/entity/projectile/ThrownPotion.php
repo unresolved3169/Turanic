@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\Potion;
 use pocketmine\level\Level;
 use pocketmine\level\particle\SpellParticle;
@@ -81,7 +82,7 @@ class ThrownPotion extends Projectile {
             $radius = 6;
             foreach($this->getLevel()->getNearbyEntities($this->getBoundingBox()->grow($radius, $radius, $radius)) as $p){
                 foreach(Potion::getEffectsById($this->getPotionId()) as $effect){
-                    $p->addEffect($effect);
+                    if($p instanceof Living) $p->addEffect($effect);
                 }
             }
             $this->flagForDespawn();
