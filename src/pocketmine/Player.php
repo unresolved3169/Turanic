@@ -2975,11 +2975,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             case BookEditPacket::TYPE_SIGN_BOOK:
                 /** @var WrittenBook $newBook */
-                try {
-                    $newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
-                } catch (\TypeError $e) {
-                    Server::getInstance()->getLogger()->debug($e->getMessage());
-                }
+                $newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
                 $newBook->setAuthor($packet->author);
                 $newBook->setTitle($packet->title);
                 $newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
