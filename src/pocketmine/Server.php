@@ -2242,7 +2242,6 @@ class Server{
 	 * Shutdowns the server correctly
 	 *
 	 * @param string $msg
-	 * @internal param bool $restart
 	 */
 	public function shutdown(string $msg = ""){
 		$this->isRunning = false;

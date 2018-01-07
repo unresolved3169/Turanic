@@ -71,11 +71,12 @@ class ConsoleCommandSender implements CommandSender {
 		return $this->perm->addAttachment($plugin, $name, $value);
 	}
 
-	/**
-	 * @param PermissionAttachment $attachment
-	 *
-	 * @return void
-	 */
+    /**
+     * @param PermissionAttachment $attachment
+     *
+     * @return void
+     * @throws \Throwable
+     */
 	public function removeAttachment(PermissionAttachment $attachment){
 		$this->perm->removeAttachment($attachment);
 	}

@@ -58,7 +58,7 @@ class KickCommand extends VanillaCommand {
 	 * @return bool
 	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -81,7 +81,6 @@ class KickCommand extends VanillaCommand {
 		}else{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 		}
-
 
 		return true;
 	}

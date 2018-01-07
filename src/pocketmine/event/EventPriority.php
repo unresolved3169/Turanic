@@ -21,7 +21,6 @@
 
 namespace pocketmine\event;
 
-
 /**
  * List of event priorities
  *

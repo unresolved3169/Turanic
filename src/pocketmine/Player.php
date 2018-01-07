@@ -2975,7 +2975,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             case BookEditPacket::TYPE_SIGN_BOOK:
                 /** @var WrittenBook $newBook */
-                $newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
+                try {
+                    $newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
+                } catch (\TypeError $e) {
+                    Server::getInstance()->getLogger()->debug($e->getMessage());
+                }
                 $newBook->setAuthor($packet->author);
                 $newBook->setTitle($packet->title);
                 $newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
@@ -2995,7 +2999,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     /**
-     * Handles a Minecraft:Bedrock Edition(BE) packet
+     * Handles a Minecraft: Bedrock Edition(BE) packet
      *
      * @param DataPacket $packet
      * @return bool
@@ -3908,18 +3912,38 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
     }
 
+    /**
+     * @param string $metadataKey
+     * @param MetadataValue $newMetadataValue
+     * @throws \Exception
+     */
     public function setMetadata(string $metadataKey, MetadataValue $newMetadataValue){
         $this->server->getPlayerMetadata()->setMetadata($this, $metadataKey, $newMetadataValue);
     }
 
+    /**
+     * @param string $metadataKey
+     * @return MetadataValue[]
+     * @throws \Exception
+     */
     public function getMetadata(string $metadataKey){
         return $this->server->getPlayerMetadata()->getMetadata($this, $metadataKey);
     }
 
+    /**
+     * @param string $metadataKey
+     * @return bool
+     * @throws \Exception
+     */
     public function hasMetadata(string $metadataKey) : bool{
         return $this->server->getPlayerMetadata()->hasMetadata($this, $metadataKey);
     }
 
+    /**
+     * @param string $metadataKey
+     * @param Plugin $owningPlugin
+     * @throws \Exception
+     */
     public function removeMetadata(string $metadataKey, Plugin $owningPlugin){
         $this->server->getPlayerMetadata()->removeMetadata($this, $metadataKey, $owningPlugin);
     }
