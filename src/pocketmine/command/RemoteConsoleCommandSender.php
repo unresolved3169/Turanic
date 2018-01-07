@@ -59,5 +59,4 @@ class RemoteConsoleCommandSender extends ConsoleCommandSender {
 		return "Rcon";
 	}
 
-
 }

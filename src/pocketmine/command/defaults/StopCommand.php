@@ -57,17 +57,8 @@ class StopCommand extends VanillaCommand {
 	 * @return bool
 	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
-		}
-		$restart = false;
-		if(isset($args[0])){
-			if($args[0] == 'force'){
-				$restart = true;
-				array_shift($args);
-			}else{
-				$restart = false;
-			}
 		}
 		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.stop.start"));
 		$msg = implode(" ", $args);

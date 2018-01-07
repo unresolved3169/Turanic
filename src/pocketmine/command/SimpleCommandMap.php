@@ -189,7 +189,6 @@ class SimpleCommandMap implements CommandMap {
 		}
 	}
 
-
 	/**
 	 * @param string $fallbackPrefix
 	 * @param array  $commands

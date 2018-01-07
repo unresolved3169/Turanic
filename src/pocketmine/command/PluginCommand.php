@@ -24,9 +24,7 @@
 
 namespace pocketmine\command;
 
-use pocketmine\event\TranslationContainer;
 use pocketmine\plugin\Plugin;
-
 
 class PluginCommand extends Command implements PluginIdentifiableCommand {
 

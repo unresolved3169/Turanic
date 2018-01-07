@@ -99,9 +99,10 @@ class HandlerList {
 		$this->handlerSlots[$listener->getPriority()][spl_object_hash($listener)] = $listener;
 	}
 
-	/**
-	 * @param RegisteredListener[] $listeners
-	 */
+    /**
+     * @param RegisteredListener[] $listeners
+     * @throws \Throwable
+     */
 	public function registerAll(array $listeners){
 		foreach($listeners as $listener){
 			$this->register($listener);
