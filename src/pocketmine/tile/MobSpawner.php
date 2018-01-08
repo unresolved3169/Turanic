@@ -20,55 +20,40 @@
  *
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace pocketmine\tile;
 
+use pocketmine\block\MonsterSpawner;
 use pocketmine\entity\Entity;
-use pocketmine\event\entity\EntityGenerateEvent;
 use pocketmine\item\Item;
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
+use pocketmine\tile\Spawnable;
 
 class MobSpawner extends Spawnable {
 
-    const TAG_ENTITY_ID = "EntityId";
-    const TAG_SPAWN_COUNT = "SpawnCount";
-    const TAG_SPAWN_RANGE = "SpawnRange";
-    const TAG_MIN_SPAWN_DELAY = "MinSpawnDelay";
-    const TAG_MAX_SPAWN_DELAY = "MaxSpawnDelay";
-    const TAG_DELAY = "Delay";
-
-	/**
-	 * MobSpawner constructor.
-	 *
-	 * @param Level       $level
-	 * @param CompoundTag $nbt
-	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-	    // TODO : Optimize et ve yenile
-		if(!$nbt->hasTag(self::TAG_ENTITY_ID, StringTag::class)){
-			$nbt->setString(self::TAG_ENTITY_ID, "0");
+		if(!isset($nbt->EntityId) or !($nbt->EntityId instanceof IntTag)){
+			$nbt->EntityId = new IntTag("EntityId", 0);
 		}
-		if(!$nbt->hasTag(self::TAG_SPAWN_COUNT, ShortTag::class)){
-			$nbt->setShort(self::TAG_SPAWN_COUNT, 4);
+		if(!isset($nbt->SpawnCount) or !($nbt->SpawnCount instanceof IntTag)){
+			$nbt->SpawnCount = new IntTag("SpawnCount", 4);
 		}
-        if(!$nbt->hasTag(self::TAG_SPAWN_RANGE, ShortTag::class)){
-			$nbt->setShort(self::TAG_SPAWN_RANGE, 4);
+		if(!isset($nbt->SpawnRange) or !($nbt->SpawnRange instanceof IntTag)){
+			$nbt->SpawnRange = new IntTag("SpawnRange", 4);
 		}
-		if(!$nbt->hasTag(self::TAG_MIN_SPAWN_DELAY, ShortTag::class)){
-			$nbt->setShort(self::TAG_MIN_SPAWN_DELAY, 200);
+		if(!isset($nbt->MinSpawnDelay) or !($nbt->MinSpawnDelay instanceof IntTag)){
+			$nbt->MinSpawnDelay = new IntTag("MinSpawnDelay", 200);
 		}
-		if(!$nbt->hasTag(self::TAG_MAX_SPAWN_DELAY, ShortTag::class)){
-			$nbt->setShort(self::TAG_MAX_SPAWN_DELAY, 799);
+		if(!isset($nbt->MaxSpawnDelay) or !($nbt->MaxSpawnDelay instanceof IntTag)){
+			$nbt->MaxSpawnDelay = new IntTag("MaxSpawnDelay", 800);
 		}
-		if(!$nbt->hasTag(self::TAG_DELAY, ShortTag::class)){
-			$nbt->setShort(self::TAG_DELAY, mt_rand($nbt->getShort(self::TAG_MIN_SPAWN_DELAY), $nbt->getShort(self::TAG_MAX_SPAWN_DELAY)));
+		if(!isset($nbt->Delay) or !($nbt->Delay instanceof IntTag)){
+			$nbt->Delay = new IntTag("Delay", mt_rand($nbt->MinSpawnDelay->getValue(), $nbt->MaxSpawnDelay->getValue()));
 		}
 		parent::__construct($level, $nbt);
 		if($this->getEntityId() > 0){
@@ -76,147 +61,61 @@ class MobSpawner extends Spawnable {
 		}
 	}
 
-	/**
-	 * @return int|null
-	 */
 	public function getEntityId(){
-		return (int) $this->namedtag->getString(self::TAG_ENTITY_ID);
+		return $this->namedtag["EntityId"];
 	}
 
-	/**
-	 * @param int $id
-	 */
 	public function setEntityId(int $id){
-		$this->namedtag->setString(self::TAG_ENTITY_ID, "$id");
+		$this->namedtag->EntityId->setValue($id);
 		$this->onChanged();
 		$this->scheduleUpdate();
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getSpawnCount(){
-		return $this->namedtag->getShort(self::TAG_SPAWN_COUNT);
-	}
-
-	/**
-	 * @param int $value
-	 */
 	public function setSpawnCount(int $value){
-		$this->namedtag->setShort(self::TAG_SPAWN_COUNT, $value);
+		$this->namedtag->SpawnCount->setValue($value);
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getSpawnRange(){
-		return $this->namedtag->getShort(self::TAG_SPAWN_RANGE);
-	}
-
-	/**
-	 * @param int $value
-	 */
 	public function setSpawnRange(int $value){
-		$this->namedtag->setShort(self::TAG_SPAWN_RANGE, $value);
+		$this->namedtag->SpawnRange->setValue($value);
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getMinSpawnDelay(){
-		return $this->namedtag->getShort(self::TAG_MIN_SPAWN_DELAY);
-	}
-
-	/**
-	 * @param int $value
-	 */
 	public function setMinSpawnDelay(int $value){
-		$this->namedtag->setShort(self::TAG_MIN_SPAWN_DELAY, $value);
+		$this->namedtag->MinSpawnDelay->setValue($value);
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getMaxSpawnDelay(){
-		return $this->namedtag->getShort(self::TAG_MAX_SPAWN_DELAY);
-	}
-
-	/**
-	 * @param int $value
-	 */
 	public function setMaxSpawnDelay(int $value){
-		$this->namedtag->setShort(self::TAG_MAX_SPAWN_DELAY, $value);
+		$this->namedtag->MaxSpawnDelay->setValue($value);
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getDelay(){
-		return $this->namedtag->getShort(self::TAG_DELAY);
-	}
+	public function getName(): string{
+		if($this->getEntityId() === 0) return "Monster Spawner";
+		else{
+			$name = ucfirst(MonsterSpawner::EID_TO_STR[$this->getEntityId()] ?? 'Monster') . ' Spawner';
 
-	/**
-	 * @param int $value
-	 */
-	public function setDelay(int $value){
-		$this->namedtag->setShort(self::TAG_DELAY, $value);
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Monster Spawner";
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function canUpdate() : bool{
-		if($this->getEntityId() === 0) return false;
-		$hasPlayer = false;
-		$count = 0;
-		foreach($this->getLevel()->getEntities() as $e){
-			if($e instanceof Player){
-				if($e->distance($this->getBlock()) <= 15) $hasPlayer = true;
-			}
-			if($e::NETWORK_ID == $this->getEntityId()){
-				$count++;
-			}
+			return $name;
 		}
-		if($hasPlayer and $count < 15){ // Spawn limit = 15
-			return true;
-		}
-		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function onUpdate(){
+	public function onUpdate(): bool{
 		if($this->closed === true){
 			return false;
 		}
 
 		$this->timings->startTiming();
 
-		if(!($this->chunk instanceof Chunk))
+		if(!($this->chunk instanceof Chunk)){
 			return false;
-
+		}
 		if($this->canUpdate()){
 			if($this->getDelay() <= 0){
 				$success = 0;
 				for($i = 0; $i < $this->getSpawnCount(); $i++){
 					$pos = $this->add(mt_rand() / mt_getrandmax() * $this->getSpawnRange(), mt_rand(-1, 1), mt_rand() / mt_getrandmax() * $this->getSpawnRange());
 					$target = $this->getLevel()->getBlock($pos);
-					$ground = $target->getSide(Vector3::SIDE_DOWN);
-					if($target->getId() == Item::AIR && $ground->isTopFacingSurfaceSolid()){
+					if($target->getId() == Item::AIR){
 						$success++;
-						$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityGenerateEvent($pos, $this->getEntityId(), EntityGenerateEvent::CAUSE_MOB_SPAWNER));
-						if(!$ev->isCancelled()){
-                            $entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), Entity::createBaseNBT($target->add(0.5, 0, 0.5), null, lcg_value() * 360, 0));
-							$entity->spawnToAll();
-						}
+						$entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), Entity::createBaseNBT($target->add(0.5, 0, 0.5), null, lcg_value() * 360, 0));
+						$entity->spawnToAll();
 					}
 				}
 				if($success > 0){
@@ -232,12 +131,55 @@ class MobSpawner extends Spawnable {
 		return true;
 	}
 
-	public function addAdditionalSpawnData(CompoundTag $nbt){
-        $nbt->setTag($this->namedtag->getTag(self::TAG_ENTITY_ID));
-        $nbt->setTag($this->namedtag->getTag(self::TAG_DELAY));
-        $nbt->setTag($this->namedtag->getTag(self::TAG_SPAWN_COUNT));
-        $nbt->setTag($this->namedtag->getTag(self::TAG_SPAWN_RANGE));
-        $nbt->setTag($this->namedtag->getTag(self::TAG_MIN_SPAWN_DELAY));
-        $nbt->setTag($this->namedtag->getTag(self::TAG_MAX_SPAWN_DELAY));
-    }
+	public function canUpdate(): bool{
+		if($this->getEntityId() === 0) return false;
+		$hasPlayer = false;
+		$count = 0;
+		foreach($this->getLevel()->getEntities() as $e){
+			if($e instanceof Player){
+				if($e->distance($this->getBlock()) <= 15) $hasPlayer = true;
+			}
+			if($e::NETWORK_ID == $this->getEntityId()){
+				$count++;
+			}
+		}
+		if($hasPlayer and $count < 15){ // Spawn limit = 15
+			return true;
+		}
+
+		return false;
+	}
+
+	public function getDelay(){
+		return $this->namedtag["Delay"];
+	}
+
+	public function getSpawnCount(){
+		return $this->namedtag["SpawnCount"];
+	}
+
+	public function getSpawnRange(){
+		return $this->namedtag["SpawnRange"];
+	}
+
+	public function setDelay(int $value){
+		$this->namedtag->Delay->setValue($value);
+	}
+
+	public function getMinSpawnDelay(){
+		return $this->namedtag["MinSpawnDelay"];
+	}
+
+	public function getMaxSpawnDelay(){
+		return $this->namedtag["MaxSpawnDelay"];
+	}
+
+	public function addAdditionalSpawnData(CompoundTag $nbt): void{
+		$nbt->EntityId = $this->namedtag->EntityId;
+		$nbt->Delay = $this->namedtag->Delay;
+		$nbt->SpawnCount = $this->namedtag->SpawnCount;
+		$nbt->SpawnRange = $this->namedtag->SpawnRange;
+		$nbt->MinSpawnDelay = $this->namedtag->MinSpawnDelay;
+		$nbt->MaxSpawnDelay = $this->namedtag->MaxSpawnDelay;
+	}
 }
