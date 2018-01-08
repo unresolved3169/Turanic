@@ -375,6 +375,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		Entity::registerEntity(Human::class, true);
 	}
 
+	public function hasEffect(){
+
+    }
+
     /**
      * Creates an entity with the specified type, level and NBT, with optional additional arguments to pass to the
      * entity's constructor

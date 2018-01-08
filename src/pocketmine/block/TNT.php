@@ -36,47 +36,27 @@ class TNT extends Solid implements ElectricalAppliance {
 
 	protected $id = self::TNT;
 
-    /**
-     * TNT constructor.
-     * @param int $meta
-     */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "TNT";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBurnChance() : int{
 		return 15;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBurnAbility() : int{
 		return 100;
 	}
 
-    /**
-     * @param Player|null $player
-     * @param int $fuse
-     */
-	public function prime(Player $player = null, int $fuse = 80){
+	public function prime(int $fuse = 80, Player $player = null){
         $this->meta = 1;
         $dropItem = $player != null and $player->isCreative() ? false : true;
         $mot = (new Random())->nextSignedFloat() * M_PI * 2;
@@ -91,9 +71,6 @@ class TNT extends Solid implements ElectricalAppliance {
         $this->level->addSound(new TNTPrimeSound($this));
     }
 
-	/**
-	 * @param int $type
-	 */
 	public function onUpdate($type){
 		if(($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE) && $this->level->isBlockPowered($this)){
             $this->prime();
@@ -101,16 +78,10 @@ class TNT extends Solid implements ElectricalAppliance {
 		}
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getId() === Item::FLINT_STEEL){
-			$this->prime($player);
-			$this->getLevel()->setBlock($this, new Air(), true);
+			$this->prime(80, $player);
+			$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
 
 			$item->useOn($this);
 
