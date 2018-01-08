@@ -172,7 +172,7 @@ class Level implements ChunkManager, Metadatable{
 	private $chunkPackets = [];
 
 	/** @var float[] */
-	private $unloadQueue;
+	private $unloadQueue = [];
 
 	/** @var int */
 	private $time;
