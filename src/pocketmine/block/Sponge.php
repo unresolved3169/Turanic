@@ -2,48 +2,45 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\item\Item;
 use pocketmine\Server;
 
 class Sponge extends Solid {
 
+    const SPONGE_NORMAL = 0;
+    const SPONGE_WET = 1;
+
 	protected $id = self::SPONGE;
 	protected $absorbRange = 6;
 
-	/**
-	 * Sponge constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.6;
 	}
 
@@ -62,11 +59,6 @@ class Sponge extends Solid {
 		}
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 		if($this->meta == 0){
 			if($type === Level::BLOCK_UPDATE_NORMAL){
@@ -105,25 +97,16 @@ class Sponge extends Solid {
 		return true;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		static $names = [
-			0 => "Sponge",
-			1 => "Wet Sponge",
+			self::SPONGE_NORMAL => "Sponge",
+			self::SPONGE_WET => "Wet Sponge",
 		];
-		return $names[$this->meta & 0x0f];
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->id, $this->meta & 0x0f, 1],
-		];
-	}
+
+	public function getVariantBitmask(): int{
+        return 0x0f;
+    }
 }

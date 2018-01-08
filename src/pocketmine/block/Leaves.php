@@ -184,11 +184,10 @@ class Leaves extends Transparent {
         }
         $drops = [];
         if(mt_rand(1, 20) === 1){ //Saplings
-            $sapling = $this->getSaplingItem();
-            $drops[] = [$sapling->getId(), $sapling->getDamage(), $sapling->getCount()];
+            $drops[] = $this->getSaplingItem();
         }
         if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
-            $drops[] = [Item::APPLE, 0, 1];
+            $drops[] = Item::get(Item::APPLE);
         }
         return $drops;
     }

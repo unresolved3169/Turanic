@@ -44,22 +44,20 @@ class Mycelium extends Solid {
 		return "Mycelium";
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.6;
 	}
 
 	public function getDrops(Item $item) : array{
 		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return [
-				[Item::MYCELIUM, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [
-				[Item::DIRT, 0, 1],
+				Item::get(Item::DIRT)
 			];
 		}
 	}

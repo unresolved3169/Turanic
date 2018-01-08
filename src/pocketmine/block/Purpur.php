@@ -2,88 +2,58 @@
 
 /*
  *
- *  _____            _               _____           
- * / ____|          (_)             |  __ \          
- *| |  __  ___ _ __  _ ___ _   _ ___| |__) | __ ___  
- *| | |_ |/ _ \ '_ \| / __| | | / __|  ___/ '__/ _ \ 
- *| |__| |  __/ | | | \__ \ |_| \__ \ |   | | | (_) |
- * \_____|\___|_| |_|_|___/\__, |___/_|   |_|  \___/ 
- *                         __/ |                    
- *                        |___/                     
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author Turanic
- * @link https://github.com/Turanic/Turanic
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
-class Purpur extends Solid {
+class Purpur extends Quartz {
 
 	protected $id = self::PURPUR;
 
-	/**
-	 * Purpur constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1.5;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
-	}
+	public function getResistance() : float{
+        return 30;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		static $names = [
-			0 => "Purpur Block",
-			2 => "Purpur Pillar",
-		];
+    public function getName() : string{
+        static $names = [
+            self::NORMAL => "Purpur Block",
+            self::CHISELED => "Chiseled Purpur", //wtf?
+            self::PILLAR => "Purpur Pillar"
+        ];
 
-		return $names[$this->meta & 0x0f] ?? "Purpur Block"; //TODO fix properly;
-	}
+        return $names[$this->getVariant()] ?? "Unknown";
+    }
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-
-			return [
-				[$this->id, $this->meta & 0x0f, 1],
-			];
-
-		}else{
-
-			return [];
-
-		}
-	}
+    public function getDrops(Item $item) : array{
+        if($this->isCompatibleWithTool($item)){
+            return Block::getDrops($item);
+        }else{
+            return [];
+        }
+    }
 
 }

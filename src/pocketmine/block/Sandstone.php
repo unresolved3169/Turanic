@@ -22,8 +22,11 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
@@ -35,55 +38,42 @@ class Sandstone extends Solid {
 
 	protected $id = self::SANDSTONE;
 
-	/**
-	 * Sandstone constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.8;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		static $names = [
-			0 => "Sandstone",
-			1 => "Chiseled Sandstone",
-			2 => "Smooth Sandstone"
+			self::NORMAL => "Sandstone",
+			self::CHISELED => "Chiseled Sandstone",
+			self::SMOOTH => "Smooth Sandstone"
 		];
-		return $names[$this->getVariant()] ?? "";
+        return $names[$this->getVariant()] ?? "Unknown";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
-			return [
-				[$this->id, $this->meta & 0x03, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}
 	}
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+    public function getVariantBitmask() : int{
+        return 0x03;
+    }
 
     public function canHarvestWithHand(): bool{
         return false;

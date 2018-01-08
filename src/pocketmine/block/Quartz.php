@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
@@ -37,7 +38,6 @@ class Quartz extends Solid {
 	const QUARTZ_NORMAL = 0;
 	const QUARTZ_CHISELED = 1;
 	const QUARTZ_PILLAR = 2;
-	const QUARTZ_PILLAR2 = 3;
 
     const NORMAL = self::QUARTZ_NORMAL;
     const CHISELED = self::QUARTZ_CHISELED;
@@ -55,28 +55,18 @@ class Quartz extends Solid {
 	
 	public function getName() : string{
 		static $names = [
-			0 => "Quartz Block",
-			1 => "Chiseled Quartz Block",
-			2 => "Quartz Pillar",
-			3 => "Quartz Block",
+			self::QUARTZ_NORMAL => "Quartz Block",
+            self::QUARTZ_CHISELED => "Chiseled Quartz Block",
+			self::QUARTZ_PILLAR => "Quartz Pillar",
 		];
-		return $names[$this->meta & 0x03] ?? "Unknown";
+		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($this->meta === 1 or $this->meta === 2){
-			//Quartz pillar block and chiselled quartz have different orientations
-			$faces = [
-				0 => 0,
-				1 => 0,
-				2 => 0b1000,
-				3 => 0b1000,
-				4 => 0b0100,
-				5 => 0b0100,
-			];
-			$this->meta = ($this->meta & 0x03) | $faces[$face];
-		}
-		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
+        if($this->meta !== self::NORMAL){
+            $this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
+        }
+        return $this->getLevel()->setBlock($blockReplace, $this, true, true);
 	}
 	
 	public function getToolType() : int{
@@ -91,11 +81,6 @@ class Quartz extends Solid {
         return 0x03;
     }
 
-    /**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($this->isCompatibleWithTool($item)){
 			return parent::getDrops($item);

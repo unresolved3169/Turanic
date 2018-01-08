@@ -34,25 +34,14 @@ class WoodSlab extends Transparent {
 
 	protected $id = self::WOOD_SLAB;
 
-	/**
-	 * WoodSlab constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		static $names = [
 			0 => "Oak",
@@ -65,11 +54,7 @@ class WoodSlab extends Transparent {
 		return (($this->meta & 0x08) === 0x08 ? "Upper " : "") . ($names[$this->getVariant()] ?? "") . " Wooden Slab";
 	}
 
-	/**
-	 * @return AxisAlignedBB
-	 */
 	protected function recalculateBoundingBox(){
-
 		if(($this->meta & 0x08) > 0){
 			return new AxisAlignedBB(
 				$this->x,
@@ -139,25 +124,15 @@ class WoodSlab extends Transparent {
 		return true;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_AXE;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->id, $this->meta & 0x07, 1],
-		];
-	}
+	public function getVariantBitmask(): int{
+        return 0x07;
+    }
 
-	public function getFuelTime(): int{
+    public function getFuelTime(): int{
         return 300;
     }
 }

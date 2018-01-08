@@ -2,6 +2,7 @@
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class HardenedClay extends Solid {
@@ -18,6 +19,10 @@ class HardenedClay extends Solid {
 
     public function getToolType() : int{
         return Tool::TYPE_PICKAXE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
     }
 
     public function getHardness() : float{

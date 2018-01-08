@@ -67,10 +67,10 @@ class Skull extends Spawnable {
 	}
 
 	/**
-	 * @return null
+	 * @return int
 	 */
 	public function getType(){
-        return $this->namedtag->getByte(self::TAG_SKULL_TYPE);
+        return $this->namedtag->getByte(self::TAG_SKULL_TYPE, self::TYPE_HUMAN);
 	}
 
     public function addAdditionalSpawnData(CompoundTag $nbt){

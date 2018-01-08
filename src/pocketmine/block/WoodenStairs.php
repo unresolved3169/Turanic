@@ -15,17 +15,6 @@ class WoodenStairs extends Stair {
 	}
 
 	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->getItemId(), $this->getVariant(), 1]
-		];
-	}
-
-	/**
 	 * @return int
 	 */
 	public function getBurnChance() : int{

@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -30,31 +30,20 @@ class DoubleRedSandstoneSlab extends DoubleSlab {
 
 	protected $id = Block::DOUBLE_RED_SANDSTONE_SLAB;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Double Red Sandstone Slab";
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
-				[Item::RED_SANDSTONE_SLAB, $this->meta, 2],
+				Item::get(Item::RED_SANDSTONE_SLAB, $this->meta, 2)
 			];
 		}else{
 			return [];
 		}
 	}
 
-    /**
-     * @return bool
-     */
     public function canHarvestWithHand(): bool{
         return false;
     }

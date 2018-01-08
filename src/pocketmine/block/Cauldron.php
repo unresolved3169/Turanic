@@ -46,6 +46,7 @@ use pocketmine\utils\Color;
 class Cauldron extends Solid {
 
 	protected $id = self::CAULDRON_BLOCK;
+	protected $itemId = Item::CAULDRON;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -75,9 +76,7 @@ class Cauldron extends Solid {
 
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
-			return [
-				[Item::CAULDRON, 0, 1]
-			];
+			return parent::getDrops($item);
 		}
 		return [];
 	}

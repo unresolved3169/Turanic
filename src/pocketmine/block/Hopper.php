@@ -97,9 +97,7 @@ class Hopper extends Transparent {
 
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
-			return [
-				[Item::HOPPER, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}

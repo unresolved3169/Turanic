@@ -62,10 +62,4 @@ class EndRod extends Flowable {
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->id, 0, 1],
-		];
-	}
-
 }

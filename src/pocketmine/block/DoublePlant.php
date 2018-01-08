@@ -148,7 +148,7 @@ class DoublePlant extends Flowable {
 
             if(mt_rand(0, 24) === 0){
                 return [
-                    [Item::SEEDS, 0, 1]
+                    Item::get(Item::SEEDS)
                 ];
             }
         }

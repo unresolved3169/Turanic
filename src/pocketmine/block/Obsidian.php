@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -35,57 +37,33 @@ class Obsidian extends Solid {
 	/** @var Vector3 */
 	private $temporalVector = null;
 
-	/**
-	 * Obsidian constructor.
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 		if($this->temporalVector === null){
 			$this->temporalVector = new Vector3(0, 0, 0);
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Obsidian";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 35;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 5){
-			return [
-				[Item::OBSIDIAN, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
 	public function onBreak(Item $item){
 		parent::onBreak($item);
 

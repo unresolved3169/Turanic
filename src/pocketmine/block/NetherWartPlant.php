@@ -87,14 +87,14 @@ class NetherWartPlant extends Flowable {
 	}
 
 	public function getDrops(Item $item) : array{
-		$drops = [];
 		if($this->meta >= 0x03){
 			$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
 			$fortunel = $fortunel > 3 ? 3 : $fortunel;
-			$drops[] = [$this->getItemId(), 0, mt_rand(2, 4 + $fortunel)];
-		}else{
-			$drops[] = [$this->getItemId(), 0, 1];
+			return [
+			    Item::get($this->getItemId(), 0, mt_rand(2, 4 + $fortunel))
+            ];
 		}
-		return $drops;
+
+		return parent::getDrops($item);
 	}
 }

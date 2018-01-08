@@ -38,7 +38,7 @@ class MonsterSpawner extends Solid {
 
 	protected $id = self::MONSTER_SPAWNER;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
@@ -80,7 +80,7 @@ class MonsterSpawner extends Solid {
         if(!$tile instanceof MobSpawner) return [];
         if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
             return [
-                [$this->id, $tile->getEntityId(), 1] // TODO : ADD NBT
+                Item::get($this->id, $tile->getEntityId(), 1, $tile->getNBT())
             ];
         }else{
             return [];

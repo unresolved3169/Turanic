@@ -2,22 +2,25 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -30,27 +33,14 @@ use pocketmine\Player;
 class Lever extends Flowable {
 	protected $id = self::LEVER;
 
-	/**
-	 * Lever constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Lever";
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
             $side = $this->isActivated() ? $this->meta ^ 0x08 : $this->meta;
@@ -98,12 +88,6 @@ class Lever extends Flowable {
 		return false;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		$this->meta ^= 0x08;
 		$this->getLevel()->setBlock($this, $this, false, true);
@@ -112,11 +96,6 @@ class Lever extends Flowable {
 		return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
 	public function onBreak(Item $item){
 		if($this->isActivated()){
 			$this->meta ^= 0x08;
@@ -126,38 +105,12 @@ class Lever extends Flowable {
 		$this->getLevel()->setBlock($this, new Air(), true, false);
 	}
 
-	/**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
 	public function isActivated(Block $from = null){
         return ($this->meta & 0x08) > 0;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getResistance(){
-		return 2.5;
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->id, 0, 1],
-		];
 	}
 
 	public function isRedstoneSource(){

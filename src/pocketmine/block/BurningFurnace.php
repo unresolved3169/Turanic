@@ -51,7 +51,7 @@ class BurningFurnace extends Solid {
 		return 3.5;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
@@ -98,12 +98,13 @@ class BurningFurnace extends Solid {
 	}
 
 	public function getDrops(Item $item) : array{
-		$drops = [];
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			$drops[] = [Item::FURNACE, 0, 1];
+			return [
+			    Item::get(Item::FURNACE)
+            ];
 		}
 
-		return $drops;
+		return [];
 	}
 
 	public function canHarvestWithHand(): bool{

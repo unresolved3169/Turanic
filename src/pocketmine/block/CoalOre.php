@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -32,44 +32,27 @@ class CoalOre extends Solid {
 
 	protected $id = self::COAL_ORE;
 
-	/**
-	 * CoalOre constructor.
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 3;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Coal Ore";
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
 				return [
-					[Item::COAL_ORE, 0, 1],
+					Item::get(Item::COAL_ORE)
 				];
 			}else{
 				$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
@@ -77,7 +60,7 @@ class CoalOre extends Solid {
 				$times = [1, 1, 2, 3, 4];
 				$time = $times[mt_rand(0, $fortunel + 1)];
 				return [
-					[Item::COAL, 0, $time],
+					Item::get(Item::COAL, 0, $time)
 				];
 			}
 
@@ -86,7 +69,7 @@ class CoalOre extends Solid {
 		}
 	}
 
-    public function canHarvestWithHand(): bool{
+    public function canHarvestWithHand() : bool{
         return false;
     }
 }

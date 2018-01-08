@@ -80,17 +80,6 @@ class Workbench extends Solid {
 		return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->id, 0, 1],
-		];
-	}
-
 	public function getFuelTime(): int{
         return 300;
     }

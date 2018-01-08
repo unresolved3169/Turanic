@@ -74,7 +74,7 @@ interface BlockIds {
 	const BRICKS = 45, BRICKS_BLOCK = 45;
 	const TNT = 46;
 	const BOOKSHELF = 47;
-	const MOSS_STONE = 48, MOSSY_STONE = 48;
+	const MOSSY_COBBLESTONE = 48, MOSS_STONE = 48, MOSSY_STONE = 48;
 	const OBSIDIAN = 49;
 	const TORCH = 50;
 	const FIRE = 51;

@@ -104,10 +104,4 @@ class Torch extends Flowable {
 
 		return false;
 	}
-
-	public function getDrops(Item $item) : array{
-		return [
-			[$this->id, 0, 1],
-		];
-	}
 }

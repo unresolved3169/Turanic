@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
@@ -32,52 +34,33 @@ class EmeraldOre extends Solid {
 
 	protected $id = self::EMERALD_ORE;
 
-	/**
-	 * EmeraldOre constructor.
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Emerald Ore";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 3;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 4){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-				return [
-					[Item::EMERALD_ORE, 0, 1],
-				];
+				return parent::getDrops($item);
 			}else{
 				$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
 				$fortunel = $fortunel > 3 ? 3 : $fortunel;
 				$times = [1, 1, 2, 3, 4];
 				$time = $times[mt_rand(0, $fortunel + 1)];
 				return [
-					[Item::EMERALD, 0, $time],
+					Item::get(Item::EMERALD, 0, $time)
 				];
 			}
 		}else{

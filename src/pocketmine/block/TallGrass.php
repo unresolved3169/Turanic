@@ -41,9 +41,6 @@ class TallGrass extends Flowable {
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canBeReplaced() : bool{
 		return true;
 	}
@@ -57,9 +54,6 @@ class TallGrass extends Flowable {
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getBurnChance() : int{
 		return 60;
 	}
@@ -98,7 +92,7 @@ class TallGrass extends Flowable {
 	public function getDrops(Item $item) : array{
 		if(mt_rand(0, 15) === 0){
 			return [
-				[Item::WHEAT_SEEDS, 0, 1]
+				Item::get(Item::WHEAT_SEEDS)
 			];
 		}
 

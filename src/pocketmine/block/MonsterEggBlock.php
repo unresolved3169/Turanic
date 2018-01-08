@@ -20,6 +20,8 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
@@ -31,15 +33,15 @@ class MonsterEggBlock extends Solid{
 
     protected $id = self::MONSTER_EGG_BLOCK;
 
-    public function __construct($meta = 0){
+    public function __construct(int $meta = 0){
         $this->meta = $meta;
     }
 
-    public function getName(){
+    public function getName() : string{
         return "Monster Egg Block";
     }
 
-    public function getHardness(){
+    public function getHardness() : float{
         return 0.75;
     }
 
@@ -55,9 +57,7 @@ class MonsterEggBlock extends Solid{
 
     public function getDrops(Item $item): array{
         if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-            return [
-                [Item::GLASS, 0, 1],
-            ];
+            return parent::getDrops($item);
         }else{
             return [];
         }

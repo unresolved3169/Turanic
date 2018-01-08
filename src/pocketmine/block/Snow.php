@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
@@ -31,43 +33,25 @@ class Snow extends Solid {
 
 	protected $id = self::SNOW_BLOCK;
 
-	/**
-	 * Snow constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.2;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Snow Block";
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isShovel() !== false){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-				return [
-					[Item::SNOW_BLOCK, 0, 1],
-				];
+				return parent::getDrops($item);
 			}else{
 				return [
-					[Item::SNOWBALL, 0, 4],
+					Item::get(Item::SNOWBALL, 0, 4)
 				];
 			}
 		}else{

@@ -36,7 +36,7 @@ class UndyedShulkerBox extends ShulkerBox {
 
     public function getDrops(Item $item): array{
         return [
-            [$this->id, 0, 1]
+            Item::get($this->getItemId())
         ];
     }
 

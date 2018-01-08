@@ -97,11 +97,12 @@ class FlowerPot extends Flowable {
 	}
 
 	public function getDrops(Item $item) : array{
-		$items = [[Item::FLOWER_POT, 0, 1]];
+		$items = parent::getDrops($item);
+
 		$tile = $this->getLevel()->getTile($this);
 		if($tile instanceof TileFlowerPot){
 			if(!($item = $tile->getItem())->isNull()){
-				$items[] = [$item->getId(), $item->getDamage(), 1];
+				$items[] = [Item::get($item->getId(), $item->getDamage())];
 			}
 		}
 		return $items;

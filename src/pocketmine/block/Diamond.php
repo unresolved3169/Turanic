@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -31,55 +33,31 @@ class Diamond extends Solid {
 
 	protected $id = self::DIAMOND_BLOCK;
 
-	/**
-	 * Diamond constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Diamond Block";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 4){
-			return [
-				[Item::DIAMOND_BLOCK, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}
 	}
 
-    /**
-     * @return bool
-     */
-    public function canHarvestWithHand(): bool{
+    public function canHarvestWithHand() : bool{
         return false;
 	}
 }

@@ -87,11 +87,17 @@ class BrewingStand extends Transparent {
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		$drops = [];
+	public function getVariantBitmask(): int{
+        return 0;
+    }
+
+    public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			$drops[] = [Item::BREWING_STAND, 0, 1];
+			return [
+			    Item::get(Item::BREWING_STAND)
+            ];
 		}
-		return $drops;
+
+		return [];
 	}
 }

@@ -100,9 +100,7 @@ class EnchantingTable extends Transparent {
 
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
-			return [
-				[$this->id, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}

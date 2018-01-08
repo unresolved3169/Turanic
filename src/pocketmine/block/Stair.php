@@ -89,11 +89,7 @@ abstract class Stair extends Transparent {
         return 0;
     }
 
-	/**
-	 * @return AxisAlignedBB
-	 */
 	protected function recalculateBoundingBox(){
-
 		if(($this->getDamage() & 0x04) > 0){
 			return new AxisAlignedBB(
 				$this->x,
@@ -141,9 +137,7 @@ abstract class Stair extends Transparent {
 
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				[$this->getId(), 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}

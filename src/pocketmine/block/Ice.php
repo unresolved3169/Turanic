@@ -41,7 +41,7 @@ class Ice extends Transparent{
 		return "Ice";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
 	}
 
@@ -81,9 +81,7 @@ class Ice extends Transparent{
 
 	public function getDrops(Item $item) : array{
 		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return [
-				[Item::ICE, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}

@@ -46,22 +46,20 @@ class Grass extends Solid {
 		return "Grass";
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.6;
 	}
 
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_SHOVEL;
 	}
 
 	public function getDrops(Item $item) : array{
 		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return [
-				[Item::GRASS, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [
-				[Item::DIRT, 0, 1],
+				Item::get(Item::DIRT, 0, 1)
 			];
 		}
 	}
@@ -109,12 +107,6 @@ class Grass extends Solid {
         return false;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
         if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){
             $item->count--;

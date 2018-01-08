@@ -34,6 +34,7 @@ use pocketmine\Server;
 class CocoaBlock extends Solid {
 
 	protected $id = self::COCOA_BLOCK;
+	protected $itemId = Item::DYE;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -47,12 +48,6 @@ class CocoaBlock extends Solid {
 		return 0.2;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){
 			$block = clone $this;
@@ -70,11 +65,6 @@ class CocoaBlock extends Solid {
 		return false;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
 	public function onUpdate($type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$faces = [3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5];
@@ -118,20 +108,19 @@ class CocoaBlock extends Solid {
 		return false;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
-		$drops = [];
 		if($this->meta >= 8){
-			$drops[] = [Item::DYE, 3, 3];
-		}else{
-			$drops[] = [Item::DYE, 3, 1];
+			return [
+			    Item::get($this->getItemId(), $this->getVariant(), 3)
+            ];
 		}
-		return $drops;
+
+		return parent::getDrops($item);
 	}
+
+	public function getVariant(): int{
+        return 3;
+    }
 
     public function ticksRandomly(): bool{
         return true;

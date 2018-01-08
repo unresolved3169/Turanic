@@ -48,11 +48,11 @@ class Anvil extends Fallable {
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 5;
 	}
 
-	public function getResistance(){
+	public function getResistance() : float{
 		return 6000;
 	}
 
@@ -61,9 +61,8 @@ class Anvil extends Fallable {
 			self::NORMAL => "Anvil",
 			self::SLIGHTLY_DAMAGED => "Slightly Damaged Anvil",
 			self::VERY_DAMAGED => "Very Damaged Anvil",
-			12 => "Anvil" //just in case somebody uses /give to get an anvil with damage 12 or higher, to prevent crash
 		];
-		return $names[$this->meta & 0x0c];
+		return $names[$this->meta & 0x0c] ?? "Anvil";
 	}
 
 	public function getToolType(){
@@ -97,7 +96,7 @@ class Anvil extends Fallable {
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
-				[$this->id, $this->meta & 0x0c, 1],
+                Item::get($this->getItemId(), $this->getDamage() & 0x0c)
 			];
 		}else{
 			return [];

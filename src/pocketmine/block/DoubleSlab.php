@@ -76,7 +76,7 @@ class DoubleSlab extends Solid {
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= 1){
 			return [
-				[Item::SLAB, $this->getVariant(), 2],
+				Item::get(Item::SLAB, $this->getVariant(), 2)
 			];
 		}else{
 			return [];

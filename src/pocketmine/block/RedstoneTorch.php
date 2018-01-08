@@ -100,7 +100,7 @@ class RedstoneTorch extends Flowable {
 
 	public function getDrops(Item $item) : array{
 		return [
-			[Item::LIT_REDSTONE_TORCH, 0, 1],
+			Item::get(Item::REDSTONE_TORCH)
 		];
 	}
 

@@ -22,28 +22,20 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-
-/**
- * Air block
- */
 class Air extends Transparent {
 
 	protected $id = self::AIR;
 
-	/**
-	 * Air constructor.
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Air";
 	}
@@ -52,75 +44,43 @@ class Air extends Transparent {
         return [];
     }
 
-    /**
-	 * @return bool
-	 */
-	public function canPassThrough(){
+	public function canPassThrough() : bool{
 		return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeFlowedInto(){
+	public function canBeFlowedInto() : bool{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBePlaced(){
+	public function canBePlaced() : bool{
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
-	/**
-	 * @return null
-	 */
 	public function getBoundingBox(){
 		return null;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getResistance(){
+	public function getResistance() : float{
 		return 0;
 	}
 
-    /**
-     * @return bool
-     */
-    public function canHarvestWithHand(): bool{
+    public function canHarvestWithHand() : bool{
         return false;
 	}
 

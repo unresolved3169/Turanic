@@ -20,6 +20,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
@@ -30,38 +32,21 @@ class StainedGlass extends Transparent {
 
 	protected $id = self::STAINED_GLASS;
 
-    /**
-     * StainedGlass constructor.
-     * @param int $meta
-     */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Glass";
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.3;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return [
-				[Item::STAINED_GLASS, $this->meta, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}

@@ -22,12 +22,14 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 
-class StainedClay extends Solid {
+class StainedClay extends HardenedClay {
 
 	protected $id = self::STAINED_CLAY;
 
@@ -48,63 +50,13 @@ class StainedClay extends Solid {
 	const RED = 14;
 	const BLACK = 15;
 
-	/**
-	 * StainedTerracotta constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
+    public function getName() : string{
+        return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Stained Clay";
+    }
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
-		return 1.25;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		static $names = [
-			0 => "White Stained Terracotta",
-			1 => "Orange Stained Clay",
-			2 => "Magenta Stained Clay",
-			3 => "Light Blue Stained Clay",
-			4 => "Yellow Stained Clay",
-			5 => "Lime Stained Clay",
-			6 => "Pink Stained Clay",
-			7 => "Gray Stained Clay",
-			8 => "Light Gray Stained Clay",
-			9 => "Cyan Stained Clay",
-			10 => "Purple Stained Clay",
-			11 => "Blue Stained Clay",
-			12 => "Brown Stained Clay",
-			13 => "Green Stained Clay",
-			14 => "Red Stained Clay",
-			15 => "Black Stained Clay",
-		];
-		return $names[$this->meta & 0x0f];
-	}
-
-    /**
-     * @param Item $item
-     * @return array
-     */
     public function getDrops(Item $item): array{
         if($item->isPickaxe() >= 1){
-            return [
-                [Item::STAINED_CLAY, 0, 1],
-            ];
+            return parent::getDrops($item);
         }
         return [];
     }

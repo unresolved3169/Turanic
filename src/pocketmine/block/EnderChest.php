@@ -39,7 +39,7 @@ class EnderChest extends Transparent {
 
 	protected $id = self::ENDER_CHEST;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
@@ -90,12 +90,6 @@ class EnderChest extends Transparent {
 		return true;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		if($player instanceof Player){
 			$top = $this->getSide(1);
@@ -117,25 +111,15 @@ class EnderChest extends Transparent {
 		return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->hasEnchantment(Enchantment::TYPE_MINING_SILK_TOUCH)){
-			return [
-				[$this->id, 0, 1],
-			];
+			return parent::getDrops($item);
 		}
 		return [
-			[Item::OBSIDIAN, 0, 8],
+			Item::get(Item::OBSIDIAN, 0, 8)
 		];
 	}
 
-    /**
-     * @return bool
-     */
     public function canHarvestWithHand(): bool{
         return false;
     }

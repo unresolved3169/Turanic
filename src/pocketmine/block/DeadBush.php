@@ -30,6 +30,7 @@ use pocketmine\level\Level;
 class DeadBush extends Flowable {
 
 	protected $id = self::DEAD_BUSH;
+	protected $itemId = Item::DEAD_BUSH;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -53,12 +54,10 @@ class DeadBush extends Flowable {
 
 	public function getDrops(Item $item) : array{
 		if($item->isShears()){
-			return [
-				[Item::DEAD_BUSH, 0, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [
-				[Item::STICK, 0, mt_rand(0, 2)],
+				Item::get(Item::STICK, 0, mt_rand(0, 2))
 			];
 		}
 

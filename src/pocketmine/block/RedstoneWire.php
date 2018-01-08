@@ -302,23 +302,13 @@ class RedstoneWire extends Flowable {
         return $hasUpdated;
     }
 
-    /**
-     * @param Item $item
-     *
-     * @return mixed|void
-     */
     public function onBreak(Item $item){
         $this->calcSignal(0, self::DESTROY);
     }
 
-    /**
-     * @param Item $item
-     *
-     * @return array
-     */
     public function getDrops(Item $item) : array{
         return [
-            [Item::REDSTONE, 0, 1]
+            Item::get(Item::REDSTONE)
         ];
     }
 

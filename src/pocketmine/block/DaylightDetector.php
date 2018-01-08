@@ -33,20 +33,14 @@ class DaylightDetector extends Transparent {
 
 	protected $id = self::DAYLIGHT_DETECTOR;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
         $this->meta = 0;
 	}
 
-    /**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Daylight Sensor";
 	}
 
-	/**
-	 * @return \pocketmine\math\AxisAlignedBB
-	 */
 	public function getBoundingBox(){
 		if($this->boundingBox === null){
 			$this->boundingBox = $this->recalculateBoundingBox();
@@ -54,16 +48,10 @@ class DaylightDetector extends Transparent {
 		return $this->boundingBox;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function canBeFlowedInto(){
 		return false;
 	}
 
-	/**
-	 * @return DLDetector|null
-	 */
 	protected function getTile(){
 		$t = $this->getLevel()->getTile($this);
 		if($t instanceof DLDetector){
@@ -75,49 +63,23 @@ class DaylightDetector extends Transparent {
 		}
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
 	public function onActivate(Item $item, Player $player = null){
 		$this->getLevel()->setBlock($this, new DaylightDetectorInverted(), true, true);
 		$this->getTile()->onUpdate();
 		return true;
 	}
 
-	/**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
 	public function isActivated(Block $from = null){
 		return $this->getTile()->isActivated();
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.2;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getResistance(){
-		return 1;
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		return [
-			[self::DAYLIGHT_SENSOR, 0, 1]
+			Item::get(self::DAYLIGHT_SENSOR)
 		];
 	}
 

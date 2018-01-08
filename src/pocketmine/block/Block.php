@@ -132,7 +132,7 @@ class Block extends Position implements BlockIds, Metadatable{
             self::registerBlock(new Bricks());
             self::registerBlock(new TNT());
             self::registerBlock(new Bookshelf());
-            self::registerBlock(new MossStone());
+            self::registerBlock(new MossyCobblestone());
             self::registerBlock(new Obsidian());
             self::registerBlock(new Torch());
             self::registerBlock(new Fire());
@@ -769,7 +769,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 */
 	public function getDrops(Item $item) : array{
         return [
-            [$this->getItemId(), $this->getVariant(), 1],
+            Item::get($this->getItemId(), $this->getVariant(), 1)
         ];
 	}
 

@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
@@ -33,60 +35,34 @@ class NetherBrickFence extends Transparent {
 
 	protected $id = self::NETHER_BRICK_FENCE;
 
-	/**
-	 * NetherBrickFence constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getResistance(){
+	public function getResistance() : float{
         return 10;
     }
 
-    /**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		//Different then the woodfences
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Nether Brick Fence";
 	}
 
-	/**
-	 * @param Block $block
-	 *
-	 * @return bool
-	 */
 	public function canConnect(Block $block){
 		return ($block instanceof NetherBrickFence || $block instanceof FenceGate) or ($block->isSolid() and !$block->isTransparent());
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-				[Item::NETHER_BRICK_FENCE, $this->meta, 1],
-			];
+			return parent::getDrops($item);
 		}else{
 			return [];
 		}

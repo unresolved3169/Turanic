@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Tool;
@@ -31,27 +33,25 @@ class RedNetherBrick extends Solid{
 
     protected $id = self::RED_NETHER_BRICK;
 
-    public function __construct($meta = 0){
+    public function __construct(int $meta = 0){
         $this->meta = $meta;
     }
 
-    public function getToolType(){
+    public function getToolType() : int{
         return Tool::TYPE_PICKAXE;
     }
 
-    public function getHardness(){
+    public function getHardness() : float{
         return 2;
     }
 
-    public function getName(){
+    public function getName() : string{
         return "Red Nether Bricks";
     }
 
     public function getDrops(Item $item): array{
         if($item->isPickaxe() >= 1){
-            return [
-                [Item::RED_NETHER_BRICK, 0, 1],
-            ];
+            return parent::getDrops($item);
         }else{
             return [];
         }

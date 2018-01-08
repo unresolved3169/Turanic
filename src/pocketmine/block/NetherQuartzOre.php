@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
@@ -29,63 +31,36 @@ use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
 
-
 class NetherQuartzOre extends Solid {
 	protected $id = self::NETHER_QUARTZ_ORE;
 
-	/**
-	 * NetherQuartzOre constructor.
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Nether Quartz Ore";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
+	public function getToolType() : int{
 		return Tool::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 3;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getResistance(){
-		return 15;
-	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-				return [
-					[Item::NETHER_QUARTZ_ORE, 0, 1],
-				];
+				return parent::getDrops($item);
 			}else{
 				$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
 				$fortunel = $fortunel > 3 ? 3 : $fortunel;
 				$times = [1, 1, 2, 3, 4];
 				$time = $times[mt_rand(0, $fortunel + 1)];
 				return [
-					[Item::NETHER_QUARTZ, 0, $time],
+					Item::get(Item::NETHER_QUARTZ, 0, $time)
 				];
 			}
 		}else{
