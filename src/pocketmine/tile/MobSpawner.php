@@ -32,7 +32,7 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\Player;
 
 class MobSpawner extends Spawnable {
@@ -52,8 +52,8 @@ class MobSpawner extends Spawnable {
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
 	    // TODO : Optimize et ve yenile
-		if(!$nbt->hasTag(self::TAG_ENTITY_ID, StringTag::class)){
-			$nbt->setString(self::TAG_ENTITY_ID, "0");
+		if(!$nbt->hasTag(self::TAG_ENTITY_ID, IntTag::class)){
+			$nbt->setInt(self::TAG_ENTITY_ID, 0);
 		}
 		if(!$nbt->hasTag(self::TAG_SPAWN_COUNT, ShortTag::class)){
 			$nbt->setShort(self::TAG_SPAWN_COUNT, 4);
@@ -80,14 +80,14 @@ class MobSpawner extends Spawnable {
 	 * @return int|null
 	 */
 	public function getEntityId(){
-		return (int) $this->namedtag->getString(self::TAG_ENTITY_ID);
+		return $this->namedtag->getInt(self::TAG_ENTITY_ID);
 	}
 
 	/**
 	 * @param int $id
 	 */
 	public function setEntityId(int $id){
-		$this->namedtag->setString(self::TAG_ENTITY_ID, "$id");
+		$this->namedtag->setInt(self::TAG_ENTITY_ID, $id);
 		$this->onChanged();
 		$this->scheduleUpdate();
 	}
@@ -212,7 +212,7 @@ class MobSpawner extends Spawnable {
 					$ground = $target->getSide(Vector3::SIDE_DOWN);
 					if($target->getId() == Item::AIR && $ground->isTopFacingSurfaceSolid()){
 						$success++;
-						$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityGenerateEvent($pos, $this->getEntityId(), EntityGenerateEvent::CAUSE_MOB_SPAWNER));
+						$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new EntityGenerateEvent($this->asPosition()->setComponents($pos->x, $pos->y, $pos->z), $this->getEntityId(), EntityGenerateEvent::CAUSE_MOB_SPAWNER));
 						if(!$ev->isCancelled()){
                             $entity = Entity::createEntity($this->getEntityId(), $this->getLevel(), Entity::createBaseNBT($target->add(0.5, 0, 0.5), null, lcg_value() * 360, 0));
 							$entity->spawnToAll();
