@@ -25,35 +25,29 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class CompoundTag extends NamedTag implements \ArrayAccess {
+class CompoundTag extends NamedTag implements \ArrayAccess{
 
-    /**
-     * CompoundTag constructor.
-     *
-     * @param string $name
-     * @param NamedTag[] $value
-     */
-    public function __construct(string $name = "", array $value = []){
-        parent::__construct($name, $value);
-    }
+	/**
+	 * CompoundTag constructor.
+	 *
+	 * @param string     $name
+	 * @param NamedTag[] $value
+	 */
+	public function __construct(string $name = "", array $value = []){
+		parent::__construct($name, $value);
+	}
 
-    /**
+	/**
 	 * @return int
 	 */
 	public function getCount(){
-		$count = 0;
-		foreach($this as $tag){
-			if($tag instanceof Tag){
-				++$count;
-			}
-		}
-
-		return $count;
+		return count($this->getValue());
 	}
-	
+
 	/**
 	 * @return NamedTag[]
 	 */
@@ -73,7 +67,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @throws \TypeError
 	 */
-	public function setValue($value){
+	public function setValue($value) : void{
 		if(is_array($value)){
 			foreach($value as $name => $tag){
 				if($tag instanceof NamedTag){
@@ -91,16 +85,16 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * Here follows many functions of misery for the sake of type safety. We really needs generics in PHP :(
 	 */
 
-    /**
-     * Returns the tag with the specified name, or null if it does not exist.
-     *
-     * @param string $name
-     * @param string|null $expectedClass Class that extends NamedTag
-     *
-     * @return NamedTag|null
-     * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
-     */
-	public function getTag(string $name, string $expectedClass = NamedTag::class){
+	/**
+	 * Returns the tag with the specified name, or null if it does not exist.
+	 *
+	 * @param string      $name
+	 * @param string|null $expectedClass Class that extends NamedTag
+	 *
+	 * @return NamedTag|null
+	 * @throws \RuntimeException if the tag exists and is not of the expected type (if specified)
+	 */
+	public function getTag(string $name, string $expectedClass = NamedTag::class) : ?NamedTag{
 		assert(is_a($expectedClass, NamedTag::class, true));
 		$tag = $this->{$name} ?? null;
 		if($tag !== null and !($tag instanceof $expectedClass)){
@@ -115,9 +109,9 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * with that name and the tag is not a ListTag.
 	 *
 	 * @param string $name
-	 * @return null|ListTag|NamedTag
-     */
-	public function getListTag(string $name){
+	 * @return ListTag|null
+	 */
+	public function getListTag(string $name) : ?ListTag{
 		return $this->getTag($name, ListTag::class);
 	}
 
@@ -126,9 +120,9 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * exists with that name and the tag is not a CompoundTag.
 	 *
 	 * @param string $name
-	 * @return null|CompoundTag|NamedTag
-     */
-	public function getCompoundTag(string $name){
+	 * @return CompoundTag|null
+	 */
+	public function getCompoundTag(string $name) : ?CompoundTag{
 		return $this->getTag($name, CompoundTag::class);
 	}
 
@@ -138,7 +132,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @param NamedTag $tag
 	 */
-	public function setTag(NamedTag $tag){
+	public function setTag(NamedTag $tag) : void{
 		$this->{$tag->__name} = $tag;
 	}
 
@@ -148,7 +142,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @param string[] ...$names
 	 */
-	public function removeTag(string ...$names){
+	public function removeTag(string ...$names) : void{
 		foreach($names as $name){
 			unset($this->{$name});
 		}
@@ -203,7 +197,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return int
 	 */
-	public function getByte(string $name, $default = null, bool $badTagDefault = false) : int{
+	public function getByte(string $name, ?int $default = null, bool $badTagDefault = false) : int{
 		return $this->getTagValue($name, ByteTag::class, $default, $badTagDefault);
 	}
 
@@ -214,7 +208,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return int
 	 */
-	public function getShort(string $name, $default = null, bool $badTagDefault = false) : int{
+	public function getShort(string $name, ?int $default = null, bool $badTagDefault = false) : int{
 		return $this->getTagValue($name, ShortTag::class, $default, $badTagDefault);
 	}
 
@@ -225,7 +219,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return int
 	 */
-	public function getInt(string $name, $default = null, bool $badTagDefault = false) : int{
+	public function getInt(string $name, ?int $default = null, bool $badTagDefault = false) : int{
 		return $this->getTagValue($name, IntTag::class, $default, $badTagDefault);
 	}
 
@@ -236,8 +230,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return int
 	 */
-	public function getLong(string $name, $default = null, bool $badTagDefault = false) : int{
-		return (int) $this->getTagValue($name, LongTag::class, $default, $badTagDefault);
+	public function getLong(string $name, ?int $default = null, bool $badTagDefault = false) : int{
+		return $this->getTagValue($name, LongTag::class, $default, $badTagDefault);
 	}
 
 	/**
@@ -247,7 +241,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return float
 	 */
-	public function getFloat(string $name, $default = null, bool $badTagDefault = false) : float{
+	public function getFloat(string $name, ?float $default = null, bool $badTagDefault = false) : float{
 		return $this->getTagValue($name, FloatTag::class, $default, $badTagDefault);
 	}
 
@@ -258,7 +252,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return float
 	 */
-	public function getDouble(string $name, $default = null, bool $badTagDefault = false) : float{
+	public function getDouble(string $name, ?float $default = null, bool $badTagDefault = false) : float{
 		return $this->getTagValue($name, DoubleTag::class, $default, $badTagDefault);
 	}
 
@@ -269,7 +263,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return string
 	 */
-	public function getByteArray(string $name, $default = null, bool $badTagDefault = false) : string{
+	public function getByteArray(string $name, ?string $default = null, bool $badTagDefault = false) : string{
 		return $this->getTagValue($name, ByteArrayTag::class, $default, $badTagDefault);
 	}
 
@@ -280,7 +274,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return string
 	 */
-	public function getString(string $name, $default = null, bool $badTagDefault = false) : string{
+	public function getString(string $name, ?string $default = null, bool $badTagDefault = false) : string{
 		return $this->getTagValue($name, StringTag::class, $default, $badTagDefault);
 	}
 
@@ -291,7 +285,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 *
 	 * @return int[]
 	 */
-	public function getIntArray(string $name, $default = null, bool $badTagDefault = false) : array{
+	public function getIntArray(string $name, ?array $default = null, bool $badTagDefault = false) : array{
 		return $this->getTagValue($name, IntArrayTag::class, $default, $badTagDefault);
 	}
 
@@ -304,7 +298,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param mixed  $value Value to set. This should be compatible with the specified tag type.
 	 * @param bool   $force Force set the value even if the existing tag is not the correct type (overwrite the old tag)
 	 */
-	public function setTagValue(string $name, string $tagClass, $value, bool $force){
+	public function setTagValue(string $name, string $tagClass, $value, bool $force) : void{
 		assert(is_a($tagClass, NamedTag::class, true));
 		$tag = $this->getTag($name, $force ? NamedTag::class : $tagClass);
 		if($tag instanceof $tagClass){
@@ -323,8 +317,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setByte(string $name, $value, bool $force = false){
-		$this->setTagValue($name, ByteTag::class, (int) $value, $force);
+	public function setByte(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, ByteTag::class, $value, $force);
 	}
 
 	/**
@@ -332,8 +326,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setShort(string $name, $value, bool $force = false){
-		$this->setTagValue($name, ShortTag::class, (int) $value, $force);
+	public function setShort(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, ShortTag::class, $value, $force);
 	}
 
 	/**
@@ -341,8 +335,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setInt(string $name, $value, bool $force = false){
-		$this->setTagValue($name, IntTag::class, (int) $value, $force);
+	public function setInt(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, IntTag::class, $value, $force);
 	}
 
 	/**
@@ -350,8 +344,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int    $value
 	 * @param bool   $force
 	 */
-	public function setLong(string $name, $value, bool $force = false){
-		$this->setTagValue($name, LongTag::class, (int) $value, $force);
+	public function setLong(string $name, int $value, bool $force = false) : void{
+		$this->setTagValue($name, LongTag::class, $value, $force);
 	}
 
 	/**
@@ -359,8 +353,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param float  $value
 	 * @param bool   $force
 	 */
-	public function setFloat(string $name, $value, bool $force = false){
-		$this->setTagValue($name, FloatTag::class, (float) $value, $force);
+	public function setFloat(string $name, float $value, bool $force = false) : void{
+		$this->setTagValue($name, FloatTag::class, $value, $force);
 	}
 
 	/**
@@ -368,8 +362,8 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param float  $value
 	 * @param bool   $force
 	 */
-	public function setDouble(string $name, $value, bool $force = false){
-		$this->setTagValue($name, DoubleTag::class, (float) $value, $force);
+	public function setDouble(string $name, float $value, bool $force = false) : void{
+		$this->setTagValue($name, DoubleTag::class, $value, $force);
 	}
 
 	/**
@@ -377,7 +371,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param string $value
 	 * @param bool   $force
 	 */
-	public function setByteArray(string $name, string $value, bool $force = false){
+	public function setByteArray(string $name, string $value, bool $force = false) : void{
 		$this->setTagValue($name, ByteArrayTag::class, $value, $force);
 	}
 
@@ -386,7 +380,7 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param string $value
 	 * @param bool   $force
 	 */
-	public function setString(string $name, string $value, bool $force = false){
+	public function setString(string $name, string $value, bool $force = false) : void{
 		$this->setTagValue($name, StringTag::class, $value, $force);
 	}
 
@@ -395,24 +389,16 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 	 * @param int[]  $value
 	 * @param bool   $force
 	 */
-	public function setIntArray(string $name, array $value, bool $force = false){
+	public function setIntArray(string $name, array $value, bool $force = false) : void{
 		$this->setTagValue($name, IntArrayTag::class, $value, $force);
 	}
 
-	/**
-	 * @param mixed $offset
-	 *
-	 * @return bool
-	 */
+
+
 	public function offsetExists($offset){
 		return isset($this->{$offset}) and $this->{$offset} instanceof Tag;
 	}
 
-	/**
-	 * @param mixed $offset
-	 *
-	 * @return null
-	 */
 	public function offsetGet($offset){
 		if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
 			if($this->{$offset} instanceof \ArrayAccess){
@@ -422,13 +408,11 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 			}
 		}
 
+		assert(false, "Offset $offset not found");
+
 		return null;
 	}
 
-	/**
-	 * @param mixed $offset
-	 * @param mixed $value
-	 */
 	public function offsetSet($offset, $value){
 		if($value instanceof Tag){
 			$this->{$offset} = $value;
@@ -437,55 +421,33 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 		}
 	}
 
-	/**
-	 * @param mixed $offset
-	 */
 	public function offsetUnset($offset){
 		unset($this->{$offset});
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getType(): int{
+	public function getType() : int{
 		return NBT::TAG_Compound;
 	}
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
+	public function read(NBTStream $nbt) : void{
 		$this->value = [];
 		do{
-			$tag = $nbt->readTag($network);
-			if($tag instanceof NamedTag and $tag->getName() !== ""){
-				$this->{$tag->getName()} = $tag;
+			$tag = $nbt->readTag();
+			if($tag instanceof NamedTag and $tag->__name !== ""){
+				$this->{$tag->__name} = $tag;
 			}
 		}while(!($tag instanceof EndTag) and !$nbt->feof());
 	}
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBTStream $nbt) : void{
 		foreach($this as $tag){
 			if($tag instanceof Tag and !($tag instanceof EndTag)){
-				$nbt->writeTag($tag, $network);
+				$nbt->writeTag($tag);
 			}
 		}
-
-		$nbt->writeTag(new EndTag, $network);
+		$nbt->writeTag(new EndTag);
 	}
 
-	/**
-	 * @return string
-	 */
 	public function __toString(){
 		$str = get_class($this) . "{\n";
 		foreach($this as $tag){
@@ -496,11 +458,11 @@ class CompoundTag extends NamedTag implements \ArrayAccess {
 		return $str . "}";
 	}
 
-    public function __clone(){
-        foreach ($this as $key => $tag) {
-            if ($tag instanceof Tag) {
-                $this->{$key} = clone $tag;
-            }
-        }
-    }
+	public function __clone(){
+		foreach($this as $key => $tag){
+			if($tag instanceof Tag){
+				$this->{$key} = clone $tag;
+			}
+		}
+	}
 }
