@@ -147,13 +147,12 @@ class ServerHandler{
                     $identifierACK = Binary::readInt(substr($packet, $offset, 4));
                     $this->instance->notifyACK($identifier, $identifierACK);
                     break;
-                case RakLib::PACKET_PING:
+                case RakLib::PACKET_REPORT_PING:
                     $len = ord($packet{$offset++});
                     $identifier = substr($packet, $offset, $len);
                     $offset += $len;
-                    $len = ord($packet{$offset++});
-                    $ping = substr($packet, $offset, $len);
-                    $this->instance->handlePing($identifier, $ping);
+                    $pingMS = Binary::readInt(substr($packet, $offset, 4));
+                    $this->instance->updatePing($identifier, $pingMS);
                     break;
             }
 

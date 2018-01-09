@@ -325,8 +325,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /** @var string */
     protected $locale = "en_US";
 
-    /** @var float */
-	private $ping = 0;
+    /**
+     * @var int
+     * Last measurement of player's latency in milliseconds.
+     */
+    protected $lastPingMeasure = 1;
 
     /** @var CraftingTransaction|null */
     public $craftingTransaction = null;
@@ -828,7 +831,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @return int
      */
     public function getPing() : int{
-        return $this->ping;
+        return $this->lastPingMeasure;
     }
 
     /**
@@ -836,10 +839,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      *
      * @internal Plugins should not use this method.
      *
-     * @param $ping
+     * @param int $pingMS
      */
-    public function setPing($ping){
-        $this->ping = (int) $ping;
+	public function updatePing(int $pingMS){
+        $this->lastPingMeasure = $pingMS;
     }
 
     /**
@@ -4031,7 +4034,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 	public function handlePing(PingPacket $packet) : bool{
 		// TODO: Add event
-		$this->setPing($packet->ping);
+		$this->updatePing($packet->ping);
 		return true;
 	}
 

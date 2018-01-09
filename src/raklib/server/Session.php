@@ -111,8 +111,10 @@ class Session{
 	private $reliableWindow = [];
 	/** @var int */
 	private $lastReliableIndex = -1;
-
-    private $pingAverage = [0.025];
+    /** @var float */
+	private $lastPingTime = -1;
+	/** @var int */
+	private $lastPingMeasure = 0;
 
 	public function __construct(SessionManager $sessionManager, $address, $port, $clientId, int $mtuSize){
 		$this->sessionManager = $sessionManager;
@@ -232,12 +234,38 @@ class Session{
 			}
 		}
 
+        if($this->lastPingTime + 5 < $time){
+            $this->sendPing();
+            $this->lastPingTime = $time;
+        }
+
 		$this->sendQueue();
 	}
 
 	public function disconnect($reason = "unknown"){
 		$this->sessionManager->removeSession($this, $reason);
 	}
+
+    private function sendDatagram(Datagram $datagram){
+        if($datagram->seqNumber !== null){
+            unset($this->recoveryQueue[$datagram->seqNumber]);
+        }
+        $datagram->seqNumber = $this->sendSeqNumber++;
+        $datagram->sendTime = microtime(true);
+        $this->recoveryQueue[$datagram->seqNumber] = $datagram;
+        $this->sendPacket($datagram);
+    }
+
+    private function queueConnectedPacket(Packet $packet, int $reliability, int $orderChannel, int $flags = RakLib::PRIORITY_NORMAL){
+        $packet->encode();
+
+        $encapsulated = new EncapsulatedPacket();
+        $encapsulated->reliability = $reliability;
+        $encapsulated->orderChannel = $orderChannel;
+        $encapsulated->buffer = $packet->buffer;
+
+        $this->addEncapsulatedToQueue($encapsulated, $flags);
+    }
 
 	private function sendPacket(Packet $packet){
 	    $packet->sendTime = microtime(true);
@@ -252,7 +280,14 @@ class Session{
         }
 	}
 
-	/**
+    private function sendPing(int $reliability = PacketReliability::UNRELIABLE){
+        $pk = new ConnectedPing();
+        $pk->sendPingTime = $this->sessionManager->getRakNetTimeMS();
+        $this->queueConnectedPacket($pk, $reliability, 0, RakLib::PRIORITY_IMMEDIATE);
+    }
+
+
+    /**
 	 * @param EncapsulatedPacket $pk
 	 * @param int                $flags
 	 */
@@ -394,144 +429,138 @@ class Session{
 	}
 
 
-	private function handleEncapsulatedPacketRoute(EncapsulatedPacket $packet){
-		if($this->sessionManager === null){
-			return;
-		}
+    private function handleEncapsulatedPacketRoute(EncapsulatedPacket $packet){
+        if($this->sessionManager === null){
+            return;
+        }
 
-		if($packet->hasSplit){
-			if($this->state === self::STATE_CONNECTED){
-				$this->handleSplit($packet);
-			}
+        if($packet->hasSplit){
+            if($this->state === self::STATE_CONNECTED){
+                $this->handleSplit($packet);
+            }
 
-			return;
-		}
+            return;
+        }
 
-		$id = ord($packet->buffer{0});
-		if($id < MessageIdentifiers::ID_USER_PACKET_ENUM){ //internal data packet
-			if($this->state === self::STATE_CONNECTING){
-				if($id === ConnectionRequest::$ID){
-					$dataPacket = new ConnectionRequest($packet->buffer);
-					$dataPacket->decode();
-					$pk = new ConnectionRequestAccepted;
-					$pk->address = $this->address;
-					$pk->port = $this->port;
-					$pk->sendPingTime = $dataPacket->sendPingTime;
-					$pk->sendPongTime = $this->sessionManager->getRakNetTimeMS();
+        $id = ord($packet->buffer{0});
+        if($id < MessageIdentifiers::ID_USER_PACKET_ENUM){ //internal data packet
+            if($this->state === self::STATE_CONNECTING){
+                if($id === ConnectionRequest::$ID){
+                    $dataPacket = new ConnectionRequest($packet->buffer);
+                    $dataPacket->decode();
+
+                    $pk = new ConnectionRequestAccepted;
+                    $pk->address = $this->address;
+                    $pk->port = $this->port;
+                    $pk->sendPingTime = $dataPacket->sendPingTime;
+                    $pk->sendPongTime = $this->sessionManager->getRakNetTimeMS();
                     $this->queueConnectedPacket($pk, PacketReliability::UNRELIABLE, 0, RakLib::PRIORITY_IMMEDIATE);
-				}elseif($id === NewIncomingConnection::$ID){
-					$dataPacket = new NewIncomingConnection($packet->buffer);
-					$dataPacket->decode();
+                }elseif($id === NewIncomingConnection::$ID){
+                    $dataPacket = new NewIncomingConnection($packet->buffer);
+                    $dataPacket->decode();
 
-					if($dataPacket->port === $this->sessionManager->getPort() or !$this->sessionManager->portChecking){
-						$this->state = self::STATE_CONNECTED; //FINALLY!
-						$this->isTemporal = false;
-						$this->sessionManager->openSession($this);
-					}
-				}
-			}elseif($id === DisconnectionNotification::$ID){
-				//TODO: we're supposed to send an ACK for this, but currently we're just deleting the session straight away
-				$this->disconnect("client disconnect");
-			}elseif($id === ConnectedPing::$ID){
-				$dataPacket = new ConnectedPing($packet->buffer);
-				$dataPacket->decode();
+                    if($dataPacket->port === $this->sessionManager->getPort() or !$this->sessionManager->portChecking){
+                        $this->state = self::STATE_CONNECTED; //FINALLY!
+                        $this->isTemporal = false;
+                        $this->sessionManager->openSession($this);
 
-				$pk = new ConnectedPong;
+                        //$this->handlePong($dataPacket->sendPingTime, $dataPacket->sendPongTime); //can't use this due to system-address count issues in MCPE >.<
+                        $this->sendPing();
+                    }
+                }
+            }elseif($id === DisconnectionNotification::$ID){
+                //TODO: we're supposed to send an ACK for this, but currently we're just deleting the session straight away
+                $this->disconnect("client disconnect");
+            }elseif($id === ConnectedPing::$ID){
+                $dataPacket = new ConnectedPing($packet->buffer);
+                $dataPacket->decode();
+
+                $pk = new ConnectedPong;
                 $pk->sendPingTime = $dataPacket->sendPingTime;
                 $pk->sendPongTime = $this->sessionManager->getRakNetTimeMS();
                 $this->queueConnectedPacket($pk, PacketReliability::UNRELIABLE, 0);
-			}
-		}elseif($this->state === self::STATE_CONNECTED){
-			$this->sessionManager->streamEncapsulated($this, $packet);
+            }elseif($id === ConnectedPong::$ID){
+                $dataPacket = new ConnectedPong($packet->buffer);
+                $dataPacket->decode();
 
-			//TODO: stream channels
-		}
-	}
+                $this->handlePong($dataPacket->sendPingTime, $dataPacket->sendPongTime);
+            }
+        }elseif($this->state === self::STATE_CONNECTED){
+            $this->sessionManager->streamEncapsulated($this, $packet);
 
-    private function sendDatagram(Datagram $datagram){
-        if($datagram->seqNumber !== null){
-            unset($this->recoveryQueue[$datagram->seqNumber]);
+            //TODO: stream channels
+        }else{
+            //$this->sessionManager->getLogger()->notice("Received packet before connection: " . bin2hex($packet->buffer));
         }
-        $datagram->seqNumber = $this->sendSeqNumber++;
-        $datagram->sendTime = microtime(true);
-        $this->recoveryQueue[$datagram->seqNumber] = $datagram;
-        $this->sendPacket($datagram);
     }
 
-    private function queueConnectedPacket(Packet $packet, int $reliability, int $orderChannel, int $flags = RakLib::PRIORITY_NORMAL){
-        $packet->encode();
-
-        $encapsulated = new EncapsulatedPacket();
-        $encapsulated->reliability = $reliability;
-        $encapsulated->orderChannel = $orderChannel;
-        $encapsulated->buffer = $packet->buffer;
-
-        $this->addEncapsulatedToQueue($encapsulated, $flags);
+    /**
+     * @param int $sendPingTime
+     * @param int $sendPongTime TODO: clock differential stuff
+     */
+    private function handlePong(int $sendPingTime, int $sendPongTime){
+        $this->lastPingMeasure = $this->sessionManager->getRakNetTimeMS() - $sendPingTime;
+        $this->sessionManager->streamPingMeasure($this, $this->lastPingMeasure);
     }
 
-	public function handlePacket(Packet $packet){
-		$this->isActive = true;
-		$this->lastUpdate = microtime(true);
+    public function handlePacket(Packet $packet){
+        $this->isActive = true;
+        $this->lastUpdate = microtime(true);
 
         if($packet instanceof Datagram){ //In reality, ALL of these packets are datagrams.
-			$packet->decode();
+            $packet->decode();
 
-			if($packet->seqNumber < $this->windowStart or $packet->seqNumber > $this->windowEnd or isset($this->receivedWindow[$packet->seqNumber])){
-				return;
-			}
+            if($packet->seqNumber < $this->windowStart or $packet->seqNumber > $this->windowEnd or isset($this->receivedWindow[$packet->seqNumber])){
+                return;
+            }
 
-			$diff = $packet->seqNumber - $this->lastSeqNumber;
+            $diff = $packet->seqNumber - $this->lastSeqNumber;
 
-			unset($this->NACKQueue[$packet->seqNumber]);
-			$this->ACKQueue[$packet->seqNumber] = $packet->seqNumber;
-			$this->receivedWindow[$packet->seqNumber] = $packet->seqNumber;
+            unset($this->NACKQueue[$packet->seqNumber]);
+            $this->ACKQueue[$packet->seqNumber] = $packet->seqNumber;
+            $this->receivedWindow[$packet->seqNumber] = $packet->seqNumber;
 
-			if($diff !== 1){
-				for($i = $this->lastSeqNumber + 1; $i < $packet->seqNumber; ++$i){
-					if(!isset($this->receivedWindow[$i])){
-						$this->NACKQueue[$i] = $i;
-					}
-				}
-			}
+            if($diff !== 1){
+                for($i = $this->lastSeqNumber + 1; $i < $packet->seqNumber; ++$i){
+                    if(!isset($this->receivedWindow[$i])){
+                        $this->NACKQueue[$i] = $i;
+                    }
+                }
+            }
 
-			if($diff >= 1){
-				$this->lastSeqNumber = $packet->seqNumber;
-				$this->windowStart += $diff;
-				$this->windowEnd += $diff;
-			}
+            if($diff >= 1){
+                $this->lastSeqNumber = $packet->seqNumber;
+                $this->windowStart += $diff;
+                $this->windowEnd += $diff;
+            }
 
-			foreach($packet->packets as $pk){
-				$this->handleEncapsulatedPacket($pk);
-			}
-		}else{
-			if($packet instanceof ACK){
-				$packet->decode();
-				foreach($packet->packets as $seq){
-					if(isset($this->recoveryQueue[$seq])){
-						foreach($this->recoveryQueue[$seq]->packets as $pk){
-							if($pk instanceof EncapsulatedPacket and $pk->needACK and $pk->messageIndex !== null){
-								unset($this->needACK[$pk->identifierACK][$pk->messageIndex]);
-							}
-						}
-                        $this->pingAverage[] = microtime(true) - $this->recoveryQueue[$seq]->sendTime;
-                        if (count($this->pingAverage) > 20) {
-                            array_shift($this->pingAverage);
+            foreach($packet->packets as $pk){
+                $this->handleEncapsulatedPacket($pk);
+            }
+        }else{
+            if($packet instanceof ACK){
+                $packet->decode();
+                foreach($packet->packets as $seq){
+                    if(isset($this->recoveryQueue[$seq])){
+                        foreach($this->recoveryQueue[$seq]->packets as $pk){
+                            if($pk instanceof EncapsulatedPacket and $pk->needACK and $pk->messageIndex !== null){
+                                unset($this->needACK[$pk->identifierACK][$pk->messageIndex]);
+                            }
                         }
-						unset($this->recoveryQueue[$seq]);
-					}
-				}
-			}elseif($packet instanceof NACK){
-				$packet->decode();
-				foreach($packet->packets as $seq){
-					if(isset($this->recoveryQueue[$seq])){
-						$this->packetToSend[] = $this->recoveryQueue[$seq];
-						unset($this->recoveryQueue[$seq]);
-					}
-				}
-			}
-		}
-	}
-
+                        unset($this->recoveryQueue[$seq]);
+                    }
+                }
+            }elseif($packet instanceof NACK){
+                $packet->decode();
+                foreach($packet->packets as $seq){
+                    if(isset($this->recoveryQueue[$seq])){
+                        $this->packetToSend[] = $this->recoveryQueue[$seq];
+                        unset($this->recoveryQueue[$seq]);
+                    }
+                }
+            }
+        }
+    }
 
 	public function flagForDisconnection(){
 		$this->state = self::STATE_DISCONNECTING;
@@ -550,8 +579,4 @@ class Session{
 			$this->sessionManager = null;
 		}
 	}
-
-    public function getPing(){
-        return round((array_sum($this->pingAverage) / count($this->pingAverage)) * 1000);
-    }
 }

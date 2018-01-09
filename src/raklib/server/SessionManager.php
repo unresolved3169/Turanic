@@ -128,45 +128,41 @@ class SessionManager{
 		}
 	}
 
-	private function tick(){
-		$time = microtime(true);
-		foreach($this->sessions as $session){
-			$session->update($time);
-            if(($this->ticks % 40) === 0) {
-                $this->streamPing($session);
+    private function tick(){
+        $time = microtime(true);
+        foreach($this->sessions as $session){
+            $session->update($time);
+        }
+
+        $this->ipSec = [];
+
+        if(($this->ticks % self::RAKLIB_TPS) === 0){
+            $diff = max(0.005, $time - $this->lastMeasure);
+            $this->streamOption("bandwidth", serialize([
+                "up" => $this->sendBytes / $diff,
+                "down" => $this->receiveBytes / $diff
+            ]));
+            $this->lastMeasure = $time;
+            $this->sendBytes = 0;
+            $this->receiveBytes = 0;
+
+            if(count($this->block) > 0){
+                asort($this->block);
+                $now = microtime(true);
+                foreach($this->block as $address => $timeout){
+                    if($timeout <= $now){
+                        unset($this->block[$address]);
+                    }else{
+                        break;
+                    }
+                }
             }
-		}
+        }
 
-		$this->ipSec = [];
+        ++$this->ticks;
+    }
 
-		if(($this->ticks % self::RAKLIB_TPS) === 0){
-			$diff = max(0.005, $time - $this->lastMeasure);
-			$this->streamOption("bandwidth", serialize([
-				"up" => $this->sendBytes / $diff,
-				"down" => $this->receiveBytes / $diff
-			]));
-			$this->lastMeasure = $time;
-			$this->sendBytes = 0;
-			$this->receiveBytes = 0;
-
-			if(count($this->block) > 0){
-				asort($this->block);
-				$now = microtime(true);
-				foreach($this->block as $address => $timeout){
-					if($timeout <= $now){
-						unset($this->block[$address]);
-					}else{
-						break;
-					}
-				}
-			}
-		}
-
-		++$this->ticks;
-	}
-
-
-	private function receivePacket(){
+    private function receivePacket(){
 		$len = $this->socket->readPacket($buffer, $source, $port);
 		if($buffer !== null){
 			$this->receiveBytes += $len;
@@ -265,10 +261,9 @@ class SessionManager{
 		$this->server->pushThreadToMainPacket($buffer);
 	}
 
-    public function streamPing(Session $session){
-        $id = $session->getAddress() . ":" . $session->getPort();
-        $ping = $session->getPing();
-        $buffer = chr(RakLib::PACKET_PING) . chr(strlen($id)) . $id . chr(strlen($ping)) . $ping;
+    public function streamPingMeasure(Session $session, int $pingMS){
+        $identifier = $session->getAddress() . ":" . $session->getPort();
+        $buffer = chr(RakLib::PACKET_REPORT_PING) . chr(strlen($identifier)) . $identifier . Binary::writeInt($pingMS);
         $this->server->pushThreadToMainPacket($buffer);
     }
 

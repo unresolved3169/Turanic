@@ -55,6 +55,9 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	/** @var string[] */
 	private $identifiers = [];
 
+    /** @var int[] */
+    private $networkLatency = [];
+
 	/** @var int[] */
 	private $identifiersACK = [];
 
@@ -113,6 +116,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 			$player = $this->players[$identifier];
 			unset($this->identifiers[spl_object_hash($player)]);
 			unset($this->players[$identifier]);
+			unset($this->networkLatency[spl_object_hash($player)]);
 			unset($this->identifiersACK[$identifier]);
 			$player->close($player->getLeaveMessage(), $reason);
 		}
@@ -126,9 +130,10 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 		if(isset($this->identifiers[$h = spl_object_hash($player)])){
 			unset($this->players[$this->identifiers[$h]]);
 			unset($this->identifiersACK[$this->identifiers[$h]]);
-			$this->interface->closeSession($this->identifiers[$h], $reason);
-			unset($this->identifiers[$h]);
-		}
+            $this->interface->closeSession($this->identifiers[$h], $reason);
+            unset($this->networkLatency[$h]);
+            unset($this->identifiers[$h]);
+        }
 	}
 
 	public function start(){
@@ -158,6 +163,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 		$this->players[$identifier] = $player;
 		$this->identifiersACK[$identifier] = 0;
 		$this->identifiers[spl_object_hash($player)] = $identifier;
+		$this->networkLatency[spl_object_hash($player)] = 0;
 		$this->server->addPlayer($identifier, $player);
 	}
 
@@ -191,17 +197,6 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 	public function blockAddress(string $address, int $timeout = 300){
 		$this->interface->blockAddress($address, $timeout);
 	}
-
-    /**
-     * @param $identifier
-     * @param $ping
-     */
-    public function handlePing($identifier, $ping){
-        if (isset($this->players[$identifier])) {
-            $player = $this->players[$identifier];
-            $player->setPing($ping);
-        }
-    }
 
 	/**
 	 * @param $address
@@ -327,6 +322,16 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
 		return null;
 	}
+
+    /**
+     * @param string $identifier
+     * @param int $pingMS
+     */
+    public function updatePing(string $identifier, int $pingMS){
+        if(isset($this->players[$identifier])){
+            $this->players[$identifier]->updatePing($pingMS);
+        }
+    }
 
 	/**
 	 * @param $buffer

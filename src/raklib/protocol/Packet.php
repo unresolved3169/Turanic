@@ -40,16 +40,16 @@ abstract class Packet{
     }
 
     protected function get($len){
-		if($len < 0){
-			$this->offset = strlen($this->buffer) - 1;
+        if($len < 0){
+            $this->offset = strlen($this->buffer) - 1;
 
-			return "";
-		}elseif($len === true){
-			return substr($this->buffer, $this->offset);
-		}
+            return "";
+        }elseif($len === true){
+            return substr($this->buffer, $this->offset);
+        }
 
-		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
-	}
+        return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
+    }
 
 	protected function getLong(){
 		return Binary::readLong($this->get(8));

@@ -249,25 +249,25 @@ class Binary{
 		return ENDIANNESS === self::BIG_ENDIAN ? strrev(pack("d", $value)) : pack("d", $value);
 	}
 
-	public static function readLong($x){
-		if(PHP_INT_SIZE === 8){
-			list(, $int1, $int2) = unpack("N*", $x);
+    public static function readLong($x){
+        if(PHP_INT_SIZE === 8){
+            list(, $int1, $int2) = unpack("N*", $x);
 
-			return ($int1 << 32) | $int2;
-		}else{
-			$value = "0";
-			for($i = 0; $i < 8; $i += 2){
-				$value = bcmul($value, "65536", 0);
-				$value = bcadd($value, self::readShort(substr($x, $i, 2)), 0);
-			}
+            return ($int1 << 32) | $int2;
+        }else{
+            $value = "0";
+            for($i = 0; $i < 8; $i += 2){
+                $value = bcmul($value, "65536", 0);
+                $value = bcadd($value, self::readShort(substr($x, $i, 2)), 0);
+            }
 
-			if(bccomp($value, "9223372036854775807") == 1){
-				$value = bcadd($value, "-18446744073709551616");
-			}
+            if(bccomp($value, "9223372036854775807") == 1){
+                $value = bcadd($value, "-18446744073709551616");
+            }
 
-			return $value;
-		}
-	}
+            return $value;
+        }
+    }
 
 	public static function writeLong($value){
 		if(PHP_INT_SIZE === 8){
