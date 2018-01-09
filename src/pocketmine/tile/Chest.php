@@ -37,17 +37,15 @@ use pocketmine\nbt\tag\ListTag;
 class Chest extends Spawnable implements InventoryHolder, Container, Nameable {
     use NameableTrait, ContainerTrait;
 
+    const TAG_PAIRX = "pairx";
+    const TAG_PAIRZ = "pairz";
+    const TAG_PAIR_LEAD = "pairlead";
+
 	/** @var ChestInventory */
 	protected $inventory;
 	/** @var DoubleChestInventory */
 	protected $doubleInventory = null;
 
-	/**
-	 * Chest constructor.
-	 *
-	 * @param Level       $level
-	 * @param CompoundTag $nbt
-	 */
 	public function __construct(Level $level, CompoundTag $nbt){
 		parent::__construct($level, $nbt);
 		$this->inventory = new ChestInventory($this);
@@ -99,124 +97,103 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable {
 		return $this->inventory;
 	}
 
-	/**
-	 * @return DoubleChestInventory|null
-	 */
-	public function getDoubleInventory(){
-		return $this->doubleInventory;
-	}
-
 	protected function checkPairing(){
-		if($this->isPaired() and !$this->getLevel()->isChunkLoaded($this->namedtag->getInt("pairx") >> 4, $this->namedtag->getInt("pairz") >> 4)){
-			//paired to a tile in an unloaded chunk
-			$this->doubleInventory = null;
+        if($this->isPaired() and !$this->getLevel()->isChunkLoaded($this->namedtag->getInt(self::TAG_PAIRX) >> 4, $this->namedtag->getInt(self::TAG_PAIRZ) >> 4)){
+            //paired to a tile in an unloaded chunk
+            $this->doubleInventory = null;
 
-		}elseif(($pair = $this->getPair()) instanceof Chest){
-			if(!$pair->isPaired()){
-				$pair->createPair($this);
-				$pair->checkPairing();
-			}
-			if($this->doubleInventory === null){
-				if(($p = $pair->getDoubleInventory()) instanceof DoubleChestInventory){
-					$this->doubleInventory = $p;
-				}else{
-					if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
-						$this->doubleInventory = new DoubleChestInventory($pair, $this);
-					}else{
-						$this->doubleInventory = new DoubleChestInventory($this, $pair);
-					}
-				}
-			}
-		}else{
-			$this->doubleInventory = null;
-			$this->namedtag->removeTag("pairx", "pairz");
-		}
+        }elseif(($pair = $this->getPair()) instanceof Chest){
+            if(!$pair->isPaired()){
+                $pair->createPair($this);
+                $pair->checkPairing();
+            }
+            if($this->doubleInventory === null){
+                if(($pair->x + ($pair->z << 15)) > ($this->x + ($this->z << 15))){ //Order them correctly
+                    $this->doubleInventory = new DoubleChestInventory($pair, $this);
+                }else{
+                    $this->doubleInventory = new DoubleChestInventory($this, $pair);
+                }
+            }
+        }else{
+            $this->doubleInventory = null;
+            $this->namedtag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
+        }
 	}
 
+    /**
+     * @return string
+     */
     public function getDefaultName() : string{
         return "Chest";
-  	}
+    }
 
-	/**
-	 * @return bool
-	 */
-	public function isPaired() : bool{
-	    return $this->namedtag->hasTag("pairx") and $this->namedtag->hasTag("pairz");
-	}
+    public function isPaired(){
+        return $this->namedtag->hasTag(self::TAG_PAIRX) and $this->namedtag->hasTag(self::TAG_PAIRZ);
+    }
 
-	/**
-	 * @return Chest
-	 */
-	public function getPair(){
+    /**
+     * @return Chest|null
+     */
+    public function getPair(){
         if($this->isPaired()){
-            $tile = $this->getLevel()->getTileAt($this->namedtag->getInt("pairx"), $this->y, $this->namedtag->getInt("pairz"));
+            $tile = $this->getLevel()->getTileAt($this->namedtag->getInt(self::TAG_PAIRX), $this->y, $this->namedtag->getInt(self::TAG_PAIRZ));
             if($tile instanceof Chest){
                 return $tile;
             }
         }
+
         return null;
-	}
+    }
 
-	/**
-	 * @param Chest $tile
-	 *
-	 * @return bool
-	 */
 	public function pairWith(Chest $tile){
-		if($this->isPaired() or $tile->isPaired()){
-			return false;
-		}
-
-		$this->createPair($tile);
-
-		$this->onChanged();
-		$tile->onChanged();
-		$this->checkPairing();
-
-		return true;
-	}
-
-	/**
-	 * @param Chest $tile
-	 */
-	private function createPair(Chest $tile){
-		$this->namedtag->setInt("pairx", $tile->x);
-		$this->namedtag->setInt("pairz", $tile->z);
-
-		$tile->namedtag->setInt("pairx", $this->x);
-		$tile->namedtag->setInt("pairz", $this->z);
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function unpair(){
-		if(!$this->isPaired()){
-			return false;
-		}
-
-		$tile = $this->getPair();
-        $this->namedtag->removeTag("pairx", "pairz");
-
-		$this->onChanged();
-
-		if($tile instanceof Chest){
-            $this->namedtag->removeTag("pairx", "pairz");
-			$tile->checkPairing();
-			$tile->onChanged();
-		}
-		$this->checkPairing();
-
-		return true;
-	}
-
-	public function addAdditionalSpawnData(CompoundTag $nbt){
-        if($this->isPaired()) {
-            $nbt->setTag($this->namedtag->getTag("pairx"));
-            $nbt->setTag($this->namedtag->getTag("pairz"));
+        if($this->isPaired() or $tile->isPaired()){
+            return false;
         }
 
-        if($this->hasName()) {
+        $this->createPair($tile);
+
+        $this->onChanged();
+        $tile->onChanged();
+        $this->checkPairing();
+
+        return true;
+	}
+
+    private function createPair(Chest $tile){
+        $this->namedtag->setInt(self::TAG_PAIRX, $tile->x);
+        $this->namedtag->setInt(self::TAG_PAIRZ, $tile->z);
+
+        $tile->namedtag->setInt(self::TAG_PAIRX, $this->x);
+        $tile->namedtag->setInt(self::TAG_PAIRZ, $this->z);
+    }
+
+    public function unpair(){
+        if(!$this->isPaired()){
+            return false;
+        }
+
+        $tile = $this->getPair();
+        $this->namedtag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
+
+        $this->onChanged();
+
+        if($tile instanceof Chest){
+            $tile->namedtag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
+            $tile->checkPairing();
+            $tile->onChanged();
+        }
+        $this->checkPairing();
+
+        return true;
+    }
+
+    public function addAdditionalSpawnData(CompoundTag $nbt){
+        if($this->isPaired()){
+            $nbt->setTag($this->namedtag->getTag(self::TAG_PAIRX));
+            $nbt->setTag($this->namedtag->getTag(self::TAG_PAIRZ));
+        }
+
+        if($this->hasName()){
             $nbt->setTag($this->namedtag->getTag("CustomName"));
         }
     }
@@ -230,8 +207,9 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable {
      */
     protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, $face = null, $item = null, $player = null){
         $nbt->setTag(new ListTag("Items", [], NBT::TAG_Compound));
-		if($item !== null and $item->hasCustomName()){
-			$nbt->setString("CustomName", $item->getCustomName());
-		}
+
+        if($item !== null and $item->hasCustomName()){
+            $nbt->setString("CustomName", $item->getCustomName());
+        }
     }
 }

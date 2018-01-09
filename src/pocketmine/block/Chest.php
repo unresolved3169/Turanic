@@ -84,13 +84,13 @@ class Chest extends Transparent {
 				continue;
 			}
 			$c = $this->getSide($side);
-			if($c instanceof Chest and $c->getDamage() === $this->meta){
-				$tile = $this->getLevel()->getTile($c);
-				if($tile instanceof TileChest and !$tile->isPaired()){
-					$chest = $tile;
-					break;
-				}
-			}
+            if($c->getId() === $this->id and $c->getDamage() === $this->meta){
+                $tile = $this->getLevel()->getTile($c);
+                if($tile instanceof TileChest and !$tile->isPaired()){
+                    $chest = $tile;
+                    break;
+                }
+            }
 		}
 
 		$this->getLevel()->setBlock($blockReplace, $this, true, true);
@@ -105,14 +105,14 @@ class Chest extends Transparent {
 	}
 
 	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player){
-			$t = $this->getLevel()->getTile($this);
-			$chest = null;
-			if($t instanceof TileChest){
-				$chest = $t;
-			}else{
+        if($player instanceof Player){
+            $t = $this->getLevel()->getTile($this);
+            $chest = null;
+            if($t instanceof TileChest){
+                $chest = $t;
+            }else{
                 $chest = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this));
-			}
+            }
 
             if($player->isCreative() and $player->getServer()->limitedCreative){
                 return true;
@@ -126,17 +126,17 @@ class Chest extends Transparent {
                 return true;
             }
 
-			$player->addWindow($chest->getInventory());
-		}
+            $player->addWindow($chest->getInventory());
+        }
 
-		return true;
+        return true;
 	}
-
-	public function getFuelTime(): int{
-        return 300;
-    }
 
     public function getVariantBitmask() : int{
         return 0;
+    }
+
+	public function getFuelTime(): int{
+        return 300;
     }
 }
