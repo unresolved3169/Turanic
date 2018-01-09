@@ -27,12 +27,9 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\FireworksRocket;
-use pocketmine\entity\projectile\Projectile;
-use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
@@ -61,7 +58,7 @@ class FireworkRocket extends Item {
             }
 
             $level = $player->getLevel();
-            $rocket = new FireworksRocket($level, $nbt, $player);
+            $rocket = new FireworksRocket($level, $nbt, $player, $this);
             $level->addEntity($rocket);
             if ($rocket instanceof Entity){
                 if ($player->isSurvival()){
@@ -86,7 +83,7 @@ class FireworkRocket extends Item {
             $nbt->setTag($tags);
         }
 
-        $rocket = new FireworksRocket($level, $nbt, $player);
+        $rocket = new FireworksRocket($level, $nbt, $player, $this, $random);
         $level->addEntity($rocket);
         if ($rocket instanceof Entity){
             if ($player->isSurvival()){

@@ -51,7 +51,7 @@ Port: **19172**
    - [ ] FireCharge
    - [x] Totem of Undying
    - [x] Elytra Wings
-   - [ ] Firework Rocket (Progress: 95%)
+   - [x] Firework Rocket
    - [x] Lingering Potions
  - Commands
    - [x] ClearInventory Command

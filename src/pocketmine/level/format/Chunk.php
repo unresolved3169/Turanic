@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\level\format;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
@@ -434,7 +433,7 @@ class Chunk{
     public function recalculateHeightMapColumn(int $x, int $z) : int{
         $max = $this->getHighestBlockAt($x, $z);
         for($y = $max; $y >= 0; --$y){
-            if(Block::$lightFilter[$id = $this->getBlockId($x, $y, $z)] > 1 or BlockFactory::$diffusesSkyLight[$id]){
+            if(Block::$lightFilter[$id = $this->getBlockId($x, $y, $z)] > 1 or Block::$diffusesSkyLight[$id]){
                 break;
             }
         }
@@ -966,9 +965,8 @@ class Chunk{
      * @return Chunk
      */
     public static function fastDeserialize(string $data) : Chunk{
-        $stream = new BinaryStream();
-        $stream->setBuffer($data);
-        $data = null;
+        $stream = new BinaryStream($data);
+
         $x = $stream->getInt();
         $z = $stream->getInt();
         $subChunks = [];
