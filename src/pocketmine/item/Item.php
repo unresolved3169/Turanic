@@ -51,6 +51,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Color;
 
 class Item implements ItemIds, \JsonSerializable {
 
@@ -463,6 +464,24 @@ class Item implements ItemIds, \JsonSerializable {
             }
             self::addCreativeItem($item);
         }
+
+        $item = Item::get(Item::FIREWORK);
+        $tag = new CompoundTag();
+        $expTag = new CompoundTag();
+        $expTag->setByteArray("FireworkColor", strval(4));
+        $expTag->setByteArray("FireworkFade", strval(5));
+        $expTag->setByte("FireworkFlicker", 0);
+        $expTag->setByte("FireworkTrait", 0);
+        $expTag->setByte("FireworkType", 0);
+        $exp = new ListTag("Explosions", [$expTag], NBT::TAG_Compound);
+
+        $fireworkTag = new CompoundTag("Fireworks");
+        $fireworkTag->setTag($exp);
+        $fireworkTag->setByte("Flight", 1);
+        $tag->setTag($fireworkTag);
+        $item->setNamedTag($tag);
+
+        self::addCreativeItem($item);
 	}
 
 	public static function clearCreativeItems(){

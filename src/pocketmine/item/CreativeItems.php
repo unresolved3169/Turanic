@@ -29,6 +29,9 @@ use pocketmine\block\Fence;
 use pocketmine\block\Planks;
 use pocketmine\block\StoneWall;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
 
 class CreativeItems {
 
@@ -1008,8 +1011,6 @@ class CreativeItems {
         ["id" => Item::BANNER, "meta" => 2],
         ["id" => Item::BANNER, "meta" => 6],
 
-        // TODO : Firework eklenince düzenle
-        ["id" => Item::FIREWORK],
         ["id" => Item::FIREWORK_STAR],
 
     ];

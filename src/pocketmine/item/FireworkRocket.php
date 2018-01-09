@@ -26,6 +26,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\FireworksRocket;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\level\Level;
@@ -33,19 +34,14 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
+use pocketmine\utils\Random;
 
-class FireworkRocket extends ProjectileItem {
+class FireworkRocket extends Item {
+
+    public $spread = 5.0;
 
     public function __construct(int $meta = 0){
         parent::__construct(self::FIREWORK, $meta, "Firework Rocket");
-    }
-
-    public function getProjectileEntityType(): string{
-        return "FireworkRocket";
-    }
-
-    public function getThrowForce(): float{
-        return 1.1;
     }
 
     public function getMaxStackSize(): int{
@@ -58,32 +54,48 @@ class FireworkRocket extends ProjectileItem {
             $this->count--;
             $motion = $player->getDirectionVector()->multiply(1.25);
             $nbt = Entity::createBaseNBT($player->asVector3(), $motion , mt_rand(0, 360), -1*(float) (90.0 + (5.0 - 5.0/2)));
-            $entity = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
-            $player->setMotion($motion);
-            if($entity != null) $entity->spawnToAll();
+            /** @var CompoundTag $tags */
+            $tags = $this->getNamedTagEntry("Fireworks");
+            if (!is_null($tags)){
+                $nbt->setTag($tags);
+            }
+
+            $level = $player->getLevel();
+            $rocket = new FireworksRocket($level, $nbt, $player);
+            $level->addEntity($rocket);
+            if ($rocket instanceof Entity){
+                if ($player->isSurvival()){
+                    --$this->count;
+                }
+                $rocket->spawnToAll();
+                return true;
+            }
         }
         return true;
     }
 
     public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
-        $up = $blockReplace->getSide(Vector3::SIDE_UP)->add(0.5, 0, 0.5);
+        $random = new Random();
+        $yaw = $random->nextBoundedInt(360);
+        $pitch = -1 * (float)(90 + ($random->nextFloat() * $this->spread - $this->spread / 2));
+        $nbt = Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, $yaw, $pitch);
 
-        $nbt = Entity::createBaseNBT($up, new Vector3(0,$this->getThrowForce(),0), mt_rand(0, 360), -1*(float) (90.0 + (5.0 - 5.0/2)));
-        $projectile = Entity::createEntity($this->getProjectileEntityType(), $player->getLevel(), $nbt, $player);
+        /** @var CompoundTag $tags */
+        $tags = $this->getNamedTagEntry("Fireworks");
+        if (!is_null($tags)){
+            $nbt->setTag($tags);
+        }
 
-        if($projectile instanceof Projectile) {
-            $player->getServer()->getPluginManager()->callEvent($projectileEv = new ProjectileLaunchEvent($projectile));
-            if ($projectileEv->isCancelled()) {
-                $projectile->kill();
-                return false;
+        $rocket = new FireworksRocket($level, $nbt, $player);
+        $level->addEntity($rocket);
+        if ($rocket instanceof Entity){
+            if ($player->isSurvival()){
+                --$this->count;
             }
+            $rocket->spawnToAll();
+            return true;
         }
-        $player->getLevel()->broadcastLevelSoundEvent($up, LevelSoundEventPacket::SOUND_BLAST);
-        if ($player->isSurvival()) {
-            $this->count--;
-        }
-        $projectile->spawnToAll();
 
-        return true;
+        return false;
     }
 }
