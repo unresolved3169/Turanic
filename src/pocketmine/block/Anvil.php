@@ -79,7 +79,6 @@ class Anvil extends Fallable {
 			}
 
 			$player->addWindow(new AnvilInventory($this));
-			$player->craftingType = Player::CRAFTING_ANVIL;
 		}
 
 		return true;

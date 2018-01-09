@@ -30,8 +30,6 @@ class CraftingGrid extends BaseInventory{
 
     protected $result = null;
 
-    public $type = Player::CRAFTING_SMALL;
-
     public function __construct(Player $holder){
         parent::__construct($holder);
     }

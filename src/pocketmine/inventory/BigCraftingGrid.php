@@ -24,11 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\Player;
-
 class BigCraftingGrid extends CraftingGrid{
-
-    public $type = Player::CRAFTING_BIG;
 
     public function getGridWidth() : int{
 		return 3;

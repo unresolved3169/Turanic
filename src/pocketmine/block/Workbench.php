@@ -74,7 +74,6 @@ class Workbench extends Solid {
 		if($player instanceof Player){
 			if($player->getServer()->limitedCreative and $player->isCreative()) return true;
 			$player->setCraftingGrid(new BigCraftingGrid($player));
-			$player->craftingType = Player::CRAFTING_BIG;
 		}
 
 		return true;
