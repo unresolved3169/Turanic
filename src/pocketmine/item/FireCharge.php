@@ -48,13 +48,6 @@ class FireCharge extends Item {
 		}
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
 	// TODO : OPTIMIZE
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		if($blockClicked->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){

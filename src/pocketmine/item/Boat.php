@@ -41,13 +41,6 @@ class Boat extends Item {
 		parent::__construct(self::BOAT, $meta, "Boat");
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		$realPos = $blockReplace->getSide($face);
 

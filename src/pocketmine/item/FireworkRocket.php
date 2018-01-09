@@ -65,10 +65,6 @@ class FireworkRocket extends ProjectileItem {
         return true;
     }
 
-    public function canBeActivated(): bool{
-        return true;
-    }
-
     public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
         $up = $blockReplace->getSide(Vector3::SIDE_UP)->add(0.5, 0, 0.5);
 

@@ -39,6 +39,22 @@ class Binary {
         return $value << 56 >> 56;
     }
 
+    public static function signShort(int $value) : int{
+        return $value << 48 >> 48;
+    }
+
+    public static function unsignShort(int $value) : int{
+        return $value & 0xffff;
+    }
+
+    public static function signInt(int $value) : int{
+        return $value << 32 >> 32;
+    }
+
+    public static function unsignInt(int $value) : int{
+        return $value & 0xffffffff;
+    }
+
 	/**
 	 * Reads a 3-byte big-endian number
 	 *
@@ -636,12 +652,5 @@ class Binary {
 
     public static function readRoundedLFloat(string $str, int $accuracy) : float{
         return round(self::readLFloat($str), $accuracy);
-    }
-
-    public static function signInt(int $value) : int{
-        return $value << 32 >> 32;
-    }
-    public static function unsignInt(int $value) : int{
-        return $value & 0xffffffff;
     }
 }

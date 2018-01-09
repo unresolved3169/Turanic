@@ -42,10 +42,6 @@ class ArmorStand extends Item {
         parent::__construct(self::ARMOR_STAND, $meta, "Armor Stand");
     }
 
-    public function canBeActivated(): bool{
-        return true;
-    }
-
     public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
         $as = Entity::createEntity("ArmorStand", $level, Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, $this->getDirection($player->yaw)));
 

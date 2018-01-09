@@ -27,40 +27,27 @@ namespace pocketmine\item;
 use pocketmine\entity\Effect;
 
 class GoldenApple extends Food {
-	/**
-	 * GoldenApple constructor.
-	 *
-	 * @param int $meta
-	 */
+
 	public function __construct(int $meta = 0){
 		parent::__construct(self::GOLDEN_APPLE, $meta, "Golden Apple");
 	}
 
-	/**
-	 * @return int
-	 */
+    public function requiresHunger(): bool{
+        return false;
+    }
+
 	public function getFoodRestore() : int{
 		return 4;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getSaturationRestore() : float{
 		return 9.6;
 	}
 
-	public function requiresHunger(): bool{
-        return false;
-    }
-
-    /**
-	 * @return array
-	 */
 	public function getAdditionalEffects() : array{
 		return [
 			Effect::getEffect(Effect::REGENERATION)->setDuration(100)->setAmplifier(1),
-			Effect::getEffect(Effect::ABSORPTION)->setDuration(2400)->setAmplifier(0)
+			Effect::getEffect(Effect::ABSORPTION)->setDuration(2400)
 		];
 	}
 }

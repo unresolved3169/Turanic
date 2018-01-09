@@ -25,51 +25,19 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Effect;
-use pocketmine\entity\Entity;
-use pocketmine\entity\Human;
 
-class EnchantedGoldenApple extends Food {
-	/**
-	 * EnchantedGoldenApple constructor.
-	 *
-	 * @param int $meta
-	 */
+class EnchantedGoldenApple extends GoldenApple {
+
 	public function __construct(int $meta = 0){
-		parent::__construct(self::ENCHANTED_GOLDEN_APPLE, $meta, "Enchanted Golden Apple");
+        Food::__construct(self::ENCHANTED_GOLDEN_APPLE, $meta, "Enchanted Golden Apple"); //skip parent constructor
 	}
 
-	/**
-	 * @param Entity $entity
-	 *
-	 * @return bool
-	 */
-	public function canBeConsumedBy(Entity $entity) : bool{
-		return $entity instanceof Human and $this->canBeConsumed();
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getFoodRestore() : int{
-		return 4;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getSaturationRestore() : float{
-		return 9.6;
-	}
-
-	/**
-	 * @return array
-	 */
 	public function getAdditionalEffects() : array{
 		return [
 			Effect::getEffect(Effect::REGENERATION)->setDuration(600)->setAmplifier(4),
-			Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setDuration(6000)->setAmplifier(0),
-			Effect::getEffect(Effect::ABSORPTION)->setDuration(2400)->setAmplifier(3),
-			Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(6000)->setAmplifier(0),
+            Effect::getEffect(Effect::ABSORPTION)->setDuration(2400)->setAmplifier(3),
+            Effect::getEffect(Effect::DAMAGE_RESISTANCE)->setDuration(6000),
+			Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(6000),
 		];
 	}
 }

@@ -27,7 +27,6 @@ namespace pocketmine\item;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\Liquid;
-use pocketmine\entity\Effect;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
@@ -41,28 +40,17 @@ class Bucket extends Item implements Consumable {
     const TYPE_WATER = Block::FLOWING_WATER;
     const TYPE_LAVA = Block::FLOWING_LAVA;
 
-	/**
-	 * Bucket constructor.
-	 *
-	 * @param int $meta
-	 */
 	public function __construct(int $meta = 0){
 		parent::__construct(self::BUCKET, $meta, "Bucket");
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getMaxStackSize() : int{
         return $this->meta === Block::AIR ? 16 : 1; //empty buckets stack to 16
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
+    public function getFuelTime(): int{
+        return ($this->meta == Block::LAVA or $this->meta == Block::FLOWING_LAVA) ? 20000 : 0;
+    }
 
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
         $resultBlock = Block::get($this->meta);
@@ -113,36 +101,14 @@ class Bucket extends Item implements Consumable {
         return false;
 	}
 
-	public function getFuelTime(): int{
-        return ($this->meta == Block::LAVA or $this->meta == Block::FLOWING_LAVA) ? 20000 : 0;
-    }
-
-    /**
-     * Returns the leftover that this Consumable produces when it is consumed. For Items, this is usually air, but could
-     * be an Item to add to a Player's inventory afterwards (such as a bowl).
-     *
-     * @return Item|Block|mixed
-     */
     public function getResidue(){
         return Item::get(Item::BUCKET, 0, 1);
     }
 
-    /**
-     * @return Effect[]
-     */
     public function getAdditionalEffects(): array{
         return [];
     }
 
-    public function canBeConsumed(): bool{
-        return $this->meta == self::TYPE_MILK;
-    }
-
-    /**
-     * Called when this Consumable is consumed by mob, after standard resulting effects have been applied.
-     *
-     * @param Living $consumer
-     */
     public function onConsume(Living $consumer){
         $consumer->removeAllEffects();
     }

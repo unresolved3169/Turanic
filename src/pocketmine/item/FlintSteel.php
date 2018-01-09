@@ -48,13 +48,6 @@ class FlintSteel extends Tool {
 			$this->temporalVector = new Vector3(0, 0, 0);
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
 	// TODO : OPTIMIZE
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		if($blockClicked->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){//黑曜石 4*5最小 23*23最大

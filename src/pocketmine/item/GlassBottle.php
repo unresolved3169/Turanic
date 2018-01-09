@@ -40,13 +40,6 @@ class GlassBottle extends Item {
 		parent::__construct(self::GLASS_BOTTLE, $meta, "Glass Bottle");
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return true;
-	}
-
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		if($player === null or $player->isSurvival() !== true){
 			return false;

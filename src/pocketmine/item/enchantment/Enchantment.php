@@ -26,6 +26,9 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\item\Item;
 
+/**
+ * Manages enchantment type data.
+ */
 class Enchantment {
 
 	const TYPE_INVALID = -1;
@@ -116,18 +119,7 @@ class Enchantment {
 		self::registerEnchantment(new Enchantment(self::INFINITY, "%enchantment.bow.infinity", self::RARITY_UNCOMMON, self::SLOT_BOW, 1));
 		self::registerEnchantment(new Enchantment(self::LUCK_OF_THE_SEA, "%enchantment.fishing.fortune", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3));
 		self::registerEnchantment(new Enchantment(self::LURE, "%enchantment.fishing.lure", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3));
-
 	}
-
-	/**
-	 * @param int $id
-	 *
-	 * @return Enchantment
-	 */
-	public static function getEnchantment(int $id){
-        return self::$enchantments[$id] ?? null;
-	}
-
 
     /**
      * Registers an enchantment type.
@@ -136,6 +128,15 @@ class Enchantment {
      */
     public static function registerEnchantment(Enchantment $enchantment){
         self::$enchantments[$enchantment->getId()] = clone $enchantment;
+    }
+
+	/**
+	 * @param int $id
+	 *
+	 * @return Enchantment
+	 */
+	public static function getEnchantment(int $id){
+        return self::$enchantments[$id] ?? null;
 	}
 
 	/**
@@ -246,8 +247,6 @@ class Enchantment {
 
 	/** @var int */
 	private $id;
-	/** @var int */
-	private $level = 1;
 	/** @var string */
 	private $name;
 	/** @var int */
@@ -325,31 +324,13 @@ class Enchantment {
     }
 
 	/**
-     * Returns the level of the enchantment.
-	 * @return int
-	 */
-	public function getLevel() : int{
-		return $this->level;
-	}
-
-	/**
-     * Sets the level of the enchantment.
-	 * @param int $level
-	 *
-	 * @return $this
-	 */
-	public function setLevel(int $level) : Enchantment{
-		$this->level = $level;
-
-		return $this;
-	}
-
-	/**
 	 * @param Enchantment $ent
 	 *
 	 * @return bool
 	 */
 	public function equals(Enchantment $ent) : bool{
-		return $ent->getId() == $this->getId() and $ent->getLevel() == $this->getLevel() and $ent->getRarity() == $this->getRarity();
+		return $ent === $this;
 	}
+
+    //TODO: methods for min/max XP cost bounds based on enchantment level (not needed yet - enchanting is client-side)
 }
