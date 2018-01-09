@@ -32,47 +32,53 @@ use pocketmine\item\Item;
 
 class BinaryStream extends \stdClass {
 
-	public $offset;
-	public $buffer;
+    /** @var int */
+    public $offset;
+    /** @var string */
+    public $buffer;
 
-	/**
-	 * BinaryStream constructor.
-	 *
-	 * @param string $buffer
-	 * @param int    $offset
-	 */
-	public function __construct($buffer = "", $offset = 0){
-		$this->buffer = $buffer;
-		$this->offset = $offset;
-	}
+    public function __construct(string $buffer = "", int $offset = 0){
+        $this->buffer = $buffer;
+        $this->offset = $offset;
+    }
 
 	public function reset(){
 		$this->buffer = "";
 		$this->offset = 0;
 	}
 
-	/**
-	 * @param null $buffer
-	 * @param int  $offset
-	 */
-	public function setBuffer($buffer = null, $offset = 0){
-		$this->buffer = $buffer;
-		$this->offset = (int) $offset;
-	}
+    public function setBuffer(string $buffer = "", int $offset = 0){
+        $this->buffer = $buffer;
+        $this->offset = $offset;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getOffset(){
-		return $this->offset;
-	}
+    public function getOffset() : int{
+        return $this->offset;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getBuffer(){
-		return $this->buffer;
-	}
+    public function getBuffer() : string{
+        return $this->buffer;
+    }
+
+    /**
+     * @param int|bool $len
+     *
+     * @return string
+     */
+    public function get($len) : string{
+        if($len === true){
+            $str = substr($this->buffer, $this->offset);
+            $this->offset = strlen($this->buffer);
+            return $str;
+        }elseif($len < 0){
+            $this->offset = strlen($this->buffer) - 1;
+            return "";
+        }elseif($len === 0){
+            return "";
+        }
+
+        return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
+    }
 
     public function getRemaining() : string{
         $str = substr($this->buffer, $this->offset);
@@ -80,30 +86,7 @@ class BinaryStream extends \stdClass {
         return $str;
     }
 
-	/**
-	 * @param $len
-	 *
-	 * @return bool|string
-	 */
-	public function get($len){
-		if($len < 0){
-			$this->offset = strlen($this->buffer) - 1;
-
-			return "";
-		}elseif($len === true){
-			$str = substr($this->buffer, $this->offset);
-			$this->offset = strlen($this->buffer);
-
-			return $str;
-		}
-
-		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
-	}
-
-	/**
-	 * @param $str
-	 */
-	public function put($str){
+	public function put(string $str){
 		$this->buffer .= $str;
 	}
 

@@ -195,6 +195,22 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	const SPECTATOR = 3;
 	const VIEW = Player::SPECTATOR;
 
+    /**
+     * Checks a supplied username and checks it is valid.
+     * @param string $name
+     *
+     * @return bool
+     */
+    public static function isValidUserName($name) : bool{
+        if($name === null){
+            return false;
+        }
+
+        $lname = strtolower($name);
+        $len = strlen($name);
+        return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
+    }
+
 	/** @var SourceInterface */
 	protected $interface;
 
@@ -326,13 +342,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     /** @var CraftingTransaction|null */
     public $craftingTransaction = null;
-
-    public static function isValidUserName($name) : bool{
-		if($name == null) return false;
-	    $lname = strtolower($name);
-		$len = strlen($lname);
-		return $lname !== "rcon" && $lname !== "console" && $len >= 1 && $len <= 16 && preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
-	}
 
     /**
      * @return TranslationContainer|string
@@ -1889,6 +1898,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->username = TextFormat::clean($packet->username);
         $this->displayName = $this->username;
         $this->iusername = strtolower($this->username);
+
+        if($packet->locale !== null){
+            $this->locale = $packet->locale;
+        }
 
         if (count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)) {
             return true;

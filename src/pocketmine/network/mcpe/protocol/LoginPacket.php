@@ -25,6 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\utils\BinaryStream;
+use pocketmine\utils\MainLogger;
 use pocketmine\utils\Utils;
 
 class LoginPacket extends DataPacket{
@@ -32,97 +34,90 @@ class LoginPacket extends DataPacket{
 
 	const EDITION_POCKET = 0;
 
-	/** @var string */
-	public $username;
-	/** @var int */
-	public $protocol;
-	/** @var string */
-	public $clientUUID;
-	/** @var int */
-	public $clientId;
-	/** @var string */
-	public $identityPublicKey;
-	/** @var string */
-	public $serverAddress;
+    /** @var string */
+    public $username;
+    /** @var int */
+    public $protocol;
+    /** @var string */
+    public $clientUUID;
+    /** @var int */
+    public $clientId;
+    /** @var string */
+    public $xuid;
+    /** @var string */
+    public $identityPublicKey;
+    /** @var string */
+    public $serverAddress;
+    /** @var string */
+    public $locale;
 
-	/** @var string */
-	public $skinId;
-	/** @var string */
-	public $skin = "";
-	
-	public $capeData = "";
-	public $geometryName = "";
-	public $geometryData = "";
-	public $uiProfile;
-	public $xuid = "";
-
-	/** @var array (the "chain" index contains one or more JWTs) */
-	public $chainData = [];
-	/** @var string */
-	public $clientDataJwt;
-	/** @var array decoded payload of the clientData JWT */
-	public $clientData = [];
+    /** @var array (the "chain" index contains one or more JWTs) */
+    public $chainData = [];
+    /** @var string */
+    public $clientDataJwt;
+    /** @var array decoded payload of the clientData JWT */
+    public $clientData = [];
 
 	public function canBeSentBeforeLogin() : bool{
 		return true;
 	}
 
 	protected function decodePayload(){
-		$this->protocol = $this->getInt();
+        $this->protocol = $this->getInt();
 
-		if(!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)){
-			$this->buffer = null;
-			return; //Do not attempt to decode for non-accepted protocols
-		}
-		
-		$this->setBuffer($this->getString(), 0);
+        if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
+            if($this->protocol > 0xffff){ //guess MCPE <= 1.1
+                $this->offset -= 6;
+                $this->protocol = $this->getInt();
+            }
+        }
 
-		$this->chainData = json_decode($this->get($this->getLInt()), true);
-		foreach($this->chainData["chain"] as $chain){
-			$webtoken = Utils::decodeJWT($chain);
-			if(isset($webtoken["extraData"])){
-				if(isset($webtoken["extraData"]["displayName"])){
-					$this->username = $webtoken["extraData"]["displayName"];
-				}
-				if(isset($webtoken["extraData"]["identity"])){
-					$this->clientUUID = $webtoken["extraData"]["identity"];
-				}
-				if(isset($webtoken["extraData"]["XUID"])){
-					$this->xuid = $webtoken["extraData"]["XUID"];
-				}
-				if(isset($webtoken["identityPublicKey"])){
-					$this->identityPublicKey = $webtoken["identityPublicKey"];
-				}
-			}
-		}
+        try{
+            $this->decodeConnectionRequest();
+        }catch(\Throwable $e){
+            if(!in_array($this->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)){
+                throw $e;
+            }
 
-		$this->clientDataJwt = $this->get($this->getLInt());
-		$this->clientData = Utils::decodeJWT($this->clientDataJwt);
-
-		$this->clientId = $this->clientData["ClientRandomId"] ?? null;
-		$this->serverAddress = $this->clientData["ServerAddress"] ?? null;
-		$this->skinId = $this->clientData["SkinId"] ?? null;
-
-		if(isset($this->clientData["SkinData"])){
-			$this->skin = base64_decode($this->clientData["SkinData"]);
-		}
-		
-		if(isset($this->clientData["SkinGeometryName"])){
-			$this->geometryName = $this->clientData["SkinGeometryName"];
-		}
-		
-		if(isset($this->clientData["SkinGeometry"])){
-			$this->geometryData = base64_decode($this->clientData["SkinGeometry"]);
-		}
-		
-		if(isset($this->clientData["CapeData"])){
-			$this->capeData = base64_decode($this->clientData["CapeData"]);
-		}
-		
-		if(isset($this->clientData["UIProfile"])){
-			$this->uiProfile = $this->clientData["UIProfile"];
-		}
+            $logger = MainLogger::getLogger();
+            $logger->debug(get_class($e)  . " was thrown while decoding connection request in login (protocol version " . ($this->protocol ?? "unknown") . "): " . $e->getMessage());
+            foreach(\pocketmine\getTrace(0, $e->getTrace()) as $line){
+                $logger->debug($line);
+            }
+        }
 	}
+
+    protected function decodeConnectionRequest(){
+        $buffer = new BinaryStream($this->getString());
+
+        $this->chainData = json_decode($buffer->get($buffer->getLInt()), true);
+        foreach($this->chainData["chain"] as $chain){
+            $webtoken = Utils::decodeJWT($chain);
+            if(isset($webtoken["extraData"])){
+                if(isset($webtoken["extraData"]["displayName"])){
+                    $this->username = $webtoken["extraData"]["displayName"];
+                }
+                if(isset($webtoken["extraData"]["identity"])){
+                    $this->clientUUID = $webtoken["extraData"]["identity"];
+                }
+                if(isset($webtoken["extraData"]["XUID"])){
+                    $this->xuid = $webtoken["extraData"]["XUID"];
+                }
+            }
+
+            if(isset($webtoken["identityPublicKey"])){
+                $this->identityPublicKey = $webtoken["identityPublicKey"];
+            }
+        }
+
+        $this->clientDataJwt = $buffer->get($buffer->getLInt());
+        $this->clientData = Utils::decodeJWT($this->clientDataJwt);
+
+        $this->clientId = $this->clientData["ClientRandomId"] ?? null;
+        $this->serverAddress = $this->clientData["ServerAddress"] ?? null;
+
+        $this->locale = $this->clientData["LanguageCode"] ?? null;
+    }
 
 	protected function encodePayload(){
 		//TODO
