@@ -25,51 +25,52 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class ShortTag extends NamedTag {
+class ShortTag extends NamedTag{
 
-    /**
-	 * @return int
+	/**
+	 * ShortTag constructor.
+	 *
+	 * @param string $name
+	 * @param int    $value
 	 */
-	public function getType(): int{
+	public function __construct(string $name = "", int $value = 0){
+		parent::__construct($name, $value);
+	}
+
+	public function getType() : int{
 		return NBT::TAG_Short;
 	}
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
-		$this->value = $nbt->getShort();
+	public function read(NBTStream $nbt) : void{
+		$this->value = $nbt->getSignedShort();
 	}
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
+	public function write(NBTStream $nbt) : void{
 		$nbt->putShort($this->value);
 	}
 
-	public function &getValue(){
-        return parent::getValue();
-    }
+	/**
+	 * @return int
+	 */
+	public function &getValue() : int{
+		return parent::getValue();
+	}
 
-    /**
-     * @param int $value
-     *
-     * @throws \TypeError
-     */
-    public function setValue($value){
-        if (!is_int($value)){
-            throw new \TypeError("ShortTag value must be of type int, " . gettype($value) . " given");
-        }
-        parent::setValue($value);
-    }
+	/**
+	 * @param int $value
+	 *
+	 * @throws \TypeError
+	 */
+	public function setValue($value) : void{
+		if(!is_int($value)){
+			throw new \TypeError("ShortTag value must be of type int, " . gettype($value) . " given");
+		}elseif($value < -(2 ** 15) or $value > ((2 ** 15) - 1)){
+			throw new \InvalidArgumentException("Value $value is too large!");
+		}
+		parent::setValue($value);
+	}
 }
