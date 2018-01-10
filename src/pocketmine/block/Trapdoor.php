@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\sound\DoorSound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -134,31 +133,19 @@ class Trapdoor extends Transparent {
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function isOpened(){
 		return (($this->meta & 0b00001000) === 0);
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Item $item, Player $player = \null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		$this->meta ^= 0b00001000;
 		$this->getLevel()->setBlock($this, $this, true);
 		$this->level->addSound(new DoorSound($this));
 		return true;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getFuelTime(): int{

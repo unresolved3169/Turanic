@@ -27,8 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
 class Sandstone extends Solid {
 
@@ -56,15 +54,7 @@ class Sandstone extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
     public function getToolHarvestLevel() : int{
@@ -73,9 +63,5 @@ class Sandstone extends Solid {
 
     public function getVariantBitmask() : int{
         return 0x03;
-    }
-
-    public function canHarvestWithHand(): bool{
-        return false;
     }
 }

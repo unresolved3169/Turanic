@@ -25,12 +25,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class TallGrass extends Flowable {
+class TallGrass extends Flowable{
 
 	const NORMAL = 1;
 	const FERN = 2;
@@ -73,7 +72,7 @@ class TallGrass extends Flowable {
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent() === true){ //Replace with common break method
 				$this->getLevel()->setBlock($this, new Air(), false, false);
@@ -86,7 +85,7 @@ class TallGrass extends Flowable {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHEARS;
+		return BlockToolType::TYPE_SHEARS;
 	}
 
 	public function getDrops(Item $item) : array{

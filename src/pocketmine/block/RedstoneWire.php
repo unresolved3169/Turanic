@@ -52,7 +52,7 @@ class RedstoneWire extends Flowable {
         return ($this->meta > 0);
     }
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         switch($type){
             case Level::BLOCK_UPDATE_NORMAL:
                 if($this->cantBePlacedOn()){
@@ -302,8 +302,9 @@ class RedstoneWire extends Flowable {
         return $hasUpdated;
     }
 
-    public function onBreak(Item $item){
+    public function onBreak(Item $item, Player $player = null) : bool{
         $this->calcSignal(0, self::DESTROY);
+        return true;
     }
 
     public function getDrops(Item $item) : array{

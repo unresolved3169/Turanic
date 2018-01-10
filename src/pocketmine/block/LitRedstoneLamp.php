@@ -34,16 +34,16 @@ class LitRedstoneLamp extends RedstoneLamp implements ElectricalAppliance, Solid
 		return "Lit Redstone Lamp";
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 15;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 	    switch($type){
             case Level::BLOCK_UPDATE_NORMAL:
             case Level::BLOCK_UPDATE_REDSTONE:
                 if (!$this->level->isBlockPowered($this))
-                    $this->level->scheduleUpdate($this, 4);
+                    $this->level->scheduleDelayedBlockUpdate($this, 4);
                 break;
             case Level::BLOCK_UPDATE_SCHEDULED:
                 if (!$this->level->isBlockPowered($this))

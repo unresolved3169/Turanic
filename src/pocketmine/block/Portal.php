@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -44,9 +43,6 @@ class Portal extends Transparent {
 		}
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Portal";
 	}
@@ -55,12 +51,12 @@ class Portal extends Transparent {
 		return -1;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
 		return 0;
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function canPassThrough() : bool{
@@ -71,7 +67,7 @@ class Portal extends Transparent {
 		return true;
 	}
 
-	public function onBreak(Item $item){
+	public function onBreak(Item $item, Player $player = null) : bool{
 		$block = $this;
 		if($this->getLevel()->getBlock($this->temporalVector->setComponents($block->x - 1, $block->y, $block->z))->getId() == Block::PORTAL or
 			$this->getLevel()->getBlock($this->temporalVector->setComponents($block->x + 1, $block->y, $block->z))->getId() == Block::PORTAL
@@ -110,7 +106,8 @@ class Portal extends Transparent {
 				}
 			}
 		}
-		parent::onBreak($item);
+
+		return parent::onBreak($item);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
@@ -125,10 +122,6 @@ class Portal extends Transparent {
 	public function getDrops(Item $item) : array{
 		return [];
 	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 
     protected function recalculateBoundingBox(){
         return new AxisAlignedBB(

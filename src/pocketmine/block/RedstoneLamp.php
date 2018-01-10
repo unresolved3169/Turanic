@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,53 +18,38 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 
 class RedstoneLamp extends Solid {
 	protected $id = self::REDSTONE_LAMP;
 
-	/**
-	 * RedstoneLamp constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 0;
 	}
 
-	public function getResistance(){
-        return 1.5;
-    }
-
-    public function getHardness(){
+    public function getHardness() : float{
         return 0.3;
     }
 
-    public function getToolType(){
-        return Tool::TYPE_PICKAXE;
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
     }
 
-    /**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Redstone Lamp";
 	}
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         if($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE){
             if($this->level->isBlockPowered($this) or $this->level->isBlockPowered($this->getSide(self::SIDE_UP))){
                 $this->level->setBlock($this, new LitRedstoneLamp(), false, false);

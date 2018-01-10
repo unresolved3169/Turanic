@@ -34,7 +34,7 @@ class Purpur extends Quartz {
 		return 1.5;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
         return 30;
     }
 

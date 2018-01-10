@@ -48,7 +48,7 @@ class DaylightDetector extends Transparent {
 		return $this->boundingBox;
 	}
 
-	public function canBeFlowedInto(){
+	public function canBeFlowedInto() : bool{
 		return false;
 	}
 
@@ -63,7 +63,7 @@ class DaylightDetector extends Transparent {
 		}
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		$this->getLevel()->setBlock($this, new DaylightDetectorInverted(), true, true);
 		$this->getTile()->onUpdate();
 		return true;

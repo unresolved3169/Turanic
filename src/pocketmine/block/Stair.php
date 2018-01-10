@@ -127,19 +127,15 @@ abstract class Stair extends Transparent {
 		return true;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	public function getResistance(){
+	public function getBlastResistance() : float{
 		return 15;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
+	public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 }

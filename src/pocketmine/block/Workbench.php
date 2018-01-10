@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\Player;
 use pocketmine\inventory\BigCraftingGrid;
 
@@ -34,43 +33,23 @@ class Workbench extends Solid {
 
 	protected $id = self::WORKBENCH;
 
-	/**
-	 * Workbench constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2.5;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Crafting Table";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_AXE;
+	public function getToolType() : int{
+		return BlockToolType::TYPE_AXE;
 	}
 
-	/**
-	 * @param Item        $item
-	 * @param Player|null $player
-	 *
-	 * @return bool
-	 */
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			if($player->getServer()->limitedCreative and $player->isCreative()) return true;
 			$player->setCraftingGrid(new BigCraftingGrid($player));

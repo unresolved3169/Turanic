@@ -25,10 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
-class CoalOre extends Solid {
+class CoalOre extends Solid{
 
 	protected $id = self::COAL_ORE;
 
@@ -40,36 +40,31 @@ class CoalOre extends Solid {
 		return 3;
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 
-	public function getName() : string{
-		return "Coal Ore";
-	}
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-				return [
-					Item::get(Item::COAL_ORE)
-				];
-			}else{
-				$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
-				$fortunel = $fortunel > 3 ? 3 : $fortunel;
-				$times = [1, 1, 2, 3, 4];
-				$time = $times[mt_rand(0, $fortunel + 1)];
-				return [
-					Item::get(Item::COAL, 0, $time)
-				];
-			}
+    public function getName() : string{
+        return "Coal Ore";
+    }
 
-		}else{
-			return [];
-		}
-	}
-
-    public function canHarvestWithHand() : bool{
-        return false;
+	public function getDropsForCompatibleTool(Item $item): array{
+        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
+            return [
+                Item::get(Item::COAL_ORE)
+            ];
+        }else{
+            $fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
+            $fortunel = $fortunel > 3 ? 3 : $fortunel;
+            $times = [1, 1, 2, 3, 4];
+            $time = $times[mt_rand(0, $fortunel + 1)];
+            return [
+                Item::get(Item::COAL, 0, $time)
+            ];
+        }
     }
 }

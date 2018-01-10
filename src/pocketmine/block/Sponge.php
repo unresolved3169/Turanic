@@ -59,7 +59,7 @@ class Sponge extends Solid {
 		}
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($this->meta == 0){
 			if($type === Level::BLOCK_UPDATE_NORMAL){
 				$blockAbove = $this->getSide(Vector3::SIDE_UP)->getId();

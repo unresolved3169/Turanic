@@ -75,7 +75,7 @@ class Cactus extends Transparent{
         $entity->attack($ev);
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             $down = $this->getSide(Vector3::SIDE_DOWN);
             if($down->getId() !== self::SAND and $down->getId() !== self::CACTUS){

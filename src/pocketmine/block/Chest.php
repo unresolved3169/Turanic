@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\StringTag;
@@ -35,7 +34,7 @@ use pocketmine\Player;
 use pocketmine\tile\Chest as TileChest;
 use pocketmine\tile\Tile;
 
-class Chest extends Transparent {
+class Chest extends Transparent{
 
 	protected $id = self::CHEST;
 
@@ -52,10 +51,11 @@ class Chest extends Transparent {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	protected function recalculateBoundingBox(){
+        //these are slightly bigger than in PC
         return new AxisAlignedBB(
             $this->x + 0.025,
             $this->y,
@@ -104,7 +104,7 @@ class Chest extends Transparent {
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         if($player instanceof Player){
             $t = $this->getLevel()->getTile($this);
             $chest = null;
@@ -136,7 +136,8 @@ class Chest extends Transparent {
         return 0;
     }
 
-	public function getFuelTime(): int{
+	public function getFuelTime() : int{
         return 300;
     }
+
 }

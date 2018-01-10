@@ -28,6 +28,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockToolType;
 use pocketmine\entity\utils\FireworkUtils;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
@@ -1089,7 +1090,7 @@ class Item implements ItemIds, \JsonSerializable {
      * @return int
      */
     public function getBlockToolType() : int{
-        return Tool::TYPE_NONE;
+        return BlockToolType::TYPE_NONE;
     }
 
     /**
@@ -1359,7 +1360,21 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return Int level|0(for null)
 	 */
 	public function getEnchantmentLevel(int $id){
-		return Enchantment::getEnchantMaxLevel($id);
+        if(!$this->hasEnchantments()){
+            return 0;
+        }
+
+        foreach($this->getNamedTag()->ench as $entry){
+            if($entry["id"] === $id){
+                $e = Enchantment::getEnchantment($entry["id"]);
+                $e = new EnchantmentInstance($e, $entry["lvl"]);
+                $e->setLevel($entry["lvl"]);
+                $E_level = $e->getLevel() > Enchantment::getEnchantMaxLevel($id) ? Enchantment::getEnchantMaxLevel($id) : $e->getLevel();
+                return $E_level;
+            }
+        }
+
+        return 0;
 	}
 
 	/**

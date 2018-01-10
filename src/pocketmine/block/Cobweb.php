@@ -27,12 +27,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
-class Cobweb extends Flowable {
+class Cobweb extends Flowable{
 
 	protected $id = self::COBWEB;
 
@@ -40,7 +38,7 @@ class Cobweb extends Flowable {
 		$this->meta = $meta;
 	}
 
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
@@ -53,33 +51,24 @@ class Cobweb extends Flowable {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHEARS;
+        return BlockToolType::TYPE_SWORD | BlockToolType::TYPE_SHEARS;
 	}
 
-	public function onEntityCollide(Entity $entity){
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+    public function onEntityCollide(Entity $entity){
 		$entity->resetFallDistance();
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return [
-                Item::get(Item::COBWEB)
-			];
-		}elseif($item->isSword() >= TieredTool::TIER_WOODEN){
-			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-				return [
-					Item::get(Item::COBWEB)
-				];
-			}else{
-				return [
-					Item::get(Item::STRING)
-				];
-			}
-		}
-		return [];
-	}
+	public function getDropsForCompatibleTool(Item $item): array{
+        return [
+            Item::get(Item::STRING)
+        ];
+    }
 
-    public function canHarvestWithHand(): bool{
-        return false;
+    public function diffusesSkyLight(): bool{
+        return true;
     }
 }

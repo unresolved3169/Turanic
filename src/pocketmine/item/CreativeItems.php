@@ -27,7 +27,7 @@ namespace pocketmine\item;
 use pocketmine\block\Anvil;
 use pocketmine\block\Fence;
 use pocketmine\block\Planks;
-use pocketmine\block\StoneWall;
+use pocketmine\block\CobblestoneWall;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -45,7 +45,7 @@ class CreativeItems {
         ["id" => Item::WOODEN_PLANK, "meta" => Planks::DARK_OAK],
         // cobblestone walls
         ["id" => Item::COBBLESTONE_WALL],
-        ["id" => Item::COBBLESTONE_WALL, "meta" => StoneWall::MOSSY_WALL],
+        ["id" => Item::COBBLESTONE_WALL, "meta" => CobblestoneWall::MOSSY_WALL],
         // fence
         ["id" => Item::FENCE],
         ["id" => Item::FENCE, "meta" => Fence::FENCE_SPRUCE],
@@ -772,8 +772,8 @@ class CreativeItems {
         ["id" => Item::BREWING_STAND],
 
         ["id" => Item::ANVIL],
-        ["id" => Item::ANVIL, "meta" => Anvil::SLIGHTLY_DAMAGED],
-        ["id" => Item::ANVIL, "meta" => Anvil::VERY_DAMAGED],
+        ["id" => Item::ANVIL, "meta" => Anvil::TYPE_SLIGHTLY_DAMAGED],
+        ["id" => Item::ANVIL, "meta" => Anvil::TYPE_VERY_DAMAGED],
 
         ["id" => Item::ENCHANT_TABLE],
         ["id" => Item::BOOKSHELF],

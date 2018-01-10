@@ -26,46 +26,32 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
-use pocketmine\Player;
 
 class IronDoor extends Door {
 
 	protected $id = self::IRON_DOOR_BLOCK;
+
+    protected $itemId = Item::IRON_DOOR;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
 	public function getName() : string{
-		return "Iron Door Block";
+		return "Iron Door";
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getHardness() : float{
-		return 5;
-	}
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return [
-				Item::get(Item::IRON_DOOR)
-			];
-		}else{
-			return [];
-		}
-	}
-
-	public function onActivate(Item $item, Player $player = null){
-		if($player instanceof Player) return true;
-		else return parent::onActivate($item, $player);
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
+    public function getHardness() : float{
+        return 5;
     }
 }

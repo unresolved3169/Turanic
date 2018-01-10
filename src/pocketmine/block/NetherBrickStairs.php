@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,49 +18,29 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
-
-use pocketmine\item\Tool;
-
 class NetherBrickStairs extends Stair {
 
-	protected $id = self::NETHER_BRICKS_STAIRS;
+    protected $id = self::NETHER_BRICKS_STAIRS;
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
+    public function __construct(int $meta = 0){
+        $this->meta = $meta;
+    }
+
+    public function getName() : string{
 		return "Nether Bricks Stairs";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+    public function getHardness() : float{
 		return 2;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
+    public function getToolType() : int{
+		return BlockToolType::TYPE_PICKAXE;
 	}
-
-	/**
-	 * NetherBrickStairs constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

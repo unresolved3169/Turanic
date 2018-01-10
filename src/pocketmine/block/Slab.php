@@ -26,8 +26,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -164,32 +164,17 @@ class Slab extends Transparent {
 		return true;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return [
-				Item::get($this->id, $this->meta & 0x07)
-			];
-		}else{
-			return [];
-		}
-	}
-
-
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
+	public function getVariantBitmask(): int{
+        return 0x07;
     }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+	public function getToolType() : int{
+		return BlockToolType::TYPE_PICKAXE;
+	}
 
     public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock): bool{
         if (parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock))

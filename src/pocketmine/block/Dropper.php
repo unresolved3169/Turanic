@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Dropper as TileDropper;
@@ -48,7 +47,7 @@ class Dropper extends Solid implements ElectricalAppliance {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
@@ -83,7 +82,7 @@ class Dropper extends Solid implements ElectricalAppliance {
 		}
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$t = $this->getLevel()->getTile($this);
 			$dropper = null;

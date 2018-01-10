@@ -41,7 +41,7 @@ class Lever extends Flowable {
 		return "Lever";
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
             $side = $this->isActivated() ? $this->meta ^ 0x08 : $this->meta;
 			$faces = [
@@ -88,7 +88,7 @@ class Lever extends Flowable {
 		return false;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		$this->meta ^= 0x08;
 		$this->getLevel()->setBlock($this, $this, false, true);
 		$this->getLevel()->addSound(new ButtonClickSound($this));
@@ -96,13 +96,14 @@ class Lever extends Flowable {
 		return true;
 	}
 
-	public function onBreak(Item $item){
+	public function onBreak(Item $item, Player $player = null) : bool{
 		if($this->isActivated()){
 			$this->meta ^= 0x08;
 			$this->getLevel()->setBlock($this, $this, true, false);
             $this->level->updateAroundRedstone($this);
         }
 		$this->getLevel()->setBlock($this, new Air(), true, false);
+		return true;
 	}
 
 	public function isActivated(Block $from = null){

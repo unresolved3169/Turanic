@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\level\weather\Weather;
 use pocketmine\math\AxisAlignedBB;
@@ -48,7 +47,7 @@ class Farmland extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function ticksRandomly(): bool{
@@ -72,7 +71,7 @@ class Farmland extends Solid {
 		];
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL and $this->getSide(Vector3::SIDE_UP)->isSolid()){
             $this->level->setBlock($this, Block::get(Block::DIRT), true);
             return $type;

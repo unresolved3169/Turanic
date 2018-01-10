@@ -22,53 +22,31 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
-
-
-use pocketmine\item\Tool;
 
 class BrickStairs extends Stair {
 
 	protected $id = self::BRICK_STAIRS;
 
-	/**
-	 * BrickStairs constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 2;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getResistance(){
+	public function getBlastResistance() : float{
 		return 30;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
+	public function getToolType() : int{
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Brick Stairs";
 	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\level\light;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\Level;
 use pocketmine\level\utils\SubChunkIteratorManager;
@@ -163,7 +164,7 @@ abstract class LightUpdate{
 
     protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel){
         $current = $this->getLight($x, $y, $z);
-        $potentialLight = $newAdjacentLevel - Block::$lightFilter[$this->subChunkHandler->currentSubChunk->getBlockId($x & 0x0f, $y & 0x0f, $z & 0x0f)];
+        $potentialLight = $newAdjacentLevel - BlockFactory::$lightFilter[$this->subChunkHandler->currentSubChunk->getBlockId($x & 0x0f, $y & 0x0f, $z & 0x0f)];
 
         if($current < $potentialLight){
             $this->setLight($x, $y, $z, $potentialLight);

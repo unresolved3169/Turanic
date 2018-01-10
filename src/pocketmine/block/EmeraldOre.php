@@ -27,10 +27,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
-class EmeraldOre extends Solid {
+class EmeraldOre extends Solid{
 
 	protected $id = self::EMERALD_ORE;
 
@@ -43,32 +43,28 @@ class EmeraldOre extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_IRON;
+    }
 
 	public function getHardness() : float{
 		return 3;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 4){
-			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-				return parent::getDrops($item);
-			}else{
-				$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
-				$fortunel = $fortunel > 3 ? 3 : $fortunel;
-				$times = [1, 1, 2, 3, 4];
-				$time = $times[mt_rand(0, $fortunel + 1)];
-				return [
-					Item::get(Item::EMERALD, 0, $time)
-				];
-			}
-		}else{
-			return [];
-		}
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
+	public function getDropsForCompatibleTool(Item $item): array{
+        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
+            return parent::getDrops($item);
+        }else{
+            $fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
+            $fortunel = $fortunel > 3 ? 3 : $fortunel;
+            $times = [1, 1, 2, 3, 4];
+            $time = $times[mt_rand(0, $fortunel + 1)];
+            return [
+                Item::get(Item::EMERALD, 0, $time)
+            ];
+        }
     }
 }

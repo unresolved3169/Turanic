@@ -24,27 +24,24 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockToolType;
 
 class Shears extends Tool {
-	/**
-	 * Shears constructor.
-	 *
-	 * @param int $meta
-	 */
+
 	public function __construct(int $meta = 0){
 		parent::__construct(self::SHEARS, $meta, "Shears");
 	}
 
-    public function getMaxDurability(){
+    public function getMaxDurability() : int{
         return 239;
     }
 
-    public function isShears(){
+    public function isShears() : bool{
         return true;
     }
 
     public function getBlockToolType() : int{
-        return Tool::TYPE_SHEARS;
+        return BlockToolType::TYPE_SHEARS;
     }
 
     public function getBlockToolHarvestLevel() : int{

@@ -56,7 +56,7 @@ class Beacon extends Transparent {
 		return $bool;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$top = $this->getSide(Vector3::SIDE_UP);
 			if($top->isTransparent() !== true){
@@ -78,10 +78,6 @@ class Beacon extends Transparent {
 		}
 
 		return true;
-	}
-
-	public function onBreak(Item $item){
-		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 	}
 
 }

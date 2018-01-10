@@ -28,17 +28,11 @@ class BrownMushroom extends RedMushroom {
 
 	protected $id = self::BROWN_MUSHROOM;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Brown Mushroom";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 1;
 	}
 

@@ -30,7 +30,6 @@ use pocketmine\level\Level;
 class DeadBush extends Flowable {
 
 	protected $id = self::DEAD_BUSH;
-	protected $itemId = Item::DEAD_BUSH;
 
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
@@ -40,7 +39,7 @@ class DeadBush extends Flowable {
 		return "Dead Bush";
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent() === true){
 				$this->getLevel()->useBreakOn($this);
@@ -52,15 +51,22 @@ class DeadBush extends Flowable {
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return parent::getDrops($item);
-		}else{
-			return [
-				Item::get(Item::STICK, 0, mt_rand(0, 2))
-			];
-		}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_SHEARS;
+    }
 
-	}
+    public function getToolHarvestLevel() : int{
+        return 1;
+    }
+
+    public function getDrops(Item $item) : array{
+        if(!$this->isCompatibleWithTool($item)){
+            return [
+                Item::get(Item::STICK, 0, mt_rand(0, 2))
+            ];
+        }
+
+        return parent::getDrops($item);
+    }
 
 }

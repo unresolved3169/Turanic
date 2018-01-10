@@ -45,7 +45,7 @@ class RedMushroom extends Flowable {
         return true;
     }
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
                 $this->getLevel()->useBreakOn($this);

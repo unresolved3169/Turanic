@@ -206,12 +206,7 @@ abstract class Door extends Transparent implements ElectricalAppliance {
         return $bb;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
                 $this->getLevel()->setBlock($this, Block::get(Block::AIR), false);
@@ -256,7 +251,7 @@ abstract class Door extends Transparent implements ElectricalAppliance {
         return false;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         if(($this->getDamage() & 0x08) === 0x08){ //Top
             $down = $this->getSide(Vector3::SIDE_DOWN);
             if($down->getId() === $this->getId()){

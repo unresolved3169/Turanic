@@ -26,8 +26,8 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
+use pocketmine\Player;
 
 class Ice extends Transparent{
 
@@ -53,11 +53,11 @@ class Ice extends Transparent{
         return 0.98;
     }
 
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
+	public function getToolType() : int{
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function onBreak(Item $item){
+	public function onBreak(Item $item, Player $player = null) : bool{
 		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) === 0){
 			$this->getLevel()->setBlock($this, Block::get(Block::WATER), true);
 		}
@@ -68,7 +68,7 @@ class Ice extends Transparent{
         return true;
     }
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_RANDOM){
             if($this->level->getHighestAdjacentBlockLight($this->x, $this->y, $this->z) >= 12){
                 $this->level->useBreakOn($this);

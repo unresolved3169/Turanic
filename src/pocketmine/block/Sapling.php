@@ -72,7 +72,7 @@ class Sapling extends Flowable {
         return false;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
             //TODO: change log type
             Tree::growTree($this->getLevel(), $this->x, $this->y, $this->z, new Random(mt_rand()), $this->getVariant());
@@ -85,7 +85,7 @@ class Sapling extends Flowable {
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->isTransparent() === true){
                 $this->getLevel()->useBreakOn($this);

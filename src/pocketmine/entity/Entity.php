@@ -29,6 +29,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Fire;
 use pocketmine\block\Portal;
 use pocketmine\block\Water;
@@ -1270,13 +1271,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
         $diffY = $y - $floorY;
         $diffZ = $z - $floorZ;
 
-        if(Block::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ)]){
-            $westNonSolid  = !Block::$solid[$this->level->getBlockIdAt($floorX - 1, $floorY, $floorZ)];
-            $eastNonSolid  = !Block::$solid[$this->level->getBlockIdAt($floorX + 1, $floorY, $floorZ)];
-            $downNonSolid  = !Block::$solid[$this->level->getBlockIdAt($floorX, $floorY - 1, $floorZ)];
-            $upNonSolid    = !Block::$solid[$this->level->getBlockIdAt($floorX, $floorY + 1, $floorZ)];
-            $northNonSolid = !Block::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ - 1)];
-            $southNonSolid = !Block::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ + 1)];
+        if(BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ)]){
+            $westNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX - 1, $floorY, $floorZ)];
+            $eastNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX + 1, $floorY, $floorZ)];
+            $downNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY - 1, $floorZ)];
+            $upNonSolid    = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY + 1, $floorZ)];
+            $northNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ - 1)];
+            $southNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ + 1)];
 
             $direction = -1;
             $limit = 9999;

@@ -45,7 +45,7 @@ class ItemFrame extends Flowable {
 		return "Item Frame";
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if(!(($tile = $this->level->getTile($this)) instanceof TileItemFrame)){
 		    /** @var TileItemFrame $tile */
             $tile = Tile::createTile(Tile::ITEM_FRAME, $this->getLevel(), TileItemFrame::createNBT($this));
@@ -65,7 +65,7 @@ class ItemFrame extends Flowable {
 		return true;
 	}
 
-	public function onBreak(Item $item){
+	public function onBreak(Item $item, Player $player = null) : bool{
 	    /** @var TileItemFrame $tile */
 		if(($tile = $this->level->getTile($this)) instanceof TileItemFrame){
 			//TODO: add events
@@ -76,7 +76,7 @@ class ItemFrame extends Flowable {
 		return parent::onBreak($item);
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$sides = [
 				0 => 4,

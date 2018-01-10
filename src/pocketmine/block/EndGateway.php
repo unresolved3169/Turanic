@@ -22,16 +22,17 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\utils\Color;
 
 class EndGateway extends Transparent {
 
     protected $id = self::END_GATEWAY;
 
-    public function __construct($meta = 0){
+    public function __construct(int $meta = 0){
         $this->meta = $meta;
     }
 
@@ -39,31 +40,27 @@ class EndGateway extends Transparent {
         return "End Gateway";
     }
 
-    public function canPassThrough(){
+    public function canPassThrough() : bool{
         return true;
     }
 
-    public function isBreakable(Item $item){
+    public function isBreakable(Item $item) : bool{
         return false;
     }
 
-    public function getHardness(){
+    public function getHardness() : float{
         return -1;
     }
 
-    public function getResistance(){
+    public function getBlastResistance() : float{
         return 18000000;
     }
 
-    public function getLightLevel(){
+    public function getLightLevel() : int{
         return 15;
     }
 
-    public function hasEntityCollision(){
+    public function hasEntityCollision() : bool{
         return true;
-    }
-
-    public function getColor(){
-        return Color::getRGB(0, 0, 0);
     }
 }

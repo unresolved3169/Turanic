@@ -22,27 +22,28 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
+
+use pocketmine\item\TieredTool;
 
 class IronTrapdoor extends Trapdoor {
 	protected $id = self::IRON_TRAPDOOR;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Iron Trapdoor";
 	}
 
-	public function getHardness() : float{
-		return 5;
-	}
+    public function getHardness() : float{
+        return 5;
+    }
 
-	public function getResistance() : float{
-		return 25;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 
-	public function canHarvestWithHand(): bool{
-        return false;
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
     }
 }

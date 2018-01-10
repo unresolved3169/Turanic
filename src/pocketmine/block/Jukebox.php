@@ -24,8 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
-
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\item\Item;
@@ -51,7 +49,7 @@ class Jukebox extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
@@ -84,7 +82,7 @@ class Jukebox extends Solid {
 		return true;
 	}
 	
-	public function onActivate(Item $item, Player $p = null){
+	public function onActivate(Item $item, Player $p = null) : bool{
 		if($item instanceof MusicDisc){
 			$this->setRecord($item->getRecordId());
 			$this->setRecordItem($item);

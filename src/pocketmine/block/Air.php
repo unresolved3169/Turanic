@@ -76,12 +76,8 @@ class Air extends Transparent {
 		return 0;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
 		return 0;
-	}
-
-    public function canHarvestWithHand() : bool{
-        return false;
 	}
 
 }

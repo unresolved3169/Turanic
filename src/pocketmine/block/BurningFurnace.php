@@ -28,14 +28,13 @@ namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Furnace as TileFurnace;
 use pocketmine\tile\Tile;
 
-class BurningFurnace extends Solid {
+class BurningFurnace extends Solid{
 
 	protected $id = self::BURNING_FURNACE;
 
@@ -51,9 +50,13 @@ class BurningFurnace extends Solid {
 		return 3.5;
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
 	public function getLightLevel() : int{
 		return 13;
@@ -73,11 +76,7 @@ class BurningFurnace extends Solid {
 		return $bool;
 	}
 
-	public function onBreak(Item $item){
-		return $this->getLevel()->setBlock($this, new Air(), true, true);
-	}
-
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$furnace = $this->getLevel()->getTile($this);
 			if(!($furnace instanceof TileFurnace)){
@@ -97,17 +96,7 @@ class BurningFurnace extends Solid {
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-			    Item::get(Item::FURNACE)
-            ];
-		}
-
-		return [];
-	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
+    public function getVariantBitmask() : int{
+        return 0;
     }
 }

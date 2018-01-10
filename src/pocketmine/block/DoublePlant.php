@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -52,12 +51,12 @@ class DoublePlant extends Flowable {
 
 	public function getName() : string{
 		static $names = [
-			0 => "Sunflower",
-			1 => "Lilac",
-			2 => "Double Tallgrass",
-			3 => "Large Fern",
-			4 => "Rose Bush",
-			5 => "Peony"
+			self::SUNFLOWER => "Sunflower",
+			self::LILAC => "Lilac",
+			self::DOUBLE_TALLGRASS => "Double Tallgrass",
+			self::LARGE_FERN => "Large Fern",
+			self::ROSE_BUSH => "Rose Bush",
+			self::PEONY => "Peony"
 		];
 		return $names[$this->getVariant()] ?? "";
 	}
@@ -92,7 +91,7 @@ class DoublePlant extends Flowable {
         );
     }
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             $down = $this->getSide(Vector3::SIDE_DOWN);
             if(!$this->isValidHalfPlant() or (($this->meta & self::BITFLAG_TOP) === 0 and $down->isTransparent())){
@@ -105,12 +104,7 @@ class DoublePlant extends Flowable {
         return false;
     }
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
-	public function onBreak(Item $item){
+	public function onBreak(Item $item, Player $player = null) : bool{
 		$up = $this->getSide(1);
 		$down = $this->getSide(0);
 		if(($this->meta & 0x08) === 0x08){ // This is the Top part of flower
@@ -126,6 +120,7 @@ class DoublePlant extends Flowable {
 				$this->getLevel()->setBlock($down, new Air(), true, true);
 			}
 		}
+		return true;
 	}
 
     public function getVariantBitmask() : int{
@@ -133,7 +128,7 @@ class DoublePlant extends Flowable {
     }
 
     public function getToolType() : int{
-        return ($this->meta === 2 or $this->meta === 3) ? Tool::TYPE_SHEARS : Tool::TYPE_NONE;
+        return ($this->meta === 2 or $this->meta === 3) ? BlockToolType::TYPE_SHEARS : BlockToolType::TYPE_NONE;
     }
 
     public function getToolHarvestLevel() : int{

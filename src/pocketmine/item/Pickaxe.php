@@ -24,6 +24,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockToolType;
+
 class Pickaxe extends TieredTool {
 
     public function isPickaxe(){
@@ -31,7 +33,7 @@ class Pickaxe extends TieredTool {
     }
 
     public function getBlockToolType() : int{
-        return Tool::TYPE_PICKAXE;
+        return BlockToolType::TYPE_PICKAXE;
     }
 
     public function getBlockToolHarvestLevel() : int{

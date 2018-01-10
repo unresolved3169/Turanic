@@ -26,7 +26,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
 class Glowstone extends Transparent implements SolidLight {
 
@@ -45,7 +44,7 @@ class Glowstone extends Transparent implements SolidLight {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getLightLevel() : int{

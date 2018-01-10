@@ -41,7 +41,7 @@ class PumpkinStem extends Crops {
 		return "Pumpkin Stem";
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(0)->isTransparent()){
 				$this->getLevel()->useBreakOn($this);

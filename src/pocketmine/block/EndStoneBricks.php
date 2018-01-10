@@ -24,8 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
 class EndStoneBricks extends Solid {
 
@@ -35,26 +34,20 @@ class EndStoneBricks extends Solid {
 		$this->meta = $meta;
 	}
 
-	public function getHardness() : float{
-		return 0.8;
-	}
-
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
-
 	public function getName() : string{
 		return "End Stone Bricks";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return [
-				Item::get(self::END_STONE_BRICKS, $this->meta & 0x03)
-			];
-		}else{
-			return [];
-		}
-	}
+    public function getHardness() : float{
+        return 0.8;
+    }
+
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
 }

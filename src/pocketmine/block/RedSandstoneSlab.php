@@ -72,8 +72,4 @@ class RedSandstoneSlab extends Slab {
 
 		return true;
 	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

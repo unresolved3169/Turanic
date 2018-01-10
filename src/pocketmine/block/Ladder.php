@@ -28,7 +28,6 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -125,7 +124,7 @@ class Ladder extends Transparent {
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		$faces = [
 			2 => 3,
 			3 => 2,
@@ -144,10 +143,6 @@ class Ladder extends Transparent {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
-
-	public function canBeClimbed(): bool{
-        return true;
-    }
 }

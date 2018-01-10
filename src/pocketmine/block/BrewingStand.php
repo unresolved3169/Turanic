@@ -49,23 +49,27 @@ class BrewingStand extends Transparent {
 		return false;
 	}
 
-	public function getHardness() : float{
-		return 0.5;
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-	}
-
 	public function getLightLevel() : int{
 		return 1;
 	}
 
-	public function getName() : string{
-		return "Brewing Stand";
-	}
+    public function getName() : string{
+        return "Brewing Stand";
+    }
 
-	public function onActivate(Item $item, Player $player = null){
+    public function getHardness() : float{
+        return 0.5;
+    }
+
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$t = $this->getLevel()->getTile($this);
 			if($t instanceof TileBrewingStand){
@@ -90,14 +94,4 @@ class BrewingStand extends Transparent {
 	public function getVariantBitmask(): int{
         return 0;
     }
-
-    public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return [
-			    Item::get(Item::BREWING_STAND)
-            ];
-		}
-
-		return [];
-	}
 }

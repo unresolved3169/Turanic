@@ -26,7 +26,6 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -60,10 +59,6 @@ class Vine extends Flowable {
 	public function hasEntityCollision() : bool{
 		return true;
 	}
-
-    public function canBeClimbed() : bool{
-        return true;
-    }
 
     public function ticksRandomly() : bool{
         return true;
@@ -156,7 +151,7 @@ class Vine extends Flowable {
         return true;
     }
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             $sides = [
                 self::FLAG_SOUTH => Vector3::SIDE_SOUTH,
@@ -203,6 +198,6 @@ class Vine extends Flowable {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 }

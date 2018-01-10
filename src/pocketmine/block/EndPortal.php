@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
@@ -30,56 +32,27 @@ class EndPortal extends Solid implements SolidLight {
 
 	protected $id = self::END_PORTAL;
 
-	/**
-	 * EndPortal constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 1;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "End Portal";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return -1;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getResistance(){
+	public function getBlastResistance() : float{
 		return 18000000;
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
-
-    /**
-     * @return bool
-     */
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

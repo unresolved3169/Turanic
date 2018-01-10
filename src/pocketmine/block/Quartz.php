@@ -29,19 +29,14 @@ namespace pocketmine\block;
 use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
 class Quartz extends Solid {
 
-	const QUARTZ_NORMAL = 0;
-	const QUARTZ_CHISELED = 1;
-	const QUARTZ_PILLAR = 2;
-
-    const NORMAL = self::QUARTZ_NORMAL;
-    const CHISELED = self::QUARTZ_CHISELED;
-    const PILLAR = self::QUARTZ_PILLAR;
+    const NORMAL = 0;
+    const CHISELED = 1;
+    const PILLAR = 2;
     
 	protected $id = self::QUARTZ_BLOCK;
 	
@@ -55,9 +50,9 @@ class Quartz extends Solid {
 	
 	public function getName() : string{
 		static $names = [
-			self::QUARTZ_NORMAL => "Quartz Block",
-            self::QUARTZ_CHISELED => "Chiseled Quartz Block",
-			self::QUARTZ_PILLAR => "Quartz Pillar",
+			self::NORMAL => "Quartz Block",
+            self::CHISELED => "Chiseled Quartz Block",
+			self::PILLAR => "Quartz Pillar",
 		];
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
@@ -70,7 +65,7 @@ class Quartz extends Solid {
 	}
 	
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 	
 	public function getToolHarvestLevel(): int{
@@ -79,17 +74,5 @@ class Quartz extends Solid {
     
     public function getVariantBitmask(): int{
         return 0x03;
-    }
-
-	public function getDrops(Item $item) : array{
-		if($this->isCompatibleWithTool($item)){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
     }
 }

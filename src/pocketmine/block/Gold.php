@@ -26,10 +26,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
-class Gold extends Solid {
+class Gold extends Solid{
 
 	protected $id = self::GOLD_BLOCK;
 
@@ -46,18 +45,10 @@ class Gold extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 4){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_IRON;
     }
 }

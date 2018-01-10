@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,8 +18,9 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -31,26 +31,15 @@ class GlowingRedstoneOre extends RedstoneOre implements SolidLight {
 
 	protected $id = self::GLOWING_REDSTONE_ORE;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Glowing Redstone Ore";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 9;
 	}
 
-	/**
-	 * @param $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_SCHEDULED or $type === Level::BLOCK_UPDATE_RANDOM){
 			$this->getLevel()->setBlock($this, Block::get(Item::REDSTONE_ORE, $this->meta), false, false);
 
@@ -59,8 +48,4 @@ class GlowingRedstoneOre extends RedstoneOre implements SolidLight {
 
 		return false;
 	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

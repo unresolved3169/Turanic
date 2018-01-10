@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -50,9 +49,6 @@ class SignPost extends Transparent{
 		return false;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Sign Post";
 	}
@@ -81,12 +77,7 @@ class SignPost extends Transparent{
 		return false;
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === Block::AIR){
 				$this->getLevel()->useBreakOn($this);
@@ -97,11 +88,8 @@ class SignPost extends Transparent{
 		return false;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getVariantBitmask(): int{

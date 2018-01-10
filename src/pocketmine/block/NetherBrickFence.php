@@ -28,8 +28,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
-use pocketmine\utils\Color;
 
 class NetherBrickFence extends Transparent {
 
@@ -43,13 +41,9 @@ class NetherBrickFence extends Transparent {
 		return 2;
 	}
 
-	public function getResistance() : float{
-        return 10;
-    }
-
 	public function getToolType() : int{
 		//Different then the woodfences
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getName() : string{
@@ -67,12 +61,4 @@ class NetherBrickFence extends Transparent {
 			return [];
 		}
 	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
-	}
-
-	public function getColor(){
-	    return new Color(112, 2, 0);
-    }
 }

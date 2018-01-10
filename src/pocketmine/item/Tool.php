@@ -30,13 +30,6 @@ use pocketmine\item\enchantment\Enchantment;
 
 abstract class Tool extends Durable {
 
-    const TYPE_NONE = 0;
-    const TYPE_SWORD = 1 << 0;
-    const TYPE_SHOVEL = 1 << 1;
-    const TYPE_PICKAXE = 1 << 2;
-    const TYPE_AXE = 1 << 3;
-    const TYPE_SHEARS = 1 << 4;
-
 	/**
 	 * @return int
 	 */

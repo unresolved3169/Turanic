@@ -26,9 +26,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
+use pocketmine\Player;
 
 class Obsidian extends Solid {
 
@@ -48,24 +49,24 @@ class Obsidian extends Solid {
 		return "Obsidian";
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 
-	public function getHardness() : float{
-		return 35;
-	}
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_DIAMOND;
+    }
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 5){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
+    public function getHardness() : float{
+        return 35; //50 in PC
+    }
 
-	public function onBreak(Item $item){
-		parent::onBreak($item);
+    public function getBlastResistance() : float{
+        return 6000;
+    }
+
+	public function onBreak(Item $item, Player $player = null) : bool{
+		parent::onBreak($item, $player);
 
 		if($this->getLevel()->getServer()->netherEnabled){
 			for($i = 0; $i <= 6; $i++){
@@ -73,7 +74,7 @@ class Obsidian extends Solid {
 					break;
 				}
 				if($i == 6){
-					return;
+					return true;
 				}
 			}
 			$block = $this->getSide($i);
@@ -115,9 +116,7 @@ class Obsidian extends Solid {
 				}
 			}
 		}
-	}
 
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
+		return true;
+	}
 }

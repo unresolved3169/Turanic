@@ -26,8 +26,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -61,7 +61,7 @@ class Redstone extends Solid {
 		$this->meta = $meta;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
         return 10;
     }
 
@@ -93,22 +93,14 @@ class Redstone extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getName() : string{
+	public function getToolHarvestLevel(): int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+    public function getName() : string{
 		return "Block of Redstone";
 	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

@@ -47,7 +47,7 @@ class Bed extends Transparent {
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.2;
 	}
 
@@ -135,7 +135,7 @@ class Bed extends Transparent {
         return null;
     }
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         $dimension = $this->getLevel()->getDimension();
         if($dimension == Level::DIMENSION_NETHER or $dimension == Level::DIMENSION_END){
             $explosion = new Explosion($this, 6, $this);

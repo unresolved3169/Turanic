@@ -48,7 +48,7 @@ class CocoaBlock extends Solid {
 		return 0.2;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){
 			$block = clone $this;
 			if($block->meta > 7){
@@ -65,7 +65,7 @@ class CocoaBlock extends Solid {
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			$faces = [3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5];
 			if($this->getSide($faces[$this->meta])->isTransparent() === true){

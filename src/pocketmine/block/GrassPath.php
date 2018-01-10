@@ -26,7 +26,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
 
@@ -43,7 +42,7 @@ class GrassPath extends Transparent {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	protected function recalculateBoundingBox(){
@@ -57,7 +56,7 @@ class GrassPath extends Transparent {
 		);
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type == Level::BLOCK_UPDATE_NORMAL){
 			$block = $this->getSide(self::SIDE_UP);
 			if($block->getId() != self::AIR){

@@ -29,6 +29,7 @@ declare(strict_types=1);
 namespace pocketmine\level;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\object\Lightning;
 use pocketmine\entity\object\ExperienceOrb;
@@ -371,7 +372,7 @@ class Level implements ChunkManager, Metadatable{
 	 * @throws \Throwable
 	 */
 	public function __construct(Server $server, string $name, string $path, string $provider) {
-		$this->blockStates = Block::getBlockStatesArray();
+		$this->blockStates = BlockFactory::getBlockStatesArray();
 		$this->levelId = static::$levelIdCounter++;
 		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->entityManager = new EntityManager($this);
@@ -1506,7 +1507,7 @@ class Level implements ChunkManager, Metadatable{
         if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
             $newHeightMap = $this->getChunk($x >> 4, $z >> 4)->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f);
         }elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
-            if(Block::$lightFilter[$sourceId] > 1 or Block::$diffusesSkyLight[$sourceId]){
+            if(BlockFactory::$lightFilter[$sourceId] > 1 or BlockFactory::$diffusesSkyLight[$sourceId]){
                 $this->setHeightMap($x, $z, $yPlusOne);
                 $newHeightMap = $yPlusOne;
             }else{ //Block changed which has no effect on direct sky light, for example placing or removing glass.
@@ -1528,7 +1529,7 @@ class Level implements ChunkManager, Metadatable{
                 $update->setAndUpdateLight($x, $i, $z, 15);
             }
         }else{ //No heightmap change, block changed "underground"
-            $update->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - Block::$lightFilter[$sourceId]));
+            $update->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - BlockFactory::$lightFilter[$sourceId]));
         }
 
         $update->execute();
@@ -1560,7 +1561,7 @@ class Level implements ChunkManager, Metadatable{
         $this->timings->doBlockLightUpdates->startTiming();
 
         $id = $this->getBlockIdAt($x, $y, $z);
-        $newLevel = max(Block::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - Block::$lightFilter[$id]);
+        $newLevel = max(BlockFactory::$light[$id], $this->getHighestAdjacentBlockLight($x, $y, $z) - BlockFactory::$lightFilter[$id]);
 
         $update = new BlockLightUpdate($this);
         $update->setAndUpdateLight($x, $y, $z, $newLevel);

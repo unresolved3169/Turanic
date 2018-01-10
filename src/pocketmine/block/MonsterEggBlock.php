@@ -28,6 +28,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\hostile\Silverfish;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
+use pocketmine\Player;
 
 class MonsterEggBlock extends Solid{
 
@@ -45,14 +46,14 @@ class MonsterEggBlock extends Solid{
         return 0.75;
     }
 
-    public function onBreak(Item $item){
-        parent::onBreak($item);
+    public function onBreak(Item $item, Player $player = null) : bool{
         if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) == 0){
             $sf = Entity::createEntity("Silverfish", $this->level, Entity::createBaseNBT($this));
             if($sf instanceof Silverfish){
                 $sf->spawnToAll();
             }
         }
+        return parent::onBreak($item, $player);
     }
 
     public function getDrops(Item $item): array{

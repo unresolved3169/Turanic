@@ -27,7 +27,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Server;
@@ -45,7 +44,7 @@ class Mycelium extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function getHardness() : float{
@@ -66,7 +65,7 @@ class Mycelium extends Solid {
         return true;
     }
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_RANDOM){
             //TODO: light levels
             $x = mt_rand($this->x - 1, $this->x + 1);
@@ -75,7 +74,7 @@ class Mycelium extends Solid {
             $block = $this->getLevel()->getBlockAt($x, $y, $z);
             if($block->getId() === Block::DIRT){
                 if($block->getSide(Vector3::SIDE_UP) instanceof Transparent){
-                    Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, BlockFactory::get(Block::MYCELIUM)));
+                    Server::getInstance()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($block, $this, Block::get(Block::MYCELIUM)));
                     if(!$ev->isCancelled()){
                         $this->getLevel()->setBlock($block, $ev->getNewState());
                     }

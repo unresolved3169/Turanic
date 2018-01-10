@@ -43,8 +43,4 @@ class DoubleRedSandstoneSlab extends DoubleSlab {
 			return [];
 		}
 	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

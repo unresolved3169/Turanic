@@ -27,9 +27,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 
-class Snow extends Solid {
+class Snow extends Solid{
 
 	protected $id = self::SNOW_BLOCK;
 
@@ -41,25 +42,25 @@ class Snow extends Solid {
 		return 0.2;
 	}
 
-	public function getName() : string{
-		return "Snow Block";
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_SHOVEL;
+    }
 
-	public function getDrops(Item $item) : array{
-		if($item->isShovel() !== false){
-			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-				return parent::getDrops($item);
-			}else{
-				return [
-					Item::get(Item::SNOWBALL, 0, 4)
-				];
-			}
-		}else{
-			return [];
-		}
-	}
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
-    public function canHarvestWithHand(): bool{
-        return false;
+    public function getName() : string{
+        return "Snow Block";
+    }
+
+	public function getDropsForCompatibleTool(Item $item): array{
+        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
+            return parent::getDrops($item);
+        }else{
+            return [
+                Item::get(Item::SNOWBALL, 0, 4)
+            ];
+        }
     }
 }

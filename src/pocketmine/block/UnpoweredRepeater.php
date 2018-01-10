@@ -2,6 +2,7 @@
 
 /*
  *
+ *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -18,7 +19,10 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+ *
+*/
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -45,16 +49,11 @@ class UnpoweredRepeater extends PoweredRepeater {
         return new PoweredRepeater($this->meta);
     }
 
-    /**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
 	public function isActivated(Block $from = null){
 		return false;
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
         return 0;
     }
 }

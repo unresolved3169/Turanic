@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
 use pocketmine\item\Item;
 
 class RedNetherBrick extends Solid{
@@ -38,7 +37,7 @@ class RedNetherBrick extends Solid{
     }
 
     public function getToolType() : int{
-        return Tool::TYPE_PICKAXE;
+        return BlockToolType::TYPE_PICKAXE;
     }
 
     public function getHardness() : float{

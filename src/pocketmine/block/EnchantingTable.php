@@ -25,8 +25,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\inventory\EnchantInventory;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -67,7 +67,7 @@ class EnchantingTable extends Transparent {
 		return 5;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
 		return 6000;
 	}
 
@@ -75,11 +75,15 @@ class EnchantingTable extends Transparent {
 		return "Enchanting Table";
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 
-	public function onActivate(Item $item, Player $player = null){
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+	public function onActivate(Item $item, Player $player = null) : bool{
         if (!$this->getLevel()->getServer()->enchantingTableEnabled) {
             return true;
         }
@@ -96,12 +100,4 @@ class EnchantingTable extends Transparent {
 
         return true;
     }
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
 }

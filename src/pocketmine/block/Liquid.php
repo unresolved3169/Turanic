@@ -47,37 +47,23 @@ abstract class Liquid extends Transparent {
     const CAN_FLOW = 0;
     const BLOCKED = -1;
 
-	/**
-	 * @return bool
-	 */
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
-	public function canBeFlowedInto(){
+	public function canBeFlowedInto() : bool{
         return true;
     }
 
-    /**
-	 * @param Item $item
-	 *
-	 * @return bool
-	 */
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
@@ -228,10 +214,10 @@ abstract class Liquid extends Transparent {
         return 1;
     }
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             $this->checkForHarden();
-            $this->level->scheduleUpdate($this, $this->tickRate());
+            $this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
             return $type;
         }elseif($type === Level::BLOCK_UPDATE_SCHEDULED){
             $decay = $this->getFlowDecay($this);
@@ -269,7 +255,7 @@ abstract class Liquid extends Transparent {
                         $this->level->setBlock($this, Block::get(Block::AIR), true, true);
                     }else{
                         $this->level->setBlock($this, Block::get($this->id, $decay), true, true);
-                        $this->level->scheduleUpdate($this, $this->tickRate());
+                        $this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
                     }
                 }
             }
@@ -312,7 +298,7 @@ abstract class Liquid extends Transparent {
                 $this->level->useBreakOn($block);
             }
             $this->level->setBlock($block, Block::get($this->getId(), $newFlowDecay), true, true);
-            $this->level->scheduleUpdate($block, $this->tickRate());
+            $this->level->scheduleDelayedBlockUpdate($block, $this->tickRate());
         }
     }
 
@@ -371,10 +357,7 @@ abstract class Liquid extends Transparent {
         return $cost;
     }
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 100;
 	}
 
@@ -435,16 +418,9 @@ abstract class Liquid extends Transparent {
 	protected function checkForHarden(){
 	}
 
-	/**
-	 * @return null
-	 */
 	public function getBoundingBox(){
 		return null;
 	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
-    }
 
     protected function liquidCollide(Block $cause, Block $result) : bool{
         //TODO: add events

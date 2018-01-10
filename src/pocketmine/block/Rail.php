@@ -224,24 +224,11 @@ class Rail extends Flowable {
 		return $connected;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.7;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getResistance(){
-		return 3.5;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function canPassThrough(){
+	public function canPassThrough() : bool{
 		return true;
 	}
 }

@@ -60,7 +60,7 @@ class NetherWartPlant extends Flowable {
         return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         switch($type){
             case Level::BLOCK_UPDATE_RANDOM:
                 if($this->meta < 3 and mt_rand(0, 10) === 0){ //Still growing

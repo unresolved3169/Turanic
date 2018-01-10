@@ -51,7 +51,7 @@ class Fire extends Flowable {
 		}
 	}
 
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
@@ -59,15 +59,15 @@ class Fire extends Flowable {
 		return "Fire Block";
 	}
 
-	public function getLightLevel(){
+	public function getLightLevel() : int{
 		return 15;
 	}
 
-	public function isBreakable(Item $item){
+	public function isBreakable(Item $item) : bool{
 		return false;
 	}
 
-	public function canBeReplaced(){
+	public function canBeReplaced() : bool{
 		return true;
 	}
 
@@ -103,12 +103,7 @@ class Fire extends Flowable {
 		return [];
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return int
-	 */
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type == Level::BLOCK_UPDATE_NORMAL or $type == Level::BLOCK_UPDATE_RANDOM or $type == Level::BLOCK_UPDATE_SCHEDULED){
 			if(!$this->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() and !$this->canNeighborBurn()){
 				$this->getLevel()->setBlock($this, new Air(), true);

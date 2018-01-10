@@ -78,7 +78,7 @@ class CommandBlock extends Solid {
         return $bool;
     }
 
-    public function onActivate(Item $item, Player $player = null){
+    public function onActivate(Item $item, Player $player = null) : bool{
         if(!($player instanceof Player) or !$player->isOp() or !$player->isCreative()){
             return false;
         }
@@ -107,11 +107,11 @@ class CommandBlock extends Solid {
         return $this->level->getTile($this);
     }
 
-    public function getResistance() : float{
+    public function getBlastResistance() : float{
         return 18000000;
     }
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         if ($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE) {
             $this->setPowered($this->level->isBlockPowered($this));
         }

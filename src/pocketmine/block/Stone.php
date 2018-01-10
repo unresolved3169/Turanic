@@ -28,7 +28,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Tool;
 use pocketmine\item\Item;
 
 class Stone extends Solid {
@@ -51,8 +50,12 @@ class Stone extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
 	public function getName() : string{
 		static $names = [
@@ -80,7 +83,11 @@ class Stone extends Solid {
 		}
 	}
 
-    public function canHarvestWithHand(): bool{
-        return false;
+	public function getDropsForCompatibleTool(Item $item): array{
+        if($this->getDamage() === self::NORMAL){
+            return $item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0 ? parent::getDropsForCompatibleTool($item) : [ Item::get(Item::COBBLESTONE, $this->getDamage()) ];
+        }
+
+        return parent::getDropsForCompatibleTool($item);
     }
 }

@@ -26,7 +26,6 @@ namespace pocketmine\block;
 
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -47,12 +46,12 @@ class Leaves extends Transparent {
 		$this->meta = $meta;
 	}
 
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.2;
 	}
 
-	public function getToolType(){
-		return Tool::TYPE_SHEARS;
+	public function getToolType() : int{
+		return BlockToolType::TYPE_SHEARS;
 	}
 
 	public function getBurnChance() : int{
@@ -146,7 +145,7 @@ class Leaves extends Transparent {
         return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if(($this->meta & 0b00001100) === 0){
 				$this->meta |= 0x08;

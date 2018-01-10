@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
 class NetherBrick extends Solid {
 
@@ -38,7 +37,7 @@ class NetherBrick extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getName() : string{
@@ -56,8 +55,4 @@ class NetherBrick extends Solid {
 			return [];
 		}
 	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

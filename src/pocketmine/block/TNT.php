@@ -71,14 +71,14 @@ class TNT extends Solid implements ElectricalAppliance {
         $this->level->addSound(new TNTPrimeSound($this));
     }
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if(($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE) && $this->level->isBlockPowered($this)){
             $this->prime();
             $this->getLevel()->setBlock($this, new Air(), true);
 		}
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($item->getId() === Item::FLINT_STEEL){
 			$this->prime(80, $player);
 			$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);

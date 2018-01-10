@@ -30,18 +30,11 @@ class Furnace extends BurningFurnace {
 
 	protected $id = self::FURNACE;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Furnace";
 	}
 
 	public function getLightLevel() : int{
         return 0;
-    }
-
-    public function canHarvestWithHand(): bool{
-        return false;
     }
 }

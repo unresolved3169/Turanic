@@ -26,7 +26,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationHelper;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -74,7 +73,7 @@ class Wood extends Solid {
     }
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getFuelTime(): int{

@@ -26,7 +26,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Tool;
+use pocketmine\block\utils\ColorBlockMetaHelper;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\StringTag;
@@ -44,29 +44,11 @@ class ShulkerBox extends Transparent {
  	}
 
  	public function getToolType() : int{
-        return Tool::TYPE_PICKAXE;
+        return BlockToolType::TYPE_PICKAXE;
     }
 
     public function getName(){
-        static $names = [
-            0 => "White Shulker Box",
-            1 => "Orange Shulker Box",
-            2 => "Magenta Shulker Box",
-            3 => "Light Blue Shulker Box",
-            4 => "Yellow Shulker Box",
-            5 => "Lime Shulker Box",
-            6 => "Pink Shulker Box",
-            7 => "Gray Shulker Box",
-            8 => "Light Gray Shulker Box",
-            9 => "Cyan Shulker Box",
-            10 => "Purple Shulker Box",
-            11 => "Blue Shulker Box",
-            12 => "Brown Shulker Box",
-            13 => "Green Shulker Box",
-            14 => "Red Shulker Box",
-            15 => "Black Shulker Box",
-        ];
-        return $names[$this->meta & 0x0f];
+        return ColorBlockMetaHelper::getColorFromMeta($this->getVariant()) . " Shulker Box";
     }
 
     public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
@@ -75,7 +57,7 @@ class ShulkerBox extends Transparent {
         return true;
     }
 
-    public function onActivate(Item $item, Player $player = null){
+    public function onActivate(Item $item, Player $player = null) : bool{
         if($player instanceof Player){
             $top = $this->getSide(1);
             if($top->isTransparent() !== true){
@@ -124,6 +106,10 @@ class ShulkerBox extends Transparent {
 
     public function getDrops(Item $item): array{
         return [];
+    }
+
+    public function getVariantBitmask(): int{
+        return 0x0f;
     }
 
 }

@@ -27,7 +27,6 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\generator\object\TallGrass as TallGrassObject;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -51,7 +50,7 @@ class Grass extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function getDrops(Item $item) : array{
@@ -68,12 +67,12 @@ class Grass extends Solid {
         return true;
     }
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_RANDOM){
             $lightAbove = $this->level->getFullLightAt($this->x, $this->y + 1, $this->z);
-            if($lightAbove < 4 and Block::$lightFilter[$this->level->getBlockIdAt($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
+            if($lightAbove < 4 and BlockFactory::$lightFilter[$this->level->getBlockIdAt($this->x, $this->y + 1, $this->z)] >= 3){ //2 plus 1 standard filter amount
                 //grass dies
-                $this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this, $this, Block::get(Block::DIRT)));
+                $this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($this, $this, BlockFactory::get(Block::DIRT)));
                 if(!$ev->isCancelled()){
                     $this->level->setBlock($this, $ev->getNewState(), false, false);
                 }
@@ -89,7 +88,7 @@ class Grass extends Solid {
                         $this->level->getBlockIdAt($x, $y, $z) !== Block::DIRT or
                         $this->level->getBlockDataAt($x, $y, $z) === 1 or
                         $this->level->getFullLightAt($x, $y + 1, $z) < 4 or
-                        Block::$lightFilter[$this->level->getBlockIdAt($x, $y + 1, $z)] >= 3
+                        BlockFactory::$lightFilter[$this->level->getBlockIdAt($x, $y + 1, $z)] >= 3
                     ){
                         continue;
                     }
@@ -107,7 +106,7 @@ class Grass extends Solid {
         return false;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){
             $item->count--;
             TallGrassObject::growGrass($this->getLevel(), $this, new Random(mt_rand()), 8, 2);

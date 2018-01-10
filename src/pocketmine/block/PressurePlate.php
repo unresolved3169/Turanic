@@ -63,16 +63,10 @@ abstract class PressurePlate extends Flowable {
         return true;
     }
 
-    /**
-	 * @return bool
-	 */
-	public function hasEntityCollision(){
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
-	/**
-	 * @param Entity $entity
-	 */
 	public function onEntityCollide(Entity $entity){
         $power = $this->getDamage();
 
@@ -81,21 +75,11 @@ abstract class PressurePlate extends Flowable {
         }
 	}
 
-	/**
-	 * @param Block|null $from
-	 *
-	 * @return bool
-	 */
 	public function isActivated(Block $from = null){
 		return ($this->meta != 0);
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 	    switch($type){
             case Level::BLOCK_UPDATE_NORMAL:
                 $below = $this->getSide(Vector3::SIDE_DOWN);
@@ -120,37 +104,20 @@ abstract class PressurePlate extends Flowable {
 		return $this->getLevel()->setBlock($blockReplace, $this, true, false);
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return mixed|void
-	 */
-	public function onBreak(Item $item){
+	public function onBreak(Item $item, Player $player = null) : bool{
 		$this->getLevel()->setBlock($this, new Air(), true, true);
 
         if($this->getDamage() > 0){
             $this->level->updateAroundRedstone($this);
             $this->level->updateAroundRedstone($this->getSide(self::SIDE_DOWN));
         }
+
+        return true;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0.5;
 	}
-
-	/**
-	 * @return float
-	 */
-	public function getResistance(){
-		return 2.5;
-	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 
     public function getWeakPower(int $side): int{
         return $this->meta;
@@ -175,7 +142,7 @@ abstract class PressurePlate extends Flowable {
         }
 
         if($isPowered){
-            $this->level->scheduleUpdate($this, 20);
+            $this->level->scheduleDelayedBlockUpdate($this, 20);
         }
     }
 

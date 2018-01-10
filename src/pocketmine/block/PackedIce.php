@@ -28,7 +28,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
 class PackedIce extends Solid {
 
@@ -47,7 +46,7 @@ class PackedIce extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getDrops(Item $item) : array{
@@ -57,8 +56,4 @@ class PackedIce extends Solid {
 			return [];
 		}
 	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
-    }
 } 

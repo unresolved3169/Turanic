@@ -44,12 +44,13 @@ abstract class RedstoneDiode extends Flowable {
 
     abstract function getFacing() : int;
 
-    public function onBreak(Item $item){
+    public function onBreak(Item $item, Player $player = null) : bool{
         $this->level->setBlock($this, new Air(), true, true);
         $sides = [self::SIDE_WEST, self::SIDE_EAST, self::SIDE_SOUTH, self::SIDE_NORTH, self::SIDE_UP, self::SIDE_DOWN];
         foreach($sides as $side){
             $this->level->updateAroundRedstone($this->getSide($side));
         }
+        return true;
     }
 
     public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
@@ -68,7 +69,7 @@ abstract class RedstoneDiode extends Flowable {
         return true;
     }
 
-    public function onUpdate($type){
+    public function onUpdate(int $type){
         switch ($type) {
             case Level::BLOCK_UPDATE_SCHEDULED:
                 if (!$this->isLocked()) {
@@ -151,7 +152,7 @@ abstract class RedstoneDiode extends Flowable {
         return new AxisAlignedBB($this->x, $this->y, $this->z, $this->x + 1, $this->y + 0.125, $this->z + 1);
     }
 
-    public function canPassThrough(){
+    public function canPassThrough() : bool{
         return false;
     }
 

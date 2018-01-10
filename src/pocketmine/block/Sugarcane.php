@@ -49,7 +49,7 @@ class Sugarcane extends Flowable {
         return true;
     }
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         if($item->getId() === Item::DYE and $item->getDamage() === 0x0F){ //Bonemeal
             if($this->getSide(Vector3::SIDE_DOWN)->getId() !== self::SUGARCANE_BLOCK){
                 for($y = 1; $y < 3; ++$y){
@@ -74,7 +74,7 @@ class Sugarcane extends Flowable {
         return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             $down = $this->getSide(Vector3::SIDE_DOWN);
             if($down->isTransparent() === true and $down->getId() !== self::SUGARCANE_BLOCK){

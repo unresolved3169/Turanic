@@ -30,7 +30,6 @@ use pocketmine\event\player\PlayerGlassBottleEvent;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\Potion;
-use pocketmine\item\Tool;
 use pocketmine\level\sound\ExplodeSound;
 use pocketmine\level\sound\GraySplashSound;
 use pocketmine\level\sound\SpellSound;
@@ -61,17 +60,13 @@ class Cauldron extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         Tile::createTile(Tile::CAULDRON, $this->getLevel(), TileCauldron::createNBT($this, $face, $item, $player));
 
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
-	}
-
-	public function onBreak(Item $item){
-		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
 	}
 
 	public function getDrops(Item $item) : array{
@@ -94,7 +89,7 @@ class Cauldron extends Solid {
 		return $this->meta === 0x06;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		$tile = $this->getLevel()->getTile($this);
 		if(!($tile instanceof TileCauldron)){
 			return false;
@@ -277,8 +272,4 @@ class Cauldron extends Solid {
 			}
 		}
 	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

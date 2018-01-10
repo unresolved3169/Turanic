@@ -26,17 +26,11 @@ namespace pocketmine\block;
 
 class UnknownBlock extends Transparent {
 
-	/**
-	 * @return bool
-	 */
-	public function isSolid(){
+	public function isSolid() : bool{
 		return false;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 0;
 	}
 }

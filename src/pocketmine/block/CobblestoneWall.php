@@ -2,81 +2,62 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
-
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
-class StoneWall extends Transparent {
-
+class CobblestoneWall extends Transparent {
 	const NONE_MOSSY_WALL = 0;
 	const MOSSY_WALL = 1;
 
-	protected $id = self::STONE_WALL;
+	protected $id = self::COBBLESTONE_WALL;
 
-	/**
-	 * StoneWall constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function isSolid(){
-		return false;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getHardness(){
-		return 2;
-	}
+    public function getHardness() : float{
+        return 2;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		if($this->meta === 0x01){
-			return "Mossy Cobblestone Wall";
-		}
+    public function getName() : string{
+        if($this->meta === 0x01){
+            return "Mossy Cobblestone Wall";
+        }
 
-		return "Cobblestone Wall";
-	}
+        return "Cobblestone Wall";
+    }
 
-	/**
-	 * @return AxisAlignedBB
-	 */
 	protected function recalculateBoundingBox(){
 
 		$north = $this->canConnect($this->getSide(Vector3::SIDE_NORTH));
@@ -107,11 +88,6 @@ class StoneWall extends Transparent {
 		);
 	}
 
-	/**
-	 * @param Block $block
-	 *
-	 * @return bool
-	 */
 	public function canConnect(Block $block){
 		return ($block->getId() !== self::COBBLE_WALL and $block->getId() !== self::FENCE_GATE) ? $block->isSolid() and !$block->isTransparent() : true;
 	}

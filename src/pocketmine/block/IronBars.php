@@ -26,10 +26,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
-class IronBars extends Thin {
+class IronBars extends Thin{
 
 	protected $id = self::IRON_BARS;
 
@@ -45,20 +44,16 @@ class IronBars extends Thin {
 		return 5;
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
-	public function canHarvestWithHand(): bool{
-        return false;
+    public function getVariantBitmask() : int{
+        return 0;
     }
 }
 

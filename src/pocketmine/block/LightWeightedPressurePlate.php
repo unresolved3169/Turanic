@@ -2,39 +2,40 @@
 
 /*
  *
- *  _____   _____   __   _   _   _____  __    __  _____
- * /  ___| | ____| |  \ | | | | /  ___/ \ \  / / /  ___/
- * | |     | |__   |   \| | | | | |___   \ \/ /  | |___
- * | |  _  |  __|  | |\   | | | \___  \   \  /   \___  \
- * | |_| | | |___  | | \  | | |  ___| |   / /     ___| |
- * \_____/ |_____| |_|  \_| |_| /_____/  /_/     /_____/
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author iTX Technologies
- * @link https://itxtech.org
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\math\Math;
 
 class LightWeightedPressurePlate extends PressurePlate {
 	protected $id = self::LIGHT_WEIGHTED_PRESSURE_PLATE;
 
-    public function __construct($meta = 0){
+    public function __construct(int $meta = 0){
         parent::__construct($meta);
         $this->onPitch = 0.90000004;
         $this->offPitch = 0.75;
     }
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Light Weighted Pressure Plate";
 	}
@@ -57,5 +58,21 @@ class LightWeightedPressurePlate extends PressurePlate {
 
     public function getMaxWeight() : int{
         return 15;
+    }
+
+    public function isSolid() : bool{
+        return false;
+    }
+
+    public function getVariantBitmask() : int{
+        return 0;
+    }
+
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
     }
 }

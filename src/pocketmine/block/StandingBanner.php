@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -77,7 +76,7 @@ class StandingBanner extends Transparent{
         return false;
     }
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
 				$this->getLevel()->useBreakOn($this);
@@ -89,7 +88,7 @@ class StandingBanner extends Transparent{
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_AXE;
+		return BlockToolType::TYPE_AXE;
 	}
 
 	public function getVariantBitmask() : int{
@@ -100,7 +99,7 @@ class StandingBanner extends Transparent{
 		return [];
 	}
 
-	public function onBreak(Item $item, Player $player = null){
+	public function onBreak(Item $item, Player $player = null) : bool{
 		if(($tile = $this->level->getTile($this)) !== null) {
 			$this->level->dropItem($this, Item::get(Item::BANNER)->setNamedTag($tile->getCleanedNBT()));
 		}

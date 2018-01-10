@@ -26,7 +26,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
 class Gravel extends Fallable {
 
@@ -45,7 +44,7 @@ class Gravel extends Fallable {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function getDrops(Item $item) : array{

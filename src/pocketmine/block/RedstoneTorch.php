@@ -43,8 +43,7 @@ class RedstoneTorch extends Flowable {
 		return "Redstone Torch";
 	}
 
-	public function onBreak(Item $item){
-		$this->getLevel()->setBlock($this, new Air(), true, true);
+	public function onBreak(Item $item, Player $player = null) : bool{
 		$faces = [
 			1 => 4,
 			2 => 5,
@@ -57,6 +56,7 @@ class RedstoneTorch extends Flowable {
         foreach($faces as $face){
             $this->level->updateAround($this->getSide($face));
         }
+        return parent::onBreak($item, $player);
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{

@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\Hopper as TileHopper;
@@ -42,18 +41,18 @@ class Hopper extends Transparent {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
 	public function getName() : string{
 		return "Hopper";
 	}
 
-	public function getHardness() : int{
+	public function getHardness() : float{
 		return 3;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$t = $this->getLevel()->getTile($this);
 			if($t instanceof TileHopper){
@@ -102,8 +101,4 @@ class Hopper extends Transparent {
 			return [];
 		}
 	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

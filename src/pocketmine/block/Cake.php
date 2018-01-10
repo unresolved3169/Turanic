@@ -71,7 +71,7 @@ class Cake extends Transparent implements FoodSource {
 		return false;
 	}
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
 			if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){ //Replace with common break method
 				$this->getLevel()->setBlock($this, Block::get(Block::AIR), true);
@@ -87,7 +87,7 @@ class Cake extends Transparent implements FoodSource {
 		return [];
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         if($player !== null){
             $player->consumeObject($this);
             return true;

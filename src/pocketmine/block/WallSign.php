@@ -30,19 +30,11 @@ class WallSign extends SignPost {
 
 	protected $id = self::WALL_SIGN;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Wall Sign";
 	}
 
-	/**
-	 * @param int $type
-	 *
-	 * @return bool|int
-	 */
-	public function onUpdate($type){
+	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL){
             if($this->getSide($this->meta ^ 0x01)->getId() === self::AIR){
                 $this->getLevel()->useBreakOn($this);

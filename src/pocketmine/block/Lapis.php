@@ -26,8 +26,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
 class Lapis extends Solid {
 
@@ -42,23 +41,14 @@ class Lapis extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_STONE;
+    }
 
 	public function getHardness() : float{
 		return 3;
 	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 3){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
-
-	public function canHarvestWithHand() : bool{
-        return false;
-    }
-
 }

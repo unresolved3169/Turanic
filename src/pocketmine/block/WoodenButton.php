@@ -41,7 +41,7 @@ class WoodenButton extends Flowable {
         return 0.5;
     }
 
-	public function onUpdate($type){
+	public function onUpdate(int $type){
 	    switch($type){
             case Level::BLOCK_UPDATE_NORMAL:
                 if($this->getSide($this->getOpposite())->isTransparent()){
@@ -84,7 +84,7 @@ class WoodenButton extends Flowable {
 		return (($this->meta & 0x08) === 0x08);
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if(!$this->isActivated()){
 			$this->meta ^= 0x08;
 			$this->level->setBlock($this, $this, true, false);

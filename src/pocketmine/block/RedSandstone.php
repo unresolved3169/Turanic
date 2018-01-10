@@ -22,25 +22,19 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 class RedSandstone extends Sandstone {
 	protected $id = Block::RED_SANDSTONE;
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		static $names = [
 			0 => "Red Sandstone",
 			1 => "Chiseled Red Sandstone",
-			2 => "Smooth Red Sandstone",
-			3 => "",
+			2 => "Smooth Red Sandstone"
 		];
-		return $names[$this->meta & 0x03];
+		return $names[$this->meta & 0x03] ?? "Unknown";
 	}
-
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

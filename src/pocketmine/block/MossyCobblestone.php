@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
 class MossyCobblestone extends Cobblestone {
 
@@ -37,11 +36,7 @@ class MossyCobblestone extends Cobblestone {
 		return "Moss Stone";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return Block::getDrops($item);
-		}else{
-			return [];
-		}
-	}
+	public function getDropsForCompatibleTool(Item $item): array{
+        return Block::getDropsForCompatibleTool($item);
+    }
 }

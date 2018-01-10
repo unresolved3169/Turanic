@@ -28,16 +28,10 @@ class LitPumpkin extends Pumpkin implements SolidLight {
 
 	protected $id = self::LIT_PUMPKIN;
 
-	/**
-	 * @return int
-	 */
 	public function getLightLevel() : int{
 		return 15;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Jack o'Lantern";
 	}

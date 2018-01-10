@@ -30,27 +30,14 @@ class Beetroot extends Crops {
 
 	protected $id = self::BEETROOT_BLOCK;
 
-	/**
-	 * Beetroot constructor.
-	 *
-	 * @param int $meta
-	 */
 	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Beetroot Block";
 	}
 
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
 	public function getDrops(Item $item) : array{
 		if($this->meta >= 0x07){
             return [

@@ -27,8 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorBlockMetaHelper;
-use pocketmine\item\Tool;
-use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 
 class Concrete extends Solid {
 
@@ -38,26 +37,19 @@ class Concrete extends Solid {
 		$this->meta = $meta;
 	}
 
-	public function getHardness() : float{
-		return 1.8;
-	}
-
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
-
-	public function getName() : string{
+    public function getName() : string{
         return ColorBlockMetaHelper::getColorFromMeta($this->meta) . " Concrete";
-	}
+    }
 
-    public function getResistance() : float {
-        return 9;
-	}
+    public function getHardness() : float{
+        return 1.8;
+    }
 
-    public function getDrops(Item $item): array{
-        if($item->isPickaxe() >= 1){
-            return parent::getDrops($item);
-        }
-        return [];
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
     }
 }

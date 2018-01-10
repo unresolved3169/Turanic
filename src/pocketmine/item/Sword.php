@@ -25,18 +25,16 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockToolType;
 
 class Sword extends TieredTool {
 
-	/**
-	 * @return int
-	 */
-	public function isSword(){
+	public function isSword() : int{
 		return $this->tier;
 	}
 
     public function getBlockToolType() : int{
-        return Tool::TYPE_SWORD;
+        return BlockToolType::TYPE_SWORD;
     }
 
     public function getAttackPoints() : int{

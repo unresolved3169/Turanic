@@ -22,7 +22,7 @@
 
 namespace pocketmine;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
@@ -44,6 +44,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentLevelTable;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
+use pocketmine\level\format\io\LevelProvider;
 use pocketmine\level\format\io\LevelProviderManager;
 use pocketmine\level\format\io\leveldb\LevelDB;
 use pocketmine\level\format\io\region\Anvil;
@@ -1800,7 +1801,7 @@ class Server{
 
             $this->commandMap = new SimpleCommandMap($this);
             Tile::init();
-			Block::init();
+			BlockFactory::init();
 			Enchantment::init();
 			Item::init();
 			Biome::init();

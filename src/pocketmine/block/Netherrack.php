@@ -26,10 +26,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
-class Netherrack extends Solid {
+class Netherrack extends Solid{
 
 	protected $id = self::NETHERRACK;
 
@@ -45,19 +44,11 @@ class Netherrack extends Solid {
 		return 0.4;
 	}
 
-	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
-	}
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
-	}
-
-	public function canHarvestWithHand(): bool{
-        return false;
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
     }
 }

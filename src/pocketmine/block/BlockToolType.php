@@ -2,7 +2,6 @@
 
 /*
  *
- *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -19,25 +18,23 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\tile\CommandBlock as TileCB;
+/**
+ * Types of tools that can be used to break blocks
+ * Blocks may allow multiple tool types by combining these bitflags
+ */
+interface BlockToolType{
 
-class RepeatingCommandBlock extends CommandBlock {
-
-    protected $id = self::REPEATING_COMMAND_BLOCK;
-
-    public function getName(): string{
-        return "Repeating Command Block";
-    }
-
-    public function getBlockType(): int{
-        return TileCB::REPEATING;
-    }
+    const TYPE_NONE = 0;
+    const TYPE_SWORD = 1 << 0;
+    const TYPE_SHOVEL = 1 << 1;
+    const TYPE_PICKAXE = 1 << 2;
+    const TYPE_AXE = 1 << 3;
+    const TYPE_SHEARS = 1 << 4;
 
 }

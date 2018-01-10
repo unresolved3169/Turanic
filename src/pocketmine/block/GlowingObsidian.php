@@ -22,37 +22,41 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 
 class GlowingObsidian extends Solid implements SolidLight {
 
 	protected $id = self::GLOWING_OBSIDIAN;
 
-	/**
-	 * GlowingObsidian constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Glowing Obsidian";
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getLightLevel(){
-		return 12;
-	}
+    public function getLightLevel() : int{
+        return 12;
+    }
 
-    public function canHarvestWithHand(): bool{
-        return false;
+    public function getHardness() : float{
+        return 10;
+    }
+
+    public function getBlastResistance() : float{
+        return 50;
+    }
+
+    public function getToolType() : int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
+
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_DIAMOND;
     }
 }

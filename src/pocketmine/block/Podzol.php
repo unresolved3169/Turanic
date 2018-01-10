@@ -26,7 +26,6 @@ namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
 
 class Podzol extends Solid {
 
@@ -37,7 +36,7 @@ class Podzol extends Solid {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_SHOVEL;
+		return BlockToolType::TYPE_SHOVEL;
 	}
 
 	public function getName() : string{
@@ -46,10 +45,6 @@ class Podzol extends Solid {
 
 	public function getHardness() : float{
 		return 0.5;
-	}
-
-	public function getResistance() : float{
-		return 2.5;
 	}
 
 	public function getDrops(Item $item) : array{

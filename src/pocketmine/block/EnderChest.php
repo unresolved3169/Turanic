@@ -27,27 +27,22 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
-use pocketmine\item\Tool;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\tile\EnderChest as TileEnderChest;
 use pocketmine\tile\Tile;
 
-class EnderChest extends Transparent {
+class EnderChest extends Chest{
 
 	protected $id = self::ENDER_CHEST;
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
 
 	public function getHardness() : float{
 		return 22.5;
 	}
 
-	public function getResistance() : float{
+	public function getBlastResistance() : float{
 		return 3000;
 	}
 
@@ -60,37 +55,30 @@ class EnderChest extends Transparent {
 	}
 
 	public function getToolType() : int{
-		return Tool::TYPE_PICKAXE;
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	protected function recalculateBoundingBox(){
-		return new AxisAlignedBB(
-			$this->x + 0.025,
-			$this->y,
-			$this->z + 0.025,
-			$this->x + 0.975,
-			$this->y + 0.95,
-			$this->z + 0.975
-		);
-	}
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$faces = [
-			0 => 4,
-			1 => 2,
-			2 => 5,
-			3 => 3
-		];
+        $faces = [
+            0 => 4,
+            1 => 2,
+            2 => 5,
+            3 => 3
+        ];
 
-		$this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
+        $this->meta = $faces[$player instanceof Player ? $player->getDirection() : 0];
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
+        $this->getLevel()->setBlock($blockReplace, $this, true, true);
+        Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this, $face, $item, $player));
 
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 			$top = $this->getSide(1);
 			if($top->isTransparent() !== true){
@@ -111,16 +99,17 @@ class EnderChest extends Transparent {
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->hasEnchantment(Enchantment::TYPE_MINING_SILK_TOUCH)){
-			return parent::getDrops($item);
-		}
-		return [
-			Item::get(Item::OBSIDIAN, 0, 8)
-		];
-	}
+	public function getDropsForCompatibleTool(Item $item): array{
+        if($item->hasEnchantment(Enchantment::TYPE_MINING_SILK_TOUCH)){
+            return parent::getDrops($item);
+        }
 
-    public function canHarvestWithHand(): bool{
-        return false;
+        return [
+            Item::get(Item::OBSIDIAN, 0, 8)
+        ];
+    }
+
+    public function getFuelTime() : int{
+        return 0;
     }
 }

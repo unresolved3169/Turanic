@@ -22,13 +22,13 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-use pocketmine\item\Tool;
+use pocketmine\item\TieredTool;
 
-class StoneBricks extends Solid {
-
+class StoneBricks extends Solid{
 	const NORMAL = 0;
 	const MOSSY = 1;
 	const CRACKED = 2;
@@ -36,59 +36,29 @@ class StoneBricks extends Solid {
 
 	protected $id = self::STONE_BRICKS;
 
-	/**
-	 * StoneBricks constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getHardness(){
+	public function getHardness() : float{
 		return 1.5;
 	}
 
-	/**
-	 * @return int
-	 */
-	public function getToolType(){
-		return Tool::TYPE_PICKAXE;
+	public function getToolType() : int{
+		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	/**
-	 * @return string
-	 */
+    public function getToolHarvestLevel() : int{
+        return TieredTool::TIER_WOODEN;
+    }
+
 	public function getName() : string{
 		static $names = [
-			0 => "Stone Bricks",
-			1 => "Mossy Stone Bricks",
-			2 => "Cracked Stone Bricks",
-			3 => "Chiseled Stone Bricks",
+			self::NORMAL => "Stone Bricks",
+			self::MOSSY => "Mossy Stone Bricks",
+			self::CRACKED => "Cracked Stone Bricks",
+			self::CHISELED => "Chiseled Stone Bricks",
 		];
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
-
-	/**
-	 * @param Item $item
-	 *
-	 * @return array
-	 */
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}
-
-		return [];
-	}
-
-    /**
-     * @return bool
-     */
-    public function canHarvestWithHand(): bool{
-        return false;
-    }
 }

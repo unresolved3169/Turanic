@@ -2,6 +2,7 @@
 
 /*
  *
+ *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -18,7 +19,10 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+ *
+*/
+
+declare(strict_types=1);
 
 namespace pocketmine\block;
 
@@ -28,33 +32,19 @@ use pocketmine\Player;
 class PoweredRepeater extends RedstoneDiode {
 	protected $id = self::POWERED_REPEATER_BLOCK;
 
-	/**
-	 * PoweredRepeater constructor.
-	 *
-	 * @param int $meta
-	 */
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 		$this->isPowered = true;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Powered Repeater";
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getStrength(){
 		return 15;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getFacing() : int{
 		$direction = 0;
 		switch($this->meta % 4){
@@ -74,9 +64,6 @@ class PoweredRepeater extends RedstoneDiode {
 		return $direction;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getOppositeDirection() : int{
 		return static::getOppositeSide($this->getFacing());
 	}
@@ -85,9 +72,6 @@ class PoweredRepeater extends RedstoneDiode {
         return $block instanceof RedstoneDiode;
 	}
 
-    /**
-	 * @return int
-	 */
 	public function getDelay() : int{
 		return (1 + ($this->meta >> 2)) * 2;
 	}
@@ -100,11 +84,11 @@ class PoweredRepeater extends RedstoneDiode {
         return new UnpoweredRepeater($this->meta);
     }
 
-    public function getLightLevel(){
+    public function getLightLevel() : int{
         return 7;
     }
 
-	public function onActivate(Item $item, Player $player = null){
+	public function onActivate(Item $item, Player $player = null) : bool{
         $this->meta += 4;
         if($this->meta > 15) $this->meta = $this->meta % 4;
 

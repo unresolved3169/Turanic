@@ -41,7 +41,7 @@ class Lava extends Liquid {
 
 	protected $id = self::FLOWING_LAVA;
 
-	public function __construct($meta = 0){
+	public function __construct(int $meta = 0){
 		$this->meta = $meta;
 	}
 
@@ -75,9 +75,9 @@ class Lava extends Liquid {
         }
         if($colliding !== null){
             if($this->getDamage() === 0){
-                $this->liquidCollide($colliding, Block::get(Block::OBSIDIAN));
+                $this->liquidCollide($colliding, BlockFactory::get(Block::OBSIDIAN));
             }elseif($this->getDamage() <= 4){
-                $this->liquidCollide($colliding, Block::get(Block::COBBLESTONE));
+                $this->liquidCollide($colliding, BlockFactory::get(Block::COBBLESTONE));
             }
         }
     }
