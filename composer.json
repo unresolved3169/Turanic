@@ -1,0 +1,29 @@
+{
+  "name": "TuranicTeam/Turanic",
+  "description": "A server software for Minecraft: Bedrock Engine written in PHP",
+  "type": "project",
+  "license": "LGPL-3.0",
+  "require": {
+    "php": ">=7.0.3",
+    "ext-bcmath": "*",
+    "ext-curl": "*",
+    "ext-hash": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-openssl": "*",
+    "ext-pcre": "*",
+    "ext-phar": "*",
+    "ext-pthreads": ">=3.1.6",
+    "ext-reflection": "*",
+    "ext-sockets": "*",
+    "ext-spl": "*",
+    "ext-yaml": ">=2.0.0",
+    "ext-zip": "*",
+    "ext-zlib": ">=1.2.11"
+  },
+  "autoload": {
+    "psr-0": {
+      "": ["src"]
+    }
+  }
+}

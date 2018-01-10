@@ -28,6 +28,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\utils\FireworkUtils;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\NamedTag;
@@ -51,7 +52,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Binary;
-use pocketmine\utils\Color;
 
 class Item implements ItemIds, \JsonSerializable {
 
@@ -466,20 +466,13 @@ class Item implements ItemIds, \JsonSerializable {
         }
 
         $item = Item::get(Item::FIREWORK);
-        $tag = new CompoundTag();
-        $expTag = new CompoundTag();
-        $expTag->setByteArray("FireworkColor", strval(4));
-        $expTag->setByteArray("FireworkFade", strval(5));
-        $expTag->setByte("FireworkFlicker", 0);
-        $expTag->setByte("FireworkTrait", 0);
-        $expTag->setByte("FireworkType", 0);
-        $exp = new ListTag("Explosions", [$expTag], NBT::TAG_Compound);
-
-        $fireworkTag = new CompoundTag("Fireworks");
-        $fireworkTag->setTag($exp);
-        $fireworkTag->setByte("Flight", 1);
-        $tag->setTag($fireworkTag);
-        $item->setNamedTag($tag);
+        $expTags = [];
+        $expTags[] = FireworkUtils::createExplosion(0, 1, true, false, 0);
+        $expTags[] = FireworkUtils::createExplosion(1, 2, true, false, 1);
+        $expTags[] = FireworkUtils::createExplosion(2, 3, true, false, 2);
+        $expTags[] = FireworkUtils::createExplosion(3, 4, true, false, 3);
+        $expTags[] = FireworkUtils::createExplosion(4, 5, true, false, 4);
+        $item->setNamedTag(FireworkUtils::createNBT(2, $expTags));
 
         self::addCreativeItem($item);
 	}

@@ -33,3 +33,5 @@ Desktop.ini
 !/docs/requirements.txt
 .project
 *.php___jb_tmp___
+
+vendor/*
