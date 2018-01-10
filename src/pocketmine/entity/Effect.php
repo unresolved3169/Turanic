@@ -184,7 +184,8 @@ class Effect {
      */
     public function setDuration(int $ticks){
         if($ticks < 0 or $ticks > INT32_MAX){
-            throw new \InvalidArgumentException("Effect duration must be in range of 0 - " . INT32_MAX);
+            Server::getInstance()->getLogger()->debug("Effect duration must be in range of 0 - " . INT32_MAX);
+            $ticks = INT32_MAX;
         }
         $this->duration = $ticks;
         return $this;
