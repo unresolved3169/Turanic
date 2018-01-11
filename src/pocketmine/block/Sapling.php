@@ -31,7 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\Random;
 
-class Sapling extends Flowable {
+class Sapling extends Flowable{
 	const OAK = 0;
 	const SPRUCE = 1;
 	const BIRCH = 2;
@@ -47,12 +47,12 @@ class Sapling extends Flowable {
 
 	public function getName() : string{
         static $names = [
-            0 => "Oak Sapling",
-            1 => "Spruce Sapling",
-            2 => "Birch Sapling",
-            3 => "Jungle Sapling",
-            4 => "Acacia Sapling",
-            5 => "Dark Oak Sapling"
+            self::OAK => "Oak Sapling",
+            self::SPRUCE => "Spruce Sapling",
+            self::BIRCH => "Birch Sapling",
+            self::JUNGLE => "Jungle Sapling",
+            self::ACACIA => "Acacia Sapling",
+            self::DARK_OAK => "Dark Oak Sapling"
         ];
         return $names[$this->getVariant()] ?? "Unknown";
 	}
