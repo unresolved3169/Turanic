@@ -38,7 +38,7 @@ class Torch extends Flowable {
 	}
 
 	public function getLightLevel() : int{
-		return 15;
+		return 14;
 	}
 
 	public function getName() : string{
@@ -47,61 +47,53 @@ class Torch extends Flowable {
 
 	public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-			$below = $this->getSide(0);
-			$side = $this->getDamage();
-			$faces = [
-				1 => 4,
-				2 => 5,
-				3 => 2,
-				4 => 3,
-				5 => 0,
-				6 => 0,
-				0 => 0,
-			];
+            $below = $this->getSide(Vector3::SIDE_DOWN);
+            $side = $this->getDamage();
+            $faces = [
+                0 => Vector3::SIDE_DOWN,
+                1 => Vector3::SIDE_WEST,
+                2 => Vector3::SIDE_EAST,
+                3 => Vector3::SIDE_NORTH,
+                4 => Vector3::SIDE_SOUTH,
+                5 => Vector3::SIDE_DOWN
+            ];
 
-			if($this->getSide($faces[$side])->isTransparent() === true and
-				!($side === 0 and ($below->getId() === self::FENCE or
-						$below->getId() === self::COBBLE_WALL or
-						$below->getId() == Block::REDSTONE_LAMP or
-						$below->getId() == Block::LIT_REDSTONE_LAMP)
-				)
-			){
-				$this->getLevel()->useBreakOn($this);
+            if($this->getSide($faces[$side])->isTransparent() === true and !($side === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
+                $this->getLevel()->useBreakOn($this);
 
-				return Level::BLOCK_UPDATE_NORMAL;
-			}
+                return Level::BLOCK_UPDATE_NORMAL;
+            }
 		}
 
 		return false;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		$below = $this->getSide(0);
+        $below = $this->getSide(Vector3::SIDE_DOWN);
 
-		if($blockClicked->isTransparent() === false and $face !== 0){
-			$faces = [
-				1 => 5,
-				2 => 4,
-				3 => 3,
-				4 => 2,
-				5 => 1,
-			];
-			$this->meta = $faces[$face];
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
+        if($blockClicked->isTransparent() === false and $face !== Vector3::SIDE_DOWN){
+            $faces = [
+                Vector3::SIDE_UP => 5,
+                Vector3::SIDE_NORTH => 4,
+                Vector3::SIDE_SOUTH => 3,
+                Vector3::SIDE_WEST => 2,
+                Vector3::SIDE_EAST => 1
+            ];
+            $this->meta = $faces[$face];
+            $this->getLevel()->setBlock($blockReplace, $this, true, true);
 
-			return true;
-		}elseif(
-			$below->isTransparent() === false or $below->getId() === self::FENCE or
-			$below->getId() === self::COBBLE_WALL or
-			$below->getId() == Block::REDSTONE_LAMP or
-			$below->getId() == Block::LIT_REDSTONE_LAMP
-		){
-			$this->meta = 0;
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
+            return true;
+        }elseif($below->isTransparent() === false or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
+            $this->meta = 0;
+            $this->getLevel()->setBlock($blockReplace, $this, true, true);
 
-			return true;
-		}
+            return true;
+        }
 
 		return false;
 	}
+
+    public function getVariantBitmask() : int{
+        return 0;
+    }
 }

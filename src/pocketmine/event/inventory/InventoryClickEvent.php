@@ -20,10 +20,13 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\event\inventory;
 
 use pocketmine\event\Cancellable;
 use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
 use pocketmine\Player;
 
 class InventoryClickEvent extends InventoryEvent implements Cancellable {
@@ -32,20 +35,28 @@ class InventoryClickEvent extends InventoryEvent implements Cancellable {
 
     /** @var Player */
     private $player;
+    /** @var int */
+    private $slot;
+    /** @var Item */
+    private $item;
 
-    /**
-     * @param Inventory $inventory
-     * @param Player $player
-     */
-    public function __construct(Inventory $inventory, Player $player){
+    public function __construct(Inventory $inventory, Player $player, int $slot){
         $this->player = $player;
+        $this->slot = $slot;
         parent::__construct($inventory);
+        $this->item = $this->inventory->getItem($slot);
     }
 
-    /**
-     * @return Player
-     */
-    public function getPlayer(){
+    public function getPlayer() : Player{
         return $this->player;
     }
+
+    public function getSlot() : int{
+        return $this->slot;
+    }
+
+    public function getItem() : Item{
+        return $this->item;
+    }
+
 }
