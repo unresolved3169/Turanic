@@ -51,9 +51,9 @@ class Dirt extends Solid {
 		if($item->isHoe()){
 			$item->useOn($this);
             if($this->meta === 1){
-                $this->getLevel()->setBlock($this, Block::get(Block::DIRT), true);
+                $this->getLevel()->setBlock($this, BlockFactory::get(Block::DIRT), true);
             }else{
-                $this->getLevel()->setBlock($this, Block::get(Block::FARMLAND), true);
+                $this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND), true);
             }
 
 			return true;

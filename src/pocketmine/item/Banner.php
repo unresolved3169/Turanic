@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
@@ -39,7 +40,7 @@ class Banner extends Item{
     const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
     public function __construct(int $meta = 0){
-        $this->block = Block::get(Block::STANDING_BANNER);
+        $this->block = BlockFactory::get(Block::STANDING_BANNER);
         parent::__construct(self::BANNER, $meta, "Banner");
     }
 

@@ -34,7 +34,7 @@ abstract class Fallable extends Solid {
         if($type === Level::BLOCK_UPDATE_NORMAL){
             $down = $this->getSide(Vector3::SIDE_DOWN);
             if($down->getId() === self::AIR or $down instanceof Liquid or $down instanceof Fire){
-                $this->level->setBlock($this, Block::get(Block::AIR), true);
+                $this->level->setBlock($this, BlockFactory::get(Block::AIR), true);
 
                 $nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5));
                 $nbt->setInt("TileID", $this->getId());

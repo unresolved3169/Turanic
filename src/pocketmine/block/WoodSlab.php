@@ -79,11 +79,11 @@ class WoodSlab extends Transparent {
 		$this->meta &= 0x07;
 		if($face === 0){
             if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and $blockClicked->getVariant() === $this->getVariant()){
-                $this->getLevel()->setBlock($blockClicked, Block::get(self::DOUBLE_WOODEN_SLAB, $this->getVariant()), true);
+                $this->getLevel()->setBlock($blockClicked, BlockFactory::get(self::DOUBLE_WOODEN_SLAB, $this->getVariant()), true);
 
 				return true;
 			}elseif($blockReplace->getId() === self::WOOD_SLAB and $blockReplace->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 				return true;
 			}else{
@@ -91,18 +91,18 @@ class WoodSlab extends Transparent {
 			}
 		}elseif($face === 1){
 			if($blockClicked->getId() === self::WOOD_SLAB and ($blockClicked->getDamage() & 0x08) === 0 and $blockClicked->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+				$this->getLevel()->setBlock($blockClicked, BlockFactory::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 				return true;
 			}elseif($blockReplace->getId() === self::WOOD_SLAB and $blockReplace->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
 			if($blockReplace->getId() === self::WOOD_SLAB){
 				if($blockReplace->getVariant() === $this->meta){
-					$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
+					$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Item::DOUBLE_WOOD_SLAB, $this->getVariant()), true);
 
 					return true;
 				}

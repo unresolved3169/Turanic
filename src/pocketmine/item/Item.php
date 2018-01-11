@@ -28,6 +28,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\utils\FireworkUtils;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -435,7 +436,7 @@ class Item implements ItemIds, \JsonSerializable {
      */
     public static function isRegistered(int $id) : bool{
         if($id < 256){
-            return Block::isRegistered($id);
+            return BlockFactory::isRegistered($id);
         }
         return isset(self::$list[$id]);
     }
@@ -575,7 +576,7 @@ class Item implements ItemIds, \JsonSerializable {
         $this->setDamage($meta);
         $this->name = $name;
         if(!isset($this->block) and $this->id <= 0xff){
-            $this->block = Block::get($this->id, $this->meta);
+            $this->block = BlockFactory::get($this->id, $this->meta);
             $this->name = $this->block->getName();
         }
     }
@@ -997,7 +998,7 @@ class Item implements ItemIds, \JsonSerializable {
         if($this->block instanceof Block){
             return clone $this->block;
         }else{
-            return Block::get(self::AIR);
+            return BlockFactory::get(Block::AIR);
         }
     }
 
@@ -1289,8 +1290,8 @@ class Item implements ItemIds, \JsonSerializable {
      */
     public function nbtSerialize(int $slot = -1, string $tagName = "") : CompoundTag{
         $result = new CompoundTag($tagName, [
-            new ShortTag("id", Binary::signShort($this->id)),
-            new ByteTag("Count", Binary::signByte($this->count)),
+            new ShortTag("id", PHP_INT_SIZE === 8 ? Binary::signShort($this->id) : $this->id),
+            new ByteTag("Count", PHP_INT_SIZE === 8 ? Binary::signByte($this->count) : $this->count ?? -1),
             new ShortTag("Damage", $this->meta)
         ]);
 

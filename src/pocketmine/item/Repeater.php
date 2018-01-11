@@ -25,15 +25,12 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Repeater extends Item {
-	/**
-	 * Repeater constructor.
-	 *
-	 * @param int $meta
-	 */
+
 	public function __construct(int $meta = 0){
-		$this->block = Block::get(Block::UNPOWERED_REPEATER_BLOCK);
+		$this->block = BlockFactory::get(Block::UNPOWERED_REPEATER_BLOCK);
 		parent::__construct(self::REPEATER, $meta, "Repeater");
 	}
 }

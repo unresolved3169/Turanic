@@ -119,11 +119,11 @@ class Slab extends Transparent {
 		$this->meta &= 0x07;
 		if($face === 0){
 			if($blockClicked->getId() === self::SLAB and ($blockClicked->getDamage() & 0x08) === 0x08 and ($blockClicked->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+				$this->getLevel()->setBlock($blockClicked, BlockFactory::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}elseif($blockReplace->getId() === self::SLAB and ($blockReplace->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}else{
@@ -131,11 +131,11 @@ class Slab extends Transparent {
 			}
 		}elseif($face === 1){
 			if($blockClicked->getId() === self::SLAB and ($blockClicked->getDamage() & 0x08) === 0 and ($blockClicked->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($blockClicked, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+				$this->getLevel()->setBlock($blockClicked, BlockFactory::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}elseif($blockReplace->getId() === self::SLAB and ($blockReplace->getDamage() & 0x07) === ($this->meta & 0x07)){
-				$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 				return true;
 			}
@@ -143,7 +143,7 @@ class Slab extends Transparent {
 		}else{
 			if($blockReplace->getId() === self::SLAB){
 				if(($blockReplace->getDamage() & 0x07) === ($this->meta & 0x07)){
-					$this->getLevel()->setBlock($blockReplace, Block::get(Item::DOUBLE_SLAB, $this->meta), true);
+					$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Item::DOUBLE_SLAB, $this->meta), true);
 
 					return true;
 				}

@@ -24,16 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class MelonSeeds extends Item {
-	/**
-	 * MelonSeeds constructor.
-	 *
-	 * @param int $meta
-	 */
+
 	public function __construct(int $meta = 0){
-		$this->block = Block::get(Item::MELON_STEM);
+		$this->block = BlockFactory::get(Item::MELON_STEM);
 		parent::__construct(self::MELON_SEEDS, 0, "Melon Seeds");
 	}
 }

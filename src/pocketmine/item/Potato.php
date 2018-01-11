@@ -24,12 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Potato extends Item {
 
 	public function __construct(int $meta = 0){
-		$this->block = Block::get(Item::POTATO_BLOCK);
+		$this->block = BlockFactory::get(Item::POTATO_BLOCK);
 		parent::__construct(self::POTATO, 0, "Potato");
 	}
 }

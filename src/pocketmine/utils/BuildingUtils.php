@@ -3,6 +3,7 @@
 namespace pocketmine\utils;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\math\Vector3;
 
@@ -28,7 +29,7 @@ class BuildingUtils{
      * @return void
      */
     public static function fill(ChunkManager $level, Vector3 $pos1, Vector3 $pos2, Block $block = null){
-        if ($block == null) $block = Block::get(Block::AIR);
+        if ($block == null) $block = BlockFactory::get(Block::AIR);
         list($pos1, $pos2) = self::minmax($pos1, $pos2);
         for ($x = $pos1->x; $x >= $pos2->x; $x--) for ($y = $pos1->y; $y >= $pos2->y; $y--) for ($z = $pos1->z; $z >= $pos2->z; $z--) {
             $level->setBlockIdAt($x, $y, $z, $block->getId());
@@ -49,7 +50,7 @@ class BuildingUtils{
      * @return void
      */
     public static function fillRandom(ChunkManager $level, Vector3 $pos1, Vector3 $pos2, Block $block = null, Random $random = null, $randMax = 3){
-        if ($block == null) $block = Block::get(Block::AIR);
+        if ($block == null) $block = BlockFactory::get(Block::AIR);
         list($pos1, $pos2) = self::minmax($pos1, $pos2);
         for ($x = $pos1->x; $x >= $pos2->x; $x--) for ($y = $pos1->y; $y >= $pos2->y; $y--) for ($z = $pos1->z; $z >= $pos2->z; $z--) if ($random !== null ? $random->nextBoundedInt($randMax) == 0 : rand(0, $randMax) == 0) {
             $level->setBlockIdAt($x, $y, $z, $block->getId());

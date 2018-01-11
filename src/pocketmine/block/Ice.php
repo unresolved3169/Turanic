@@ -59,7 +59,7 @@ class Ice extends Transparent{
 
 	public function onBreak(Item $item, Player $player = null) : bool{
 		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) === 0){
-			$this->getLevel()->setBlock($this, Block::get(Block::WATER), true);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER), true);
 		}
 		return true;
 	}

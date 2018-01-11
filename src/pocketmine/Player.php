@@ -24,6 +24,7 @@ namespace pocketmine;
 
 use pocketmine\block\Bed;
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\CommandBlock;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
@@ -2646,7 +2647,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
                 $block = $target->getSide($packet->face);
                 if ($block->getId() === Block::FIRE) {
-                    $this->level->setBlock($block, Block::get(Block::AIR));
+                    $this->level->setBlock($block, BlockFactory::get(Block::AIR));
                     break;
                 }
 
@@ -4266,7 +4267,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             if($block instanceof CommandBlock){
                 $tile = $this->level->getTile($block);
                 if(!$tile instanceof TileCommandBlock) return false;
-                $replace = Block::get($tile->getIdByBlockType($packet->commandBlockMode), $block->getDamage());
+                $replace = BlockFactory::get($tile->getIdByBlockType($packet->commandBlockMode), $block->getDamage());
                 if($packet->isConditional){
                     if($replace->getDamage() < 8){
                         $replace->setDamage($replace->getDamage() + 8);

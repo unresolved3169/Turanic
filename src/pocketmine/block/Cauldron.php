@@ -77,7 +77,7 @@ class Cauldron extends Solid {
 	}
 
 	public function update(){//umm... right update method...?
-		$this->getLevel()->setBlock($this, Block::get($this->id, $this->meta + 1), true);
+		$this->getLevel()->setBlock($this, BlockFactory::get($this->id, $this->meta + 1), true);
 		$this->getLevel()->setBlock($this, $this, true);//Undo the damage value
 	}
 

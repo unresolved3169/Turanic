@@ -24,16 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Sign extends Item {
-	/**
-	 * Sign constructor.
-	 *
-	 * @param int $meta
-	 */
+
 	public function __construct(int $meta = 0){
-		$this->block = Block::get(Item::SIGN_POST);
+		$this->block = BlockFactory::get(Item::SIGN_POST);
 		parent::__construct(self::SIGN, 0, "Sign");
 	}
 

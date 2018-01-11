@@ -26,6 +26,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
@@ -53,7 +54,7 @@ class Bucket extends Item implements Consumable {
     }
 
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
-        $resultBlock = Block::get($this->meta);
+        $resultBlock = BlockFactory::get($this->meta);
 
         if($resultBlock instanceof Air){
             if($blockClicked instanceof Liquid and $blockClicked->getDamage() === 0){
@@ -63,7 +64,7 @@ class Bucket extends Item implements Consumable {
                 $resultItem->setDamage($blockClicked->getFlowingForm()->getId());
                 $player->getServer()->getPluginManager()->callEvent($ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem));
                 if(!$ev->isCancelled()){
-                    $player->getLevel()->setBlock($blockClicked, Block::get(Block::AIR), true, true);
+                    $player->getLevel()->setBlock($blockClicked, BlockFactory::get(Block::AIR), true, true);
                     $player->getLevel()->broadcastLevelSoundEvent($blockClicked->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
                     if($player->isSurvival()){
                         if($stack->getCount() === 0){

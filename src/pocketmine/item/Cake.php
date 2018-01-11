@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Cake extends Item {
 	/**
@@ -34,7 +35,7 @@ class Cake extends Item {
 	 * @param int $count
 	 */
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(Item::CAKE_BLOCK);
+		$this->block = BlockFactory::get(Item::CAKE_BLOCK);
 		parent::__construct(self::CAKE, 0, "Cake");
 	}
 

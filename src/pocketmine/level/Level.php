@@ -412,7 +412,7 @@ class Level implements ChunkManager, Metadatable{
 
         $this->randomTickBlocks = new \SplFixedArray(256);
         foreach($this->randomTickBlocks as $id => $null){
-            $block = Block::get($id); //Make sure it's a copy
+            $block = BlockFactory::get($id); //Make sure it's a copy
             if(!isset($dontTickBlocks[$id]) and $block->ticksRandomly()){
                 $this->randomTickBlocks[$id] = $block;
             }
@@ -993,7 +993,7 @@ class Level implements ChunkManager, Metadatable{
     }
 
     public function addRandomTickedBlock(int $id){
-        $this->randomTickBlocks[$id] = Block::get($id);
+        $this->randomTickBlocks[$id] = BlockFactory::get($id);
     }
 
     public function removeRandomTickedBlock(int $id){
@@ -1821,7 +1821,7 @@ class Level implements ChunkManager, Metadatable{
     private function destroyBlockInternal(Block $target, Item $item, $player = null, bool $createParticles = false){
         $above = $this->getBlockAt($target->x, $target->y + 1, $target->z);
         if($above->getId() === Block::FIRE){ //TODO: this should be done in Fire's onUpdate(), not with this hack
-            $this->setBlock($above, Block::get(Block::AIR), true);
+            $this->setBlock($above, BlockFactory::get(Block::AIR), true);
         }
 
         if($createParticles){

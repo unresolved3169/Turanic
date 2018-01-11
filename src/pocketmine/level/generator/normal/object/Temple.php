@@ -3,6 +3,7 @@
 namespace pocketmine\level\generator\normal\object;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\object\PopulatorObject;
 use pocketmine\math\Vector3;
@@ -88,25 +89,25 @@ class Temple extends PopulatorObject{
     public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
         echo "temple on $x $y $z" . PHP_EOL;
         // Clearing space...
-        BuildingUtils::fill($level, new Vector3($x + 10, $y + 1, $z + 10), new Vector3($x - 10, $y + 2, $z - 10), Block::get(Block::AIR));
+        BuildingUtils::fill($level, new Vector3($x + 10, $y + 1, $z + 10), new Vector3($x - 10, $y + 2, $z - 10), BlockFactory::get(Block::AIR));
         // First, build a pyramid.
         $this->level = $level;
         $firstPos = new Vector3($x + 10, $y, $z + 10);
         $sndPos = new Vector3($x - 10, $y, $z - 10);
         for ($i = 0; $i <= 9; $i++) {
             // Building diagonal sides
-            BuildingUtils::walls($level, $firstPos->add(-$i, $i, -$i), $sndPos->add($i, $i, $i), Block::get(Block::SANDSTONE));
+            BuildingUtils::walls($level, $firstPos->add(-$i, $i, -$i), $sndPos->add($i, $i, $i), BlockFactory::get(Block::SANDSTONE));
         }
 
         // Floor top
-        BuildingUtils::fill($level, new Vector3($x - 5, $y + 4, $z - 5), new Vector3($x + 5, $y + 4, $z + 5), Block::get(Block::SANDSTONE));
+        BuildingUtils::fill($level, new Vector3($x - 5, $y + 4, $z - 5), new Vector3($x + 5, $y + 4, $z + 5), BlockFactory::get(Block::SANDSTONE));
         // Creating hole
-        BuildingUtils::fill($level, new Vector3($x - 1, $y - 11, $z - 1), new Vector3($x + 1, $y + 4, $z + 1), Block::get(Block::AIR));
+        BuildingUtils::fill($level, new Vector3($x - 1, $y - 11, $z - 1), new Vector3($x + 1, $y + 4, $z + 1), BlockFactory::get(Block::AIR));
         // Hole walls
-        BuildingUtils::walls($level, new Vector3($x - 2, $y - 1, $z - 2), new Vector3($x + 2, $y - 8, $z + 2), Block::get(Block::SANDSTONE));
+        BuildingUtils::walls($level, new Vector3($x - 2, $y - 1, $z - 2), new Vector3($x + 2, $y - 8, $z + 2), BlockFactory::get(Block::SANDSTONE));
 
         //Floor bottom
-        BuildingUtils::fill($level, new Vector3($x - 9, $y, $z - 9), new Vector3($x + 9, $y, $z + 9), Block::get(Block::SANDSTONE));
+        BuildingUtils::fill($level, new Vector3($x - 9, $y, $z - 9), new Vector3($x + 9, $y, $z + 9), BlockFactory::get(Block::SANDSTONE));
         // Floor pattern
         for ($i = -2; $i <= 1; $i++) {//straight
             $xextra = ($i + 1) % 2;
@@ -164,9 +165,9 @@ class Temple extends PopulatorObject{
                 $this->placeTower($x + 8, $y, $z + 8, self::DIRECTION_PLUSX, self::DIRECTION_PLUSZ);
                 $this->placeTower($x + 8, $y, $z - 8, self::DIRECTION_PLUSX, self::DIRECTION_MINZ);
                 // Creating rectangular parallelepiped of sandstone.
-                BuildingUtils::fill($level, new Vector3($x + 6, $y + 1, $z - 6), new Vector3($x + 9, $y + 4, $z + 6), Block::get(Block::SANDSTONE));
+                BuildingUtils::fill($level, new Vector3($x + 6, $y + 1, $z - 6), new Vector3($x + 9, $y + 4, $z + 6), BlockFactory::get(Block::SANDSTONE));
                 // Creating a path to the entrance
-                BuildingUtils::fill($level, new Vector3($x + 6, $y + 1, $z - 1), new Vector3($x + 9, $y + 4, $z + 1), Block::get(Block::AIR));//this clears the entrance
+                BuildingUtils::fill($level, new Vector3($x + 6, $y + 1, $z - 1), new Vector3($x + 9, $y + 4, $z + 1), BlockFactory::get(Block::AIR));//this clears the entrance
                 // Creating path to towers.
                 for ($yy = $y + 1; $yy <= $y + 2; $yy++)
                     for ($zz = $z - 6; $zz <= $z + 6; $zz++)
@@ -248,14 +249,14 @@ class Temple extends PopulatorObject{
                 $this->placeTower($x + 8, $y, $z + 8, self::DIRECTION_PLUSZ, self::DIRECTION_PLUSX);
                 $this->placeTower($x - 8, $y, $z + 8, self::DIRECTION_PLUSZ, self::DIRECTION_MINX);
                 // Creating rectangular parallelepiped of sandstone.
-                BuildingUtils::fill($level, new Vector3($x - 6, $y + 1, $z + 6), new Vector3($x + 6, $y + 4, $z + 9), Block::get(Block::SANDSTONE));
+                BuildingUtils::fill($level, new Vector3($x - 6, $y + 1, $z + 6), new Vector3($x + 6, $y + 4, $z + 9), BlockFactory::get(Block::SANDSTONE));
                 // Creating a path to the entrance
                 for ($xx = $x - 1; $xx <= $x + 1; $xx++)
                     for ($yy = $y + 1; $yy <= $y + 4; $yy++)
                         for ($zz = $z + 6; $zz <= $z + 9; $zz++)
                             $this->placeBlock($xx, $yy, $zz, 0);
                 // Creating path to towers.
-                BuildingUtils::fill($level, new Vector3($x - 1, $y + 1, $z + 6), new Vector3($x + 1, $y + 4, $z + 9), Block::get(Block::AIR));
+                BuildingUtils::fill($level, new Vector3($x - 1, $y + 1, $z + 6), new Vector3($x + 1, $y + 4, $z + 9), BlockFactory::get(Block::AIR));
                 // Door additional blocks
                 for ($yy = $y + 1; $yy <= $y + 4; $yy++) {
                     $this->placeBlock($x - 2, $yy, $z + 6);
@@ -288,9 +289,9 @@ class Temple extends PopulatorObject{
                 $this->placeTower($x + 8, $y, $z - 8, self::DIRECTION_MINZ, self::DIRECTION_PLUSX);
                 $this->placeTower($x - 8, $y, $z - 8, self::DIRECTION_MINZ, self::DIRECTION_MINX);
                 // Creating rectangular parallelepiped of sandstone.
-                BuildingUtils::fill($level, new Vector3($x - 6, $y + 1, $z - 6), new Vector3($x + 6, $y + 4, $z - 9), Block::get(Block::SANDSTONE));
+                BuildingUtils::fill($level, new Vector3($x - 6, $y + 1, $z - 6), new Vector3($x + 6, $y + 4, $z - 9), BlockFactory::get(Block::SANDSTONE));
                 // Creating a path to the entrance
-                BuildingUtils::fill($level, new Vector3($x - 1, $y + 1, $z - 6), new Vector3($x + 1, $y + 4, $z - 9), Block::get(Block::AIR));
+                BuildingUtils::fill($level, new Vector3($x - 1, $y + 1, $z - 6), new Vector3($x + 1, $y + 4, $z - 9), BlockFactory::get(Block::AIR));
                 // Creating path to towers.
                 for ($yy = $y + 1; $yy <= $y + 2; $yy++)
                     for ($xx = $x - 6; $xx <= $x + 6; $xx++)
@@ -348,9 +349,9 @@ class Temple extends PopulatorObject{
      * @return void
      */
     public function placeTower($x, $y, $z, $direction1 = self::DIRECTION_PLUSX, $direction2 = self::DIRECTION_PLUSZ){
-        BuildingUtils::walls($this->level, new Vector3($x + 2, $y, $z + 2), new Vector3($x - 2, $y + 8, $z - 2), Block::get(Block::SANDSTONE));
+        BuildingUtils::walls($this->level, new Vector3($x + 2, $y, $z + 2), new Vector3($x - 2, $y + 8, $z - 2), BlockFactory::get(Block::SANDSTONE));
         //Clear insides
-        BuildingUtils::fill($this->level, new Vector3($x + 1, $y + 1, $z + 1), new Vector3($x - 1, $y + 7, $z - 1), Block::get(Block::AIR));
+        BuildingUtils::fill($this->level, new Vector3($x + 1, $y + 1, $z + 1), new Vector3($x - 1, $y + 7, $z - 1), BlockFactory::get(Block::AIR));
         switch ($direction1) {
             case self::DIRECTION_PLUSX : // x+ (0)
                 // Stairs
@@ -389,8 +390,8 @@ class Temple extends PopulatorObject{
                         $this->placeBlock($x + 1, $y + 7, $z + 2, Block::SANDSTONE, 2);
 
                         // Building entrance to second floor.
-                        BuildingUtils::fill($this->level, new Vector3($x - 9, $y + 5, $z - 4), new Vector3($x - 7, $y + 7, $z - 5), Block::get(Block::SANDSTONE, 2));
-                        BuildingUtils::fill($this->level, new Vector3($x - 8, $y + 5, $z - 4), new Vector3($x - 8, $y + 6, $z - 5), Block::get(Block::AIR));
+                        BuildingUtils::fill($this->level, new Vector3($x - 9, $y + 5, $z - 4), new Vector3($x - 7, $y + 7, $z - 5), BlockFactory::get(Block::SANDSTONE, 2));
+                        BuildingUtils::fill($this->level, new Vector3($x - 8, $y + 5, $z - 4), new Vector3($x - 8, $y + 6, $z - 5), BlockFactory::get(Block::AIR));
                         break;
                     case self::DIRECTION_MINZ :
                         for ($zz = $z - 1; $zz <= $z; $zz++) {
@@ -428,8 +429,8 @@ class Temple extends PopulatorObject{
                 }
 
                 // Building entrance to second floor.
-                BuildingUtils::fill($this->level, new Vector3($x - 9, $y + 5, $z + 4), new Vector3($x - 7, $y + 7, $z + 5), Block::get(Block::SANDSTONE, 2));
-                BuildingUtils::fill($this->level, new Vector3($x - 8, $y + 5, $z + 4), new Vector3($x - 8, $y + 6, $z + 5), Block::get(Block::AIR));
+                BuildingUtils::fill($this->level, new Vector3($x - 9, $y + 5, $z + 4), new Vector3($x - 7, $y + 7, $z + 5), BlockFactory::get(Block::SANDSTONE, 2));
+                BuildingUtils::fill($this->level, new Vector3($x - 8, $y + 5, $z + 4), new Vector3($x - 8, $y + 6, $z + 5), BlockFactory::get(Block::AIR));
 
                 // Finishing stairs system
                 $this->placeBlock($x - 2, $y + 3, $z, Block::SANDSTONE_STAIRS, 1);
@@ -438,7 +439,7 @@ class Temple extends PopulatorObject{
                 $this->placeBlock($x - 2, $y + 5, $z, Block::AIR);
                 $this->placeBlock($x - 2, $y + 6, $z, Block::AIR);
                 // Making path from stairs to first floor.
-                BuildingUtils::fill($this->level, new Vector3($x - 3, $y, $z + 1 + ($direction2 === self::DIRECTION_PLUSZ ? 2 : 0)), new Vector3($x - 8, $y + 4, $z - 1 + ($direction2 === self::DIRECTION_MINZ ? -2 : 0)), Block::get(Block::SANDSTONE));
+                BuildingUtils::fill($this->level, new Vector3($x - 3, $y, $z + 1 + ($direction2 === self::DIRECTION_PLUSZ ? 2 : 0)), new Vector3($x - 8, $y + 4, $z - 1 + ($direction2 === self::DIRECTION_MINZ ? -2 : 0)), BlockFactory::get(Block::SANDSTONE));
 
                 // Other side pattern
                 foreach ([
@@ -503,8 +504,8 @@ class Temple extends PopulatorObject{
                         $this->placeBlock($x + 1, $y + 7, $z + 2, Block::SANDSTONE, 2);
 
                         // Building entrance to second floor.
-                        BuildingUtils::fill($this->level, new Vector3($x + 9, $y + 5, $z - 4), new Vector3($x + 7, $y + 7, $z - 5), Block::get(Block::SANDSTONE, 2));
-                        BuildingUtils::fill($this->level, new Vector3($x + 8, $y + 5, $z - 4), new Vector3($x + 8, $y + 6, $z - 5), Block::get(Block::AIR));
+                        BuildingUtils::fill($this->level, new Vector3($x + 9, $y + 5, $z - 4), new Vector3($x + 7, $y + 7, $z - 5), BlockFactory::get(Block::SANDSTONE, 2));
+                        BuildingUtils::fill($this->level, new Vector3($x + 8, $y + 5, $z - 4), new Vector3($x + 8, $y + 6, $z - 5), BlockFactory::get(Block::AIR));
                         break;
                     case self::DIRECTION_MINZ :
                         for ($zz = $z - 1; $zz <= $z; $zz++) {
@@ -540,8 +541,8 @@ class Temple extends PopulatorObject{
                         $this->placeBlock($x + 1, $y + 6, $z - 2, Block::SANDSTONE, 2);
 
                         // Building entrance to second floor.
-                        BuildingUtils::fill($this->level, new Vector3($x + 9, $y + 5, $z + 4), new Vector3($x + 7, $y + 7, $z + 5), Block::get(Block::SANDSTONE, 2));
-                        BuildingUtils::fill($this->level, new Vector3($x + 8, $y + 5, $z + 4), new Vector3($x + 8, $y + 6, $z + 5), Block::get(Block::AIR));
+                        BuildingUtils::fill($this->level, new Vector3($x + 9, $y + 5, $z + 4), new Vector3($x + 7, $y + 7, $z + 5), BlockFactory::get(Block::SANDSTONE, 2));
+                        BuildingUtils::fill($this->level, new Vector3($x + 8, $y + 5, $z + 4), new Vector3($x + 8, $y + 6, $z + 5), BlockFactory::get(Block::AIR));
                         break;
                 }
 
@@ -552,7 +553,7 @@ class Temple extends PopulatorObject{
                 $this->placeBlock($x + 2, $y + 5, $z, Block::AIR);
                 $this->placeBlock($x + 2, $y + 6, $z, Block::AIR);
                 // Making path from stairs to first floor.
-                BuildingUtils::fill($this->level, new Vector3($x + 3, $y, $z + 1 + ($direction2 === self::DIRECTION_PLUSZ ? 2 : 0)), new Vector3($x + 8, $y + 4, $z - 1 + ($direction2 === self::DIRECTION_MINZ ? -2 : 0)), Block::get(Block::SANDSTONE));
+                BuildingUtils::fill($this->level, new Vector3($x + 3, $y, $z + 1 + ($direction2 === self::DIRECTION_PLUSZ ? 2 : 0)), new Vector3($x + 8, $y + 4, $z - 1 + ($direction2 === self::DIRECTION_MINZ ? -2 : 0)), BlockFactory::get(Block::SANDSTONE));
 
                 // Other side pattern
                 foreach ([
@@ -616,8 +617,8 @@ class Temple extends PopulatorObject{
                         $this->placeBlock($x + 2, $y + 7, $z, Block::SANDSTONE, 2);
                         $this->placeBlock($x + 2, $y + 7, $z + 1, Block::SANDSTONE, 2);
                         // Building entrance to second floor.
-                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z - 9), new Vector3($x - 5, $y + 7, $z - 7), Block::get(Block::SANDSTONE, 2));
-                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z - 8), new Vector3($x - 5, $y + 6, $z - 8), Block::get(Block::AIR));
+                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z - 9), new Vector3($x - 5, $y + 7, $z - 7), BlockFactory::get(Block::SANDSTONE, 2));
+                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z - 8), new Vector3($x - 5, $y + 6, $z - 8), BlockFactory::get(Block::AIR));
                         break;
                     case self::DIRECTION_MINX :
                         for ($xx = $x - 1; $xx <= $x; $xx++) {
@@ -652,8 +653,8 @@ class Temple extends PopulatorObject{
                         $this->placeBlock($x - 2, $y + 7, $z, Block::SANDSTONE, 2);
                         $this->placeBlock($x - 2, $y + 7, $z + 1, Block::SANDSTONE, 2);
                         // Building entrance to second floor.
-                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z - 9), new Vector3($x + 5, $y + 7, $z - 7), Block::get(Block::SANDSTONE, 2));
-                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z - 8), new Vector3($x + 5, $y + 6, $z - 8), Block::get(Block::AIR));
+                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z - 9), new Vector3($x + 5, $y + 7, $z - 7), BlockFactory::get(Block::SANDSTONE, 2));
+                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z - 8), new Vector3($x + 5, $y + 6, $z - 8), BlockFactory::get(Block::AIR));
                         break;
                 }
 
@@ -664,7 +665,7 @@ class Temple extends PopulatorObject{
                 $this->placeBlock($x, $y + 5, $z - 2, Block::AIR);
                 $this->placeBlock($x, $y + 6, $z - 2, Block::AIR);
                 // Making path from stairs to first floor.
-                BuildingUtils::fill($this->level, new Vector3($x + 1 + ($direction2 === self::DIRECTION_PLUSX ? 2 : 0), $y, $z - 3), new Vector3($x - 1 + ($direction2 === self::DIRECTION_MINX ? -2 : 0), $y + 4, $z - 8), Block::get(Block::SANDSTONE));
+                BuildingUtils::fill($this->level, new Vector3($x + 1 + ($direction2 === self::DIRECTION_PLUSX ? 2 : 0), $y, $z - 3), new Vector3($x - 1 + ($direction2 === self::DIRECTION_MINX ? -2 : 0), $y + 4, $z - 8), BlockFactory::get(Block::SANDSTONE));
 
                 // Other side pattern
                 foreach ([
@@ -728,8 +729,8 @@ class Temple extends PopulatorObject{
                         $this->placeBlock($x + 2, $y + 7, $z, Block::SANDSTONE, 2);
                         $this->placeBlock($x + 2, $y + 7, $z + 1, Block::SANDSTONE, 2);
                         // Building entrance to second floor.
-                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z + 9), new Vector3($x - 5, $y + 7, $z + 7), Block::get(Block::SANDSTONE, 2));
-                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z + 8), new Vector3($x - 5, $y + 6, $z + 8), Block::get(Block::AIR));
+                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z + 9), new Vector3($x - 5, $y + 7, $z + 7), BlockFactory::get(Block::SANDSTONE, 2));
+                        BuildingUtils::fill($this->level, new Vector3($x - 4, $y + 5, $z + 8), new Vector3($x - 5, $y + 6, $z + 8), BlockFactory::get(Block::AIR));
                         break;
                     case self::DIRECTION_MINX :
                         for ($xx = $x - 1; $xx <= $x; $xx++) {
@@ -764,8 +765,8 @@ class Temple extends PopulatorObject{
                         $this->placeBlock($x - 2, $y + 7, $z, Block::SANDSTONE, 2);
                         $this->placeBlock($x - 2, $y + 7, $z + 1, Block::SANDSTONE, 2);
                         // Building entrance to second floor.
-                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z + 9), new Vector3($x + 5, $y + 7, $z + 7), Block::get(Block::SANDSTONE, 2));
-                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z + 8), new Vector3($x + 5, $y + 6, $z + 8), Block::get(Block::AIR));
+                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z + 9), new Vector3($x + 5, $y + 7, $z + 7), BlockFactory::get(Block::SANDSTONE, 2));
+                        BuildingUtils::fill($this->level, new Vector3($x + 4, $y + 5, $z + 8), new Vector3($x + 5, $y + 6, $z + 8), BlockFactory::get(Block::AIR));
                         break;
                 }
 
@@ -776,7 +777,7 @@ class Temple extends PopulatorObject{
                 $this->placeBlock($x, $y + 5, $z + 2, Block::AIR);
                 $this->placeBlock($x, $y + 6, $z + 2, Block::AIR);
                 // Making path from stairs to first floor.
-                BuildingUtils::fill($this->level, new Vector3($x + 1 + ($direction2 === self::DIRECTION_PLUSX ? 2 : 0), $y, $z + 3), new Vector3($x - 1 + ($direction2 === self::DIRECTION_MINX ? -2 : 0), $y + 4, $z + 8), Block::get(Block::SANDSTONE));
+                BuildingUtils::fill($this->level, new Vector3($x + 1 + ($direction2 === self::DIRECTION_PLUSX ? 2 : 0), $y, $z + 3), new Vector3($x - 1 + ($direction2 === self::DIRECTION_MINX ? -2 : 0), $y + 4, $z + 8), BlockFactory::get(Block::SANDSTONE));
 
                 // Other side pattern
                 foreach ([
@@ -806,7 +807,7 @@ class Temple extends PopulatorObject{
         }
 
         // Making top
-        BuildingUtils::top($this->level, new Vector3($x - 1, $y + 9, $z - 1), new Vector3($x + 1, $y, $z + 1), Block::get(Block::SANDSTONE));
+        BuildingUtils::top($this->level, new Vector3($x - 1, $y + 9, $z - 1), new Vector3($x + 1, $y, $z + 1), BlockFactory::get(Block::SANDSTONE));
         $this->placeBlock($x - 2, $y + 9, $z, Block::SANDSTONE_STAIRS, 0);
         $this->placeBlock($x + 2, $y + 9, $z, Block::SANDSTONE_STAIRS, 1);
         $this->placeBlock($x, $y + 9, $z - 2, Block::SANDSTONE_STAIRS, 2);

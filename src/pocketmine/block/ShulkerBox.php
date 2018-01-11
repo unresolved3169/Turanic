@@ -95,7 +95,7 @@ class ShulkerBox extends Transparent {
             $this->getLevel()->dropItem($this->asVector3(), $item);
             $t->getInventory()->clearAll(); // dont drop the items
         }
-        $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
+        $this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true, true);
 
         return true;
     }

@@ -183,8 +183,8 @@ class Bed extends Transparent {
             $meta = (($player instanceof Player ? $player->getDirection() : 0) - 1) & 0x03;
             $next = $this->getSide(self::getOtherHalfSide($meta));
             if($next->canBeReplaced() === true and !$next->getSide(Vector3::SIDE_DOWN)->isTransparent()){
-                $this->getLevel()->setBlock($blockReplace, Block::get($this->id, $meta), true, true);
-                $this->getLevel()->setBlock($next, Block::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
+                $this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->id, $meta), true, true);
+                $this->getLevel()->setBlock($next, BlockFactory::get($this->id, $meta | self::BITFLAG_HEAD), true, true);
 
                 Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($this, $face, $item, $player));
                 Tile::createTile(Tile::BED, $this->getLevel(), TileBed::createNBT($next, $face, $item, $player));
@@ -196,19 +196,20 @@ class Bed extends Transparent {
         return false;
 	}
 
-	public function getDrops(Item $item) : array{
-        if($this->isHeadPart()) {
+	public function getDropsForCompatibleTool(Item $item) : array{
+        if($this->isHeadPart()){
             $tile = $this->getLevel()->getTile($this);
-            if ($tile instanceof TileBed) {
+            if($tile instanceof TileBed){
                 return [
                     Item::get($this->getItemId(), $tile->getColor())
                 ];
-            } else {
+            }else{
                 return [
-                    Item::get($this->getItemId(), 14) // red
+                    Item::get($this->getItemId(), 14) //Red
                 ];
             }
         }
+
         return [];
 	}
 

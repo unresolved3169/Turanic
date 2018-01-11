@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\entity\Hanging;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item as ItemItem;
@@ -57,7 +58,7 @@ class Painting extends Hanging {
 	public function attack(EntityDamageEvent $source){
 		parent::attack($source);
 		if($source->isCancelled()) return false;
-		$this->level->addParticle(new DestroyBlockParticle($this->add(0.5), Block::get(Block::LADDER)));
+		$this->level->addParticle(new DestroyBlockParticle($this->add(0.5), BlockFactory::get(Block::LADDER)));
 		$this->kill();
 		return true;
 	}

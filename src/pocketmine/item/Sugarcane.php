@@ -24,16 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Sugarcane extends Item {
-	/**
-	 * Sugarcane constructor.
-	 *
-	 * @param int $meta
-	 */
+
 	public function __construct(int $meta = 0){
-		$this->block = Block::get(Item::SUGARCANE_BLOCK);
+		$this->block = BlockFactory::get(Item::SUGARCANE_BLOCK);
 		parent::__construct(self::SUGARCANE, 0, "Sugar Cane");
 	}
 }

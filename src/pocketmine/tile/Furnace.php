@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\tile;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\FurnaceInventory;
@@ -134,7 +135,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable 
         $this->namedtag->setShort(self::TAG_BURN_TIME, $ev->getBurnTime());
         $this->namedtag->setShort(self::TAG_BURN_TICKS, 0);
 		if($this->getBlock()->getId() === Block::FURNACE){
-			$this->getLevel()->setBlock($this, Block::get(Block::BURNING_FURNACE, $this->getBlock()->getDamage()), true);
+			$this->getLevel()->setBlock($this, BlockFactory::get(Block::BURNING_FURNACE, $this->getBlock()->getDamage()), true);
 		}
 
         if($this->namedtag->getShort(self::TAG_BURN_TIME) > 0 and $ev->isBurning()){
@@ -190,7 +191,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable 
             $ret = true;
         }else{
             if($this->getBlock()->getId() === Block::BURNING_FURNACE){
-                $this->getLevel()->setBlock($this, Block::get(Block::FURNACE, $this->getBlock()->getDamage()), true);
+                $this->getLevel()->setBlock($this, BlockFactory::get(Block::FURNACE, $this->getBlock()->getDamage()), true);
             }
             $this->namedtag->setShort(self::TAG_BURN_TIME, 0);
             $this->namedtag->setShort(self::TAG_COOK_TIME, 0);

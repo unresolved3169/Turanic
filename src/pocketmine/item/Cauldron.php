@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Cauldron extends Item {
 
@@ -34,7 +35,7 @@ class Cauldron extends Item {
 	 * @param int $meta
 	 */
 	public function __construct(int $meta = 0){
-		$this->block = Block::get(Block::CAULDRON_BLOCK);
+		$this->block = BlockFactory::get(Block::CAULDRON_BLOCK);
 		parent::__construct(self::CAULDRON, $meta, "Cauldron");
 	}
 

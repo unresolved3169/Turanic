@@ -24,7 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tile;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\inventory\VirtualInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
@@ -46,7 +46,7 @@ class VirtualHolder extends Spawnable implements InventoryHolder, Container, Nam
         parent::__construct($level, $nbt);
         $this->inventory = new VirtualInventory($this);
         $this->loadItems();
-        $this->cevir = Block::get($this->getBlock()->getId(), $this->getBlock()->getDamage());
+        $this->cevir = BlockFactory::get($this->getBlock()->getId(), $this->getBlock()->getDamage());
         return $this;
     }
 

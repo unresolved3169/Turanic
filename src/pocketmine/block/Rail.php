@@ -121,7 +121,7 @@ class Rail extends Flowable {
 					break;
 			}
 		}
-		$this->level->setBlock($this, Block::get($this->id, $this->meta), true, true);
+		$this->level->setBlock($this, BlockFactory::get($this->id, $this->meta), true, true);
 		return true;
 	}
 
@@ -178,7 +178,7 @@ class Rail extends Flowable {
 				break;
 		}
         if($this instanceof PoweredRail && $this->isPowered()) $this->meta += 8;
-		$this->level->setBlock($this, Block::get($this->id, $this->meta), true, true);
+		$this->level->setBlock($this, BlockFactory::get($this->id, $this->meta), true, true);
 		return true;
 	}
 

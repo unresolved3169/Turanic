@@ -126,7 +126,7 @@ class PoweredRail extends Rail {
 					break;
 			}
 		}
-		$this->level->setBlock($this, Block::get($this->id, $this->meta), true, true);
+		$this->level->setBlock($this, BlockFactory::get($this->id, $this->meta), true, true);
 		return true;
 	}
 
@@ -194,7 +194,7 @@ class PoweredRail extends Rail {
 				break;
 		}
 
-		$this->level->setBlock($this, Block::get($this->id, $this->meta), true, true);
+		$this->level->setBlock($this, BlockFactory::get($this->id, $this->meta), true, true);
 		return true;
 	}
 

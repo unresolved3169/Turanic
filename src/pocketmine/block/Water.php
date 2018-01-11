@@ -70,11 +70,11 @@ class Water extends Liquid {
 	}
 
     public function getStillForm(): Block{
-        return Block::get(Block::STILL_WATER, $this->meta);
+        return BlockFactory::get(Block::STILL_WATER, $this->meta);
     }
 
     public function getFlowingForm(): Block{
-        return Block::get(Block::FLOWING_WATER, $this->meta);
+        return BlockFactory::get(Block::FLOWING_WATER, $this->meta);
     }
 
     public function getBucketFillSound(): int{

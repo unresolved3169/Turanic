@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\Fire;
 use pocketmine\block\Portal;
 use pocketmine\block\Solid;
@@ -137,13 +138,13 @@ class FlintSteel extends Tool {
 		}
 
 		if($blockReplace->getId() === self::AIR and ($blockClicked instanceof Solid)){
-			$level->setBlock($blockReplace, Block::get(Block::FIRE), true);
+			$level->setBlock($blockReplace, BlockFactory::get(Block::FIRE), true);
 			$player->getLevel()->broadcastLevelSoundEvent($blockReplace->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_IGNITE);
 
 			/** @var Fire $block */
 			$block = $level->getBlock($blockReplace);
 			if($block->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() or $block->canNeighborBurn()){
-				$level->scheduleUpdate($block, $block->getTickRate() + mt_rand(0, 10));
+				$level->scheduleDelayedBlockUpdate($block, $block->getTickRate() + mt_rand(0, 10));
 				//	return true;
 			}
 

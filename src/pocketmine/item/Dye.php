@@ -22,6 +22,7 @@
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Dye extends Item {
 	const BLACK = 0;
@@ -52,7 +53,7 @@ class Dye extends Item {
 	 */
 	public function __construct(int $meta = 0){
 		if($meta === self::BROWN){
-			$this->block = Block::get(Item::COCOA_BLOCK);
+			$this->block = BlockFactory::get(Item::COCOA_BLOCK);
 			parent::__construct(self::DYE, self::BROWN, "Cocoa Beans");
 		}else{
 			parent::__construct(self::DYE, $meta, $this->getNameByMeta($meta));

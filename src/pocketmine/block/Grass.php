@@ -93,7 +93,7 @@ class Grass extends Solid {
                         continue;
                     }
 
-                    $this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($b = $this->level->getBlockAt($x, $y, $z), $this, Block::get(Block::GRASS)));
+                    $this->level->getServer()->getPluginManager()->callEvent($ev = new BlockSpreadEvent($b = $this->level->getBlockAt($x, $y, $z), $this, BlockFactory::get(Block::GRASS)));
                     if(!$ev->isCancelled()){
                         $this->level->setBlock($b, $ev->getNewState(), false, false);
                     }
@@ -114,12 +114,12 @@ class Grass extends Solid {
             return true;
         }elseif($item->isHoe()){
             $item->useOn($this);
-            $this->getLevel()->setBlock($this, Block::get(Block::FARMLAND));
+            $this->getLevel()->setBlock($this, BlockFactory::get(Block::FARMLAND));
 
             return true;
         }elseif($item->isShovel() and $this->getSide(Vector3::SIDE_UP)->getId() === Block::AIR){
             $item->useOn($this);
-            $this->getLevel()->setBlock($this, Block::get(Block::GRASS_PATH));
+            $this->getLevel()->setBlock($this, BlockFactory::get(Block::GRASS_PATH));
 
             return true;
         }

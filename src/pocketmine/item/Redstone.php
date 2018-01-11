@@ -24,17 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Redstone extends Item {
-	/**
-	 * Redstone constructor.
-	 *
-	 * @param int $meta
-	 * @param int $count
-	 */
+
 	public function __construct($meta = 0, $count = 1){
-		$this->block = Block::get(Item::REDSTONE_WIRE);
+		$this->block = BlockFactory::get(Item::REDSTONE_WIRE);
 		parent::__construct(self::REDSTONE, 0, "Redstone");
 	}
 

@@ -84,7 +84,7 @@ class Lava extends Liquid {
 
     protected function flowIntoBlock(Block $block, int $newFlowDecay){
         if($block instanceof Water){
-            $block->liquidCollide($this, Block::get(Block::STONE));
+            $block->liquidCollide($this, BlockFactory::get(Block::STONE));
         }else{
             parent::flowIntoBlock($block, $newFlowDecay);
         }
@@ -123,11 +123,11 @@ class Lava extends Liquid {
 	}
 
     public function getStillForm(): Block{
-        return Block::get(Block::STILL_LAVA, $this->meta);
+        return BlockFactory::get(Block::STILL_LAVA, $this->meta);
     }
 
     public function getFlowingForm(): Block{
-        return Block::get(Block::FLOWING_LAVA, $this->meta);
+        return BlockFactory::get(Block::FLOWING_LAVA, $this->meta);
     }
 
     public function getBucketFillSound() : int{

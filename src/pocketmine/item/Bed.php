@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Bed extends Item {
 
@@ -51,7 +52,7 @@ class Bed extends Item {
      * @param int $meta
      */
 	public function __construct(int $meta = self::WHITE_BED){
-		$this->block = Block::get(Item::BED_BLOCK, $meta);
+		$this->block = BlockFactory::get(Item::BED_BLOCK, $meta);
 		parent::__construct(self::BED, $meta, "Bed"); //TODO: Bed Names
 	}
 

@@ -252,9 +252,9 @@ abstract class Liquid extends Transparent {
                 if($newDecay !== $decay){
                     $decay = $newDecay;
                     if($decay < 0){
-                        $this->level->setBlock($this, Block::get(Block::AIR), true, true);
+                        $this->level->setBlock($this, BlockFactory::get(Block::AIR), true, true);
                     }else{
-                        $this->level->setBlock($this, Block::get($this->id, $decay), true, true);
+                        $this->level->setBlock($this, BlockFactory::get($this->id, $decay), true, true);
                         $this->level->scheduleDelayedBlockUpdate($this, $this->tickRate());
                     }
                 }
@@ -297,7 +297,7 @@ abstract class Liquid extends Transparent {
             if($block->getId() > 0){
                 $this->level->useBreakOn($block);
             }
-            $this->level->setBlock($block, Block::get($this->getId(), $newFlowDecay), true, true);
+            $this->level->setBlock($block, BlockFactory::get($this->getId(), $newFlowDecay), true, true);
             $this->level->scheduleDelayedBlockUpdate($block, $this->tickRate());
         }
     }

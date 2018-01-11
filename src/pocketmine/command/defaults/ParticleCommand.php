@@ -22,9 +22,11 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
-use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandSender;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
@@ -85,7 +87,7 @@ class ParticleCommand extends VanillaCommand {
 	 * @return bool
 	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -225,7 +227,7 @@ class ParticleCommand extends VanillaCommand {
 		}elseif(substr($name, 0, 11) === "blockcrack_"){
 			$d = explode("_", $name);
 			if(count($d) === 2){
-				return new TerrainParticle($pos, Block::get($d[1] & 0xff, $d[1] >> 12));
+				return new TerrainParticle($pos, BlockFactory::get($d[1] & 0xff, $d[1] >> 12));
 			}
 		}elseif(substr($name, 0, 10) === "blockdust_"){
 			$d = explode("_", $name);

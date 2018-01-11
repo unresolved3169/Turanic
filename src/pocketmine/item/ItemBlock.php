@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 /**
  * Class used for Items that can be Blocks
@@ -37,7 +38,7 @@ class ItemBlock extends Item {
      * @param int|null $itemId
      */
     public function __construct(int $blockId, int $meta = 0, int $itemId = null){
-        $this->block = Block::get($blockId, $meta & 0xf);
+        $this->block = BlockFactory::get($blockId, $meta & 0xf);
         parent::__construct($itemId ?? $this->block->getId(), $meta, $this->block->getName());
     }
 

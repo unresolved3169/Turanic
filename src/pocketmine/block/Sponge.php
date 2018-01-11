@@ -51,8 +51,8 @@ class Sponge extends Solid {
 				for($yy = -$range; $yy <= $range; $yy++){
 					for($zz = -$range; $zz <= $range; $zz++){
 						$block = $this->getLevel()->getBlock(new Vector3($this->x + $xx, $this->y + $yy, $this->z + $zz));
-						if($block->getId() === Block::WATER) $this->getLevel()->setBlock($block, Block::get(Block::AIR), true, true);
-						if($block->getId() === Block::STILL_WATER) $this->getLevel()->setBlock($block, Block::get(Block::AIR), true, true);
+						if($block->getId() === Block::WATER) $this->getLevel()->setBlock($block, BlockFactory::get(Block::AIR), true, true);
+						if($block->getId() === Block::STILL_WATER) $this->getLevel()->setBlock($block, BlockFactory::get(Block::AIR), true, true);
 					}
 				}
 			}
@@ -77,7 +77,7 @@ class Sponge extends Solid {
 					$blockWest === Block::WATER
 				){
 					$this->absorbWater();
-					$this->getLevel()->setBlock($this, Block::get(Block::SPONGE, 1), true, true);
+					$this->getLevel()->setBlock($this, BlockFactory::get(Block::SPONGE, 1), true, true);
 					return Level::BLOCK_UPDATE_NORMAL;
 				}
 				if($blockAbove === Block::STILL_WATER ||
@@ -88,7 +88,7 @@ class Sponge extends Solid {
 					$blockWest === Block::STILL_WATER
 				){
 					$this->absorbWater();
-					$this->getLevel()->setBlock($this, Block::get(Block::SPONGE, 1), true, true);
+					$this->getLevel()->setBlock($this, BlockFactory::get(Block::SPONGE, 1), true, true);
 					return Level::BLOCK_UPDATE_NORMAL;
 				}
 			}

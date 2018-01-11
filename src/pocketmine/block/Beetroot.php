@@ -38,7 +38,7 @@ class Beetroot extends Crops {
 		return "Beetroot Block";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->meta >= 0x07){
             return [
                 Item::get(Item::BEETROOT),
@@ -47,7 +47,7 @@ class Beetroot extends Crops {
 		}
 
 		return [
-		    Item::get(Item::BEETROOT_SEEDS, 0, 1)
+		    Item::get(Item::BEETROOT_SEEDS)
         ];
 	}
 

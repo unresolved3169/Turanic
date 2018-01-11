@@ -3,6 +3,7 @@
 namespace pocketmine\level\generator\ender;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\level\ChunkManager;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\ender\populator\EnderPilar;
@@ -92,7 +93,7 @@ class Ender extends Generator{
 
                 $biome = Biome::getBiome(Biome::END);
                 $biome->setGroundCover([
-                    Block::get(Block::OBSIDIAN, 0)
+                    BlockFactory::get(Block::OBSIDIAN, 0)
 
                 ]);
                 $chunk->setBiomeId($x, $z, $biome->getId());

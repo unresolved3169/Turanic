@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 
 class Skull extends Item {
     const SKELETON = 0;
@@ -34,13 +35,8 @@ class Skull extends Item {
     const CREEPER = 4;
     const DRAGON = 5;
 
-    /**
-     * Skull constructor.
-     *
-     * @param int $meta
-     */
     public function __construct(int $meta = 0){
-        $this->block = Block::get(Block::SKULL_BLOCK);
+        $this->block = BlockFactory::get(Block::SKULL_BLOCK);
         parent::__construct(self::SKULL, $meta, "Skull");
     }
 

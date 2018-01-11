@@ -73,7 +73,7 @@ class Farmland extends Solid {
 
 	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL and $this->getSide(Vector3::SIDE_UP)->isSolid()){
-            $this->level->setBlock($this, Block::get(Block::DIRT), true);
+            $this->level->setBlock($this, BlockFactory::get(Block::DIRT), true);
             return $type;
         }elseif($type === Level::BLOCK_UPDATE_RANDOM){
             if(!$this->canHydrate()){
@@ -81,7 +81,7 @@ class Farmland extends Solid {
                     $this->meta--;
                     $this->level->setBlock($this, $this, false, false);
                 }else{
-                    $this->level->setBlock($this, Block::get(Block::DIRT), false, true);
+                    $this->level->setBlock($this, BlockFactory::get(Block::DIRT), false, true);
                 }
 
                 return $type;

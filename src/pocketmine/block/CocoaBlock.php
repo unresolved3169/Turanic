@@ -101,7 +101,7 @@ class CocoaBlock extends Solid {
 					5 => 1,
 				];
 				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($blockReplace, Block::get(Item::COCOA_BLOCK, $this->meta), true);
+				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Item::COCOA_BLOCK, $this->meta), true);
 				return true;
 			}
 		}
