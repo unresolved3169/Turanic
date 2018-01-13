@@ -1950,7 +1950,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return true;
         }
 
-        if ($packet->identityPublicKey !== null) {
+        if ($packet->xuid != "") {
             $this->processLogin();
         }
 
