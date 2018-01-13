@@ -48,12 +48,8 @@ class Purpur extends Quartz {
         return $names[$this->getVariant()] ?? "Unknown";
     }
 
-    public function getDrops(Item $item) : array{
-        if($this->isCompatibleWithTool($item)){
-            return Block::getDrops($item);
-        }else{
-            return [];
-        }
+    public function getDropsForCompatibleTool(Item $item) : array{
+        return Block::getDrops($item);
     }
 
 }

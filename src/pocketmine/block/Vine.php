@@ -187,17 +187,15 @@ class Vine extends Flowable {
         return 0;
     }
 
-	public function getDrops(Item $item) : array{
-		if($item->isShears()){
-			return [
-				Item::get($this->getItemId())
-			];
-		}else{
-			return [];
-		}
-	}
+    public function getDrops(Item $item) : array{
+        if($item->getBlockToolType() & BlockToolType::TYPE_SHEARS){
+            return $this->getDropsForCompatibleTool($item);
+        }
 
-	public function getToolType() : int{
-		return BlockToolType::TYPE_AXE;
-	}
+        return [];
+    }
+
+    public function getToolType() : int{
+        return BlockToolType::TYPE_AXE;
+    }
 }

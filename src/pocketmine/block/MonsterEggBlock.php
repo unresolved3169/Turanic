@@ -47,7 +47,7 @@ class MonsterEggBlock extends Solid{
     }
 
     public function onBreak(Item $item, Player $player = null) : bool{
-        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) == 0){
+        if($item->getEnchantmentLevel(Enchantment::SILK_TOUCH) == 0){
             $sf = Entity::createEntity("Silverfish", $this->level, Entity::createBaseNBT($this));
             if($sf instanceof Silverfish){
                 $sf->spawnToAll();
@@ -56,11 +56,7 @@ class MonsterEggBlock extends Solid{
         return parent::onBreak($item, $player);
     }
 
-    public function getDrops(Item $item): array{
-        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-            return parent::getDrops($item);
-        }else{
-            return [];
-        }
+    public function getDropsForCompatibleTool(Item $item): array{
+        return [];
     }
 }

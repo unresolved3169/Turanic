@@ -58,7 +58,7 @@ class Bookshelf extends Solid {
         return 300;
     }
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			Item::get(Item::BOOK, 0, 3)
 		];

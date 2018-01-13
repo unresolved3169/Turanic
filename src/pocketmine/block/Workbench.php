@@ -51,7 +51,6 @@ class Workbench extends Solid {
 
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
-			if($player->getServer()->limitedCreative and $player->isCreative()) return true;
 			$player->setCraftingGrid(new BigCraftingGrid($player));
 		}
 

@@ -96,4 +96,8 @@ class SnowLayer extends Flowable{
             Item::get(Item::SNOWBALL) //TODO: check layer count
         ];
     }
+
+    public function isAffectedBySilkTouch(): bool{
+        return false;
+    }
 }

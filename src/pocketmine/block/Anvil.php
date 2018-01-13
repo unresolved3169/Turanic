@@ -101,10 +101,6 @@ class Anvil extends Fallable {
             return true;
         }
         if($player instanceof Player){
-            if($player->isCreative() and $player->getServer()->limitedCreative){
-                return true;
-            }
-
             $player->addWindow(new AnvilInventory($this));
         }
 

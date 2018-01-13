@@ -39,20 +39,18 @@ class Wheat extends Crops {
 		return "Wheat Block";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->meta >= 0x07){
-			$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
-			$fortunel = $fortunel > 3 ? 3 : $fortunel;
+    public function getDropsForCompatibleTool(Item $item) : array{
+        if($this->meta >= 0x07){
             return [
                 Item::get(Item::WHEAT),
-                Item::get(Item::WHEAT_SEEDS, 0, mt_rand(0, 3 + $fortunel))
+                Item::get(Item::WHEAT_SEEDS, 0, mt_rand(0, 3))
             ];
-		}else{
+        }else{
             return [
                 Item::get(Item::WHEAT_SEEDS)
             ];
-		}
-	}
+        }
+    }
 
     public function getPickedItem(): Item{
         return Item::get(Item::WHEAT_SEEDS);

@@ -22,23 +22,12 @@
  *
 */
 
-namespace pocketmine\block;
+declare(strict_types=1);
 
-use pocketmine\item\Item;
+namespace pocketmine\block;
 
 class UndyedShulkerBox extends ShulkerBox {
 
     protected $id = self::UNDYED_SHULKER_BOX;
-
-    public function __construct($meta = 0){
-        $this->meta = $meta;
-    }
-
-    public function getDrops(Item $item): array{
-        return [
-            Item::get($this->getItemId())
-        ];
-    }
-
 
 }

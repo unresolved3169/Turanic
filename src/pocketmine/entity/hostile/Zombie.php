@@ -28,7 +28,6 @@ use pocketmine\entity\Monster;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\Player;
 use pocketmine\entity\behavior\{
     PanicBehavior, StrollBehavior, RandomLookaroundBehavior, LookAtPlayerBehavior
@@ -69,7 +68,7 @@ class Zombie extends Monster {
 		if($cause instanceof EntityDamageByEntityEvent){
 			$damager = $cause->getDamager();
 			if($damager instanceof Player){
-				$lootingL = $damager->getItemInHand()->getEnchantmentLevel(Enchantment::TYPE_WEAPON_LOOTING);
+				$lootingL = $damager->getItemInHand()->getEnchantmentLevel(Enchantment::LOOTING);
 				if(mt_rand(0, 199) < (5 + 2 * $lootingL)){
 					switch(mt_rand(0, 3)){
 						case 0:

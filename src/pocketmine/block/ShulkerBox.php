@@ -76,9 +76,6 @@ class ShulkerBox extends Transparent {
                 return true;
             }
 
-            if($player->isCreative() and $player->getServer()->limitedCreative){
-                return true;
-            }
             $player->addWindow($sb->getInventory());
         }
 
@@ -104,7 +101,7 @@ class ShulkerBox extends Transparent {
         return 6;
     }
 
-    public function getDrops(Item $item): array{
+    public function getDropsForCompatibleTool(Item $item): array{
         return [];
     }
 

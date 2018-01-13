@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\TieredTool;
-use pocketmine\item\Item;
 
 class NetherBrickFence extends Transparent {
 
@@ -46,19 +45,15 @@ class NetherBrickFence extends Transparent {
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getName() : string{
+	public function getToolHarvestLevel(): int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+    public function getName() : string{
 		return "Nether Brick Fence";
 	}
 
 	public function canConnect(Block $block){
 		return ($block instanceof NetherBrickFence || $block instanceof FenceGate) or ($block->isSolid() and !$block->isTransparent());
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
 	}
 }

@@ -294,7 +294,6 @@ class Server{
 	public $playerLoginMsg = "";
 	public $playerLogoutMsg = "";
 	public $keepExperience = false;
-	public $limitedCreative = false;
 	public $chunkRadius = -1;
 	public $destroyBlockParticle = true;
 	public $allowSplashPotion = true;
@@ -1523,7 +1522,6 @@ class Server{
 			"serverList" => explode(";", $this->getAdvancedProperty("dserver.server-list", ""))
 		];
 		$this->getLogger()->setWrite(!$this->getAdvancedProperty("server.disable-log", false));
-		$this->limitedCreative = $this->getAdvancedProperty("server.limited-creative", true);
 		$this->chunkRadius = $this->getAdvancedProperty("player.chunk-radius", -1);
 		$this->destroyBlockParticle = $this->getAdvancedProperty("server.destroy-block-particle", true);
 		$this->allowSplashPotion = $this->getAdvancedProperty("server.allow-splash-potion", true);

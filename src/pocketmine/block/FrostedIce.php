@@ -42,7 +42,7 @@ class FrostedIce extends Transparent {
         return "Frosted Ice";
     }
 
-    public function getDrops(Item $item): array{
+    public function getDropsForCompatibleTool(Item $item): array{
         return [];
     }
 }

@@ -89,10 +89,6 @@ class EnderChest extends Chest{
 				Tile::createTile(Tile::ENDER_CHEST, $this->getLevel(), TileEnderChest::createNBT($this));
 			}
 
-			if($player->isCreative() and $player->getServer()->limitedCreative){
-				return true;
-			}
-
 			$player->getEnderChestInventory()->openAt($this);
 		}
 
@@ -100,10 +96,6 @@ class EnderChest extends Chest{
 	}
 
 	public function getDropsForCompatibleTool(Item $item): array{
-        if($item->hasEnchantment(Enchantment::TYPE_MINING_SILK_TOUCH)){
-            return parent::getDrops($item);
-        }
-
         return [
             Item::get(Item::OBSIDIAN, 0, 8)
         ];

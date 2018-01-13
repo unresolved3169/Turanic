@@ -64,8 +64,6 @@ server:
  player-msg-type: 0
  login-msg: "§3@player ist dem Spiel beigetreten"
  logout-msg: "§3@player hat das Spiel verlassen"
- #Limitierter KreativModus (Kann keine Items droppen, kann keine Truhen öffnen, etc.)
- limited-creative: false
  #BlockZerstörungs Partikel
  destroy-block-particle: true
  #Wurf tränke zulassen

@@ -65,11 +65,15 @@ class Farmland extends Solid {
         );
     }
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			Item::get(Item::DIRT)
 		];
 	}
+
+    public function isAffectedBySilkTouch(): bool{
+        return false;
+    }
 
 	public function onUpdate(int $type){
         if($type === Level::BLOCK_UPDATE_NORMAL and $this->getSide(Vector3::SIDE_UP)->isSolid()){

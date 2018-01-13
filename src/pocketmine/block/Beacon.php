@@ -71,9 +71,6 @@ class Beacon extends Transparent {
 				$beacon = Tile::createTile(Tile::BEACON, $this->getLevel(), TileBeacon::createNBT($this));
 			}
 
-			if($player->isCreative() and $player->getServer()->limitedCreative){
-				return true;
-			}
 			$player->addWindow($beacon->getInventory());
 		}
 

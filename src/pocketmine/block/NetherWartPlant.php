@@ -25,7 +25,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\event\block\BlockGrowEvent;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
@@ -86,15 +85,13 @@ class NetherWartPlant extends Flowable {
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->meta >= 0x03){
-			$fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
-			$fortunel = $fortunel > 3 ? 3 : $fortunel;
-			return [
-			    Item::get($this->getItemId(), 0, mt_rand(2, 4 + $fortunel))
-            ];
-		}
-
-		return parent::getDrops($item);
+	public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get($this->getItemId(), 0, ($this->getDamage() === 3 ? mt_rand(2, 4) : 1))
+        ];
 	}
+
+    public function isAffectedBySilkTouch(): bool{
+        return false;
+    }
 }

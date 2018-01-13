@@ -82,7 +82,7 @@ class PumpkinStem extends Crops {
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			Item::get(Item::PUMPKIN_SEEDS, 0, mt_rand(0, 2))
 		];

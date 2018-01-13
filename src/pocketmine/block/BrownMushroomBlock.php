@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 
 class BrownMushroomBlock extends Solid {
@@ -45,15 +44,9 @@ class BrownMushroomBlock extends Solid {
 		return 0.2;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return [
-				Item::get(Item::BROWN_MUSHROOM_BLOCK, self::BROWN)
-			];
-		}else{
-			return [
-				Item::get(Item::BROWN_MUSHROOM, 0, mt_rand(0, 2))
-			];
-		}
+	public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get(Item::BROWN_MUSHROOM, 0, mt_rand(0, 2))
+        ];
 	}
 }

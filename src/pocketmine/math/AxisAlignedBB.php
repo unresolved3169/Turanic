@@ -21,8 +21,6 @@
 
 namespace pocketmine\math;
 
-use pocketmine\level\MovingObjectPosition;
-
 class AxisAlignedBB {
 
 	public $minX;
@@ -363,8 +361,8 @@ class AxisAlignedBB {
 	 * @param Vector3 $pos1
 	 * @param Vector3 $pos2
 	 *
-	 * @return MovingObjectPosition
-	 */
+	 * @return RayTraceResult|null
+     */
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2){
 		$v1 = $pos1->getIntermediateWithXValue($pos2, $this->minX);
 		$v2 = $pos1->getIntermediateWithXValue($pos2, $this->maxX);
@@ -444,7 +442,7 @@ class AxisAlignedBB {
 			$f = 3;
 		}
 
-		return MovingObjectPosition::fromBlock(0, 0, 0, $f, $vector);
+		return new RayTraceResult($this, $f, $vector);
 	}
 
 	/**

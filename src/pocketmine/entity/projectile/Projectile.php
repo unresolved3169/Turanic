@@ -2,23 +2,22 @@
 
 /*
  *
- *    _______                    _
- *   |__   __|                  (_)
- *      | |_   _ _ __ __ _ _ __  _  ___
- *      | | | | | '__/ _` | '_ \| |/ __|
- *      | | |_| | | | (_| | | | | | (__
- *      |_|\__,_|_|  \__,_|_| |_|_|\___|
- *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author TuranicTeam
- * @link https://github.com/TuranicTeam/Turanic
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
  *
- */
+ *
+*/
 
 declare(strict_types=1);
 
@@ -32,7 +31,6 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\Level;
-use pocketmine\level\MovingObjectPosition;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 
@@ -137,13 +135,13 @@ abstract class Projectile extends Entity{
                 }
 
                 $axisalignedbb = $entity->boundingBox->grow(0.3, 0.3, 0.3);
-                $ob = $axisalignedbb->calculateIntercept($this, $moveVector);
+                $rayTraceResult = $axisalignedbb->calculateIntercept($this, $moveVector);
 
-                if($ob === null){
+                if($rayTraceResult === null){
                     continue;
                 }
 
-                $distance = $this->distanceSquared($ob->hitVector);
+                $distance = $this->distanceSquared($rayTraceResult->hitVector);
 
                 if($distance < $nearDistance){
                     $nearDistance = $distance;
@@ -152,14 +150,8 @@ abstract class Projectile extends Entity{
             }
 
             if($nearEntity !== null){
-                $movingObjectPosition = MovingObjectPosition::fromEntity($nearEntity);
-            }
-
-            if($movingObjectPosition !== null){
-                if($movingObjectPosition->entityHit !== null){
-                    $this->onCollideWithEntity($movingObjectPosition->entityHit);
-                    return false;
-                }
+                $this->onCollideWithEntity($nearEntity);
+                return false;
             }
 
             if($this->isCollided and !$this->hadCollision){ //Collided with a block

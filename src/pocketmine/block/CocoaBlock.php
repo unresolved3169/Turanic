@@ -108,15 +108,19 @@ class CocoaBlock extends Solid {
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->meta >= 8){
 			return [
 			    Item::get($this->getItemId(), $this->getVariant(), 3)
             ];
 		}
 
-		return parent::getDrops($item);
+		return parent::getDropsForCompatibleTool($item);
 	}
+
+    public function isAffectedBySilkTouch(): bool{
+        return false;
+    }
 
 	public function getVariant(): int{
         return 3;

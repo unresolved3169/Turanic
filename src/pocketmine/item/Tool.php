@@ -44,14 +44,8 @@ abstract class Tool extends Durable {
      * @return bool
      *
      */
-	public function useOn($object){
+    public function useOn($object){
         if($this->isUnbreakable()){
-            return true;
-        }
-
-        $unbreakingl = $this->getEnchantmentLevel(Enchantment::TYPE_MINING_DURABILITY);
-        $unbreakingl = $unbreakingl > 3 ? 3 : $unbreakingl;
-        if(mt_rand(1, $unbreakingl + 1) !== 1){
             return true;
         }
 
@@ -72,7 +66,7 @@ abstract class Tool extends Durable {
         }
 
         return true;
-	}
+    }
 
     public function isTool(){
         return true;
@@ -82,7 +76,9 @@ abstract class Tool extends Durable {
         $efficiency = 1;
         if(($block->getToolType() & $this->getBlockToolType()) !== 0){
             $efficiency = $this->getBaseMiningEfficiency();
-            //TODO: check Efficiency enchantment
+            if(($enchantmentLevel = $this->getEnchantmentLevel(Enchantment::EFFICIENCY)) > 0){
+                $efficiency += ($enchantmentLevel ** 2 + 1);
+            }
         }
 
         return $efficiency;

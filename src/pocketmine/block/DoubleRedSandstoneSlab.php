@@ -34,13 +34,9 @@ class DoubleRedSandstoneSlab extends DoubleSlab {
 		return "Double Red Sandstone Slab";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return [
-				Item::get(Item::RED_SANDSTONE_SLAB, $this->meta, 2)
-			];
-		}else{
-			return [];
-		}
+    public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get(Item::RED_SANDSTONE_SLAB, $this->meta, 2)
+        ];
 	}
 }

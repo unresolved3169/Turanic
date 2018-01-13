@@ -2,88 +2,75 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ *    _______                    _
+ *   |__   __|                  (_)
+ *      | |_   _ _ __ __ _ _ __  _  ___
+ *      | | | | | '__/ _` | '_ \| |/ __|
+ *      | | |_| | | | (_| | | | | | (__
+ *      |_|\__,_|_|  \__,_|_| |_|_|\___|
+ *
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- * 
+ * @author TuranicTeam
+ * @link https://github.com/TuranicTeam/Turanic
  *
-*/
+ */
+
+declare(strict_types=1);
 
 namespace pocketmine\level;
 
+use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\math\Vector3;
+use pocketmine\math\RayTraceResult;
 
-class MovingObjectPosition {
-
+class MovingObjectPosition{
     const TYPE_BLOCK_COLLISION = 0;
     const TYPE_ENTITY_COLLISION = 1;
 
-	public $typeOfHit;
+    /** @var RayTraceResult */
+    public $hitResult;
 
-	public $blockX;
-	public $blockY;
-	public $blockZ;
+    /** @var int */
+    public $typeOfHit;
 
-	/**
-	 * Which side was hit. If its -1 then it went the full length of the ray trace.
-	 * Bottom = 0, Top = 1, East = 2, West = 3, North = 4, South = 5.
-	 */
-	public $sideHit;
+    /** @var Entity|null */
+    public $entityHit = null;
+    /** @var Block|null */
+    public $blockHit = null;
 
-	/** @var Vector3 */
-	public $hitVector;
-
-	/** @var Entity */
-	public $entityHit = null;
-
-	/**
-	 * MovingObjectPosition constructor.
-	 */
-	protected function __construct(){
-
-	}
+    protected function __construct(int $hitType, RayTraceResult $hitResult){
+        $this->typeOfHit = $hitType;
+        $this->hitResult = $hitResult;
+    }
 
     /**
-     * @param int $x
-     * @param int $y
-     * @param int $z
-     * @param int $side
-     * @param Vector3 $hitVector
+     * @param Block          $block
+     * @param RayTraceResult $result
      *
      * @return MovingObjectPosition
      */
-    public static function fromBlock(int $x, int $y, int $z, int $side, Vector3 $hitVector) : MovingObjectPosition{
-        $ob = new MovingObjectPosition;
-        $ob->typeOfHit = self::TYPE_BLOCK_COLLISION;
-        $ob->blockX = $x;
-        $ob->blockY = $y;
-        $ob->blockZ = $z;
-        $ob->sideHit = $side;
-        $ob->hitVector = $hitVector->asVector3();
+    public static function fromBlock(Block $block, RayTraceResult $result) : MovingObjectPosition{
+        $ob = new MovingObjectPosition(self::TYPE_BLOCK_COLLISION, $result);
+        $ob->blockHit = $block;
         return $ob;
     }
 
     /**
-     * @param Entity $entity
+     * @param Entity         $entity
+     *
+     * @param RayTraceResult $result
      *
      * @return MovingObjectPosition
      */
-    public static function fromEntity(Entity $entity) : MovingObjectPosition{
-        $ob = new MovingObjectPosition;
-        $ob->typeOfHit = self::TYPE_ENTITY_COLLISION;
+    public static function fromEntity(Entity $entity, RayTraceResult $result) : MovingObjectPosition{
+        $ob = new MovingObjectPosition(self::TYPE_ENTITY_COLLISION, $result);
         $ob->entityHit = $entity;
-        $ob->hitVector = $entity->asVector3();
+
         return $ob;
     }
 }

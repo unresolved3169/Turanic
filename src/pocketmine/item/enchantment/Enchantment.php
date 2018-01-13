@@ -33,59 +33,59 @@ class Enchantment {
 
 	const TYPE_INVALID = -1;
 
-	const PROTECTION = 0, TYPE_ARMOR_PROTECTION = 0;
-	const FIRE_PROTECTION = 1, TYPE_ARMOR_FIRE_PROTECTION = 1;
-	const FEATHER_FALLING = 2, TYPE_ARMOR_FALL_PROTECTION = 2;
-	const BLAST_PROTECTION = 3, TYPE_ARMOR_EXPLOSION_PROTECTION = 3;
-	const PROJECTILE_PROTECTION = 4, TYPE_ARMOR_PROJECTILE_PROTECTION = 4;
-	const THORNS = 5, TYPE_ARMOR_THORNS = 5;
-	const RESPIRATION = 6, TYPE_WATER_BREATHING = 6;
-	const DEPTH_STRIDER = 7, TYPE_WATER_SPEED = 7;
-	const AQUA_AFFINITY = 8, TYPE_WATER_AFFINITY = 8;
-	const SHARPNESS = 9, TYPE_WEAPON_SHARPNESS = 9;
-	const SMITE = 10, TYPE_WEAPON_SMITE = 10;
-	const BANE_OF_ARTHROPODS = 11, TYPE_WEAPON_ARTHROPODS = 11;
-	const KNOCKBACK = 12, TYPE_WEAPON_KNOCKBACK = 12;
-	const FIRE_ASPECT = 13, TYPE_WEAPON_FIRE_ASPECT = 13;
-	const LOOTING = 14, TYPE_WEAPON_LOOTING = 14;
-	const EFFIENCY = 15, TYPE_MINING_EFFICIENCY = 15;
-	const SILK_TOUCH = 16, TYPE_MINING_SILK_TOUCH = 16;
-	const UNBREAKING = 17, TYPE_MINING_DURABILITY = 17;
-	const FORTUNE = 18, TYPE_MINING_FORTUNE = 18;
-	const POWER = 19, TYPE_BOW_POWER = 19;
-	const PUNCH = 20, TYPE_BOW_KNOCKBACK = 20;
-	const FLAME = 21, TYPE_BOW_FLAME = 21;
-	const INFINITY = 22, TYPE_BOW_INFINITY = 22;
-	const LUCK_OF_THE_SEA = 23, TYPE_FISHING_FORTUNE = 23;
-	const LURE = 24, TYPE_FISHING_LURE = 24;
-	// TODO : ADD ENCHANT
+    const PROTECTION = 0;
+    const FIRE_PROTECTION = 1;
+    const FEATHER_FALLING = 2;
+    const BLAST_PROTECTION = 3;
+    const PROJECTILE_PROTECTION = 4;
+    const THORNS = 5;
+    const RESPIRATION = 6;
+    const DEPTH_STRIDER = 7;
+    const AQUA_AFFINITY = 8;
+    const SHARPNESS = 9;
+    const SMITE = 10;
+    const BANE_OF_ARTHROPODS = 11;
+    const KNOCKBACK = 12;
+    const FIRE_ASPECT = 13;
+    const LOOTING = 14;
+    const EFFICIENCY = 15;
+    const SILK_TOUCH = 16;
+    const UNBREAKING = 17;
+    const FORTUNE = 18;
+    const POWER = 19;
+    const PUNCH = 20;
+    const FLAME = 21;
+    const INFINITY = 22;
+    const LUCK_OF_THE_SEA = 23;
+    const LURE = 24;
     const FROST_WALKER = 25;
     const MENDING = 26;
 
-	const RARITY_COMMON = 10;
-	const RARITY_UNCOMMON = 5;
-	const RARITY_RARE = 2;
-	const RARITY_MYTHIC = 1;
+    const RARITY_COMMON = 10;
+    const RARITY_UNCOMMON = 5;
+    const RARITY_RARE = 2;
+    const RARITY_MYTHIC = 1;
 
-	const SLOT_NONE = 0;
-	const SLOT_ALL = 0b11111111111111;
-	const SLOT_ARMOR = 0b1111;
-	const SLOT_HEAD = 0b1;
-	const SLOT_TORSO = 0b10;
-	const SLOT_LEGS = 0b100;
-	const SLOT_FEET = 0b1000;
-	const SLOT_SWORD = 0b10000;
-	const SLOT_BOW = 0b100000;
-	const SLOT_TOOL = 0b111000000;
-	const SLOT_HOE = 0b1000000;
-	const SLOT_SHEARS = 0b10000000;
-	const SLOT_FLINT_AND_STEEL = 0b10000000;
-	const SLOT_DIG = 0b111000000000;
-	const SLOT_AXE = 0b1000000000;
-	const SLOT_PICKAXE = 0b10000000000;
-	const SLOT_SHOVEL = 0b10000000000;
-	const SLOT_FISHING_ROD = 0b100000000000;
-	const SLOT_CARROT_STICK = 0b1000000000000;
+    const SLOT_NONE = 0x0;
+    const SLOT_ALL = 0x7fff;
+    const SLOT_ARMOR = self::SLOT_HEAD | self::SLOT_TORSO | self::SLOT_LEGS | self::SLOT_FEET;
+    const SLOT_HEAD = 0x1;
+    const SLOT_TORSO = 0x2;
+    const SLOT_LEGS = 0x4;
+    const SLOT_FEET = 0x8;
+    const SLOT_SWORD = 0x10;
+    const SLOT_BOW = 0x20;
+    const SLOT_TOOL = self::SLOT_HOE | self::SLOT_SHEARS | self::SLOT_FLINT_AND_STEEL;
+    const SLOT_HOE = 0x40;
+    const SLOT_SHEARS = 0x80;
+    const SLOT_FLINT_AND_STEEL = 0x100;
+    const SLOT_DIG = self::SLOT_AXE | self::SLOT_PICKAXE | self::SLOT_SHOVEL;
+    const SLOT_AXE = 0x200;
+    const SLOT_PICKAXE = 0x400;
+    const SLOT_SHOVEL = 0x800;
+    const SLOT_FISHING_ROD = 0x1000;
+    const SLOT_CARROT_STICK = 0x2000;
+    const SLOT_ELYTRA = 0x4000;
 
 
 	/** @var Enchantment[] */
@@ -94,13 +94,9 @@ class Enchantment {
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4));
-		self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON,self::SLOT_ARMOR, 4));
-		self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET, 4));
 		self::registerEnchantment(new Enchantment(self::BLAST_PROTECTION, "%enchantment.protect.explosion", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4));
 		self::registerEnchantment(new Enchantment(self::PROJECTILE_PROTECTION, "%enchantment.protect.projectile", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4));
 		self::registerEnchantment(new Enchantment(self::THORNS, "%enchantment.protect.thorns", self::RARITY_UNCOMMON, self::SLOT_SWORD, 3));
-		self::registerEnchantment(new Enchantment(self::RESPIRATION, "%enchantment.protect.waterbrething", self::RARITY_UNCOMMON, self::SLOT_FEET, 3));
 		self::registerEnchantment(new Enchantment(self::DEPTH_STRIDER, "%enchantment.waterspeed", self::RARITY_UNCOMMON, self::SLOT_FEET, 3));
 		self::registerEnchantment(new Enchantment(self::AQUA_AFFINITY, "%enchantment.protect.wateraffinity", self::RARITY_UNCOMMON,  self::SLOT_FEET, 1));
 		self::registerEnchantment(new Enchantment(self::SHARPNESS, "%enchantment.weapon.sharpness", self::RARITY_UNCOMMON,  self::SLOT_SWORD, 5));
@@ -109,17 +105,25 @@ class Enchantment {
 		self::registerEnchantment(new Enchantment(self::KNOCKBACK, "%enchantment.weapon.knockback", self::RARITY_UNCOMMON,  self::SLOT_SWORD, 2));
 		self::registerEnchantment(new Enchantment(self::FIRE_ASPECT, "%enchantment.weapon.fireaspect", self::RARITY_UNCOMMON,  self::SLOT_SWORD, 2));
 		self::registerEnchantment(new Enchantment(self::LOOTING, "%enchantment.weapon.looting", self::RARITY_UNCOMMON,  self::SLOT_SWORD, 3));
-		self::registerEnchantment(new Enchantment(self::EFFIENCY, "%enchantment.mining.efficiency", self::RARITY_UNCOMMON,  self::SLOT_TOOL, 5));
-		self::registerEnchantment(new Enchantment(self::SILK_TOUCH, "%enchantment.mining.silktouch", self::RARITY_UNCOMMON,  self::SLOT_TOOL, 1));
-		self::registerEnchantment(new Enchantment(self::UNBREAKING, "%enchantment.mining.durability", self::RARITY_UNCOMMON,  self::SLOT_TOOL, 3));
-		self::registerEnchantment(new Enchantment(self::FORTUNE, "%enchantment.mining.fortune", self::RARITY_UNCOMMON,  self::SLOT_TOOL, 3));
-		self::registerEnchantment(new Enchantment(self::POWER, "%enchantment.bow.power", self::RARITY_UNCOMMON,  self::SLOT_BOW, 5));
-		self::registerEnchantment(new Enchantment(self::PUNCH, "%enchantment.bow.knockback", self::RARITY_UNCOMMON,  self::SLOT_BOW, 2));
-		self::registerEnchantment(new Enchantment(self::FLAME, "%enchantment.bow.flame", self::RARITY_UNCOMMON,  self::SLOT_BOW, 1));
-		self::registerEnchantment(new Enchantment(self::INFINITY, "%enchantment.bow.infinity", self::RARITY_UNCOMMON, self::SLOT_BOW, 1));
-		self::registerEnchantment(new Enchantment(self::LUCK_OF_THE_SEA, "%enchantment.fishing.fortune", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3));
-		self::registerEnchantment(new Enchantment(self::LURE, "%enchantment.fishing.lure", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3));
-	}
+        self::registerEnchantment(new Enchantment(self::FORTUNE, "%enchantment.mining.fortune", self::RARITY_UNCOMMON,  self::SLOT_TOOL, 3));
+        self::registerEnchantment(new Enchantment(self::POWER, "%enchantment.bow.power", self::RARITY_UNCOMMON,  self::SLOT_BOW, 5));
+        self::registerEnchantment(new Enchantment(self::PUNCH, "%enchantment.bow.knockback", self::RARITY_UNCOMMON,  self::SLOT_BOW, 2));
+        self::registerEnchantment(new Enchantment(self::FLAME, "%enchantment.bow.flame", self::RARITY_UNCOMMON,  self::SLOT_BOW, 1));
+        self::registerEnchantment(new Enchantment(self::INFINITY, "%enchantment.bow.infinity", self::RARITY_UNCOMMON, self::SLOT_BOW, 1));
+        self::registerEnchantment(new Enchantment(self::LUCK_OF_THE_SEA, "%enchantment.fishing.fortune", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3));
+        self::registerEnchantment(new Enchantment(self::LURE, "%enchantment.fishing.lure", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3));
+
+        self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4));
+        self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON,self::SLOT_ARMOR, 4));
+        self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET, 4));
+
+        self::registerEnchantment(new Enchantment(self::RESPIRATION, "%enchantment.oxygen", self::RARITY_RARE, self::SLOT_HEAD, 3));
+
+        self::registerEnchantment(new Enchantment(self::EFFICIENCY, "%enchantment.digging", self::RARITY_COMMON, self::SLOT_DIG | self::SLOT_SHEARS, 5));
+
+        self::registerEnchantment(new Enchantment(self::SILK_TOUCH, "%enchantment.untouching", self::RARITY_MYTHIC, self::SLOT_DIG | self::SLOT_SHEARS, 1));
+        self::registerEnchantment(new Enchantment(self::UNBREAKING, "%enchantment.durability", self::RARITY_UNCOMMON, self::SLOT_ALL, 3));
+    }
 
     /**
      * Registers an enchantment type.

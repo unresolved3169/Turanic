@@ -107,7 +107,7 @@ class Skull extends Flowable {
         return true;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		$tile = $this->level->getTile($this);
 		if($tile instanceof TileSkull){
 			return [

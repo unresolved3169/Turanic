@@ -77,7 +77,7 @@ class DaylightDetector extends Transparent {
 		return 0.2;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			Item::get(self::DAYLIGHT_SENSOR)
 		];

@@ -275,12 +275,16 @@ abstract class Door extends Transparent implements ElectricalAppliance {
         return 0;
     }
 
-    public function getDrops(Item $item): array{
+    public function getDropsForCompatibleTool(Item $item): array{
         if(($this->meta & 0x08) === 0){ //bottom half only
-            return parent::getDrops($item);
+            return parent::getDropsForCompatibleTool($item);
         }
 
         return [];
+    }
+
+    public function isAffectedBySilkTouch(): bool{
+        return false;
     }
 
     public function getAffectedBlocks() : array{

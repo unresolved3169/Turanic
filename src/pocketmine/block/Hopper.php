@@ -26,6 +26,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -44,7 +45,11 @@ class Hopper extends Transparent {
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getName() : string{
+	public function getToolHarvestLevel(): int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+    public function getName() : string{
 		return "Hopper";
 	}
 
@@ -61,9 +66,6 @@ class Hopper extends Transparent {
 					return true;
 				}
 
-				if($player->isCreative() and $player->getServer()->limitedCreative){
-					return true;
-				}
 				$player->addWindow($t->getInventory());
 			}
 		}
@@ -92,13 +94,5 @@ class Hopper extends Transparent {
 		Tile::createTile(Tile::HOPPER, $this->getLevel(), TileHopper::createNBT($this, $face, $item, $player));
 
 		return true;
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
 	}
 }

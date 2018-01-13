@@ -28,6 +28,7 @@ use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\event\player\PlayerGlassBottleEvent;
 use pocketmine\item\Armor;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\item\Potion;
 use pocketmine\level\sound\ExplodeSound;
@@ -63,17 +64,14 @@ class Cauldron extends Solid {
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
+	public function getToolHarvestLevel(): int{
+        return TieredTool::TIER_WOODEN;
+    }
+
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
         Tile::createTile(Tile::CAULDRON, $this->getLevel(), TileCauldron::createNBT($this, $face, $item, $player));
 
 		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
-	}
-
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return parent::getDrops($item);
-		}
-		return [];
 	}
 
 	public function update(){//umm... right update method...?

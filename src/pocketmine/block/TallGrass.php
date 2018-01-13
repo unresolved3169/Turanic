@@ -88,7 +88,7 @@ class TallGrass extends Flowable{
 		return BlockToolType::TYPE_SHEARS;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if(mt_rand(0, 15) === 0){
 			return [
 				Item::get(Item::WHEAT_SEEDS)

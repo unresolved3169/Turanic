@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 
@@ -70,22 +69,11 @@ class Stone extends Solid {
 		return $names[$this->getVariant()] ?? "Unknown";
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
-			if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0 and $this->getDamage() === 0){
-				return parent::getDrops($item);
-			}
-			return [
-				Item::get($this->getDamage() === 0 ? Item::COBBLESTONE : Item::STONE, $this->getDamage())
-			];
-		}else{
-			return [];
-		}
-	}
-
-	public function getDropsForCompatibleTool(Item $item): array{
+    public function getDropsForCompatibleTool(Item $item) : array{
         if($this->getDamage() === self::NORMAL){
-            return $item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0 ? parent::getDropsForCompatibleTool($item) : [ Item::get(Item::COBBLESTONE, $this->getDamage()) ];
+            return [
+                Item::get(Item::COBBLESTONE, $this->getDamage())
+            ];
         }
 
         return parent::getDropsForCompatibleTool($item);

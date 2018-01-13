@@ -46,7 +46,7 @@ class ChorusPlant extends Crops {
 		return "Chorus Plant";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if($this->meta >= 0x07){
 			return [
 			    Item::get(Item::CHORUS_FRUIT)

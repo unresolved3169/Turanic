@@ -88,10 +88,6 @@ class EnchantingTable extends Transparent {
             return true;
         }
         if ($player instanceof Player) {
-            if ($player->isCreative() and $player->getServer()->limitedCreative) {
-                return true;
-            }
-            $enchantTable = null;
             $this->getLevel()->setBlock($this, $this, true, true);
             Tile::createTile(Tile::ENCHANT_TABLE, $this->getLevel(), EnchantTable::createNBT($this));
         }

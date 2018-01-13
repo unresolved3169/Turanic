@@ -307,7 +307,7 @@ class RedstoneWire extends Flowable {
         return true;
     }
 
-    public function getDrops(Item $item) : array{
+    public function getDropsForCompatibleTool(Item $item) : array{
         return [
             Item::get(Item::REDSTONE)
         ];

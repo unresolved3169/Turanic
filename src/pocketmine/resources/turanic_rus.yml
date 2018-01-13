@@ -76,8 +76,6 @@ server:
  player-msg-type: 0
  login-msg: "§3@player joined the game"
  logout-msg: "§3@player left the game"
- #Ограниченный творческий режим
- limited-creative: false
  #Отображает частицы блока при разрушении
  destroy-block-particle: true
  #Взрывающиеся зелья

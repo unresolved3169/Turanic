@@ -1355,28 +1355,27 @@ class Item implements ItemIds, \JsonSerializable {
 
     // TURANIC
 
-	/**
-	 * @param $id
-	 *
-	 * @return Int level|0(for null)
-	 */
-	public function getEnchantmentLevel(int $id){
-        if(!$this->hasEnchantments()){
-            return 0;
-        }
-
-        foreach($this->getNamedTag()->ench as $entry){
-            if($entry["id"] === $id){
-                $e = Enchantment::getEnchantment($entry["id"]);
-                $e = new EnchantmentInstance($e, $entry["lvl"]);
-                $e->setLevel($entry["lvl"]);
-                $E_level = $e->getLevel() > Enchantment::getEnchantMaxLevel($id) ? Enchantment::getEnchantMaxLevel($id) : $e->getLevel();
-                return $E_level;
+    /**
+     * Returns the level of the enchantment on this item with the specified ID, or 0 if the item does not have the
+     * enchantment.
+     *
+     * @param int $enchantmentId
+     *
+     * @return int
+     */
+	public function getEnchantmentLevel(int $enchantmentId) : int{
+        $ench = $this->getNamedTag()->getListTag(self::TAG_ENCH);
+        if ($ench !== null) {
+            /** @var CompoundTag $entry */
+            foreach ($ench as $entry) {
+                if ($entry->getShort("id") === $enchantmentId) {
+                    return $entry->getShort("lvl");
+                }
             }
         }
 
         return 0;
-	}
+    }
 
 	/**
 	 * @return bool
@@ -1478,7 +1477,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 */
 	public function getModifyAttackDamage(Entity $target){
 		$rec = $this->getAttackPoints();
-		$sharpL = $this->getEnchantmentLevel(Enchantment::TYPE_WEAPON_SHARPNESS);
+		$sharpL = $this->getEnchantmentLevel(Enchantment::SHARPNESS);
 		if($sharpL > 0){
 			$rec += 0.5 * ($sharpL + 1);
 		}
@@ -1487,13 +1486,13 @@ class Item implements ItemIds, \JsonSerializable {
 			$target instanceof Witch or $target instanceof ZombiePigman
 		){
 			//SMITE    wither skeletons
-			$rec += 2.5 * $this->getEnchantmentLevel(Enchantment::TYPE_WEAPON_SMITE);
+			$rec += 2.5 * $this->getEnchantmentLevel(Enchantment::SMITE);
 
 		}elseif($target instanceof Spider or $target instanceof CaveSpider or
 			$target instanceof Silverfish
 		){
 			//Bane of Arthropods    wither skeletons
-			$rec += 2.5 * $this->getEnchantmentLevel(Enchantment::TYPE_WEAPON_ARTHROPODS);
+			$rec += 2.5 * $this->getEnchantmentLevel(Enchantment::BANE_OF_ARTHROPODS);
 
 		}
 		return $rec;

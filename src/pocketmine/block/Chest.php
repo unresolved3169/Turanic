@@ -114,10 +114,6 @@ class Chest extends Transparent{
                 $chest = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this));
             }
 
-            if($player->isCreative() and $player->getServer()->limitedCreative){
-                return true;
-            }
-
             if(
                 !$this->getSide(Vector3::SIDE_UP)->isTransparent() or
                 ($chest->isPaired() and !$chest->getPair()->getBlock()->getSide(Vector3::SIDE_UP)->isTransparent()) or

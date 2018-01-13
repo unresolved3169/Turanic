@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 
 class Glowstone extends Transparent implements SolidLight {
@@ -51,19 +50,9 @@ class Glowstone extends Transparent implements SolidLight {
 		return 15;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return parent::getDrops($item);
-		}else{
-			$fortuneL = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
-			$fortuneL = $fortuneL > 3 ? 3 : $fortuneL;
-			$times = [1, 1, 2, 3, 4];
-			$time = $times[mt_rand(0, $fortuneL + 1)];
-			$num = mt_rand(2, 4) * $time;
-			$num = $num > 4 ? 4 : $num;
-			return [
-				Item::get(Item::GLOWSTONE_DUST, 0, $num)
-			];
-		}
+	public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get(Item::GLOWSTONE_DUST, 0, mt_rand(2, 4))
+        ];
 	}
 }

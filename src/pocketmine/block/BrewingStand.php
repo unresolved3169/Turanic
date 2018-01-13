@@ -78,10 +78,6 @@ class BrewingStand extends Transparent {
 				$brewingStand = Tile::createTile(Tile::BREWING_STAND, $this->getLevel(), TileBrewingStand::createNBT($this));
 			}
 
-            if($player->isCreative() and $player->getServer()->limitedCreative){
-                return true;
-            }
-
             if($brewingStand->namedtag->hasTag("Lock", StringTag::class) and $brewingStand->namedtag->getString("Lock") !== $item->getCustomName()){
                 return true;
             }

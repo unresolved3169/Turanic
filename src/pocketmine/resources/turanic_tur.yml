@@ -62,8 +62,6 @@ server:
  player-msg-type: 0
  login-msg: "§3@player oyuna katıldı"
  logout-msg: "§3@player oyundan ayrıldı"
- #Eğer aktif ise creative sınırlı olur (Hotbardaki itemi atamazsınız, sandıkları açamazsınız)
- limited-creative: false
  #Eğer aktifse blok kırılınca particle çıkar
  destroy-block-particle: true
  #Eğer aktif ise potion fırlatabilirsiniz

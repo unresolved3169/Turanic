@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -80,14 +79,10 @@ class MonsterSpawner extends Solid {
 	}
 
 	public function getDropsForCompatibleTool(Item $item): array{
-        $tile = $this->getLevel()->getTileAt($this->x, $this->y, $this->z);
-        if(!$tile instanceof MobSpawner) return [];
-        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-            return [
-                Item::get($this->id, $tile->getEntityId(), 1, $tile->getNBT())
-            ];
-        }
-
         return [];
+    }
+
+    public function isAffectedBySilkTouch(): bool{
+        return false;
     }
 }

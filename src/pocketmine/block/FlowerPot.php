@@ -96,17 +96,19 @@ class FlowerPot extends Flowable {
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
-		$items = parent::getDrops($item);
+    public function getDropsForCompatibleTool(Item $item) : array{
+        $items = parent::getDropsForCompatibleTool($item);
 
-		$tile = $this->getLevel()->getTile($this);
-		if($tile instanceof TileFlowerPot){
-			if(!($item = $tile->getItem())->isNull()){
-				$items[] = [Item::get($item->getId(), $item->getDamage())];
-			}
-		}
-		return $items;
-	}
+        $tile = $this->getLevel()->getTile($this);
+        if($tile instanceof TileFlowerPot){
+            $item = $tile->getItem();
+            if($item->getId() !== Item::AIR){
+                $items[] = $item;
+            }
+        }
+
+        return $items;
+    }
 
     public function getVariantBitmask(): int{
         return 0;

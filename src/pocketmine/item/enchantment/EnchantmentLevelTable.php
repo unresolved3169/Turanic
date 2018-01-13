@@ -30,58 +30,58 @@ class EnchantmentLevelTable {
 
 	public static function init(){
 		self::$map = [
-			Enchantment::TYPE_ARMOR_PROTECTION => [
+			Enchantment::PROTECTION => [
 				new Range(1, 21),
 				new Range(12, 32),
 				new Range(23, 43),
 				new Range(34, 54)
 			],
 
-			Enchantment::TYPE_ARMOR_FIRE_PROTECTION => [
+			Enchantment::FIRE_PROTECTION => [
 				new Range(10, 22),
 				new Range(18, 30),
 				new Range(26, 38),
 				new Range(34, 46)],
 
-			Enchantment::TYPE_ARMOR_FALL_PROTECTION => [
+			Enchantment::FEATHER_FALLING => [
 				new Range(5, 12),
 				new Range(11, 21),
 				new Range(17, 27),
 				new Range(23, 33)
 			],
 
-			Enchantment::TYPE_ARMOR_EXPLOSION_PROTECTION => [
+			Enchantment::BLAST_PROTECTION => [
 				new Range(5, 17),
 				new Range(13, 25),
 				new Range(21, 33),
 				new Range(29, 41)
 			],
 
-			Enchantment::TYPE_ARMOR_PROJECTILE_PROTECTION => [
+			Enchantment::PROJECTILE_PROTECTION => [
 				new Range(3, 18),
 				new Range(9, 24),
 				new Range(15, 30),
 				new Range(21, 36)
 			],
 
-			Enchantment::TYPE_WATER_BREATHING => [
+			Enchantment::RESPIRATION => [
 				new Range(10, 40),
 				new Range(20, 50),
 				new Range(30, 60)
 			],
 
-			Enchantment::TYPE_WATER_AFFINITY => [
+			Enchantment::AQUA_AFFINITY => [
 				new Range(10, 41)
 			],
 
-			Enchantment::TYPE_ARMOR_THORNS => [
+			Enchantment::THORNS => [
 				new Range(10, 60),
 				new Range(30, 80),
 				new Range(50, 100)
 			],
 
 			//Weapon
-			Enchantment::TYPE_WEAPON_SHARPNESS => [
+			Enchantment::SHARPNESS => [
 				new Range(1, 21),
 				new Range(12, 32),
 				new Range(23, 43),
@@ -89,7 +89,7 @@ class EnchantmentLevelTable {
 				new Range(45, 65)
 			],
 
-			Enchantment::TYPE_WEAPON_SMITE => [
+			Enchantment::SMITE => [
 				new Range(5, 25),
 				new Range(13, 33),
 				new Range(21, 41),
@@ -97,7 +97,7 @@ class EnchantmentLevelTable {
 				new Range(37, 57)
 			],
 
-			Enchantment::TYPE_WEAPON_ARTHROPODS => [
+			Enchantment::BANE_OF_ARTHROPODS => [
 				new Range(5, 25),
 				new Range(13, 33),
 				new Range(21, 41),
@@ -105,24 +105,24 @@ class EnchantmentLevelTable {
 				new Range(37, 57)
 			],
 
-			Enchantment::TYPE_WEAPON_KNOCKBACK => [
+			Enchantment::KNOCKBACK => [
 				new Range(5, 55),
 				new Range(25, 75)
 			],
 
-			Enchantment::TYPE_WEAPON_FIRE_ASPECT => [
+			Enchantment::FIRE_ASPECT => [
 				new Range(10, 60),
 				new Range(30, 80)
 			],
 
-			Enchantment::TYPE_WEAPON_LOOTING => [
+			Enchantment::LOOTING => [
 				new Range(15, 65),
 				new Range(24, 74),
 				new Range(33, 83)
 			],
 
 			//Bow
-			Enchantment::TYPE_BOW_POWER => [
+			Enchantment::POWER => [
 				new Range(1, 16),
 				new Range(11, 26),
 				new Range(21, 36),
@@ -130,21 +130,21 @@ class EnchantmentLevelTable {
 				new Range(41, 56)
 			],
 
-			Enchantment::TYPE_BOW_KNOCKBACK => [
+			Enchantment::PUNCH => [
 				new Range(12, 37),
 				new Range(32, 57)
 			],
 
-			Enchantment::TYPE_BOW_FLAME => [
+			Enchantment::FLAME => [
 				new Range(20, 50)
 			],
 
-			Enchantment::TYPE_BOW_INFINITY => [
+			Enchantment::INFINITY => [
 				new Range(20, 50)
 			],
 
 			//Mining
-			Enchantment::TYPE_MINING_EFFICIENCY => [
+			Enchantment::EFFICIENCY => [
 				new Range(1, 51),
 				new Range(11, 61),
 				new Range(21, 71),
@@ -152,30 +152,30 @@ class EnchantmentLevelTable {
 				new Range(41, 91)
 			],
 
-			Enchantment::TYPE_MINING_SILK_TOUCH => [
+			Enchantment::SILK_TOUCH => [
 				new Range(15, 65)
 			],
 
-			Enchantment::TYPE_MINING_DURABILITY => [
+			Enchantment::UNBREAKING => [
 				new Range(5, 55),
 				new Range(13, 63),
 				new Range(21, 71)
 			],
 
-			Enchantment::TYPE_MINING_FORTUNE => [
+			Enchantment::FORTUNE => [
 				new Range(15, 55),
 				new Range(24, 74),
 				new Range(33, 83)
 			],
 
 			//Fishing
-			Enchantment::TYPE_FISHING_FORTUNE => [
+			Enchantment::LUCK_OF_THE_SEA => [
 				new Range(15, 65),
 				new Range(24, 74),
 				new Range(33, 83)
 			],
 
-			Enchantment::TYPE_FISHING_LURE => [
+			Enchantment::LURE => [
 				new Range(15, 65),
 				new Range(24, 74),
 				new Range(33, 83)
@@ -197,48 +197,48 @@ class EnchantmentLevelTable {
 		if($item->getId() == Item::BOOK){
 			$enchantmentIds = array_keys(self::$map);
 		}elseif($item->isArmor()){
-			$enchantmentIds[] = Enchantment::TYPE_ARMOR_PROTECTION;
-			$enchantmentIds[] = Enchantment::TYPE_ARMOR_FIRE_PROTECTION;
-			$enchantmentIds[] = Enchantment::TYPE_ARMOR_EXPLOSION_PROTECTION;
-			$enchantmentIds[] = Enchantment::TYPE_ARMOR_PROJECTILE_PROTECTION;
-			$enchantmentIds[] = Enchantment::TYPE_ARMOR_THORNS;
+			$enchantmentIds[] = Enchantment::PROTECTION;
+			$enchantmentIds[] = Enchantment::FIRE_PROTECTION;
+			$enchantmentIds[] = Enchantment::BLAST_PROTECTION;
+			$enchantmentIds[] = Enchantment::PROJECTILE_PROTECTION;
+			$enchantmentIds[] = Enchantment::THORNS;
 
 			if($item->isBoots()){
-				$enchantmentIds[] = Enchantment::TYPE_ARMOR_FALL_PROTECTION;
+				$enchantmentIds[] = Enchantment::FEATHER_FALLING;
 			}
 
 			if($item->isHelmet()){
-				$enchantmentIds[] = Enchantment::TYPE_WATER_BREATHING;
-				$enchantmentIds[] = Enchantment::TYPE_WATER_AFFINITY;
+				$enchantmentIds[] = Enchantment::RESPIRATION;
+				$enchantmentIds[] = Enchantment::AQUA_AFFINITY;
 			}
 
 		}elseif($item->isSword()){
-			$enchantmentIds[] = Enchantment::TYPE_WEAPON_SHARPNESS;
-			$enchantmentIds[] = Enchantment::TYPE_WEAPON_SMITE;
-			$enchantmentIds[] = Enchantment::TYPE_WEAPON_ARTHROPODS;
-			$enchantmentIds[] = Enchantment::TYPE_WEAPON_KNOCKBACK;
-			$enchantmentIds[] = Enchantment::TYPE_WEAPON_FIRE_ASPECT;
-			$enchantmentIds[] = Enchantment::TYPE_WEAPON_LOOTING;
+			$enchantmentIds[] = Enchantment::SHARPNESS;
+			$enchantmentIds[] = Enchantment::SMITE;
+			$enchantmentIds[] = Enchantment::BANE_OF_ARTHROPODS;
+			$enchantmentIds[] = Enchantment::KNOCKBACK;
+			$enchantmentIds[] = Enchantment::FIRE_ASPECT;
+			$enchantmentIds[] = Enchantment::LOOTING;
 
 		}elseif($item->isTool()){
-			$enchantmentIds[] = Enchantment::TYPE_MINING_EFFICIENCY;
-			$enchantmentIds[] = Enchantment::TYPE_MINING_SILK_TOUCH;
-			$enchantmentIds[] = Enchantment::TYPE_MINING_FORTUNE;
+			$enchantmentIds[] = Enchantment::EFFICIENCY;
+			$enchantmentIds[] = Enchantment::SILK_TOUCH;
+			$enchantmentIds[] = Enchantment::FORTUNE;
 
 		}elseif($item->getId() == Item::BOW){
-			$enchantmentIds[] = Enchantment::TYPE_BOW_POWER;
-			$enchantmentIds[] = Enchantment::TYPE_BOW_KNOCKBACK;
-			$enchantmentIds[] = Enchantment::TYPE_BOW_FLAME;
-			$enchantmentIds[] = Enchantment::TYPE_BOW_INFINITY;
+			$enchantmentIds[] = Enchantment::POWER;
+			$enchantmentIds[] = Enchantment::PUNCH;
+			$enchantmentIds[] = Enchantment::FLAME;
+			$enchantmentIds[] = Enchantment::INFINITY;
 
 		}elseif($item->getId() == Item::FISHING_ROD){
-			$enchantmentIds[] = Enchantment::TYPE_FISHING_FORTUNE;
-			$enchantmentIds[] = Enchantment::TYPE_FISHING_LURE;
+			$enchantmentIds[] = Enchantment::LUCK_OF_THE_SEA;
+			$enchantmentIds[] = Enchantment::LURE;
 
 		}
 
 		if($item->isTool() || $item->isArmor()){
-			$enchantmentIds[] = Enchantment::TYPE_MINING_DURABILITY;
+			$enchantmentIds[] = Enchantment::UNBREAKING;
 		}
 
 		foreach($enchantmentIds as $enchantmentId){
@@ -249,7 +249,8 @@ class EnchantmentLevelTable {
 			foreach($ranges as $range){
 				$i++;
 				if($range->isInRange($modifiedLevel)){
-					$result[] = $enchantment->setLevel($i);
+				    $ench = new EnchantmentInstance($enchantment, $i);
+					$result[] = $ench;
 				}
 			}
 		}

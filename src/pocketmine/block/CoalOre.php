@@ -24,7 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 
@@ -52,19 +51,9 @@ class CoalOre extends Solid{
         return "Coal Ore";
     }
 
-	public function getDropsForCompatibleTool(Item $item): array{
-        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-            return [
-                Item::get(Item::COAL_ORE)
-            ];
-        }else{
-            $fortunel = $item->getEnchantmentLevel(Enchantment::TYPE_MINING_FORTUNE);
-            $fortunel = $fortunel > 3 ? 3 : $fortunel;
-            $times = [1, 1, 2, 3, 4];
-            $time = $times[mt_rand(0, $fortunel + 1)];
-            return [
-                Item::get(Item::COAL, 0, $time)
-            ];
-        }
+    public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get(Item::COAL)
+        ];
     }
 }

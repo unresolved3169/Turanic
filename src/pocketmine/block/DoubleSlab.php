@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 
 class DoubleSlab extends Solid {
@@ -42,28 +43,28 @@ class DoubleSlab extends Solid {
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getName() : string{
-		static $names = [
-			0 => "Stone",
-			1 => "Sandstone",
-			2 => "Wooden",
-			3 => "Cobblestone",
-			4 => "Brick",
-			5 => "Stone Brick",
-			6 => "Quartz",
-			7 => "Nether Brick",
-		];
-		return "Double " . $names[$this->getVariant()] . " Slab";
-	}
+    public function getToolHarvestLevel(): int{
+        return TieredTool::TIER_WOODEN;
+    }
 
-	public function getDrops(Item $item) : array{
-		if($item->isPickaxe() >= 1){
-			return [
-				Item::get(Item::SLAB, $this->getVariant(), 2)
-			];
-		}else{
-			return [];
-		}
+    public function getName() : string{
+        static $names = [
+            0 => "Stone",
+            1 => "Sandstone",
+            2 => "Wooden",
+            3 => "Cobblestone",
+            4 => "Brick",
+            5 => "Stone Brick",
+            6 => "Quartz",
+            7 => "Nether Brick",
+        ];
+        return "Double " . $names[$this->getVariant()] . " Slab";
+    }
+
+    public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get(Item::SLAB, $this->getVariant(), 2)
+        ];
 	}
 
 }

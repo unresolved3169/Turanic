@@ -51,14 +51,10 @@ class Mycelium extends Solid {
 		return 0.6;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return parent::getDrops($item);
-		}else{
-			return [
-				Item::get(Item::DIRT)
-			];
-		}
+	public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get(Item::DIRT)
+        ];
 	}
 
     public function ticksRandomly() : bool{

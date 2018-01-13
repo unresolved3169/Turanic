@@ -121,7 +121,7 @@ class Sheep extends Animal implements Colorable {
 		if($cause instanceof EntityDamageByEntityEvent){
 			$damager = $cause->getDamager();
 			if($damager instanceof Player){
-				$lootingL = $damager->getItemInHand()->getEnchantmentLevel(Enchantment::TYPE_WEAPON_LOOTING);
+				$lootingL = $damager->getItemInHand()->getEnchantmentLevel(Enchantment::LOOTING);
 				$drops = [ItemItem::get(ItemItem::WOOL, $this->getColor(), 1)];
                 $drops[] = ItemItem::get(ItemItem::RAW_MUTTON, 0, mt_rand(1, 2 + $lootingL));
 				return $drops;

@@ -83,7 +83,7 @@ class Cake extends Transparent implements FoodSource {
 		return false;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
 

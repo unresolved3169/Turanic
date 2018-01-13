@@ -81,7 +81,7 @@ class ZombiePigman extends Monster {
 		if($cause instanceof EntityDamageByEntityEvent){
 			$damager = $cause->getDamager();
 			if($damager instanceof Player){
-				$lootingL = $damager->getItemInHand()->getEnchantmentLevel(Enchantment::TYPE_WEAPON_LOOTING);
+				$lootingL = $damager->getItemInHand()->getEnchantmentLevel(Enchantment::LOOTING);
 				if(mt_rand(1, 200) <= (5 + 2 * $lootingL)){
 					$drops[] = ItemItem::get(ItemItem::GOLD_INGOT, 0, 1);
 				}

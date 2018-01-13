@@ -26,7 +26,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\TieredTool;
 use pocketmine\item\Item;
 
@@ -55,12 +54,8 @@ class Snow extends Solid{
     }
 
 	public function getDropsForCompatibleTool(Item $item): array{
-        if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-            return parent::getDrops($item);
-        }else{
-            return [
-                Item::get(Item::SNOWBALL, 0, 4)
-            ];
-        }
+        return [
+            Item::get(Item::SNOWBALL, 0, 4)
+        ];
     }
 }

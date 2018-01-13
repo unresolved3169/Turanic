@@ -178,9 +178,10 @@ class Leaves extends Transparent {
 	}
 
     public function getDrops(Item $item) : array{
-        if($item->isShears()){
-            return parent::getDrops($item);
+        if($item->getBlockToolType() & BlockToolType::TYPE_SHEARS){
+            return $this->getDropsForCompatibleTool($item);
         }
+
         $drops = [];
         if(mt_rand(1, 20) === 1){ //Saplings
             $drops[] = $this->getSaplingItem();
@@ -188,6 +189,7 @@ class Leaves extends Transparent {
         if($this->canDropApples() and mt_rand(1, 200) === 1){ //Apples
             $drops[] = Item::get(Item::APPLE);
         }
+
         return $drops;
     }
 

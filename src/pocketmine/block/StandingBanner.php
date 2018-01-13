@@ -95,7 +95,7 @@ class StandingBanner extends Transparent{
 		return 0;
 	}
 
-	public function getDrops(Item $item): array{
+	public function getDropsForCompatibleTool(Item $item): array{
 		return [];
 	}
 

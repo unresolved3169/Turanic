@@ -148,9 +148,6 @@ class TrappedChest extends RedstoneSource {
 				}
 			}
 
-			if($player->isCreative() and $player->getServer()->limitedCreative){
-				return true;
-			}
 			$player->addWindow($chest->getInventory());
 			$this->level->updateAroundRedstone($this, [self::SIDE_DOWN, self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST]);
 		}

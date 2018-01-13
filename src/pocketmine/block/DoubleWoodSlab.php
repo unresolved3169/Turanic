@@ -26,6 +26,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
+// TODO : UPDATE!?!?
 class DoubleWoodSlab extends Solid {
 
 	protected $id = self::DOUBLE_WOOD_SLAB;
@@ -56,7 +57,7 @@ class DoubleWoodSlab extends Solid {
 		return "Double " . $names[$this->getVariant()] . " Wooden Slab";
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			Item::get(Item::WOOD_SLAB, $this->getVariant(), 2)
 		];

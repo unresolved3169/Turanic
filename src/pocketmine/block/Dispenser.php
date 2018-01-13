@@ -94,10 +94,6 @@ class Dispenser extends Solid {
 				$dispenser = Tile::createTile(Tile::DISPENSER, $this->getLevel(), TileDispenser::createNBT($this));
 			}
 
-			if($player->isCreative() and $player->getServer()->limitedCreative){
-				return true;
-			}
-
 			$player->addWindow($dispenser->getInventory());
 		}
 

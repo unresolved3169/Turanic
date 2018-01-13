@@ -49,11 +49,7 @@ class PackedIce extends Solid {
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getDrops(Item $item) : array{
-		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
-			return parent::getDrops($item);
-		}else{
-			return [];
-		}
+	public function getDropsForCompatibleTool(Item $item) : array{
+        return [];
 	}
 } 

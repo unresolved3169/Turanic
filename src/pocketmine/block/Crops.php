@@ -98,4 +98,8 @@ abstract class Crops extends Flowable {
 
         return false;
 	}
+
+    public function isAffectedBySilkTouch(): bool{
+        return false;
+    }
 }

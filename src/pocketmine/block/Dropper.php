@@ -92,9 +92,6 @@ class Dropper extends Solid implements ElectricalAppliance {
 				$dropper = Tile::createTile(Tile::DROPPER, $this->getLevel(), TileDropper::createNBT($this));
 			}
 
-			if($player->isCreative() and $player->getServer()->limitedCreative){
-				return true;
-			}
 			$player->addWindow($dropper->getInventory());
 		}
 
