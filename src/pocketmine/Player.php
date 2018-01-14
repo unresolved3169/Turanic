@@ -128,6 +128,7 @@ use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
@@ -4428,5 +4429,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return true;
         }
         return false;
+    }
+
+    public function handleMapInfoRequest(MapInfoRequestPacket) : bool{
+        return true;
     }
 }

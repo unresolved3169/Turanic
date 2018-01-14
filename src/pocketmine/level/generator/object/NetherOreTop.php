@@ -108,7 +108,6 @@ class NetherOreTop {
 									if($this->type->material->getDamage() !== 0){
 										$level->setBlockDataAt($x, $y, $z, $this->type->material->getDamage());
 									}
-									$level->updateBlockLight($x, $y, $z);
 									//echo "Placed to $x, $y, $z\n";
 								}
 							}
