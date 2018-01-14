@@ -4431,7 +4431,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         return false;
     }
 
-    public function handleMapInfoRequest(MapInfoRequestPacket) : bool{
+    public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
         return true;
     }
 }
