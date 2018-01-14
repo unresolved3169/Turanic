@@ -18,63 +18,57 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 declare(strict_types=1);
 
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class DoubleTag extends NamedTag {
+class DoubleTag extends NamedTag{
 
     /**
      * DoubleTag constructor.
      *
      * @param string $name
-     * @param float $value
+     * @param float  $value
      */
-    public function __construct(string $name = "", $value = 0.0){
-        parent::__construct($name, (float) $value ?? 0.0);
+    public function __construct(string $name = "", float $value = 0.0){
+        parent::__construct($name, $value);
+    }
+
+    public function getType() : int{
+        return NBT::TAG_Double;
+    }
+
+    public function read(NBTStream $nbt){
+        $this->value = $nbt->getDouble();
+    }
+
+    public function write(NBTStream $nbt){
+        $nbt->putDouble($this->value);
     }
 
     /**
-	 * @return int
-	 */
-	public function getType(): int{
-		return NBT::TAG_Double;
-	}
-
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
-		$this->value = $nbt->getDouble();
-	}
-
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
-		$nbt->putDouble($this->value);
-	}
-
-	public function &getValue(){
+     * @return float
+     */
+    public function &getValue() : float{
         return parent::getValue();
     }
 
+    /**
+     * @param float $value
+     *
+     * @throws \TypeError
+     */
     public function setValue($value){
-        if (!is_float($value) and !is_int($value)) {
+        if(!is_float($value) and !is_int($value)){
             throw new \TypeError("DoubleTag value must be of type double, " . gettype($value) . " given");
         }
-        parent::setValue((float)$value);
+        parent::setValue((float) $value);
     }
 }

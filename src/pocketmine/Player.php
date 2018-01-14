@@ -102,7 +102,7 @@ use pocketmine\level\WeakPosition;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\metadata\MetadataValue;
-use pocketmine\nbt\NBT;
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
@@ -952,8 +952,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
             }
 
-            $X = null;
-            $Z = null;
             Level::getXZ($index, $X, $Z);
             assert(is_int($X) and is_int($Z));
 
@@ -2883,8 +2881,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         $t = $this->level->getTile($pos);
         if($t instanceof Spawnable){
-            $nbt = new NBT(NBT::LITTLE_ENDIAN);
-            $nbt->read($packet->namedtag, false, true);
+            $nbt = new NetworkLittleEndianNBTStream();
+            $nbt->read($packet->namedtag);
             $nbt = $nbt->getData();
             if(!$t->updateCompoundTag($nbt, $this)){
                 $t->spawnTo($this);

@@ -8,14 +8,11 @@ Turanic is a fork of GenisysPro
  [![Download](https://img.shields.io/badge/download-latest-blue.svg)](https://jenkins.zxda.net/job/Turanic/) | [![Twitter](https://i.hizliresim.com/vJ2594.jpg)](https://twitter.com/TuranicTeam) | [![Build Status](https://travis-ci.org/TuranicTeam/Turanic.svg?branch=master)](https://travis-ci.org/TuranicTeam/Turanic) | [![Discord](https://camo.githubusercontent.com/455152269a0ed38255ed15e375084d4dd08e0c98/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f636861742d6f6e253230646973636f72642d3732383944412e737667)](https://discord.gg/4GZxrdk) | [![HitCount](http://hits.dwyl.io/TuranicTeam/Turanic.svg)](http://hits.dwyl.io/TuranicTeam/Turanic) |
 
 -------------
-## Can I test it before I download it?
-Yes, you can. There are our member who already use it, and at times there are dev servers running and you might be lucky enough to get in..<br>
-
-IP: **kitpvp.pkpvp.cf**  
-Port: **19172**
-
+Example servers running Turanic
+--------------------
+- **play.oyungg.net**
+- **oyna.minecraftpetr.net**
 -------------
-
 ## Known Bugs in 1.2:
 - Movement Bug (players not affected by gravity in some server devices)
 
@@ -27,7 +24,6 @@ Port: **19172**
     - [x] Fully Functional Nether Portal Frame and Block
     - [x] Funtional END_PORTAL Block (Portal Soon)
   - [x] Weather System
-  - [ ] Temperature System
  - Blocks
    - [x] EndPortal
    - [x] Portal (Nether Portal Block)
@@ -63,6 +59,8 @@ Port: **19172**
    - [x] Virtual Inventory
    - [x] Command Parameters
    - [x] Advanced Creative Items
+   - [x] Utils::urshift
+   - [x] Utils::copyOfRange
    - [ ] Fully MobAI (indev)
    - [ ] Ultra Fast Chunk Load/Unload/Generate
    - [ ] More thread/worker

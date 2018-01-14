@@ -46,4 +46,3 @@ class CommandOverload{
 		$this->params[$index] = $param;
 	}
 }
-?>

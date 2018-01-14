@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\JsonNBTParser;
 use pocketmine\nbt\NBT;
 use pocketmine\Player;
 use pocketmine\entity\Entity;
@@ -137,7 +138,7 @@ class SummonCommand extends VanillaCommand {
 		$level = ($sender instanceof Player) ? $sender->getLevel() : $sender->getServer()->getDefaultLevel();
 		$nbt = Entity::createBaseNBT(new Vector3($x, $y, $z), null, lcg_value() * 360);
 		if(count($args) == 5 and $args[4]{0} == "{"){//Tags are found
-			$nbtExtra = NBT::parseJSON($args[4]);
+			$nbtExtra = JsonNBTParser::parseJSON($args[4]);
 			$nbt = NBT::combineCompoundTags($nbt, $nbtExtra, true);
 		}
 

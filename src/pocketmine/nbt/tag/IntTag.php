@@ -25,39 +25,36 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class IntTag extends NamedTag {
+class IntTag extends NamedTag{
 
     /**
-	 * @return int
-	 */
-	public function getType(): int{
-		return NBT::TAG_Int;
-	}
+     * @param string $name
+     * @param int    $value
+     */
+    public function __construct(string $name = "", int $value = 0){
+        parent::__construct($name, $value);
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
-		$this->value = $nbt->getInt($network);
-	}
+    public function getType() : int{
+        return NBT::TAG_Int;
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
-		$nbt->putInt($this->value, $network);
-	}
+    public function read(NBTStream $nbt){
+        $this->value = $nbt->getInt();
+    }
 
-	public function &getValue(){
+    public function write(NBTStream $nbt){
+        $nbt->putInt($this->value);
+    }
+
+    /**
+     * @return int
+     */
+    public function &getValue() : int{
         return parent::getValue();
     }
 
@@ -66,11 +63,12 @@ class IntTag extends NamedTag {
      *
      * @throws \TypeError
      */
-	public function setValue($value){
-        if (!is_int($value)) {
+    public function setValue($value){
+        if(!is_int($value)){
             throw new \TypeError("IntTag value must be of type int, " . gettype($value) . " given");
+        }elseif($value < -(2 ** 31) or $value > ((2 ** 31) - 1)){
+            throw new \InvalidArgumentException("Value $value is too large!");
         }
-
         parent::setValue($value);
     }
 }

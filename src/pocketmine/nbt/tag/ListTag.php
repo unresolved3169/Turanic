@@ -25,39 +25,40 @@ declare(strict_types=1);
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class ListTag extends NamedTag implements \ArrayAccess, \Countable {
+class ListTag extends NamedTag implements \ArrayAccess, \Countable{
 
     /** @var int */
-	private $tagType;
+    private $tagType;
 
     /**
      * ListTag constructor.
      *
-     * @param string $name
+     * @param string     $name
      * @param NamedTag[] $value
-     * @param int $tagType
+     * @param int        $tagType
      */
-	public function __construct($name = "", $value = [], int $tagType = NBT::TAG_End){
+    public function __construct(string $name = "", array $value = [], int $tagType = NBT::TAG_End){
         parent::__construct($name, $value);
-		$this->tagType = $tagType;
-	}
+        $this->tagType = $tagType;
+    }
 
-	/**
-	 * @return NamedTag[]
-	 */
-	public function &getValue(){
-		$value = [];
-		foreach($this as $k => $v){
-			if($v instanceof Tag){
-				$value[$k] = $v;
-			}
-		}
+    /**
+     * @return NamedTag[]
+     */
+    public function &getValue() : array{
+        $value = [];
+        foreach($this as $k => $v){
+            if($v instanceof Tag){
+                $value[$k] = $v;
+            }
+        }
 
-		return $value;
-	}
+        return $value;
+    }
 
     /**
      * @param NamedTag[] $value
@@ -78,70 +79,67 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable {
         }
     }
 
-	/**
-	 * @return int
-	 */
-	public function getCount(){
-		$count = 0;
-		foreach($this as $tag){
-			if($tag instanceof Tag){
-				++$count;
-			}
-		}
+    public function getCount(){
+        $count = 0;
+        foreach($this as $tag){
+            if($tag instanceof Tag){
+                ++$count;
+            }
+        }
 
-		return $count;
-	}
+        return $count;
+    }
 
-	/**
-	 * @param mixed $offset
-	 *
-	 * @return bool
-	 */
-	public function offsetExists($offset){
-		return isset($this->{$offset});
-	}
+    public function getAllValues() : array{
+        $result = [];
+        foreach($this as $tag){
+            if(!($tag instanceof NamedTag)){
+                continue;
+            }
 
-	/**
-	 * @param mixed $offset
-	 *
-	 * @return null
-	 */
-	public function offsetGet($offset){
-		if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
-			if($this->{$offset} instanceof \ArrayAccess){
-				return $this->{$offset};
-			}else{
-				return $this->{$offset}->getValue();
-			}
-		}
+            if($tag instanceof \ArrayAccess){
+                $result[] = $tag;
+            }else{
+                $result[] = $tag->getValue();
+            }
+        }
 
-		return null;
-	}
+        return $result;
+    }
 
-	/**
-	 * @param mixed $offset
-	 * @param mixed $value
-	 */
-	public function offsetSet($offset, $value){
-		if($value instanceof Tag){
-			$this->{$offset} = $value;
-		}elseif($this->{$offset} instanceof Tag){
-			$this->{$offset}->setValue($value);
-		}
-	}
+    public function offsetExists($offset){
+        return isset($this->{$offset});
+    }
 
-	/**
-	 * @param mixed $offset
-	 */
-	public function offsetUnset($offset){
-		unset($this->{$offset});
-	}
+    /**
+     * @param int $offset
+     *
+     * @return CompoundTag|ListTag|mixed
+     */
+    public function offsetGet($offset){
+        if(isset($this->{$offset}) and $this->{$offset} instanceof Tag){
+            if($this->{$offset} instanceof \ArrayAccess){
+                return $this->{$offset};
+            }else{
+                return $this->{$offset}->getValue();
+            }
+        }
 
-	/**
-	 * @param int $mode
-	 *
-	 * @return int
-	 */
+        return null;
+    }
+
+    public function offsetSet($offset, $value){
+        if($value instanceof Tag){
+            $this->{$offset} = $value;
+        }elseif($this->{$offset} instanceof Tag){
+            $this->{$offset}->setValue($value);
+        }
+    }
+
+    public function offsetUnset($offset){
+        unset($this->{$offset});
+    }
+
     public function count($mode = COUNT_NORMAL){
         $count = 0;
         for($i = 0; isset($this->{$i}); $i++){
@@ -155,38 +153,32 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable {
         return $count;
     }
 
-	public function getType() : int{
-		return NBT::TAG_List;
-	}
+    public function getType() : int{
+        return NBT::TAG_List;
+    }
 
-	public function setTagType(int $type){
-		$this->tagType = $type;
-	}
+    public function setTagType(int $type){
+        $this->tagType = $type;
+    }
 
-	public function getTagType(): int{
-		return $this->tagType;
-	}
+    public function getTagType() : int{
+        return $this->tagType;
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
-		$this->value = [];
-		$this->tagType = $nbt->getByte();
-		$size = $nbt->getInt($network);
+    public function read(NBTStream $nbt){
+        $this->value = [];
+        $this->tagType = $nbt->getByte();
+        $size = $nbt->getInt();
 
-		$tagBase = NBT::createTag($this->tagType);
+        $tagBase = NBT::createTag($this->tagType);
         for($i = 0; $i < $size and !$nbt->feof(); ++$i){
             $tag = clone $tagBase;
-            $tag->read($nbt, $network);
+            $tag->read($nbt);
             $this->{$i} = $tag;
         }
-	}
+    }
 
-	public function write(NBT $nbt, bool $network = false){
+    public function write(NBTStream $nbt){
         if($this->tagType === NBT::TAG_End){ //previously empty list, try detecting type from tag children
             $id = NBT::TAG_End;
             foreach($this as $tag){
@@ -210,47 +202,27 @@ class ListTag extends NamedTag implements \ArrayAccess, \Countable {
                 $tags[] = $tag;
             }
         }
-        $nbt->putInt(count($tags), $network);
+        $nbt->putInt(count($tags));
         foreach($tags as $tag){
-            $tag->write($nbt, $network);
+            $tag->write($nbt);
         }
-	}
+    }
 
-	/**
-	 * @return string
-	 */
-	public function __toString(){
-		$str = get_class($this) . "{\n";
-		foreach($this as $tag){
-			if($tag instanceof Tag){
-				$str .= get_class($tag) . ":" . $tag->__toString() . "\n";
-			}
-		}
-		return $str . "}";
-	}
+    public function __toString(){
+        $str = get_class($this) . "{\n";
+        foreach($this as $tag){
+            if($tag instanceof Tag){
+                $str .= get_class($tag) . ":" . $tag->__toString() . "\n";
+            }
+        }
+        return $str . "}";
+    }
 
     public function __clone(){
-	    foreach ($this as $key => $tag){
+        foreach($this as $key => $tag){
             if($tag instanceof Tag){
                 $this->{$key} = clone $tag;
             }
         }
-    }
-
-    public function getAllValues() : array{
-        $result = [];
-        foreach($this as $tag){
-            if(!($tag instanceof NamedTag)){
-                continue;
-            }
-
-            if($tag instanceof \ArrayAccess){
-                $result[] = $tag;
-            }else{
-                $result[] = $tag->getValue();
-            }
-        }
-
-        return $result;
     }
 }

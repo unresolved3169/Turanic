@@ -33,6 +33,7 @@ use pocketmine\block\BlockToolType;
 use pocketmine\entity\utils\FireworkUtils;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\LittleEndianNBTStream;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\Player;
 use pocketmine\block\Block;
@@ -78,7 +79,7 @@ class Item implements ItemIds, \JsonSerializable {
         }
 
         if(self::$cachedParser === null){
-            self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
+            self::$cachedParser = new LittleEndianNBTStream();
         }
 
         self::$cachedParser->read($tag);
@@ -98,7 +99,7 @@ class Item implements ItemIds, \JsonSerializable {
 	 */
 	private static function writeCompoundTag(CompoundTag $tag) : string{
 		if(self::$cachedParser === null){
-			self::$cachedParser = new NBT(NBT::LITTLE_ENDIAN);
+			self::$cachedParser = new LittleEndianNBTStream();
 		}
 
 		self::$cachedParser->setData($tag);

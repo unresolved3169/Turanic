@@ -18,53 +18,52 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 declare(strict_types=1);
 
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class FloatTag extends NamedTag {
+class FloatTag extends NamedTag{
 
     /**
-	 * @return int
-	 */
-	public function getType(): int{
-		return NBT::TAG_Float;
-	}
+     * FloatTag constructor.
+     *
+     * @param string $name
+     * @param float  $value
+     */
+    public function __construct(string $name = "", float $value = 0.0){
+        parent::__construct($name, $value);
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
-		$this->value = $nbt->getFloat();
-	}
+    public function getType() : int{
+        return NBT::TAG_Float;
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
-		$nbt->putFloat($this->value);
-	}
+    public function read(NBTStream $nbt){
+        $this->value = $nbt->getFloat();
+    }
 
-	public function &getValue(){
+    public function write(NBTStream $nbt){
+        $nbt->putFloat($this->value);
+    }
+
+    /**
+     * @return float
+     */
+    public function &getValue() : float{
         return parent::getValue();
     }
 
     public function setValue($value){
-        if (!is_float($value) and !is_int($value)) {
+        if(!is_float($value) and !is_int($value)){
             throw new \TypeError("FloatTag value must be of type float, " . gettype($value) . " given");
         }
-        parent::setValue((float)$value);
+        parent::setValue((float) $value);
     }
 }

@@ -458,4 +458,29 @@ class Utils {
         return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
     }
 
+    public static function urshift($n, $s) {
+        return ($n >= 0) ? ($n >> $s) :
+            (($n & 0x7fffffff) >> $s) |
+            (0x40000000 >> ($s - 1));
+    }
+
+    public static function copyOfRange(array $array, int $start, int $finish = null){
+	    if($finish == null){
+	        $finish = count($array) - 1;
+        }
+        if($start > $finish or $start < -1 or $start >= count($array) or $finish >= count($array)){
+            throw new \ArrayOutOfBoundsException("Out of bounds");
+        }
+        $new = [];
+        $sayi = 0;
+	    foreach($array as $key => $value){
+            if($sayi >= $start and $sayi <= $finish){
+                $new[$key] = $value;
+            }
+            if($sayi >= $finish) break;
+            $sayi++;
+        }
+        return $new;
+    }
+
 }

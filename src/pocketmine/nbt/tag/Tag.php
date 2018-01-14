@@ -18,61 +18,36 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 declare(strict_types=1);
 
 /**
  * All the NBT Tags
  */
-
 namespace pocketmine\nbt\tag;
 
-use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
-abstract class Tag extends \stdClass {
+abstract class Tag extends \stdClass{
 
-	protected $value;
+    protected $value;
 
-	/**
-	 * @return mixed
-	 */
-	public function &getValue(){
-		return $this->value;
-	}
+    public function &getValue(){
+        return $this->value;
+    }
 
-	/**
-	 * @return int
-	 */
-	public abstract function getType(): int;
+    abstract public function getType() : int;
 
-	/**
-	 * @param $value
-	 */
-	public function setValue($value){
-		$this->value = $value;
-	}
+    public function setValue($value){
+        $this->value = $value;
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed
-	 */
-	abstract public function write(NBT $nbt, bool $network = false);
+    abstract public function write(NBTStream $nbt);
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed
-	 */
-	abstract public function read(NBT $nbt, bool $network = false);
+    abstract public function read(NBTStream $nbt);
 
-	/**
-	 * @return string
-	 */
-	public function __toString(){
-		return (string) $this->value;
-	}
+    public function __toString(){
+        return (string) $this->value;
+    }
 }

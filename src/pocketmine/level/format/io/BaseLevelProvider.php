@@ -28,7 +28,7 @@ use pocketmine\level\format\Chunk;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\LevelException;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
+use pocketmine\nbt\BigEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 
@@ -43,7 +43,7 @@ abstract class BaseLevelProvider implements LevelProvider{
         if(!file_exists($this->path)){
             mkdir($this->path, 0777, true);
         }
-        $nbt = new NBT(NBT::BIG_ENDIAN);
+        $nbt = new BigEndianNBTStream();
         $nbt->readCompressed(file_get_contents($this->getPath() . "level.dat"));
         $levelData = $nbt->getData()->getCompoundTag("Data");
         if($levelData !== null){
@@ -107,7 +107,7 @@ abstract class BaseLevelProvider implements LevelProvider{
     }
 
 	public function saveLevelData(){
-		$nbt = new NBT(NBT::BIG_ENDIAN);
+		$nbt = new BigEndianNBTStream();
 		$nbt->setData(new CompoundTag("", [
 			$this->levelData
 		]));

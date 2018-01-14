@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\command\Command;
-use pocketmine\utils\{BinaryStream, Binary};
+use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\command\overload\{CommandParameter, CommandOverload, CommandEnum};
 
 class AvailableCommandsPacket extends DataPacket{
@@ -37,7 +37,7 @@ class AvailableCommandsPacket extends DataPacket{
 	
 	protected $enumValuesCount = 0;
 	
-	public function putCommandEnum(CommandEnum $list, BinaryStream $stream){
+	public function putCommandEnum(CommandEnum $list, NetworkBinaryStream $stream){
 		$stream->putString($list->getName());
 		$stream->putUnsignedVarInt(count($list->getValues()));
 		
@@ -46,7 +46,7 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 	
-	public function putEnumIndex(int $index, BinaryStream $stream){
+	public function putEnumIndex(int $index, NetworkBinaryStream $stream){
 		if ($this->enumValuesCount < 256) {
 			$stream->putByte($index);
 		}elseif($this->enumValuesCount < 65536) {
@@ -57,8 +57,8 @@ class AvailableCommandsPacket extends DataPacket{
 	}
 	
 	protected function getPreparedCommandData(){
-        $extraDataStream = new BinaryStream;
-        $commandStream = new BinaryStream;
+        $extraDataStream = new NetworkBinaryStream;
+        $commandStream = new NetworkBinaryStream;
 
         $enumValues = [];
         $enums = [];
@@ -99,6 +99,7 @@ class AvailableCommandsPacket extends DataPacket{
                 foreach ($overloads as $overload) {
                     $params = $overload->getParameters();
                     $commandStream->putUnsignedVarInt(count($params));
+                    /** @var CommandParameter $param */
                     foreach ($params as $param) {
                         $commandStream->putString($param->getName());
 

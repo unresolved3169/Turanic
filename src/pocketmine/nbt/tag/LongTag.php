@@ -18,44 +18,57 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 declare(strict_types=1);
 
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class LongTag extends NamedTag {
+class LongTag extends NamedTag{
 
     /**
-	 * @return int
-	 */
-	public function getType(): int{
-		return NBT::TAG_Long;
-	}
+     * LongTag constructor.
+     *
+     * @param string $name
+     * @param int    $value
+     */
+    public function __construct(string $name = "", int $value = 0){
+        parent::__construct($name, $value);
+    }
 
-	//TODO: check if this also changed to varint
+    public function getType() : int{
+        return NBT::TAG_Long;
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
-		$this->value = $nbt->getLong();
-	}
+    public function read(NBTStream $nbt){
+        $this->value = $nbt->getLong();
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
-		$nbt->putLong($this->value);
-	}
+    public function write(NBTStream $nbt){
+        $nbt->putLong($this->value);
+    }
+
+    /**
+     * @return int
+     */
+    public function &getValue() : int{
+        return parent::getValue();
+    }
+
+    /**
+     * @param int $value
+     *
+     * @throws \TypeError
+     */
+    public function setValue($value){
+        if(!is_int($value)){
+            throw new \TypeError("LongTag value must be of type int, " . gettype($value) . " given");
+        }
+        parent::setValue($value);
+    }
 }

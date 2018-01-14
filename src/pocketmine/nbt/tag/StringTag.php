@@ -18,51 +18,55 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 declare(strict_types=1);
 
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
 #include <rules/NBT.h>
 
-class StringTag extends NamedTag {
+class StringTag extends NamedTag{
 
     /**
-	 * @return int
-	 */
-	public function getType(): int{
-		return NBT::TAG_String;
-	}
+     * StringTag constructor.
+     *
+     * @param string $name
+     * @param string $value
+     */
+    public function __construct(string $name = "", string $value = ""){
+        parent::__construct($name, $value);
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
-		$this->value = $nbt->getString($network);
-	}
+    public function getType() : int{
+        return NBT::TAG_String;
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
-		$nbt->putString($this->value, $network);
-	}
+    public function read(NBTStream $nbt){
+        $this->value = $nbt->getString();
+    }
 
-	public function &getValue(){
+    public function write(NBTStream $nbt){
+        $nbt->putString($this->value);
+    }
+
+    /**
+     * @return string
+     */
+    public function &getValue() : string{
         return parent::getValue();
     }
 
+    /**
+     * @param string $value
+     *
+     * @throws \TypeError
+     */
     public function setValue($value){
-        if (!is_string($value)) {
+        if(!is_string($value)){
             throw new \TypeError("StringTag value must be of type string, " . gettype($value) . " given");
         }
         parent::setValue($value);

@@ -18,40 +18,26 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+*/
 
 declare(strict_types=1);
 
 namespace pocketmine\nbt\tag;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\NBTStream;
 
-class EndTag extends Tag {
+class EndTag extends Tag{
 
-	/**
-	 * @return int
-	 */
-	public function getType(): int{
-		return NBT::TAG_End;
-	}
+    public function getType() : int{
+        return NBT::TAG_End;
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function read(NBT $nbt, bool $network = false){
+    public function read(NBTStream $nbt){
 
-	}
+    }
 
-	/**
-	 * @param NBT  $nbt
-	 * @param bool $network
-	 *
-	 * @return mixed|void
-	 */
-	public function write(NBT $nbt, bool $network = false){
+    public function write(NBTStream $nbt){
 
-	}
+    }
 }

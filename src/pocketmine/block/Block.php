@@ -432,11 +432,9 @@ class Block extends Position implements BlockIds, Metadatable{
      */
     public function getDrops(Item $item) : array{
         if($this->isCompatibleWithTool($item)){
-            if($item->hasEnchantment(Enchantment::SILK_TOUCH) and $this->isAffectedBySilkTouch()) {
-                return [
-                    Item::get($this->getItemId(), $this->getVariant())
-                ];
-            }
+            if($this->isAffectedBySilkTouch() and $item->hasEnchantment(Enchantment::SILK_TOUCH)){
+                return $this->getSilkTouchDrops($item);
+ 			}
             return $this->getDropsForCompatibleTool($item);
         }
 
@@ -451,6 +449,19 @@ class Block extends Position implements BlockIds, Metadatable{
      * @return Item[]
      */
     public function getDropsForCompatibleTool(Item $item) : array{
+        return [
+            Item::get($this->getItemId(), $this->getVariant())
+        ];
+    }
+
+    /**
+     * Returns an array of Items to be dropped when the block is broken using a compatible Silk Touch-enchanted tool.
+     *
+     * @param Item $item
+     *
+     * @return Item[]
+     */
+    public function getSilkTouchDrops(Item $item) : array{
         return [
             Item::get($this->getItemId(), $this->getVariant())
         ];

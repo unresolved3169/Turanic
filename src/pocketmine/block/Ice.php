@@ -58,10 +58,10 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item, Player $player = null) : bool{
-		if($item->getEnchantmentLevel(Enchantment::SILK_TOUCH) === 0){
+		if(!$item->hasEnchantment(Enchantment::SILK_TOUCH)){
 			$this->getLevel()->setBlock($this, BlockFactory::get(Block::WATER), true);
 		}
-		return true;
+		return parent::onBreak($item, $player);
 	}
 
     public function ticksRandomly() : bool{
