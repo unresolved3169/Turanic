@@ -24,9 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\level;
 
-use pocketmine\block\Block;
 use pocketmine\level\format\Chunk;
-use pocketmine\math\Vector3;
 
 class SimpleChunkManager implements ChunkManager {
 

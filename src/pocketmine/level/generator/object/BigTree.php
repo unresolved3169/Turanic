@@ -227,7 +227,7 @@ class BigTree extends Tree {
 					$branch->next();
 					$pos = $branch->current();
 					$level->setBlockIdAt((int) $pos->x, (int) $pos->y, (int) $pos->z, Block::LOG);
-					$level->updateBlockLight((int) $pos->x, (int) $pos->y, (int) $pos->z);
+					//$level->updateBlockLight((int) $pos->x, (int) $pos->y, (int) $pos->z);
 				}
 			}
 		}
