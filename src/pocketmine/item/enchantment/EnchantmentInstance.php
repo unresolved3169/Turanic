@@ -79,4 +79,8 @@ class EnchantmentInstance{
 
         return $this;
     }
+
+    public function getRepairCost(bool $isBook = false) : int{
+        return $this->enchantment->getRepairCost($isBook) * $this->getLevel();
+    }
 }

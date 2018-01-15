@@ -1394,14 +1394,8 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return int
 	 */
 	public function getRepairCost() : int{
-        $display = $this->getNamedTagEntry(self::TAG_DISPLAY);
-        if($display instanceof CompoundTag){
-            if($display->hasTag("RepairCost")){
-                return $display->getInt("RepairCost");
-            }
-        }
-
-		return 1;
+        $namedtag = $this->getNamedTag();
+        return $namedtag->getInt("RepairCost", 0);
 	}
 
 
@@ -1411,20 +1405,10 @@ class Item implements ItemIds, \JsonSerializable {
 	 * @return $this
 	 */
 	public function setRepairCost(int $cost){
-		if($cost === 1){
-			$this->clearRepairCost();
-		}
-
-        /** @var CompoundTag $display */
-        $display = $this->getNamedTagEntry(self::TAG_DISPLAY);
-        if(!($display instanceof CompoundTag)){
-            $display = new CompoundTag(self::TAG_DISPLAY);
-        }
-
-        $display->setInt("RepairCost", $cost);
-        $this->setNamedTagEntry($display);
-
-		return $this;
+        $namedtag = $this->getNamedTag();
+        $namedtag->setInt("RepairCost", $cost);
+        $this->setNamedTag($namedtag);
+        return $this;
 	}
 
 	/**
