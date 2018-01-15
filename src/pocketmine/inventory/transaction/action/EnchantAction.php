@@ -24,30 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
-use pocketmine\inventory\AnvilInventory;
-use pocketmine\item\Item;
 use pocketmine\Player;
 
-class AnvilInputAction extends InventoryAction{
-
-    /** @var AnvilInventory */
-    public $inventory;
-
-    public function __construct(AnvilInventory $inventory, Item $sourceItem, Item $targetItem){
-        parent::__construct($sourceItem, $targetItem);
-        $this->inventory = $inventory;
-    }
+class EnchantAction extends SlotChangeAction{
 
     public function isValid(Player $source): bool{
-        $check = $this->inventory->getItem(0);
-        return $check->equalsExact($this->sourceItem);
+        if($this->getSlot() == -1) return true;
+        return parent::isValid($source);
     }
-
-    public function execute(Player $source): bool{
-        return $this->inventory->setItem(0, $this->targetItem, false);
-    }
-
-    public function onExecuteSuccess(Player $source){}
-
-    public function onExecuteFail(Player $source){}
 }

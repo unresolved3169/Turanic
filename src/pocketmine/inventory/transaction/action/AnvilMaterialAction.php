@@ -24,16 +24,16 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
-use pocketmine\inventory\Inventory;
+use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 class AnvilMaterialAction extends InventoryAction{
 
-    /** @var Inventory */
+    /** @var AnvilInventory */
     public $inventory;
 
-    public function __construct(Inventory $inventory, Item $sourceItem, Item $targetItem){
+    public function __construct(AnvilInventory $inventory, Item $sourceItem, Item $targetItem){
         parent::__construct($sourceItem, $targetItem);
         $this->inventory = $inventory;
     }
@@ -47,13 +47,7 @@ class AnvilMaterialAction extends InventoryAction{
         return $this->inventory->setItem(1, $this->targetItem, false);
     }
 
-    public function onExecuteSuccess(Player $source){
-    }
+    public function onExecuteSuccess(Player $source){}
 
-    public function onExecuteFail(Player $source){
-    }
-
-    public function setSourceItem(Item $sourceItem){
-        $this->sourceItem = $sourceItem;
-    }
+    public function onExecuteFail(Player $source){}
 }

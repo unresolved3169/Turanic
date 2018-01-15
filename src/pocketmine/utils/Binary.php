@@ -500,13 +500,10 @@ class Binary{
      */
     public static function readVarLong(string $buffer, int &$offset) : int{
         if(PHP_INT_SIZE === 8){
-            $int = self::readVarLong_64($buffer, $offset);
+            return self::readVarLong_64($buffer, $offset);
         }else{
-            $int = intval(self::readVarLong_32($buffer, $offset));
+            return intval(self::readVarLong_32($buffer, $offset));
         }
-
-        var_dump("readVarLong: ".$int);
-        return $int;
     }
 
     /**

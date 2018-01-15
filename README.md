@@ -31,12 +31,14 @@ Example servers running Turanic
    - [x] Slime Block
    - [x] Monster Spawner
  - Tiles
+   - [x] Anvil
    - [x] Beacon
    - [x] Brewing Stand
    - [x] Command Block
    - [x] Daylight Detector
    - [x] Dispenser
    - [x] Dropper
+   - [x] Enchanting Table
    - [x] Hopper
    - [x] Jukebox
    - [x] Mob Spawner
@@ -52,15 +54,16 @@ Example servers running Turanic
  - Commands
    - [x] ClearInventory Command
    - [ ] PlaySound Command
+   - [ ] StopSound Command
  - Utils
    - [x] TextUtils::center like PC or Minet.
    - [x] TextFormat::randomize 
+   - [x] Utils::urshift
+   - [x] Utils::copyOfRange
  - Others
    - [x] Virtual Inventory
    - [x] Command Parameters
    - [x] Advanced Creative Items
-   - [x] Utils::urshift
-   - [x] Utils::copyOfRange
    - [ ] Fully MobAI (indev)
    - [ ] Ultra Fast Chunk Load/Unload/Generate
    - [ ] More thread/worker

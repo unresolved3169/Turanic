@@ -25,16 +25,16 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\block\Block;
-use pocketmine\inventory\Inventory;
+use pocketmine\inventory\AnvilInventory;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
 class AnvilResultAction extends InventoryAction{
 
-    /** @var Inventory */
+    /** @var AnvilInventory */
     public $inventory;
 
-    public function __construct(Inventory $inventory, Item $sourceItem, Item $targetItem){
+    public function __construct(AnvilInventory $inventory, Item $sourceItem, Item $targetItem){
         parent::__construct($sourceItem, $targetItem);
         $this->inventory = $inventory;
     }
@@ -53,7 +53,7 @@ class AnvilResultAction extends InventoryAction{
     public function onExecuteFail(Player $source){
     }
 
-    public function getInventory(): Inventory{
+    public function getInventory(): AnvilInventory{
         return $this->inventory;
     }
 }

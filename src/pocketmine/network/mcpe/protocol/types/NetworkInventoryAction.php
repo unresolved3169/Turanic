@@ -31,6 +31,7 @@ use pocketmine\inventory\transaction\action\CraftingTakeResultAction;
 use pocketmine\inventory\transaction\action\CraftingTransferMaterialAction;
 use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\action\EnchantAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\item\Item;
@@ -121,6 +122,9 @@ class NetworkInventoryAction{
                         break;
                     case self::SOURCE_TYPE_ANVIL_RESULT:
                         $packet->inventoryType = "Anvil";
+                        break;
+                    case self::SOURCE_TYPE_ENCHANT_OUTPUT:
+                        $packet->inventoryType = "Enchant";
                         break;
                 }
                 break;
@@ -221,6 +225,16 @@ class NetworkInventoryAction{
                         return new AnvilResultAction($window, $this->oldItem, $this->newItem);
                     case self::SOURCE_TYPE_ANVIL_OUTPUT:
                         throw new \RuntimeException("Anvil inventory source type OUTPUT");
+
+                    case self::SOURCE_TYPE_ENCHANT_INPUT:
+                        $window = $player->getEnchantInventory();
+                        return new EnchantAction($window, 0, $this->oldItem, $this->newItem);
+                    case self::SOURCE_TYPE_ENCHANT_MATERIAL:
+                        $window = $player->getEnchantInventory();
+                        return new EnchantAction($window, 1, $this->oldItem, $this->newItem);
+                    case self::SOURCE_TYPE_ENCHANT_OUTPUT:
+                        $window = $player->getEnchantInventory();
+                        return new EnchantAction($window, -1, $this->oldItem, $this->newItem);
 
                     case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
                         //TODO: this type applies to all fake windows, not just crafting
