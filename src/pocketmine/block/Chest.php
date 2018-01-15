@@ -104,7 +104,17 @@ class Chest extends Transparent{
 		return true;
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
+	public function onBreak(Item $item, Player $player = null): bool{
+        $t = $this->getLevel()->getTile($this);
+        if($t instanceof TileChest){
+            $t->unpair();
+        }
+        $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
+
+        return true;
+    }
+
+    public function onActivate(Item $item, Player $player = null) : bool{
         if($player instanceof Player){
             $t = $this->getLevel()->getTile($this);
             $chest = null;
