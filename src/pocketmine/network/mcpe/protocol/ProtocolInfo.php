@@ -29,7 +29,7 @@ interface ProtocolInfo {
 	 */
 	const CURRENT_PROTOCOL = 160;
 	const ACCEPTED_PROTOCOLS = [150, 137, 140, 141, 142, 160, 414];
-	const MINECRAFT_VERSION_NETWORK = "1.2.8";
+	const MINECRAFT_VERSION_NETWORK = "1.2.9";
 
     const LOGIN_PACKET = 0x01;
     const PLAY_STATUS_PACKET = 0x02;
