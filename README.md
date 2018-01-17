@@ -62,7 +62,8 @@ Example servers running Turanic
    - [x] Utils::copyOfRange
  - Others
    - [x] Virtual Inventory
-   - [x] Command Parameters
+   - [x] Bossbar API
+   - [x] Command Parameters
    - [x] Advanced Creative Items
    - [ ] Fully MobAI (indev)
    - [ ] Ultra Fast Chunk Load/Unload/Generate
