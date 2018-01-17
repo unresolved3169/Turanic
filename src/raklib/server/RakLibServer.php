@@ -50,8 +50,8 @@ class RakLibServer extends \Thread{
 	 *
 	 * @throws \Exception
 	 */
-	public function __construct(\ThreadedLogger $logger, \ClassLoader $loader, $port, $interface = "0.0.0.0", bool $autoStart = true){
-		$this->port = (int) $port;
+	public function __construct(\ThreadedLogger $logger, \ClassLoader $loader, int $port, string $interface = "0.0.0.0", bool $autoStart = true){
+		$this->port = $port;
 		if($port < 1 or $port > 65536){
 			throw new \Exception("Invalid port range");
 		}
@@ -77,7 +77,7 @@ class RakLibServer extends \Thread{
 		}
 	}
 
-	public function isShutdown(){
+	public function isShutdown() : bool{
 		return $this->shutdown === true;
 	}
 
@@ -85,11 +85,11 @@ class RakLibServer extends \Thread{
 		$this->shutdown = true;
 	}
 
-	public function getPort(){
+	public function getPort() : int{
 		return $this->port;
 	}
 
-	public function getInterface(){
+	public function getInterface() : string{
 		return $this->interface;
 	}
 
@@ -104,37 +104,43 @@ class RakLibServer extends \Thread{
 	/**
 	 * @return \ThreadedLogger
 	 */
-	public function getLogger(){
+	public function getLogger() : \ThreadedLogger{
 		return $this->logger;
 	}
 
 	/**
 	 * @return \Threaded
 	 */
-	public function getExternalQueue(){
+	public function getExternalQueue() : \Threaded{
 		return $this->externalQueue;
 	}
 
 	/**
 	 * @return \Threaded
 	 */
-	public function getInternalQueue(){
+	public function getInternalQueue() : \Threaded{
 		return $this->internalQueue;
 	}
 
-	public function pushMainToThreadPacket($str){
+	public function pushMainToThreadPacket(string $str){
 		$this->internalQueue[] = $str;
 	}
 
-	public function readMainToThreadPacket(){
+    /**
+     * @return string|null
+     */
+    public function readMainToThreadPacket(){
 		return $this->internalQueue->shift();
 	}
 
-	public function pushThreadToMainPacket($str){
+	public function pushThreadToMainPacket(string $str){
 		$this->externalQueue[] = $str;
 	}
 
-	public function readThreadToMainPacket(){
+    /**
+     * @return string|null
+     */
+    public function readThreadToMainPacket(){
 		return $this->externalQueue->shift();
 	}
 
@@ -173,7 +179,7 @@ class RakLibServer extends \Thread{
 
 		$this->getLogger()->debug("An $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
 
-		foreach(($trace = $this->getTrace(2)) as $i => $line){
+		foreach($this->getTrace(2) as $i => $line){
 			$this->getLogger()->debug($line);
 		}
 

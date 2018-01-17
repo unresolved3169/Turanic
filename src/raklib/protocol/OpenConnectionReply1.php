@@ -32,7 +32,7 @@ class OpenConnectionReply1 extends OfflineMessage{
     protected function encodePayload(){
 		$this->writeMagic();
 		$this->putLong($this->serverID);
-		$this->putByte(+$this->serverSecurity);
+		$this->putByte($this->serverSecurity ? 1 : 0);
 		$this->putShort($this->mtuSize);
 	}
 

@@ -22,31 +22,32 @@ namespace raklib\protocol;
 use raklib\RakLib;
 
 class NewIncomingConnection extends Packet{
-	public static $ID = MessageIdentifiers::ID_NEW_INCOMING_CONNECTION;
+    public static $ID = MessageIdentifiers::ID_NEW_INCOMING_CONNECTION;
 
-	/** @var string */
-	public $address;
-	/** @var int */
-	public $port;
+    /** @var string */
+    public $address;
+    /** @var int */
+    public $port;
 
-	/** @var array */
-	public $systemAddresses = [];
+    /** @var array */
+    public $systemAddresses = [];
 
-	/** @var int */
-	public $sendPingTime;
-	/** @var int */
-	public $sendPongTime;
+    /** @var int */
+    public $sendPingTime;
+    /** @var int */
+    public $sendPongTime;
 
-	protected function encodePayload(){
-
-	}
+    protected function encodePayload(){
+        //TODO
+    }
 
     protected function decodePayload(){
-		$this->getAddress($this->address, $this->port);
+        $this->getAddress($this->address, $this->port);
 
+        //TODO: HACK!
         $stopOffset = strlen($this->buffer) - 16; //buffer length - sizeof(sendPingTime) - sizeof(sendPongTime)
-		for($i = 0; $i < RakLib::$SYSTEM_ADDRESS_COUNT; ++$i) {
-            if($this->offset >= $stopOffset) {
+        for($i = 0; $i < RakLib::$SYSTEM_ADDRESS_COUNT; ++$i){
+            if($this->offset >= $stopOffset){
                 $this->systemAddresses[$i] = ["0.0.0.0", 0, 4];
             }else{
                 $this->getAddress($addr, $port, $version);
@@ -54,7 +55,7 @@ class NewIncomingConnection extends Packet{
             }
         }
 
-		$this->sendPingTime = $this->getLong();
-		$this->sendPongTime = $this->getLong();
-	}
+        $this->sendPingTime = $this->getLong();
+        $this->sendPongTime = $this->getLong();
+    }
 }

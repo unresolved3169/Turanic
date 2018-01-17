@@ -21,9 +21,8 @@ class UDPServerSocket{
 	/** @var resource */
 	protected $socket;
 
-	public function __construct(\ThreadedLogger $logger, $port = 19132, $interface = "0.0.0.0"){
+	public function __construct(\ThreadedLogger $logger, int $port = 19132, string $interface = "0.0.0.0"){
 		$this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-		//socket_set_option($this->socket, SOL_SOCKET, SO_BROADCAST, 1); //Allow sending broadcast messages
 		if(@socket_bind($this->socket, $interface, $port) === true){
 			socket_set_option($this->socket, SOL_SOCKET, SO_REUSEADDR, 0);
 			$this->setSendBuffer(1024 * 1024 * 8)->setRecvBuffer(1024 * 1024 * 8);
@@ -35,7 +34,10 @@ class UDPServerSocket{
 		socket_set_nonblock($this->socket);
 	}
 
-	public function getSocket(){
+    /**
+     * @return resource
+     */
+    public function getSocket(){
 		return $this->socket;
 	}
 
@@ -44,9 +46,9 @@ class UDPServerSocket{
 	}
 
 	/**
-	 * @param string &$buffer
-	 * @param string &$source
-	 * @param int    &$port
+	 * @param string|null &$buffer
+	 * @param string|null &$source
+	 * @param int|null    &$port
 	 *
 	 * @return int|bool
 	 */
@@ -61,7 +63,7 @@ class UDPServerSocket{
 	 *
 	 * @return int|bool
 	 */
-	public function writePacket($buffer, $dest, $port){
+	public function writePacket(string $buffer, string $dest, int $port){
 		return socket_sendto($this->socket, $buffer, strlen($buffer), 0, $dest, $port);
 	}
 
@@ -70,7 +72,7 @@ class UDPServerSocket{
 	 *
 	 * @return $this
 	 */
-	public function setSendBuffer($size){
+	public function setSendBuffer(int $size){
 		@socket_set_option($this->socket, SOL_SOCKET, SO_SNDBUF, $size);
 
 		return $this;
@@ -81,7 +83,7 @@ class UDPServerSocket{
 	 *
 	 * @return $this
 	 */
-	public function setRecvBuffer($size){
+	public function setRecvBuffer(int $size){
 		@socket_set_option($this->socket, SOL_SOCKET, SO_RCVBUF, $size);
 
 		return $this;

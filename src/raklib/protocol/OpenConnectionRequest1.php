@@ -23,22 +23,22 @@ namespace raklib\protocol;
 use raklib\RakLib;
 
 class OpenConnectionRequest1 extends OfflineMessage{
-	public static $ID = MessageIdentifiers::ID_OPEN_CONNECTION_REQUEST_1;
+    public static $ID = MessageIdentifiers::ID_OPEN_CONNECTION_REQUEST_1;
 
-	/** @var int */
-	public $protocol = RakLib::PROTOCOL;
-	/** @var int */
-	public $mtuSize;
+    /** @var int */
+    public $protocol = RakLib::PROTOCOL;
+    /** @var int */
+    public $mtuSize;
 
-	protected function encodePayload(){
-		$this->writeMagic();
-		$this->putByte($this->protocol);
-		$this->put(str_repeat(chr(0x00), $this->mtuSize - 18));
-	}
+    protected function encodePayload(){
+        $this->writeMagic();
+        $this->putByte($this->protocol);
+        $this->buffer = str_pad($this->buffer, "\x00", $this->mtuSize);
+    }
 
-	protected function decodePayload(){
-		$this->readMagic();
-		$this->protocol = $this->getByte();
-		$this->mtuSize = strlen($this->get(true)) + 18;
-	}
+    protected function decodePayload(){
+        $this->readMagic();
+        $this->protocol = $this->getByte();
+        $this->mtuSize = strlen($this->buffer);
+    }
 }
