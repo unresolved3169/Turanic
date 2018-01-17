@@ -561,6 +561,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         return false;
     }
 
+    public function canBeCollidedWith(): bool{
+        return !$this->isSpectator();
+    }
+
     public function resetFallDistance(){
         parent::resetFallDistance();
         if($this->inAirTicks !== 0){

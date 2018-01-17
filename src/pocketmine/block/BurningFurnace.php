@@ -38,6 +38,8 @@ class BurningFurnace extends Solid{
 
     protected $id = self::BURNING_FURNACE;
 
+    protected $itemId = self::FURNACE;
+
     public function __construct(int $meta = 0){
         $this->meta = $meta;
     }

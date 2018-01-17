@@ -60,9 +60,9 @@ Example servers running Turanic
    - [x] TextFormat::randomize 
    - [x] Utils::urshift
    - [x] Utils::copyOfRange
- - Others
    - [x] Virtual Inventory
    - [x] Bossbar API
+ - Others
    - [x] Command Parameters
    - [x] Advanced Creative Items
    - [ ] Fully MobAI (indev)

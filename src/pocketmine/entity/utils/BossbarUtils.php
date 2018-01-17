@@ -20,30 +20,34 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\entity;
 
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\{AddEntityPacket, UpdateAttributesPacket, BossEventPacket, RemoveEntityPacket, SetEntityDataPacket};
 use pocketmine\Player;
-use pocketmine\entity\Entity;
-use pocketmine\entity\Attribute;
-use pocketmine\level\Level;
-use pocketmine\level\Position;
 
 /*
  * This a Helper class for simple Bossbar create
  * Note: This not a entity
  */
 
-class Bossbar extends Position{
-	
-	protected $title = "unknown";
+class BossbarUtils extends Vector3{
+
+    /** @var string */
+	protected $title = "Turanic";
+	/** @var float */
 	protected $healthPercent = 0;
+	/** @var float */
 	protected $maxHealthPercent = 1;
+	/** @var int */
 	protected $entityId;
+	/** @var array */
 	protected $metadata = [];
 	
-	public function __construct($x = 0, $y = 0, $z = 0, Level $level = null){
-		parent::__construct($x,$y,$z,$level);
+	public function __construct(){
+		parent::__construct(0,0,0);
 		
 		$flags = (
 				(1 << Entity::DATA_FLAG_INVISIBLE) |
@@ -65,32 +69,29 @@ class Bossbar extends Position{
 		return $this->title;
 	}
 	
-	public function setHealthPercent($hp, $maxHp = null){
-		if(is_numeric($maxHp) and $maxHp !== null){
+	public function setHealthPercent(float $hp, float $maxHp = null){
+		if($maxHp !== null)
 			$this->maxHealthPercent = $maxHp;
-		}
-		
-		if(!is_numeric($hp)) return false;
 		
 		if($hp > $this->maxHealthPercent){
-			$hp = $this->maxHealthPercent;
+		    $this->maxHealthPercent = $hp;
 		}
 		
 		$this->healthPercent = $hp;
 	}
 	
-	public function getHealthPercent(){
+	public function getHealthPercent() : float{
 		return $this->healthPercent;
 	}
 	
-	public function getMaxHealthPercent(){
+	public function getMaxHealthPercent() : float{
 		return $this->maxHealthPercent;
 	}
 	
 	public function showTo(Player $player){
 		$pk = new AddEntityPacket;
 		$pk->entityRuntimeId = $this->entityId;
-		$pk->type = 54; // shulker
+		$pk->type = EntityIds::SHULKER;
 		$pk->metadata = $this->metadata;
 		$pk->position = $this;
 		
@@ -140,7 +141,7 @@ class Bossbar extends Position{
 		$player->dataPacket($mpk);
 	}
 	
-	protected function getHealthPacket(){
+	protected function getHealthPacket() : UpdateAttributesPacket{
 		$attr = Attribute::getAttribute(Attribute::HEALTH);
 		$attr->setMaxValue($this->maxHealthPercent);
 		$attr->setValue($this->healthPercent);
