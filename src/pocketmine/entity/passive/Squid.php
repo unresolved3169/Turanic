@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
 use pocketmine\Player;
@@ -47,22 +48,14 @@ class Squid extends WaterAnimal implements Ageable {
 	private $switchDirectionTicker = 0;
 
 	public function initEntity(){
-		parent::initEntity();
-		$this->setMaxHealth(5);
+        $this->setMaxHealth(10);
+        parent::initEntity();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getName() : string{
 		return "Squid";
 	}
 
-    /**
-     * @param EntityDamageEvent $source
-     * @return bool|void
-     * @internal param float $damage
-     */
 	public function attack(EntityDamageEvent $source){
 		parent::attack($source);
 		if($source->isCancelled()){
@@ -72,96 +65,59 @@ class Squid extends WaterAnimal implements Ageable {
 		if($source instanceof EntityDamageByEntityEvent){
 			$this->swimSpeed = mt_rand(150, 350) / 2000;
 			$e = $source->getDamager();
-			$this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
+            if($e !== null){
+                $this->swimDirection = (new Vector3($this->x - $e->x, $this->y - $e->y, $this->z - $e->z))->normalize();
+            }
 
-			$pk = new EntityEventPacket();
-			$pk->entityRuntimeId = $this->getId();
-			$pk->event = EntityEventPacket::SQUID_INK_CLOUD;
-			$this->server->broadcastPacket($this->hasSpawned, $pk);
+            $this->broadcastEntityEvent(EntityEventPacket::SQUID_INK_CLOUD);
 		}
 	}
 
-	/**
-	 * @return Vector3
-	 */
 	private function generateRandomDirection(){
-		return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
+        return new Vector3(mt_rand(-1000, 1000) / 1000, mt_rand(-500, 500) / 1000, mt_rand(-1000, 1000) / 1000);
 	}
 
+    public function entityBaseTick(int $tickDiff = 1){
+        if($this->closed !== false){
+            return false;
+        }
 
-	/**
-	 * @param $currentTick
-	 *
-	 * @return bool
-	 */
-	public function onUpdate(int $currentTick){
-		if($this->closed !== false){
-			return false;
-		}
+        if(++$this->switchDirectionTicker === 100 or $this->isCollided){
+            $this->switchDirectionTicker = 0;
+            if(mt_rand(0, 100) < 50){
+                $this->swimDirection = null;
+            }
+        }
 
-		if(++$this->switchDirectionTicker === 100){
-			$this->switchDirectionTicker = 0;
-			if(mt_rand(0, 100) < 50){
-				$this->swimDirection = null;
-			}
-		}
+        $hasUpdate = parent::entityBaseTick($tickDiff);
 
-		$this->lastUpdate = $currentTick;
+        if($this->isAlive()){
 
-		$this->timings->startTiming();
+            if($this->y > 62 and $this->swimDirection !== null){
+                $this->swimDirection->y = -0.5;
+            }
 
-		$hasUpdate = parent::onUpdate($currentTick);
+            $inWater = $this->isInsideOfWater();
+            if(!$inWater){
+                $this->swimDirection = null;
+            }elseif($this->swimDirection !== null){
+                if($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2 <= $this->swimDirection->lengthSquared()){
+                    $this->motionX = $this->swimDirection->x * $this->swimSpeed;
+                    $this->motionY = $this->swimDirection->y * $this->swimSpeed;
+                    $this->motionZ = $this->swimDirection->z * $this->swimSpeed;
+                }
+            }else{
+                $this->swimDirection = $this->generateRandomDirection();
+                $this->swimSpeed = mt_rand(50, 100) / 2000;
+            }
 
-		if($this->isAlive()){
+            $f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
+            $this->yaw = (-atan2($this->motionX, $this->motionZ) * 180 / M_PI);
+            $this->pitch = (-atan2($f, $this->motionY) * 180 / M_PI);
+        }
 
-			if($this->y > 62 and $this->swimDirection !== null){
-				$this->swimDirection->y = -0.5;
-			}
-
-			$inWater = $this->isInsideOfWater();
-			if(!$inWater){
-				$this->motionY -= $this->gravity;
-				$this->swimDirection = null;
-			}elseif($this->swimDirection !== null){
-				if($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2 <= $this->swimDirection->lengthSquared()){
-					$this->motionX = $this->swimDirection->x * $this->swimSpeed;
-					$this->motionY = $this->swimDirection->y * $this->swimSpeed;
-					$this->motionZ = $this->swimDirection->z * $this->swimSpeed;
-				}
-			}else{
-				$this->swimDirection = $this->generateRandomDirection();
-				$this->swimSpeed = mt_rand(50, 100) / 2000;
-			}
-
-			$expectedPos = new Vector3($this->x + $this->motionX, $this->y + $this->motionY, $this->z + $this->motionZ);
-
-			$this->move($this->motionX, $this->motionY, $this->motionZ);
-
-			if($expectedPos->distanceSquared($this) > 0){
-				$this->swimDirection = $this->generateRandomDirection();
-				$this->swimSpeed = mt_rand(50, 100) / 2000;
-			}
-
-			$friction = 1 - $this->drag;
-
-			$this->motionX *= $friction;
-			$this->motionY *= 1 - $this->drag;
-			$this->motionZ *= $friction;
-
-			$f = sqrt(($this->motionX ** 2) + ($this->motionZ ** 2));
-			$this->yaw = (-atan2($this->motionX, $this->motionZ) * 180 / M_PI);
-			$this->pitch = (-atan2($f, $this->motionY) * 180 / M_PI);
-
-			if($this->onGround){
-				$this->motionY *= -0.5;
-			}
-
-		}
-
-		$this->timings->stopTiming();
-
-		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
-	}
+        return $hasUpdate;
+    }
 
 	/**
 	 * @return array
@@ -179,8 +135,16 @@ class Squid extends WaterAnimal implements Ageable {
 			}
 		}
 
-		return [];
+		return [
+            Item::get(Item::DYE, 0, mt_rand(1, 3))
+        ];
 	}
+
+    protected function applyGravity(){
+        if(!$this->isInsideOfWater()){
+            parent::applyGravity();
+        }
+    }
 
     public function getXpDropAmount(): int{
         return !$this->isBaby() ? mt_rand(1,3) : 0;

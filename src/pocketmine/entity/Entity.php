@@ -1457,8 +1457,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
         $hasUpdate = $this->entityBaseTick($tickDiff);
         Timings::$timerEntityBaseTick->stopTiming();
 
-
-
         $this->timings->stopTiming();
 
         //if($this->isStatic())

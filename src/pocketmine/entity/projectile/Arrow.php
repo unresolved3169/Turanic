@@ -33,7 +33,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\TakeItemEntityPacket;
 use pocketmine\Player;
-use pocketmine\item\Item as ItemItem;
+use pocketmine\item\Item;
 use pocketmine\Server;
 
 class Arrow extends Projectile {
@@ -129,7 +129,7 @@ class Arrow extends Projectile {
             return;
         }
 
-        $item = ItemItem::get(ItemItem::ARROW, 0, 1);
+        $item = Item::get(Item::ARROW);
 
         $playerInventory = $player->getInventory();
         if($player->isSurvival() and !$playerInventory->canAddItem($item)){
