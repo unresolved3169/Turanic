@@ -60,7 +60,7 @@ abstract class Durable extends Item{
 
         $this->meta = min($this->meta + $amount, $this->getMaxDurability());
         if($this->isBroken()){
-            $this->pop();
+            $this->onBroken();
         }
 
         return true;
@@ -81,6 +81,13 @@ abstract class Durable extends Item{
         }
 
         return 0;
+    }
+
+    /**
+     * Called when the item's damage exceeds its maximum durability.
+     */
+	protected function onBroken() : void{
+        $this->pop();
     }
 
     /**
