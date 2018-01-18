@@ -84,6 +84,13 @@ abstract class Durable extends Item{
     }
 
     /**
+     * Returns the maximum amount of damage this item can take before it breaks.
+     *
+     * @return int
+     */
+	abstract public function getMaxDurability() : int;
+
+    /**
      * Returns whether the item is broken.
      * @return bool
      */

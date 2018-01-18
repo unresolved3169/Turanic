@@ -39,7 +39,7 @@ abstract class TieredTool extends Tool{
         $this->tier = $tier;
     }
 
-    public function getMaxDurability(){
+    public function getMaxDurability() : int{
         return self::getDurabilityFromTier($this->tier);
     }
 
