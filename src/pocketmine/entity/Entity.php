@@ -714,6 +714,17 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
         $this->width *= $multiplier;
         $this->height *= $multiplier;
         $this->eyeHeight *= $multiplier;
+
+        $this->recalculateBoundingBox();
+
+        $this->setDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT, $value);
+    }
+
+    public function getBoundingBox(){
+        return $this->boundingBox;
+    }
+
+    protected function recalculateBoundingBox(){
         $halfWidth = $this->width / 2;
 
         $this->boundingBox->setBounds(
@@ -724,14 +735,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
             $this->y + $this->height,
             $this->z + $halfWidth
         );
-
-        $this->setDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT, $value);
     }
-
-    public function getBoundingBox(){
-        return $this->boundingBox;
-    }
-
 
     public function isSneaking() : bool{
         return $this->getGenericFlag(self::DATA_FLAG_SNEAKING);
@@ -765,7 +769,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
         return $this->getGenericFlag(self::DATA_FLAG_INVISIBLE);
  	}
 
-	public function setInvisible(bool $value = true) : void{
+	public function setInvisible(bool $value = true){
         $this->setGenericFlag(self::DATA_FLAG_INVISIBLE, $value);
     }
 
@@ -1794,8 +1798,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
         $this->y = $pos->y;
         $this->z = $pos->z;
 
-        $radius = $this->width / 2;
-        $this->boundingBox->setBounds($pos->x - $radius, $pos->y, $pos->z - $radius, $pos->x + $radius, $pos->y + $this->height, $pos->z + $radius);
+        $this->recalculateBoundingBox();
 
         $this->blocksAround = null;
 
