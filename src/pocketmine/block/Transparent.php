@@ -31,4 +31,8 @@ abstract class Transparent extends Block {
 	public function isTransparent() : bool{
 		return true;
 	}
+
+	public function getLightFilter() : int{
+        return 0;
+    }
 }
