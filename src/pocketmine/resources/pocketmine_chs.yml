@@ -1,4 +1,4 @@
-# PocketMine-MP 主配置文件
+# Turanic 主配置文件
 # 此处包含 server.properties 中无法包含的设置
 # 某些设置的修改是安全的，而某些设置修改后将导致服务器无法工作
 # 升级服务器后，新的设置或默认值将不会自动在此处显示
@@ -88,6 +88,9 @@ network:
  async-compression: true
  #实验性功能，仅适用于 Windows。尝试使用 UPnP 进行自动端口转发
  upnp-forwarding: false
+ #Maximum size in bytes of packets sent over the network (default 1492 bytes). Packets larger than this will be
+ #fragmented or split into smaller parts. Clients can request MTU sizes up to but not more than this number.
+ max-mtu-size: 1492
 
 debug:
  #若要启用断言执行，请在 php.ini 中将 zend.assertions 设为 1
