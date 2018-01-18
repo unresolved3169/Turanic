@@ -50,9 +50,7 @@ class Boat extends Item {
 		$boat = Entity::createEntity("Boat", $player->getLevel(), $nbt);
 		if($boat != null) $boat->spawnToAll();
 
-		if($player->isSurvival()){
-			$this->count--;
-		}
+        $this->count--;
 
 		return true;
 	}

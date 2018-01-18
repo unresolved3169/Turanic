@@ -61,9 +61,7 @@ class FireworkRocket extends Item {
             $rocket = new FireworksRocket($level, $nbt, $player, $this);
             $level->addEntity($rocket);
             if ($rocket instanceof Entity){
-                if ($player->isSurvival()){
-                    --$this->count;
-                }
+                --$this->count;
                 $rocket->spawnToAll();
                 return true;
             }
@@ -86,9 +84,7 @@ class FireworkRocket extends Item {
         $rocket = new FireworksRocket($level, $nbt, $player, $this, $random);
         $level->addEntity($rocket);
         if ($rocket instanceof Entity){
-            if ($player->isSurvival()){
-                --$this->count;
-            }
+            --$this->count;
             $rocket->spawnToAll();
             return true;
         }

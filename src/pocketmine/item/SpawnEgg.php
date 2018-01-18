@@ -60,11 +60,8 @@ class SpawnEgg extends Item {
 			$entity = Entity::createEntity($this->meta, $level, $nbt);
 
 			if($entity instanceof Entity){
-				if($player->isSurvival()){
-					--$this->count;
-				}
+                --$this->count;
 				$entity->spawnToAll();
-
 				return true;
 			}
 

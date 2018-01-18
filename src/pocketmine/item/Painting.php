@@ -111,9 +111,7 @@ class Painting extends Item {
 			$painting = Entity::createEntity("Painting", $player->getLevel(), $nbt);
 			if($painting != null) $painting->spawnToAll();
 
-			if($player->isSurvival()){
-				$this->count--;
-			}
+            $this->count--;
 
 			return true;
 		}

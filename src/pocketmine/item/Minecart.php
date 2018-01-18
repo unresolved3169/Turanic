@@ -49,18 +49,9 @@ class Minecart extends Item {
 
 	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		$minecart = Entity::createEntity("Minecart", $player->getLevel(), Entity::createBaseNBT($blockReplace->add(0,0.8,0)));
-		if($minecart != null) $minecart->spawnToAll();
-
-		if($player->isSurvival()){
-			$item = $player->getInventory()->getItemInHand();
-			$count = $item->getCount();
-			if(--$count <= 0){
-				$player->getInventory()->setItemInHand(Item::get(Item::AIR));
-				return true;
-			}
-
-			$item->setCount($count);
-			$player->getInventory()->setItemInHand($item);
+		if($minecart instanceof Entity) {
+            $this->count--;
+            $minecart->spawnToAll();
 		}
 
 		return true;

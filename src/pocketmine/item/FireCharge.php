@@ -87,7 +87,6 @@ class FireCharge extends Item {
 						}
 						if($player->isSurvival()){
 							$this->useOn($blockReplace);
-							$player->getInventory()->setItemInHand($this);
 						}
 						return true;
 					}
@@ -127,7 +126,6 @@ class FireCharge extends Item {
 						}
 						if($player->isSurvival()){
 							$this->useOn($blockReplace);
-							$player->getInventory()->setItemInHand($this);
 						}
 						return true;
 					}
@@ -141,12 +139,11 @@ class FireCharge extends Item {
 			/** @var Fire $block */
 			$block = $level->getBlock($block);
 			if($block->getSide(Vector3::SIDE_DOWN)->isTopFacingSurfaceSolid() or $block->canNeighborBurn()){
-				$level->scheduleUpdate($block, $block->getTickRate() + mt_rand(0, 10));
+				$level->scheduleDelayedBlockUpdate($block, $block->getTickRate() + mt_rand(0, 10));
 			}
 
 			if($player->isSurvival()){
 				$this->useOn($block);
-				$player->getInventory()->setItemInHand($this);
 			}
 
 			return true;
