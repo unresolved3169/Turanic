@@ -66,9 +66,9 @@ class Painting extends Hanging {
 	protected function sendSpawnPacket(Player $player){
         $pk = new AddPaintingPacket();
         $pk->entityRuntimeId = $this->getId();
-        $pk->x = $this->x;
-        $pk->y = $this->y;
-        $pk->z = $this->z;
+        $pk->x = (int) $this->x;
+        $pk->y = (int) $this->y;
+        $pk->z = (int) $this->z;
         $pk->direction = $this->getDirection();
         $pk->title = $this->motive;
         $player->dataPacket($pk);
