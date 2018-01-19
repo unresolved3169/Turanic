@@ -1483,7 +1483,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
     }
 
-    protected function checkNearEntities(int $tickDiff){
+    protected function checkNearEntities(){
         foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
             $entity->scheduleUpdate();
 
@@ -1774,7 +1774,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     }
                 }
 
-                $this->checkNearEntities($tickDiff);
+                $this->checkNearEntities();
                 if ($this->hasEffect(Effect::LEVITATION)) {
                     $this->inAirTicks = 0;
                 }
