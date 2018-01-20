@@ -25,13 +25,18 @@ declare(strict_types=1);
 namespace pocketmine\entity\passive;
 
 use pocketmine\entity\Ageable;
-use pocketmine\entity\behavior\{
-    LookAtPlayerBehavior, PanicBehavior, RandomLookaroundBehavior, StrollBehavior
-};
-use pocketmine\entity\Mob;
+use pocketmine\entity\Creature;
 use pocketmine\entity\NPC;
+use pocketmine\inventory\VillagerTradeInventory;
+use pocketmine\inventory\InventoryHolder;
+use pocketmine\item\Item;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\Player;
 
-class Villager extends Mob implements NPC, Ageable {
+class Villager extends Creature implements NPC, Ageable, InventoryHolder {
 	
 	const NETWORK_ID = self::VILLAGER;
 
@@ -45,11 +50,6 @@ class Villager extends Mob implements NPC, Ageable {
 	public $height = 1.8;
 
     public function initEntity(){
-		$this->addBehavior(new PanicBehavior($this, 0.25, 2.0));
-		$this->addBehavior(new StrollBehavior($this));
-		$this->addBehavior(new LookAtPlayerBehavior($this));
-		$this->addBehavior(new RandomLookaroundBehavior($this));
-
 		parent::initEntity();
 
         /** @var int $profession */
@@ -60,6 +60,10 @@ class Villager extends Mob implements NPC, Ageable {
         }
 
         $this->setProfession($profession);
+
+        // Example
+        $this->addTradeItem(0, 7, Item::get(Item::DIAMOND, 0, 5), Item::get(Item::DIAMOND_BLOCK));
+        $this->addTradeItems(0, 7, Item::get(Item::DIAMOND, 0, 5), Item::get(Item::BOOK), Item::get(Item::BEACON));
 	}
 
 	public function saveNBT(){
@@ -67,11 +71,15 @@ class Villager extends Mob implements NPC, Ageable {
         $this->namedtag->setInt("Profession", $this->getProfession());
     }
 
-    /**
-	 * @return string
-	 */
 	public function getName() : string{
-		return "Villager";
+	    static $names = [
+	        self::PROFESSION_FARMER => "Farmer",
+	        self::PROFESSION_LIBRARIAN => "Librarian",
+	        self::PROFESSION_PRIEST => "Priest",
+	        self::PROFESSION_BLACKSMITH => "Blacksmith",
+	        self::PROFESSION_BUTCHER => "Butcher"
+        ];
+		return $names[$this->getProfession()];
 	}
 
     /**
@@ -93,5 +101,55 @@ class Villager extends Mob implements NPC, Ageable {
 
     public function getXpDropAmount(): int{
         return 0;
+    }
+
+    public function onInteract(Player $player, Item $item){
+        $player->addWindow($this->getInventory());
+        return true;
+    }
+
+    public function addTradeItem(int $rewardExp, int $maxUses, Item $buyA, Item $sell){
+        $offers = $this->getOffers();
+        $tradeItem = new CompoundTag("", [
+            $buyA->nbtSerialize(-1, "buyA"),
+            new IntTag("maxUses", $maxUses),
+            new ByteTag("rewardExp", $rewardExp),
+            $sell->nbtSerialize(-1, "sell"),
+            new IntTag("uses", 0),
+        ]);
+        $recipes = $offers->getListTag("Recipes");
+        $recipes->offsetSet(count($recipes), $tradeItem);
+        $offers->setTag($recipes);
+        $this->namedtag->setTag($offers);
+    }
+
+    public function addTradeItems(int $rewardExp, int $maxUses, Item $buyA, Item $buyB, Item $sell){
+        $offers = $this->getOffers();
+        $tradeItem = new CompoundTag("", [
+            $buyA->nbtSerialize(-1, "buyA"),
+            $buyB->nbtSerialize(-1, "buyB"),
+            new IntTag("maxUses", $maxUses),
+            new ByteTag("rewardExp", $rewardExp),
+            $sell->nbtSerialize(-1, "sell"),
+            new IntTag("uses", 0),
+        ]);
+        $recipes = $offers->getListTag("Recipes");
+        $recipes->offsetSet(count($recipes), $tradeItem);
+        $offers->setTag($recipes);
+        $this->namedtag->setTag($offers);
+    }
+
+    public function getOffers() : CompoundTag{
+        if($this->namedtag->hasTag("Offers")){
+            return $this->namedtag->getCompoundTag("Offers");
+        }else{
+            $offers = new CompoundTag("Offers", [new ListTag("Recipes")]);
+            $this->namedtag->setTag($offers);
+            return $offers;
+        }
+    }
+
+    public function getInventory() : VillagerTradeInventory{
+        return new VillagerTradeInventory($this);
     }
 }

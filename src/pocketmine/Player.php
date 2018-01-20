@@ -91,6 +91,7 @@ use pocketmine\inventory\transaction\AnvilTransaction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\EnchantTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\VillagerTradeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\{
@@ -1483,7 +1484,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
     }
 
-    protected function checkNearEntities(){
+    protected function checkNearEntities(int $tickDiff){
         foreach($this->level->getNearbyEntities($this->boundingBox->grow(1, 0.5, 1), $this) as $entity){
             $entity->scheduleUpdate();
 
@@ -1774,7 +1775,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     }
                 }
 
-                $this->checkNearEntities();
+                $this->checkNearEntities($tickDiff);
                 if ($this->hasEffect(Effect::LEVITATION)) {
                     $this->inAirTicks = 0;
                 }
@@ -4481,6 +4482,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public function getAnvilInventory(){
         foreach($this->windowIndex as $inventory){
             if($inventory instanceof AnvilInventory){
+                return $inventory;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * @return VillagerTradeInventory|null
+     */
+    public function getTradeInventory(){
+        foreach($this->windowIndex as $inventory){
+            if($inventory instanceof VillagerTradeInventory){
                 return $inventory;
             }
         }

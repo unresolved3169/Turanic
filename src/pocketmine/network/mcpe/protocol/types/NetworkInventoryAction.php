@@ -33,6 +33,7 @@ use pocketmine\inventory\transaction\action\CreativeInventoryAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\EnchantAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
+use pocketmine\inventory\transaction\action\TradeAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
@@ -235,6 +236,18 @@ class NetworkInventoryAction{
                     case self::SOURCE_TYPE_ENCHANT_OUTPUT:
                         $window = $player->getEnchantInventory();
                         return new EnchantAction($window, -1, $this->oldItem, $this->newItem);
+
+                    case self::SOURCE_TYPE_TRADING_INPUT_1:
+                        $window = $player->getTradeInventory();
+                        return new SlotChangeAction($window, 0, $this->oldItem, $this->newItem);
+                    case self::SOURCE_TYPE_TRADING_INPUT_2:
+                        $window = $player->getTradeInventory();
+                        return new SlotChangeAction($window, 1, $this->oldItem, $this->newItem);
+                    case self::SOURCE_TYPE_TRADING_USE_INPUTS:
+                        return new TradeAction($this->oldItem, $this->newItem);
+                    case self::SOURCE_TYPE_TRADING_OUTPUT:
+                         $window = $player->getTradeInventory();
+                         return new TradeAction($this->oldItem, $this->newItem, $window);
 
                     case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
                         //TODO: this type applies to all fake windows, not just crafting
