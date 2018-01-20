@@ -89,7 +89,11 @@ class ShulkerBox extends Spawnable implements InventoryHolder, Container, Nameab
      * @param null $player
      */
     protected static function createAdditionalNBT(CompoundTag $nbt, Vector3 $pos, $face = null, $item = null, $player = null){
-        $nbt->setTag(new ListTag("Items", [], NBT::TAG_Compound));
+    	   $slots = [];
+    	   if($item !== null){
+    	   	  $slots = $item->getNamedTag()->getTag(Container::TAG_ITEMS) ?? [];
+    	   	}
+        $nbt->setTag(new ListTag("Items", $slots, NBT::TAG_Compound));
 
         if ($item !== null and $item->hasCustomName()) {
             $nbt->setString("CustomName", $item->getCustomName());
