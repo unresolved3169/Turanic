@@ -14,7 +14,7 @@ Example servers running Turanic
 - **oyna.minecraftpetr.net**
 -------------
 ## Known Bugs in 1.2:
-- Movement Bug (players not affected by gravity in some server devices)
+- Movement Bug (players not affect from gravity in some server devices)
 
 # Finished & Planned Features
  - Worlds
