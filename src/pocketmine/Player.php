@@ -3338,9 +3338,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * TODO: add translation type popups
      *
      * @param string $message
-     * @param string $subtitle @deprecated
      */
-    public function sendPopup(string $message, string $subtitle = ""){
+    public function sendPopup(string $message){
         $pk = new TextPacket();
         $pk->type = TextPacket::TYPE_POPUP;
         $pk->message = $message;
