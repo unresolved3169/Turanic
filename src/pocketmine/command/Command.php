@@ -80,12 +80,13 @@ abstract class Command {
 	/** @var CommandOverload[] */
 	public $overloads = [];
 
-	/**
-	 * @param string   $name
-	 * @param string   $description
-	 * @param string   $usageMessage
-	 * @param string[] $aliases
-	 */
+    /**
+     * @param string $name
+     * @param string $description
+     * @param string $usageMessage
+     * @param string[] $aliases
+     * @param array $overloads
+     */
 	public function __construct($name, $description = "", $usageMessage = null, array $aliases = [], array $overloads = []){
 		$this->name = $this->nextLabel = $this->label = $name;
 		$this->setDescription($description);
@@ -195,10 +196,12 @@ abstract class Command {
 
 		return false;
 	}
-		
-	/**
-	 * @deprecated
-	 */
+
+    /**
+     * @deprecated
+     * @param CommandSender $sender
+     * @return bool
+     */
 	public function testPermission(CommandSender $sender) : bool{
 		return $this->canExecute($sender);
 	}
@@ -207,7 +210,7 @@ abstract class Command {
 	 * @deprecated
 	 */
 	public function testPermissionSilent(CommandSender $sender) : bool{
-		return $this->canExecute($sender);
+		return $this->scanPermission($sender);
 	}
 
 	/**

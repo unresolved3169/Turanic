@@ -301,6 +301,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 	/** @var PermissibleBase */
 	private $perm = null;
 
+	/** @var int|null */
+    protected $lineHeight = null;
+
 	/** @var FishingHook */
 	public $fishingHook = null;
 
@@ -1925,7 +1928,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public function sendPlayStatus(int $status, bool $immediate = false){
         $pk = new PlayStatusPacket();
         $pk->status = $status;
-        $pk->protocol = $this->protocol;
         $this->sendDataPacket($pk, false, $immediate);
     }
 

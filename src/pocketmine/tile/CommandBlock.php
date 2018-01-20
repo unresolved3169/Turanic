@@ -141,7 +141,7 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
     }
 
     public function setBlockType(int $blockType){
-        return $this->namedtag->setInt("blockType", $blockType > 2 or $blockType < 0 ? self::NORMAL : $blockType);
+        return $this->namedtag->setInt("blockType", ($blockType > 2 or $blockType < 0) ? self::NORMAL : $blockType);
     }
 
     public function isConditional() : int{
@@ -310,5 +310,12 @@ class CommandBlock extends Spawnable implements Nameable,CommandSender {
             self::CHAIN => Block::CHAIN_COMMAND_BLOCK
         ];
         return isset($id[$type]) ? $id[$type] : Block::COMMAND_BLOCK;
+    }
+
+    public function getScreenLineHeight(): int{
+        return 7;
+    }
+
+    public function setScreenLineHeight(int $height = null){
     }
 }
