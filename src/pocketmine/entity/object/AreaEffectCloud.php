@@ -33,8 +33,6 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
 
 class AreaEffectCloud extends Entity {
     const NETWORK_ID = self::AREA_EFFECT_CLOUD;
@@ -88,12 +86,12 @@ class AreaEffectCloud extends Entity {
         }
         $this->DurationOnUse = $this->namedtag->getInt("DurationOnUse");
 
-        $this->setDataProperty(self::DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, self::DATA_TYPE_INT, Particle::TYPE_MOB_SPELL);//todo
-        $this->setDataProperty(self::DATA_AREA_EFFECT_CLOUD_RADIUS, self::DATA_TYPE_FLOAT, $this->Radius);
-        $this->setDataProperty(self::DATA_AREA_EFFECT_CLOUD_WAITING, self::DATA_TYPE_INT, $this->WaitTime);
-        $this->setDataProperty(self::DATA_BOUNDING_BOX_HEIGHT, self::DATA_TYPE_FLOAT, 1);
-        $this->setDataProperty(self::DATA_BOUNDING_BOX_WIDTH, self::DATA_TYPE_FLOAT, $this->Radius * 2);
-        $this->setDataProperty(self::DATA_POTION_AMBIENT, self::DATA_TYPE_BYTE, 1);
+        $this->propertyManager->setInt(self::DATA_AREA_EFFECT_CLOUD_PARTICLE_ID, Particle::TYPE_MOB_SPELL);//todo
+        $this->propertyManager->setFloat(self::DATA_AREA_EFFECT_CLOUD_RADIUS, $this->Radius);
+        $this->propertyManager->setInt(self::DATA_AREA_EFFECT_CLOUD_WAITING, $this->WaitTime);
+        $this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, 1);
+        $this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $this->Radius * 2);
+        $this->propertyManager->setByte(self::DATA_POTION_AMBIENT, 1);
     }
 
     public function entityBaseTick(int $tickDiff = 1){
@@ -118,9 +116,9 @@ class AreaEffectCloud extends Entity {
             }
             /** @var Effect[] $effects */
             $firsteffect = $effects[0]; //Todo multiple effects
-            $this->setDataProperty(self::DATA_POTION_COLOR, self::DATA_TYPE_INT, $firsteffect->getColor()->toARGB());
+            $this->propertyManager->setInt(self::DATA_POTION_COLOR, $firsteffect->getColor()->toARGB());
             $this->Radius += $this->RadiusPerTick;
-            $this->setDataProperty(self::DATA_BOUNDING_BOX_WIDTH, self::DATA_TYPE_FLOAT, $this->Radius * 2);
+            $this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $this->Radius * 2);
             if($this->WaitTime > 0){
                 $this->WaitTime--;
                 $this->timings->stopTiming();
@@ -144,8 +142,8 @@ class AreaEffectCloud extends Entity {
             }
         }
 
-        $this->setDataProperty(self::DATA_AREA_EFFECT_CLOUD_RADIUS, self::DATA_TYPE_FLOAT, $this->Radius);
-        $this->setDataProperty(self::DATA_AREA_EFFECT_CLOUD_WAITING, self::DATA_TYPE_INT, $this->WaitTime);
+        $this->propertyManager->setFloat(self::DATA_AREA_EFFECT_CLOUD_RADIUS, $this->Radius);
+        $this->propertyManager->setInt(self::DATA_AREA_EFFECT_CLOUD_WAITING, $this->WaitTime);
 
         $this->timings->stopTiming();
 

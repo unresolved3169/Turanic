@@ -53,14 +53,14 @@ class Boat extends Vehicle {
 			$nbt->WoodID = new IntTag("WoodID", 0);
 		}
 		parent::__construct($level, $nbt);
-		$this->setDataProperty(self::DATA_VARIANT, self::DATA_TYPE_INT, $this->getWoodID());
+		$this->propertyManager->setInt(self::DATA_VARIANT, $this->getWoodID());
 	}
 
 	/**
 	 * @return int
 	 */
 	public function getWoodID() : int{
-		return (int) $this->namedtag["WoodID"];
+		return $this->namedtag->getInt("WoodID");
 	}
 
     /**

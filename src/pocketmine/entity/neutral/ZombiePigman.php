@@ -49,7 +49,7 @@ class ZombiePigman extends Monster {
 			$this->addBehavior(new RandomLookaroundBehavior($this));
 			//2 Armor Points
 			$this->setMaxHealth(20);
-			$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, 10);
+			$this->propertyManager->setInt(Entity::DATA_VARIANT, 10);
 			parent::initEntity();
 		}
 		
@@ -57,7 +57,7 @@ class ZombiePigman extends Monster {
 	 * @return string
 	 */
 	public function getName() : string{
-		return "PigZombie";
+		return "Zombie Pigman";
 	}
 	/**
 	 * @param Player $player

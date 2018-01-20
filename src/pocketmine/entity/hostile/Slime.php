@@ -100,7 +100,7 @@ class Slime extends Monster {
                 break;
         }
         $this->setMaxHealth($this->getHealthFromSize());
-        $this->setDataProperty(self::DATA_TYPE_INT,self::DATA_SLIME_SIZE, $this->slimeSize); // i am not sure
+        $this->propertyManager->setPropertyValue(self::DATA_TYPE_INT,self::DATA_SLIME_SIZE, $this->slimeSize); // i am not sure
     }
 
     public function getHealthFromSize() : int{

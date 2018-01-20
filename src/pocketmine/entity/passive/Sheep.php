@@ -73,7 +73,7 @@ class Sheep extends Animal implements Colorable {
         }
         parent::__construct($level, $nbt);
 
-        $this->setDataProperty(self::DATA_COLOR_INFO, self::DATA_TYPE_BYTE, $this->getColor());
+        $this->propertyManager->setByte(self::DATA_COLOR_INFO, $this->getColor());
     }
 
     /**

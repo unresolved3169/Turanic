@@ -151,24 +151,17 @@ class NetworkBinaryStream extends BinaryStream{
                     $value = $this->getString();
                     break;
                 case Entity::DATA_TYPE_SLOT:
-                    //TODO: use objects directly
-                    $value = [];
-                    $item = $this->getSlot();
-                    $value[0] = $item->getId();
-                    $value[1] = $item->getCount();
-                    $value[2] = $item->getDamage();
-                    $value[3] = $item->getCompoundTag();
+                    $value = $this->getSlot();
                     break;
                 case Entity::DATA_TYPE_POS:
-                    $value = [0, 0, 0];
-                    $this->getSignedBlockPosition(...$value);
+                    $value = new Vector3();
+                    $this->getSignedBlockPosition($value->x, $value->y, $value->z);
                     break;
                 case Entity::DATA_TYPE_LONG:
                     $value = $this->getVarLong();
                     break;
                 case Entity::DATA_TYPE_VECTOR3F:
-                    $value = [0.0, 0.0, 0.0];
-                    $this->getVector3f(...$value);
+                    $value = $this->getVector3();
                     break;
                 default:
                     $value = [];
@@ -210,19 +203,21 @@ class NetworkBinaryStream extends BinaryStream{
                     $this->putString($d[1]);
                     break;
                 case Entity::DATA_TYPE_SLOT:
-                    //TODO: change this implementation (use objects)
-                    $this->putSlot(Item::get($d[1][0], $d[1][2], $d[1][1], $d[1][3])); //ID, damage, count, compoundtag
+                    $this->putSlot($d[1]);
                     break;
                 case Entity::DATA_TYPE_POS:
-                    //TODO: change this implementation (use objects)
-                    $this->putSignedBlockPosition(...$d[1]);
+                    $v = $d[1];
+                    if($v !== null){
+                        $this->putSignedBlockPosition($v->x, $v->y, $v->z);
+                    }else{
+                        $this->putSignedBlockPosition(0, 0, 0);
+                    }
                     break;
                 case Entity::DATA_TYPE_LONG:
                     $this->putVarLong($d[1]);
                     break;
                 case Entity::DATA_TYPE_VECTOR3F:
-                    //TODO: change this implementation (use objects)
-                    $this->putVector3f(...$d[1]); //x, y, z
+                    $this->putVector3Nullable($d[1]);
             }
         }
     }
@@ -363,38 +358,11 @@ class NetworkBinaryStream extends BinaryStream{
     }
 
     /**
-     * Reads a floating-point vector3 rounded to 4dp.
-     *
-     * @param float $x
-     * @param float $y
-     * @param float $z
-     */
-    public function getVector3f(&$x, &$y, &$z){
-        $x = $this->getRoundedLFloat(4);
-        $y = $this->getRoundedLFloat(4);
-        $z = $this->getRoundedLFloat(4);
-    }
-
-    /**
-     * Writes a floating-point vector3
-     *
-     * @param float $x
-     * @param float $y
-     * @param float $z
-     */
-    public function putVector3f(float $x, float $y, float $z){
-        $this->putLFloat($x);
-        $this->putLFloat($y);
-        $this->putLFloat($z);
-    }
-
-    /**
-     * Reads a floating-point Vector3 object
-     * TODO: get rid of primitive methods and replace with this
+     * Reads a floating-point Vector3 object with coordinates rounded to 4 decimal places.
      *
      * @return Vector3
      */
-    public function getVector3Obj() : Vector3{
+    public function getVector3() : Vector3{
         return new Vector3(
             $this->getRoundedLFloat(4),
             $this->getRoundedLFloat(4),
@@ -406,13 +374,13 @@ class NetworkBinaryStream extends BinaryStream{
      * Writes a floating-point Vector3 object, or 3x zero if null is given.
      *
      * Note: ONLY use this where it is reasonable to allow not specifying the vector.
-     * For all other purposes, use {@link DataPacket#putVector3Obj}
+     * For all other purposes, use the non-nullable version.
      *
      * @param Vector3|null $vector
      */
-    public function putVector3ObjNullable(Vector3 $vector = null){
+    public function putVector3Nullable($vector){
         if($vector){
-            $this->putVector3Obj($vector);
+            $this->putVector3($vector);
         }else{
             $this->putLFloat(0.0);
             $this->putLFloat(0.0);
@@ -426,7 +394,7 @@ class NetworkBinaryStream extends BinaryStream{
      *
      * @param Vector3 $vector
      */
-    public function putVector3Obj(Vector3 $vector){
+    public function putVector3(Vector3 $vector){
         $this->putLFloat($vector->x);
         $this->putLFloat($vector->y);
         $this->putLFloat($vector->z);

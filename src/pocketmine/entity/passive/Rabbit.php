@@ -74,7 +74,7 @@ class Rabbit extends Animal {
 		}
 		parent::__construct($level, $nbt);
 
-		$this->setDataProperty(self::DATA_RABBIT_TYPE, self::DATA_TYPE_BYTE, $this->getRabbitType());
+		$this->propertyManager->setByte(self::DATA_RABBIT_TYPE, $this->getRabbitType());
 	}
 
 	/**

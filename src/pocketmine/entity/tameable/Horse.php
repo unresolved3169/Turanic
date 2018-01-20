@@ -51,7 +51,7 @@ class Horse extends Animal{
 		$this->addBehavior(new StrollBehavior($this));
 		$this->addBehavior(new LookAtPlayerBehavior($this));
 		$this->addBehavior(new RandomLookaroundBehavior($this));
-		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, rand(0, 4));
+		$this->propertyManager->setInt(Entity::DATA_VARIANT, rand(0, 4));
         $this->setMaxHealth(30);
 		parent::initEntity();
 	}

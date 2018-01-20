@@ -58,7 +58,7 @@ class Llama extends Animal {
         $this->addBehavior(new RandomLookaroundBehavior($this));
 
 		$this->setMaxHealth(30);
-		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, rand(0, 3));
+		$this->propertyManager->setInt(Entity::DATA_VARIANT, rand(0, 3));
 		parent::initEntity();
 	}
 

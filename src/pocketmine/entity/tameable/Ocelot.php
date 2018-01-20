@@ -60,7 +60,7 @@ class Ocelot extends Animal {
 		}
 		parent::__construct($level, $nbt);
 
-		$this->setDataProperty(self::DATA_CAT_TYPE, self::DATA_TYPE_BYTE, $this->getCatType());
+		$this->propertyManager->setByte(self::DATA_CAT_TYPE, $this->getCatType());
 	}
 
 	/**

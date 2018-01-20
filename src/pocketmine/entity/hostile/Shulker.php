@@ -48,7 +48,7 @@ class Shulker extends Monster {
 	    $this->addBehavior(new LookAtPlayerBehavior($this));
 	    $this->addBehavior(new RandomLookaroundBehavior($this));
 		$this->setMaxHealth(30);
-		$this->setDataProperty(Entity::DATA_VARIANT, Entity::DATA_TYPE_INT, 10);
+		$this->propertyManager->setInt(Entity::DATA_VARIANT, 10);
 		parent::initEntity();
 	}
 

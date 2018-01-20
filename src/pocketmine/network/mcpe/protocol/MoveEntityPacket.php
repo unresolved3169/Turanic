@@ -46,24 +46,23 @@ class MoveEntityPacket extends DataPacket{
 	public $teleported = false;
 
 	protected function decodePayload(){
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->position = $this->getVector3Obj();
-		$this->pitch = $this->getByteRotation();
-		$this->headYaw = $this->getByteRotation();
-		$this->yaw = $this->getByteRotation();
-		$this->onGround = $this->getBool();
-		$this->teleported = $this->getBool();
+        $this->entityRuntimeId = $this->getEntityRuntimeId();
+        $this->position = $this->getVector3();
+        $this->pitch = $this->getByteRotation();
+        $this->headYaw = $this->getByteRotation();
+        $this->yaw = $this->getByteRotation();
+        $this->onGround = $this->getBool();
+        $this->teleported = $this->getBool();
 	}
 
 	protected function encodePayload(){
-		if(isset($this->x)) $this->position = new Vector3($this->x, $this->y, $this->z);
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putVector3Obj($this->position);
-		$this->putByteRotation($this->pitch);
-		$this->putByteRotation($this->headYaw);
-		$this->putByteRotation($this->yaw);
-		$this->putBool($this->onGround);
-		$this->putBool($this->teleported);
+        $this->putEntityRuntimeId($this->entityRuntimeId);
+        $this->putVector3($this->position);
+        $this->putByteRotation($this->pitch);
+        $this->putByteRotation($this->headYaw);
+        $this->putByteRotation($this->yaw);
+        $this->putBool($this->onGround);
+        $this->putBool($this->teleported);
 	}
 
 }

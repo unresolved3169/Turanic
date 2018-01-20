@@ -131,7 +131,6 @@ use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LoginPacket;
-use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
@@ -1198,7 +1197,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         $this->sleeping = clone $pos;
 
-        $this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [$pos->x, $pos->y, $pos->z]);
+        $this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, $pos);
         $this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, true);
 
         $this->setSpawn($pos);
@@ -1217,7 +1216,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->server->getPluginManager()->callEvent($ev = new PlayerBedLeaveEvent($this, $b));
 
             $this->sleeping = null;
-            $this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0]);
+            $this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
             $this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
 
             $this->level->setSleepTicks(0);
@@ -1671,23 +1670,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             }
         }
     }
-
-	/**
-	 * @param int $id
-	 * @param int $type
-	 * @param mixed $value
-	 *
-	 * @param bool $send
-	 * @return bool
-	 */
-	public function setDataProperty(int $id, int $type, $value, bool $send = true) : bool{
-		if (parent::setDataProperty($id, $type, $value, $send)) {
-			if($send) $this->sendData($this, [$id => $this->dataProperties[$id]]);
-			return true;
-		}
-
-		return false;
-	}
 
     /**
      * @param $currentTick
@@ -4374,11 +4356,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @param string $text
      */
 	public function setButtonText(string $text){
-        $this->setDataProperty(self::DATA_INTERACTIVE_TAG, self::DATA_TYPE_STRING, $text);
+        $this->propertyManager->setString(self::DATA_INTERACTIVE_TAG, $text);
     }
 
 	public function getButtonText(){
-        return $this->getDataProperty(self::DATA_INTERACTIVE_TAG);
+        return $this->propertyManager->getString(self::DATA_INTERACTIVE_TAG);
     }
 
 	/**
@@ -4450,10 +4432,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return true;
         }
         return false;
-    }
-
-    public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
-        return true;
     }
 
     /**
