@@ -30,22 +30,14 @@ use pocketmine\item\Item;
 use pocketmine\level\sound\ButtonClickSound;
 use pocketmine\Player;
 
-class StoneButton extends WoodenButton {
+class StoneButton extends Button {
 	protected $id = self::STONE_BUTTON;
 
 	public function getName() : string{
 		return "Stone Button";
 	}
 
-	public function onActivate(Item $item, Player $player = null) : bool{
-		if(!$this->isActivated()){
-			$this->meta ^= 0x08;
-			$this->getLevel()->setBlock($this, $this, true, false);
-			$this->getLevel()->addSound(new ButtonClickSound($this));
-			$this->getLevel()->scheduleDelayedBlockUpdate($this, 40);
-            $this->level->updateAroundRedstone($this);
-            $this->level->updateAroundRedstone($this->getSide($this->getOpposite()));
-		}
-		return true;
-	}
+	public function getToolType(): int{
+        return BlockToolType::TYPE_PICKAXE;
+    }
 }

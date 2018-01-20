@@ -2,6 +2,7 @@
 
 /*
  *
+ *
  *    _______                    _
  *   |__   __|                  (_)
  *      | |_   _ _ __ __ _ _ __  _  ___
@@ -18,26 +19,39 @@
  * @author TuranicTeam
  * @link https://github.com/TuranicTeam/Turanic
  *
- */
+ *
+*/
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\level\Level;
-use pocketmine\level\sound\ButtonClickSound;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
-class WoodenButton extends Button {
-	protected $id = self::WOODEN_BUTTON;
+abstract class Button extends Flowable {
 
-	public function getName() : string{
-		return "Wooden Button";
-	}
+    public function __construct(int $meta = 0){
+        $this->meta = $meta;
+    }
 
-	public function getToolType(): int{
-        return BlockToolType::TYPE_AXE;
+    public function getHardness(): float{
+        return 0.5;
+    }
+
+    public function getVariantBitmask(): int{
+        return 0;
+    }
+
+    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null): bool{
+        $this->meta = $face;
+
+        return $this->level->setBlock($this, $this, true, true);
+    }
+
+    public function onActivate(Item $item, Player $player = null): bool{
+        // TODO : Add Redstone System
+        return true;
     }
 }
