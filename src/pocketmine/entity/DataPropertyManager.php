@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 
 class DataPropertyManager{
@@ -139,20 +140,20 @@ class DataPropertyManager{
     /**
      * @param int $key
      *
-     * @return null|\pocketmine\item\Item
+     * @return null|Item
      */
     public function getItem(int $key){
         $value = $this->getPropertyValue($key, Entity::DATA_TYPE_SLOT);
-        assert($value instanceof \pocketmine\item\Item  or $value === null);
+        assert($value instanceof Item  or $value === null);
         return $value;
     }
 
     /**
      * @param int                   $key
-     * @param \pocketmine\item\Item $value
+     * @param Item $value
      * @param bool                  $force
      */
-    public function setItem(int $key, \pocketmine\item\Item $value, bool $force = false){
+    public function setItem(int $key, Item $value, bool $force = false){
         $this->setPropertyValue($key, Entity::DATA_TYPE_SLOT, $value, $force);
     }
 
