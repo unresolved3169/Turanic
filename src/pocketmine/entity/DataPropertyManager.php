@@ -150,10 +150,10 @@ class DataPropertyManager{
 
     /**
      * @param int                   $key
-     * @param \pocketmine\item\Item $value
+     * @param Item $value
      * @param bool                  $force
      */
-    public function setItem(int $key, \pocketmine\item\Item $value, bool $force = false){
+    public function setItem(int $key, Item $value, bool $force = false){
         $this->setPropertyValue($key, Entity::DATA_TYPE_SLOT, $value, $force);
     }
 
