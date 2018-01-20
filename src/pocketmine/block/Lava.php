@@ -96,15 +96,8 @@ class Lava extends Liquid {
 	public function onEntityCollide(Entity $entity){
 		$entity->fallDistance *= 0.5;
 
-		$damage = true;
-		if($entity instanceof Living and !$entity->hasEffect(Effect::FIRE_RESISTANCE)){
-            $damage = false;
-		}
-
-		if($damage){
-            $ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
-            $entity->attack($ev);
-        }
+        $ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
+        $entity->attack($ev);
 
         $ev = new EntityCombustByBlockEvent($this, $entity, 15);
 		Server::getInstance()->getPluginManager()->callEvent($ev);

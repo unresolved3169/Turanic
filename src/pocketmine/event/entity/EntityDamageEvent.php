@@ -61,7 +61,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
     /** @var int */
     private $cause;
-    /** @var array */
+    /** @var float[] */
     private $modifiers;
     /** @var float[] */
     private $originals;
@@ -95,35 +95,33 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
     /**
      * @return int
      */
-    public function getCause(){
+    public function getCause() : int{
         return $this->cause;
     }
 
     /**
      * @param int $type
      *
-     * @return int
+     * @return float
      */
-    public function getOriginalDamage($type = self::MODIFIER_BASE){
-        return $this->originals[$type] ?? 0;
+    public function getOriginalDamage(int $type = self::MODIFIER_BASE) : float{
+        return $this->originals[$type] ?? 0.0;
     }
 
     /**
      * @param int $type
      *
-     * @return int
+     * @return float
      */
-    public function getDamage($type = self::MODIFIER_BASE){
-        return $this->modifiers[$type] ?? 0;
+    public function getDamage(int $type = self::MODIFIER_BASE) : float{
+        return $this->modifiers[$type] ?? 0.0;
     }
 
     /**
      * @param float $damage
      * @param int   $type
-     *
-     * @throws \UnexpectedValueException
      */
-    public function setDamage(float $damage, $type = self::MODIFIER_BASE){
+    public function setDamage(float $damage, int $type = self::MODIFIER_BASE){
         $this->modifiers[$type] = $damage;
     }
 
@@ -132,14 +130,14 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
      *
      * @return bool
      */
-    public function isApplicable($type){
+    public function isApplicable(int $type) : bool{
         return isset($this->modifiers[$type]);
     }
 
     /**
-     * @return int
+     * @return float
      */
-    public function getFinalDamage(){
+    public function getFinalDamage() : float{
         return array_sum($this->modifiers);
     }
 

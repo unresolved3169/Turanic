@@ -524,7 +524,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	protected $stepHeight = 0;
 	public $keepMovement = false;
 
-	public $fallDistance = 0;
+	/** @var float */
+	public $fallDistance = 0.0;
 	public $ticksLived = 0;
 	public $lastUpdate;
 	public $fireTicks = 0;

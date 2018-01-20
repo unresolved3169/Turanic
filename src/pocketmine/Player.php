@@ -127,7 +127,6 @@ use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EntityEventPacket;
-use pocketmine\network\mcpe\protocol\EntityFallPacket;
 use pocketmine\network\mcpe\protocol\EntityPickRequestPacket;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
@@ -139,7 +138,6 @@ use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PingPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
-use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -656,6 +654,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     /**
      * @param PermissionAttachment $attachment
+     * @throws \Throwable
      */
     public function removeAttachment(PermissionAttachment $attachment){
         $this->perm->removeAttachment($attachment);
@@ -1688,29 +1687,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		}
 
 		return false;
-	}
-
-	public function move($dx, $dy, $dz){
-		$this->checkGroundState(0,0,0,0,0,0);
-		if($dx == 0 and $dz == 0 and $dy == 0){
-			return true;
-		}
-
-		if($this->keepMovement){
-			$this->boundingBox->offset($dx, $dy, $dz);
-			$this->setPosition(new Vector3(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
-			$this->onGround = true;
-			return true;
-		}else{
-			$pos = new Vector3($this->x + $dx, $this->y + $dy, $this->z + $dz);
-			if(!$this->setPosition($pos)){
-				return false;
-			}else{
-				$this->checkChunks();
-				$this->updateFallState($dy, $this->onGround);
-			}
-			return true;
-		}
 	}
 
     /**
@@ -3711,9 +3687,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             if($this->getItemInHand()->getId() == Item::TOTEM && $source->getCause() != EntityDamageEvent::CAUSE_VOID && $source->getCause() != EntityDamageEvent::CAUSE_SUICIDE){
                 $totem = clone $this->getItemInHand();
                 $totem->count--;
-                if($totem->count <= 0){
-                    $totem = Item::get(Item::AIR);
-                }
                 $this->inventory->setItemInHand($totem);
 
                 $pk = new LevelEventPacket();
@@ -3729,10 +3702,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                 $this->removeAllEffects();
                 $this->setHealth(2);
-                $this->addEffect(Effect::getEffect(Effect::REGENERATION)->setDuration(40*20)->setAmplifier(1));
-                $this->addEffect(Effect::getEffect(Effect::ABSORPTION)->setDuration(5*20)->setAmplifier(1));
-                $this->addEffect(Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(40*20)->setAmplifier(1));
-                return false;
+                $this->addEffect(Effect::getEffect(Effect::REGENERATION)->setDuration(40*20)->setEffectLevel(2));
+                $this->addEffect(Effect::getEffect(Effect::ABSORPTION)->setDuration(5*20)->setEffectLevel(2));
+                $this->addEffect(Effect::getEffect(Effect::FIRE_RESISTANCE)->setDuration(40*20)->setEffectLevel(2));
+                return;
             }
         }
 
@@ -4066,14 +4039,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
 		return true;
 	}
-
-	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
-	    return true;
-    }
-
-    public function handleEntityFall(EntityFallPacket $packet) : bool{
-        return true;
-    }
 
 	public function handleText(TextPacket $packet) : bool{
 		if($packet->type == TextPacket::TYPE_CHAT){

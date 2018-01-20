@@ -186,8 +186,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 					$this->players[$identifier]->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
-				$logger = $this->server->getLogger();
-				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+                $this->server->getLogger()->debug("Unhandled Packet : ".$e->getMessage());
 			}
 		}
 	}

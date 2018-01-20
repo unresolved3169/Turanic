@@ -247,6 +247,15 @@ class Effect {
     }
 
     /**
+     * Sets the level of this effect.
+     *
+     * @return $this
+     */
+    public function setEffectLevel(int $level) : Effect{
+        return $this->setAmplifier($level - 1);
+    }
+
+    /**
      * Returns the amplifier of this effect.
      * @return int
      */
