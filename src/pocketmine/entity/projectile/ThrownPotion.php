@@ -57,7 +57,7 @@ class ThrownPotion extends Projectile {
 
 		parent::__construct($level, $nbt, $shootingEntity);
 
-		unset($this->dataProperties[self::DATA_SHOOTER_ID]);
+		$this->propertyManager->removeProperty(self::DATA_SHOOTER_ID);
 		$this->propertyManager->setShort(self::DATA_POTION_ID, $this->getPotionId());
 	}
 
