@@ -1995,7 +1995,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
-        var_dump("Clientresponse: ".$packet->status);
         switch($packet->status){
             case ResourcePackClientResponsePacket::STATUS_REFUSED:
                 //TODO: add lang strings for this
@@ -2927,7 +2926,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
-        var_dump($packet);
         $manager = $this->server->getResourceManager();
         $pack = $manager->getPackById($packet->packId);
         if(!($pack instanceof ResourcePack)){
@@ -3025,7 +3023,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
          */
         $handleName = "handle" . str_ireplace("Packet", "", $packet->getName());
 
-        var_dump($handleName);
         try {
             $this->{$handleName}($packet);
         } catch (\Exception $e) {
