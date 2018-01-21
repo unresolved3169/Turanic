@@ -2193,7 +2193,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         switch($packet->event){
             case EntityEventPacket::EATING_ITEM:
-                if($packet->data === 0){
+                if($packet->data === Block::AIR && ($this->server->foodEnabled && $packet->data !== Item::POTION)){
                     return false;
                 }
 
