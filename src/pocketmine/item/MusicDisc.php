@@ -27,18 +27,6 @@ namespace pocketmine\item;
 abstract class MusicDisc extends Item{
 	
 	const NO_RECORD = 0;
-	const RECORD_13 = 2256;
-	const RECORD_CAT = 2257;
-	const RECORD_BLOCKS = 2258;
-	const RECORD_CHIRP = 2259;
-	const RECORD_FAR = 2260;
-	const RECORD_MALL = 2261;
-	const RECORD_MELLOHI = 2262;
-	const RECORD_STAL = 2263;
-	const RECORD_STRAD = 2264;
-	const RECORD_WARD = 2265;
-	const RECORD_11 = 2266;
-	const RECORD_WAIT = 2267;
 
     /**
      * MusicDisc constructor.
@@ -58,8 +46,12 @@ abstract class MusicDisc extends Item{
 	}
 	
 	public function getRecordId() : int{
-		return 2256 + ($this->id - 500);
+		return 90 + ($this->id - 500);
 	}
+
+	public function getSoundId(){
+        return 90 + ($this->getRecordId() - 2256);
+    }
 	
 	public function getRecordName() : string{
 		return str_ireplace("Music Disc ", "", $this->getName()); // to easy :D
