@@ -307,7 +307,6 @@ class Utils {
 			case "bsd":
 			case "mac":
 				$processors = (int) `sysctl -n hw.ncpu`;
-				$processors = (int) `sysctl -n hw.ncpu`;
 				break;
 			case "win":
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
@@ -428,29 +427,24 @@ class Utils {
 		return $ret;
 	}
 
-	/**
-	 * @param $string
-	 *
-	 * @return int
-	 */
-	public static function javaStringHash($string){
-		$hash = 0;
-		for($i = 0; $i < strlen($string); $i++){
-			$ord = ord($string{$i});
-			if($ord & 0x80){
-				$ord -= 0x100;
-			}
-			$hash = 31 * $hash + $ord;
-			while($hash > 0x7FFFFFFF){
-				$hash -= 0x100000000;
-			}
-			while($hash < -0x80000000){
-				$hash += 0x100000000;
-			}
-			$hash &= 0xFFFFFFFF;
-		}
-		return $hash;
-	}
+    public static function javaStringHash(string $string) : int{
+        $hash = 0;
+        for($i = 0, $len = strlen($string); $i < $len; $i++){
+            $ord = ord($string{$i});
+            if($ord & 0x80){
+                $ord -= 0x100;
+            }
+            $hash = 31 * $hash + $ord;
+            while($hash > 0x7FFFFFFF){
+                $hash -= 0x100000000;
+            }
+            while($hash < -0x80000000){
+                $hash += 0x100000000;
+            }
+            $hash &= 0xFFFFFFFF;
+        }
+        return $hash;
+    }
 
     public static function decodeJWT(string $token) : array{
         list($headB64, $payloadB64, $sigB64) = explode(".", $token);

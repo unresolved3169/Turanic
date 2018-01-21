@@ -21,26 +21,25 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
 class ResourcePackChunkRequestPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_REQUEST_PACKET;
+    const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CHUNK_REQUEST_PACKET;
 
-	/** @var string */
-	public $packId;
-	/** @var int */
-	public $chunkIndex;
+    /** @var string */
+    public $packId;
+    /** @var int */
+    public $chunkIndex;
 
-	protected function decodePayload(){
-		$this->packId = $this->getString();
-		$this->chunkIndex = $this->getLInt();
-	}
+    protected function decodePayload(){
+        $this->packId = $this->getString();
+        $this->chunkIndex = $this->getLInt();
+    }
 
-	protected function encodePayload(){
-		$this->putString($this->packId);
-		$this->putLInt($this->chunkIndex);
-	}
+    protected function encodePayload(){
+        $this->putString($this->packId);
+        $this->putLInt($this->chunkIndex);
+    }
 }

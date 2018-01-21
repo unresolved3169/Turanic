@@ -26,31 +26,31 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 class ResourcePackClientResponsePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
+    const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_CLIENT_RESPONSE_PACKET;
 
-	const STATUS_REFUSED = 1;
-	const STATUS_SEND_PACKS = 2;
-	const STATUS_HAVE_ALL_PACKS = 3;
-	const STATUS_COMPLETED = 4;
+    const STATUS_REFUSED = 1;
+    const STATUS_SEND_PACKS = 2;
+    const STATUS_HAVE_ALL_PACKS = 3;
+    const STATUS_COMPLETED = 4;
 
-	/** @var int */
-	public $status;
-	/** @var string[] */
-	public $packIds = [];
+    /** @var int */
+    public $status;
+    /** @var string[] */
+    public $packIds = [];
 
-	protected function decodePayload(){
-		$this->status = $this->getByte();
-		$entryCount = $this->getLShort();
-		while($entryCount-- > 0){
-			$this->packIds[] = $this->getString();
-		}
-	}
+    protected function decodePayload(){
+        $this->status = $this->getByte();
+        $entryCount = $this->getLShort();
+        while($entryCount-- > 0){
+            $this->packIds[] = $this->getString();
+        }
+    }
 
-	protected function encodePayload(){
-		$this->putByte($this->status);
-		$this->putLShort(count($this->packIds));
-		foreach($this->packIds as $id){
-			$this->putString($id);
-		}
-	}
+    protected function encodePayload(){
+        $this->putByte($this->status);
+        $this->putLShort(count($this->packIds));
+        foreach($this->packIds as $id){
+            $this->putString($id);
+        }
+    }
 }

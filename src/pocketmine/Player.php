@@ -1928,6 +1928,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     public function sendPlayStatus(int $status, bool $immediate = false){
         $pk = new PlayStatusPacket();
         $pk->status = $status;
+        $pk->protocol = $this->protocol;
         $this->sendDataPacket($pk, false, $immediate);
     }
 
@@ -1994,8 +1995,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
+        var_dump("Clientresponse: ".$packet->status);
         switch($packet->status){
             case ResourcePackClientResponsePacket::STATUS_REFUSED:
+                //TODO: add lang strings for this
                 $this->close("", "You must accept resource packs to join this server.", true);
                 break;
             case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
@@ -2006,14 +2009,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         //Client requested a resource pack but we don't have it available on the server
                         $this->close("", "disconnectionScreen.resourcePack", true);
                         $this->server->getLogger()->debug("Got a resource pack request for unknown pack with UUID " . $uuid . ", available packs: " . implode(", ", $manager->getPackIdList()));
+
                         return false;
                     }
 
                     $pk = new ResourcePackDataInfoPacket();
                     $pk->packId = $pack->getPackId();
-                    $pk->maxChunkSize = 1048576; //1MB
-                    $pk->chunkCount = (int) ceil($pack->getPackSize() / $pk->maxChunkSize);
-                    $pk->compressedPackSize = $pack->getPackSize();
+                    $pk->fileSize = $pack->getPackSize();
                     $pk->sha256 = $pack->getSha256();
                     $this->dataPacket($pk);
                 }
@@ -2925,6 +2927,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
+        var_dump($packet);
         $manager = $this->server->getResourceManager();
         $pack = $manager->getPackById($packet->packId);
         if(!($pack instanceof ResourcePack)){
@@ -3022,6 +3025,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
          */
         $handleName = "handle" . str_ireplace("Packet", "", $packet->getName());
 
+        var_dump($handleName);
         try {
             $this->{$handleName}($packet);
         } catch (\Exception $e) {

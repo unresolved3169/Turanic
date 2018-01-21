@@ -29,48 +29,48 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\resourcepacks\ResourcePack;
 
 class ResourcePackStackPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_STACK_PACKET;
+    const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_STACK_PACKET;
 
-	/** @var bool */
-	public $mustAccept = false;
+    /** @var bool */
+    public $mustAccept = false;
 
-	/** @var ResourcePack[] */
-	public $behaviorPackStack = [];
-	/** @var ResourcePack[] */
-	public $resourcePackStack = [];
+    /** @var ResourcePack[] */
+    public $behaviorPackStack = [];
+    /** @var ResourcePack[] */
+    public $resourcePackStack = [];
 
-	protected function decodePayload(){
-		/*$this->mustAccept = $this->getBool();
-		$behaviorPackCount = $this->getUnsignedVarInt();
-		while($behaviorPackCount-- > 0){
-			$packId = $this->getString();
-			$version = $this->getString();
-			$this->behaviorPackStack[] = new ResourcePackInfoEntry($packId, $version);
-		}
+    protected function decodePayload(){
+        /*$this->mustAccept = $this->getBool();
+        $behaviorPackCount = $this->getUnsignedVarInt();
+        while($behaviorPackCount-- > 0){
+            $packId = $this->getString();
+            $version = $this->getString();
+            $this->behaviorPackStack[] = new ResourcePackInfoEntry($packId, $version);
+        }
 
-		$resourcePackCount = $this->getUnsignedVarInt();
-		while($resourcePackCount-- > 0){
-			$packId = $this->getString();
-			$version = $this->getString();
-			$this->resourcePackStack[] = new ResourcePackInfoEntry($packId, $version);
-		}*/
-	}
+        $resourcePackCount = $this->getUnsignedVarInt();
+        while($resourcePackCount-- > 0){
+            $packId = $this->getString();
+            $version = $this->getString();
+            $this->resourcePackStack[] = new ResourcePackInfoEntry($packId, $version);
+        }*/
+    }
 
-	protected function encodePayload(){
-		$this->putBool($this->mustAccept);
+    protected function encodePayload(){
+        $this->putBool($this->mustAccept);
 
-		$this->putUnsignedVarInt(count($this->behaviorPackStack));
-		foreach($this->behaviorPackStack as $entry){
-			$this->putString($entry->getPackId());
-			$this->putString($entry->getPackVersion());
-			$this->putString(""); //TODO
-		}
+        $this->putUnsignedVarInt(count($this->behaviorPackStack));
+        foreach($this->behaviorPackStack as $entry){
+            $this->putString($entry->getPackId());
+            $this->putString($entry->getPackVersion());
+            $this->putString(""); //TODO
+        }
 
-		$this->putUnsignedVarInt(count($this->resourcePackStack));
-		foreach($this->resourcePackStack as $entry){
-			$this->putString($entry->getPackId());
-			$this->putString($entry->getPackVersion());
-			$this->putString(""); //TODO
-		}
-	}
+        $this->putUnsignedVarInt(count($this->resourcePackStack));
+        foreach($this->resourcePackStack as $entry){
+            $this->putString($entry->getPackId());
+            $this->putString($entry->getPackVersion());
+            $this->putString(""); //TODO
+        }
+    }
 }
