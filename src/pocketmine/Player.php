@@ -3023,11 +3023,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
          */
         $handleName = "handle" . str_ireplace("Packet", "", $packet->getName());
 
-        try {
+        if(is_callable([$this, $handleName])){
             $this->{$handleName}($packet);
-        } catch (\Exception $e) {
-            $timings->stopTiming();
-            return false;
+        }else{
+            $this->handleRedundantPacket($packet);
         }
 
         $timings->stopTiming();
@@ -4435,6 +4434,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return true;
         }
         return false;
+    }
+
+    public function handleRedundantPacket(DataPacket $packet) : bool{
+        return true;
     }
 
     /**
