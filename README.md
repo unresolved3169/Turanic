@@ -11,7 +11,6 @@ Turanic is a fork of GenisysPro
 Example servers running Turanic
 --------------------
 - **play.oyungg.net**
-- **oyna.minecraftpetr.net**
 -------------
 ## Known Bugs in 1.2:
 - Movement Bug (players not affect from gravity in some server devices)
