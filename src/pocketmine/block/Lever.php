@@ -41,84 +41,59 @@ class Lever extends Flowable {
 		return "Lever";
 	}
 
-	public function onUpdate(int $type){
+	public function getHardness(): float{
+        return 0.5;
+    }
+
+    public function getVariantBitmask(): int{
+        return 0;
+    }
+
+    public function onUpdate(int $type){
 		if($type === Level::BLOCK_UPDATE_NORMAL){
-            $side = $this->isActivated() ? $this->meta ^ 0x08 : $this->meta;
 			$faces = [
-				5 => 0,
-				6 => 0,
-				3 => 2,
-				1 => 4,
-				4 => 3,
-				2 => 5,
-				0 => 1,
-				7 => 1,
+                0 => Vector3::SIDE_UP,
+                1 => Vector3::SIDE_WEST,
+                2 => Vector3::SIDE_EAST,
+                3 => Vector3::SIDE_NORTH,
+                4 => Vector3::SIDE_SOUTH,
+                5 => Vector3::SIDE_DOWN,
+                6 => Vector3::SIDE_DOWN,
+                7 => Vector3::SIDE_UP
 			];
 
-			$block = $this->getSide($faces[$side]);
-			if(!$block->isSolid()){
-				$this->getLevel()->useBreakOn($this);
+            if(!$this->getSide($faces[$this->meta & 0x07])->isSolid()){
+                $this->level->useBreakOn($this);
 
-				return Level::BLOCK_UPDATE_NORMAL;
+                return $type;
 			}
 		}
 		return false;
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockClicked->isTransparent() && $blockClicked->isSolid()){
-			$faces = [
-				3 => 3,
-				2 => 4,
-				4 => 2,
-				5 => 1,
-			];
-			if($face === 0){
-				$to = $player instanceof Player ? $player->getDirection() : 0;
-				$this->meta = ($to % 2 != 1 ? 0 : 7);
-			}elseif($face === 1){
-				$to = $player instanceof Player ? $player->getDirection() : 0;
-				$this->meta = ($to % 2 != 1 ? 6 : 5);
-			}else{
-				$this->meta = $faces[$face];
-			}
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
-			return true;
-		}
-		return false;
-	}
-
-	public function onActivate(Item $item, Player $player = null) : bool{
-		$this->meta ^= 0x08;
-		$this->getLevel()->setBlock($this, $this, false, true);
-		$this->getLevel()->addSound(new ButtonClickSound($this));
-        $this->level->updateAroundRedstone($this);
-		return true;
-	}
-
-	public function onBreak(Item $item, Player $player = null) : bool{
-		if($this->isActivated()){
-			$this->meta ^= 0x08;
-			$this->getLevel()->setBlock($this, $this, true, false);
-            $this->level->updateAroundRedstone($this);
+        if(!$blockClicked->isSolid()){
+            return false;
         }
-		$this->getLevel()->setBlock($this, new Air(), true, false);
-		return true;
-	}
 
-	public function isActivated(Block $from = null){
-        return ($this->meta & 0x08) > 0;
-	}
+        if($face === Vector3::SIDE_DOWN){
+            $this->meta = 0;
+        }else{
+            $this->meta = 6 - $face;
+        }
 
-	public function getHardness() : float{
-		return 0.5;
-	}
+        if($player !== null){
+            if(($player->getDirection() & 0x01) === 0){
+                if($face === Vector3::SIDE_UP){
+                    $this->meta = 6;
+                }
+            } else {
+                if($face === Vector3::SIDE_DOWN){
+                    $this->meta = 7;
+                }
+            }
+        }
 
-	public function isRedstoneSource(){
-        return true;
-    }
-
-    public function getWeakPower(int $side): int{
-        return $this->isActivated() ? 15 : 0;
+        return $this->level->setBlock($blockReplace, $this, true, true);
     }
 }
