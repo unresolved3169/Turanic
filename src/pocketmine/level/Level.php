@@ -3247,11 +3247,6 @@ class Level implements ChunkManager, Metadatable{
         }
     }
 
-    public function getRedstonePower(Vector3 $pos, int $face) : int{
-        $block = $this->getBlockAt($pos->x, $pos->y, $pos->z);
-        return $block->getWeakPower($face);
-    }
-
     public function isBlockPowered(Vector3 $pos) : bool{
         $sides = [Vector3::SIDE_NORTH, Vector3::SIDE_SOUTH, Vector3::SIDE_WEST, Vector3::SIDE_EAST, Vector3::SIDE_DOWN, Vector3::SIDE_UP];
         foreach($sides as $side){

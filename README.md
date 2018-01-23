@@ -69,7 +69,7 @@ Example servers running Turanic
    - [ ] More thread/worker
    - [ ] Basic ChunkLoader System
    - [ ] Fast NBT Writer/reader
-   - [ ] Basic Redstone system (without lag) (Progress: %80)
+   - [ ] Basic Redstone system (without lag) (Progress: %10)
    - [ ] Update languages
 <br />***More to do...***
 

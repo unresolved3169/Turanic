@@ -26,10 +26,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\RedstoneUtils;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\level\Level;
 
 class Redstone extends Solid {
 
@@ -71,7 +70,9 @@ class Redstone extends Solid {
         return 15;
     }
 
-    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null): bool{
-        return parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player); // TODO: REDSTONE SYSTEM
+    public function onUpdate(int $type){
+        if($type == Level::BLOCK_UPDATE_NORMAL){
+            RedstoneUtils::updateRedstone($this->asPosition());
+        }
     }
 }

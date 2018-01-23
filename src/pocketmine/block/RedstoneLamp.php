@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\RedstoneUtils;
 use pocketmine\level\Level;
 
 class RedstoneLamp extends Solid {
@@ -33,26 +34,18 @@ class RedstoneLamp extends Solid {
 		$this->meta = $meta;
 	}
 
-	public function getLightLevel() : int{
-		return 0;
-	}
+    public function getName() : string{
+        return "Redstone Lamp";
+    }
 
     public function getHardness() : float{
         return 0.3;
     }
 
-    public function getToolType() : int{
-        return BlockToolType::TYPE_PICKAXE;
-    }
-
-	public function getName() : string{
-		return "Redstone Lamp";
-	}
-
     public function onUpdate(int $type){
         if($type == Level::BLOCK_UPDATE_NORMAL || $type == Level::BLOCK_UPDATE_REDSTONE){
-            if($this->level->isBlockPowered($this) or $this->level->isBlockPowered($this->getSide(self::SIDE_UP))){
-                $this->level->setBlock($this, new LitRedstoneLamp(), false, false);
+            if(RedstoneUtils::isRedstonePowered($this->asPosition())){
+                $this->level->setBlock($this, Block::get(Block::LIT_REDSTONE_LAMP));
             }
         }
 	}

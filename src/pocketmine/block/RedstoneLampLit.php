@@ -24,11 +24,14 @@
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\RedstoneUtils;
 use pocketmine\level\Level;
 
-class LitRedstoneLamp extends RedstoneLamp implements ElectricalAppliance, SolidLight{
+class RedstoneLampLit extends RedstoneLamp implements SolidLight{
 
 	protected $id = self::LIT_REDSTONE_LAMP;
+	/** @var bool */
+	private $delayed = false;
 
 	public function getName() : string{
 		return "Lit Redstone Lamp";
@@ -42,12 +45,13 @@ class LitRedstoneLamp extends RedstoneLamp implements ElectricalAppliance, Solid
 	    switch($type){
             case Level::BLOCK_UPDATE_NORMAL:
             case Level::BLOCK_UPDATE_REDSTONE:
-                if (!$this->level->isBlockPowered($this))
+                if (!RedstoneUtils::isRedstonePowered($this))
+                    $this->delayed = true;
                     $this->level->scheduleDelayedBlockUpdate($this, 4);
                 break;
             case Level::BLOCK_UPDATE_SCHEDULED:
-                if (!$this->level->isBlockPowered($this))
-                    $this->level->setBlock($this, new RedstoneLamp(), false, false);
+                if($this->delayed or !RedstoneUtils::isRedstonePowered($this))
+                    $this->level->setBlock($this, Block::get(Block::REDSTONE_LAMP), false, false);
                 break;
         }
 	}
