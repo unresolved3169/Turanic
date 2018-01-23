@@ -472,7 +472,7 @@ class Vector3 {
 		return "Vector3(x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
 
-	public function toArray(){
+	public function toArray() : array{
 	    return [$this->x, $this->y, $this->z];
     }
 

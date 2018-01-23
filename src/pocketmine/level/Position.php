@@ -127,4 +127,8 @@ class Position extends Vector3 {
         return parent::equals($v);
     }
 
+    public function toArray() : array{
+        return [$this->x, $this->y, $this->z, $this->level->getFolderName()];
+    }
+
 }

@@ -49,4 +49,8 @@ class RedstoneLamp extends Solid {
             }
         }
 	}
+
+	public function canUpdateWithRedstone(): bool{
+        return true;
+    }
 }
