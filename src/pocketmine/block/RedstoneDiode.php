@@ -38,10 +38,6 @@ abstract class RedstoneDiode extends Flowable {
         parent::__construct($meta);
     }
 
-    public function isRedstoneSource(){
-        return true;
-    }
-
     abstract function getFacing() : int;
 
     public function onBreak(Item $item, Player $player = null) : bool{

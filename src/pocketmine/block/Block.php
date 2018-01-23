@@ -739,19 +739,29 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->canBePlaced();
 	}
 
-	public function isNormal(){
-	    return !$this->isTransparent() && $this->isSolid() && !$this->isRedstoneSource();
-    }
+	// Redstone
 
-    public function isRedstoneSource(){
+    /**
+     * Kızıltaş kaynağı kontrolü
+     *
+     * @return bool
+     */
+    public function isRedstoneSource() : bool{
 	    return false;
     }
 
-    public function getWeakPower(int $side) : int{
-        return 0;
+    /**
+     * Kızıltaş güç seviyesi
+     *
+     * @return int
+     */
+    public function getRedstonePower() : int{
+	    return 0;
     }
 
-	public function activate(){ // TODO : remove
+    // TODO : remove
+
+	public function activate(){
 		return false;
 	}
 

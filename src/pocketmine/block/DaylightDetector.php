@@ -87,10 +87,6 @@ class DaylightDetector extends Transparent {
         return 300;
     }
 
-    public function isRedstoneSource(){
-        return true;
-    }
-
     public function getWeakPower(int $side): int{
         return $this->getTile()->getLightByTime();
     }
