@@ -41,7 +41,7 @@ class EnderChestInventory extends ChestInventory{
 	 */
 	public function __construct(Human $owner, $contents = null){
 		$this->owner = $owner;
-		ContainerInventory::__construct(new FakeBlockMenu($this, $owner->getPosition()));
+		ContainerInventory::__construct(new Position());
 
 		if($contents !== null){
 			if($contents instanceof ListTag){ //Saved data to be loaded into the inventory
@@ -80,4 +80,11 @@ class EnderChestInventory extends ChestInventory{
 		$this->getHolder()->setLevel($pos->getLevel());
 		$this->owner->addWindow($this);
 	}
+
+    /**
+     * @return Position
+     */
+    public function getHolder(){
+        return $this->holder;
+    }
 }

@@ -26,11 +26,10 @@ use pocketmine\tile\BrewingStand;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 
 class BrewingInventory extends ContainerInventory {
-	/**
-	 * BrewingInventory constructor.
-	 *
-	 * @param BrewingStand $tile
-	 */
+
+    /** @var BrewingStand */
+    protected $holder;
+
 	public function __construct(BrewingStand $tile){
 		parent::__construct($tile);
 	}
@@ -43,9 +42,6 @@ class BrewingInventory extends ContainerInventory {
 		return 4;
 	}
 
-	/**
-	 * @return BrewingStand
-	 */
 	public function getHolder(){
 		return $this->holder;
 	}

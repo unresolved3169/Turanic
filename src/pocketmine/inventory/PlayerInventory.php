@@ -321,14 +321,15 @@ class PlayerInventory extends EntityInventory{
 		return parent::doSetItemEvents($index, $newItem);
 	}
 
-	public function clearAll() {
-		parent::clearAll();
+	public function clearAll(bool $send = true) {
+		parent::clearAll($send);
 
 		for($i = $this->getSize(), $m = $i + 4; $i < $m; ++$i){
 			$this->clear($i, false);
 		}
 
-		$this->sendArmorContents($this->getViewers());
+		if($send)
+		    $this->sendArmorContents($this->getViewers());
 	}
 
 	/**

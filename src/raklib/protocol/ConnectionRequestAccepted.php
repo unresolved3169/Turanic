@@ -20,37 +20,40 @@ namespace raklib\protocol;
 #include <rules/RakLibPacket.h>
 
 use raklib\RakLib;
+use raklib\utils\InternetAddress;
 
 class ConnectionRequestAccepted extends Packet{
-	public static $ID = MessageIdentifiers::ID_CONNECTION_REQUEST_ACCEPTED;
+    public static $ID = MessageIdentifiers::ID_CONNECTION_REQUEST_ACCEPTED;
 
-	/** @var string */
-	public $address;
-	/** @var int */
-	public $port;
-	/** @var array */
-	public $systemAddresses = [
-        ["127.0.0.1", 0, 4]
-	];
+    /** @var InternetAddress */
+    public $address;
+    /** @var InternetAddress[] */
+    public $systemAddresses = [];
 
-	/** @var int */
-	public $sendPingTime;
-	/** @var int */
-	public $sendPongTime;
+    /** @var int */
+    public $sendPingTime;
+    /** @var int */
+    public $sendPongTime;
+
+    public function __construct(string $buffer = "", int $offset = 0){
+        parent::__construct($buffer, $offset);
+        $this->systemAddresses[] = new InternetAddress("127.0.0.1", 0, 4);
+    }
 
     protected function encodePayload(){
-		$this->putAddress($this->address, $this->port, 4);
-		$this->putShort(0);
-		for($i = 0; $i < RakLib::$SYSTEM_ADDRESS_COUNT; ++$i){
-            $addr = $this->systemAddresses[$i] ?? ["0.0.0.0", 0, 4];
-            $this->putAddress($addr[0], $addr[1], $addr[2]);
-		}
+        $this->putAddress($this->address);
+        $this->putShort(0);
 
-		$this->putLong($this->sendPingTime);
-		$this->putLong($this->sendPongTime);
-	}
+        $dummy = new InternetAddress("0.0.0.0", 0, 4);
+        for($i = 0; $i < RakLib::$SYSTEM_ADDRESS_COUNT; ++$i){
+            $this->putAddress($this->systemAddresses[$i] ?? $dummy);
+        }
+
+        $this->putLong($this->sendPingTime);
+        $this->putLong($this->sendPongTime);
+    }
 
     protected function decodePayload(){
-		//TODO, not needed yet
-	}
+        //TODO, not needed yet
+    }
 }

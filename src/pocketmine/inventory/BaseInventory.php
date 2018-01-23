@@ -44,18 +44,13 @@ abstract class BaseInventory implements Inventory{
 	protected $slots = [];
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var InventoryHolder */
-	protected $holder;
 
 	/**
-	 * @param InventoryHolder $holder
 	 * @param Item[]          $items
 	 * @param int             $size
 	 * @param string          $title
 	 */
-	public function __construct(InventoryHolder $holder, array $items = [], int $size = null, string $title = null){
-		$this->holder = $holder;
-
+	public function __construct(array $items = [], int $size = null, string $title = null){
 		$this->slots = new \SplFixedArray($size ?? $this->getDefaultSize());
 		$this->title = $title ?? $this->getName();
 
@@ -96,12 +91,17 @@ abstract class BaseInventory implements Inventory{
 		return $this->slots[$index] !== null ? clone $this->slots[$index] : Item::get(Item::AIR, 0, 0);
 	}
 
-	/**
-	 * @return Item[]
-	 */
-	public function getContents() : array{
-		return array_filter($this->slots->toArray(), function(Item $item = null){ return $item !== null; });
-	}
+    public function getContents(bool $includeEmpty = false) : array{
+        $contents = [];
+        for ($i = 0, $size = $this->getSize(); $i < $size; ++$i) {
+            $item = $this->getItem($i);
+            if ($includeEmpty or !$item->isNull()) {
+                $contents[$i] = $item;
+            }
+        }
+
+        return $contents;
+    }
 
 	/**
 	 * @param Item[] $items
@@ -350,13 +350,14 @@ abstract class BaseInventory implements Inventory{
 		return $this->setItem($index, Item::get(Item::AIR, 0, 0), $send);
 	}
 
-	public function clearAll(){
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$this->clear($i, false);
-		}
+    public function clearAll(bool $send = true){
+        for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
+            $this->clear($i, false);
+        }
 
-		$this->sendContents($this->getViewers());
-	}
+        if($send)
+            $this->sendContents($this->getViewers());
+    }
 
 	/**
 	 * @return Player[]
@@ -375,10 +376,6 @@ abstract class BaseInventory implements Inventory{
             unset($this->viewers[$hash]);
         }
     }
-
-	public function getHolder(){
-		return $this->holder;
-	}
 
 	public function setMaxStackSize(int $size){
 		$this->maxStackSize = $size;
