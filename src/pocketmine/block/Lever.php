@@ -24,10 +24,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\RedstoneUtils;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
-use pocketmine\level\sound\ButtonClickSound;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 class Lever extends Flowable {
@@ -95,5 +96,21 @@ class Lever extends Flowable {
         }
 
         return $this->level->setBlock($blockReplace, $this, true, true);
+    }
+
+    public function onActivate(Item $item, Player $player = null) : bool{
+        $this->meta ^= 0x08;
+        $this->level->setBlock($this, $this, false, true);
+        $this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_REDSTONE_TRIGGER);
+        RedstoneUtils::updateRedstone($this);
+        return true;
+    }
+
+    public function isRedstoneSource(): bool{
+	    return ($this->meta & 0x08) > 0;
+    }
+
+    public function getRedstonePower(): int{
+        return 15;
     }
 }

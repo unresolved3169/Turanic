@@ -72,7 +72,7 @@ class Redstone extends Solid {
 
     public function onUpdate(int $type){
         if($type == Level::BLOCK_UPDATE_NORMAL){
-            RedstoneUtils::updateRedstone($this->asPosition());
+            RedstoneUtils::updateRedstone($this);
         }
     }
 }

@@ -34,7 +34,7 @@ abstract class RedstoneUtils{
         $level = $position->getLevel();
         foreach(self::$allSides as $side){
             $blok = $level->getBlockAt(...$position->getSide($side)->toArray());
-            if($blok->getRedstonePower() > 0){
+            if($blok->isRedstoneSource() && $blok->getRedstonePower() > 0){
                 return true;
             }
         }

@@ -752,6 +752,7 @@ class Block extends Position implements BlockIds, Metadatable{
 
     /**
      * Kızıltaş güç seviyesi
+     * NOT: Güç seviyesi isRedstoneSource fonksiyonundan bağımsız çalışır
      *
      * @return int
      */
