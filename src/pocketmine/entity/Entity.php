@@ -934,7 +934,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 			$this->namedtag->setString("id", $this->getSaveId(), true);
 			if($this->getNameTag() !== ""){
 				$this->namedtag->setString("CustomName", $this->getNameTag());
-				$this->namedtag->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$this->namedtag->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0, true);
 				$this->namedtag->setByte("CustomNameAlwaysVisible", $this->isNameTagAlwaysVisible() ? 1 : 0);
 			}else{
                 $this->namedtag->removeTag("CustomName", "CustomNameVisible", "CustomNameAlwaysVisible");
@@ -970,7 +970,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
         if($this->namedtag->hasTag("CustomName", StringTag::class)){
             $this->setNameTag($this->namedtag->getString("CustomName"));
-            $this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
+            if($this->namedtag->hasTag("CustomNameVisible", ByteTag::class)){
+                $this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
+            }
         }
 
         $this->scheduleUpdate();
