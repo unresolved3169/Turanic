@@ -33,7 +33,10 @@ use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\Timings;
+use pocketmine\inventory\ArmorInventory;
+use pocketmine\item\Armor;
 use pocketmine\item\Consumable;
+use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -60,18 +63,21 @@ abstract class Living extends Entity implements Damageable{
     /** @var int */
     protected $maxDeadTicks = 20;
 
-	protected $invisible = false;
-
 	protected $jumpVelocity = 0.42;
 
     /** @var Effect[] */
     protected $effects = [];
+
+    /** @var ArmorInventory */
+	protected $armorInventory;
 
     // TODO Add return type (string)
     abstract public function getName();
 
 	protected function initEntity(){
 		parent::initEntity();
+
+        $this->armorInventory = new ArmorInventory($this);
 
         $health = $this->getMaxHealth();
 
@@ -376,7 +382,39 @@ abstract class Living extends Entity implements Damageable{
      * @return int
      */
     public function getArmorPoints() : int{
-        return 0;
+        $total = 0;
+        foreach($this->armorInventory->getContents() as $item){
+            $total += $item->getDefensePoints();
+        }
+
+        return $total;
+    }
+
+    /**
+     * Returns the highest level of the specified enchantment on any armour piece that the entity is currently wearing.
+     *
+     * @param int $enchantmentId
+     *
+     * @return int
+     */
+    public function getHighestArmorEnchantmentLevel(int $enchantmentId) : int{
+        $result = 0;
+        foreach($this->armorInventory->getContents() as $item){
+            $result = max($result, $item->getEnchantmentLevel($enchantmentId));
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return ArmorInventory
+     */
+    public function getArmorInventory() : ArmorInventory{
+        return $this->armorInventory;
+    }
+
+    public function setOnFire(int $seconds){
+        parent::setOnFire($seconds - (int) min($seconds, $seconds * $this->getHighestArmorEnchantmentLevel(Enchantment::FIRE_PROTECTION) * 0.15));
     }
 
     /**
@@ -396,7 +434,13 @@ abstract class Living extends Entity implements Damageable{
             $source->setDamage(-($source->getFinalDamage() * 0.20 * $this->getEffect(Effect::DAMAGE_RESISTANCE)->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
         }
 
-        //TODO: armour protection enchantments should be checked here (after effect damage reduction)
+        $totalEpf = 0;
+        foreach($this->armorInventory->getContents() as $item){
+            if($item instanceof Armor){
+                $totalEpf += $item->getEnchantmentProtectionFactor($source);
+            }
+        }
+        $source->setDamage(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
         $source->setDamage(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
     }
@@ -429,6 +473,16 @@ abstract class Living extends Entity implements Damageable{
         }
 
         $this->applyDamageModifiers($source);
+
+        if($source instanceof EntityDamageByEntityEvent and (
+                $source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+                $source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
+        ){
+            //TODO: knockback should not just apply for entity damage sources
+            //this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
+            $base = $source->getKnockBack();
+            $source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15));
+        }
 
         parent::attack($source);
 
@@ -578,13 +632,17 @@ abstract class Living extends Entity implements Damageable{
      * @param int $tickDiff
      */
     protected function doAirSupplyTick(int $tickDiff){
-        $ticks = $this->getAirSupplyTicks() - $tickDiff;
+        if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION)) <= 0 or
+            lcg_value() <= (1 / ($respirationLevel + 1))
+        ){
+            $ticks = $this->getAirSupplyTicks() - $tickDiff;
 
-        if($ticks <= -20){
-            $this->setAirSupplyTicks(0);
-            $this->onAirExpired();
-        }else{
-            $this->setAirSupplyTicks($ticks);
+            if($ticks <= -20){
+                $this->setAirSupplyTicks(0);
+                $this->onAirExpired();
+            }else{
+                $this->setAirSupplyTicks($ticks);
+            }
         }
     }
 
@@ -753,6 +811,12 @@ abstract class Living extends Entity implements Damageable{
         if($this->yaw < 0){
             $this->yaw += 360.0;
         }
+    }
+
+    protected function sendSpawnPacket(Player $player){
+        parent::sendSpawnPacket($player);
+
+        $this->armorInventory->sendContents($player);
     }
 
     public function doesTriggerPressurePlate() : bool{

@@ -716,9 +716,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 		$this->setLevel($this->server->getDefaultLevel());
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
-		$this->uuid = null;
-		$this->rawUUID = null;
-
 		$this->creationTime = microtime(true);
 
 		$this->allowMovementCheats = (bool)$this->server->getProperty("player.anti-cheat.allow-movement-cheats", false);
@@ -1704,6 +1701,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
         if ($this->spawned) {
             $this->processMovement($tickDiff);
+            $this->motionX = $this->motionY = $this->motionZ = 0; //TODO: HACK! (Fixes player knockback being messed up)
 
             Timings::$timerEntityBaseTick->startTiming();
             $this->entityBaseTick($tickDiff);
@@ -2110,7 +2108,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->sendData($this);
 
         $this->inventory->sendContents($this);
-        $this->inventory->sendArmorContents($this);
+        $this->armorInventory->sendContents($this);
         $this->inventory->sendCreativeContents();
         $this->inventory->sendHeldItem($this);
 
@@ -2697,7 +2695,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                 $this->sendSettings();
                 $this->inventory->sendContents($this);
-                $this->inventory->sendArmorContents($this);
+                $this->armorInventory->sendContents($this);
 
                 $this->spawnToAll();
                 $this->scheduleUpdate();
@@ -3627,6 +3625,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->inventory->setHeldItemIndex(0, false);
                 $this->inventory->clearAll();
             }
+            if($this->armorInventory !== null){
+                $this->armorInventory->clearAll();
+            }
         }
 
         if ($this->server->expEnabled and !$ev->getKeepExperience()){
@@ -3644,15 +3645,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         }
 
         return false; //never flag players for despawn
-    }
-
-    public function getArmorPoints() : int{
-        $total = 0;
-        foreach($this->inventory->getArmorContents() as $item){
-            $total += $item->getDefensePoints();
-        }
-
-        return $total;
     }
 
     protected function applyPostDamageEffects(EntityDamageEvent $source){
@@ -3779,6 +3771,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
     protected function addDefaultWindows(){
         $this->addWindow($this->getInventory(), ContainerIds::INVENTORY, true);
+
+        $this->addWindow($this->getArmorInventory(), ContainerIds::ARMOR, true);
 
         $this->cursorInventory = new PlayerCursorInventory($this);
         $this->addWindow($this->cursorInventory, ContainerIds::CURSOR, true);
@@ -3916,9 +3910,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     protected function sendAllInventories(){
         foreach($this->windowIndex as $id => $inventory){
             $inventory->sendContents($this);
-            if($inventory instanceof PlayerInventory){
-                $inventory->sendArmorContents($this);
-            }
         }
     }
 
@@ -4422,7 +4413,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function isHaveElytra(){
-        if ($this->getInventory()->getArmorItem(1) instanceof Elytra) {
+        if ($this->armorInventory->getChestplate() instanceof Elytra) {
             return true;
         }
         return false;

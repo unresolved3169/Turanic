@@ -28,7 +28,6 @@ use pocketmine\block\Block;
 use pocketmine\block\Fire;
 use pocketmine\block\Portal;
 use pocketmine\block\Solid;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -49,7 +48,8 @@ class FireCharge extends Item {
 	}
 
 	// TODO : OPTIMIZE
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+	    $level = $player->getLevel();
 		if($blockClicked->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){
 			$tx = $blockClicked->getX();
 			$ty = $blockClicked->getY();

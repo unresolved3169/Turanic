@@ -506,6 +506,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     }
 
     protected function initEntity(){
+        parent::initEntity();
+
         $this->setPlayerFlag(self::DATA_PLAYER_FLAG_SLEEP, false);
         $this->propertyManager->setBlockPos(self::DATA_PLAYER_BED_POSITION, null);
 
@@ -522,7 +524,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
                     //Old hotbar saving stuff, remove it (useless now)
                     unset($inventoryTag[$i]);
                 }elseif($slot >= 100 and $slot < 104){ //Armor
-                    $this->inventory->setItem($this->inventory->getSize() + $slot - 100, ItemItem::nbtDeserialize($item));
+                    $this->armorInventory->setItem($slot - 100, ItemItem::nbtDeserialize($item));
                 }else{
                     $this->inventory->setItem($slot - 9, ItemItem::nbtDeserialize($item));
                 }
@@ -538,8 +540,6 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         }
 
         $this->inventory->setHeldItemIndex($this->namedtag->getInt("SelectedInventorySlot", 0), false);
-
-        parent::initEntity();
 
         $this->setFood((float) $this->namedtag->getInt("foodLevel", (int) $this->getFood(), true));
         $this->setExhaustion($this->namedtag->getFloat("foodExhaustionLevel", $this->getExhaustion(), true));
@@ -636,13 +636,16 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         }
     }
 
-	public function getName(){
+	public function getName() : string{
 		return $this->getNameTag();
 	}
 
 	public function getDrops(){
-        return $this->inventory !== null ? array_values($this->inventory->getContents()) : [];
-	}
+        array_merge(
+            $this->inventory !== null ? array_values($this->inventory->getContents()) : [],
+            $this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
+        );
+    }
 
 	public function saveNBT(){
         parent::saveNBT();
@@ -671,7 +674,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 
             //Armor
             for($slot = 100; $slot < 104; ++$slot){
-                $item = $this->inventory->getItem($this->inventory->getSize() + $slot - 100);
+                $item = $this->armorInventory->getItem($slot - 100);
                 if(!$item->isNull()){
                     $inventoryTag[$slot] = $item->nbtSerialize($slot);
                 }
@@ -732,7 +735,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         $pk->metadata = $this->propertyManager->getAll();
         $player->dataPacket($pk);
 
-        $this->inventory->sendArmorContents($player);
+        $this->armorInventory->sendContents($player);
 
         if(!($this instanceof Player)){
             $this->sendSkin([$player]);

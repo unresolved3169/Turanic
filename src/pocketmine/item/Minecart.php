@@ -26,7 +26,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -47,7 +46,7 @@ class Minecart extends Item {
 	    return 1;
     }
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		$minecart = Entity::createEntity("Minecart", $player->getLevel(), Entity::createBaseNBT($blockReplace->add(0,0.8,0)));
 		if($minecart instanceof Entity) {
             $this->count--;

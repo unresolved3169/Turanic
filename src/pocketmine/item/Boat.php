@@ -26,7 +26,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -41,7 +40,7 @@ class Boat extends Item {
 		parent::__construct(self::BOAT, $meta, "Boat");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		$realPos = $blockReplace->getSide($face);
 
 		$nbt = Entity::createBaseNBT($realPos->add(0.5, 0, 0.5));

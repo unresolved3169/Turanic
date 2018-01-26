@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -222,5 +223,26 @@ abstract class Armor extends Item {
         }
         $player->getInventory()->setItemInHand($item);
         return false; // because not set item air
+    }
+
+    /**
+     * Returns the total enchantment protection factor this armour piece offers from all applicable protection
+     * enchantments on the item.
+     *
+     * @param EntityDamageEvent $event
+     *
+     * @return int
+     */
+    public function getEnchantmentProtectionFactor(EntityDamageEvent $event) : int{
+        $epf = 0;
+
+        foreach($this->getEnchantments() as $enchantment){
+            $type = $enchantment->getType();
+            if($type instanceof ProtectionEnchantment and $type->isApplicable($event)){
+                $epf += $type->getProtectionFactor($enchantment->getLevel());
+            }
+        }
+
+        return $epf;
     }
 }
