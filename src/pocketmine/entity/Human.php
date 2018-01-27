@@ -630,7 +630,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 
     protected function doAirSupplyTick(int $tickDiff){
         //TODO: allow this to apply to other mobs
-        if(($respirationLevel = $this->inventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION)) <= 0 or
+        if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION)) <= 0 or
             lcg_value() <= (1 / ($respirationLevel + 1))){
             parent::doAirSupplyTick($tickDiff);
         }

@@ -967,9 +967,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
         if($this->namedtag->hasTag("CustomName", StringTag::class)){
             $this->setNameTag($this->namedtag->getString("CustomName"));
-            if($this->namedtag->hasTag("CustomNameVisible", ByteTag::class)){
-                $this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
-            }
+            $this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
         }
 
         $this->scheduleUpdate();
