@@ -102,7 +102,7 @@ abstract class Worker extends \Worker {
      * @return string
      * @throws \ReflectionException
      */
-	public function getThreadName(){
+	public function getThreadName() : string{
 		return (new \ReflectionClass($this))->getShortName();
 	}
 }

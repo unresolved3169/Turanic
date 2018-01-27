@@ -129,10 +129,7 @@ class RakLibServer extends \Thread{
 		$this->internalQueue[] = $str;
 	}
 
-    /**
-     * @return string|null
-     */
-    public function readMainToThreadPacket(){
+    public function readMainToThreadPacket() : ?string{
 		return $this->internalQueue->shift();
 	}
 
@@ -140,10 +137,7 @@ class RakLibServer extends \Thread{
 		$this->externalQueue[] = $str;
 	}
 
-    /**
-     * @return string|null
-     */
-    public function readThreadToMainPacket(){
+    public function readThreadToMainPacket() : ?string{
 		return $this->externalQueue->shift();
 	}
 
@@ -223,7 +217,7 @@ class RakLibServer extends \Thread{
 		return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], $this->mainPath)], ["/", "", "", ""], $path);
 	}
 
-	public function run(){
+	public function run() : void{
 		try{
 			$this->loader->register(true);
 

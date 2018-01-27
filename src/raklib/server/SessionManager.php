@@ -407,13 +407,7 @@ class SessionManager{
         return $ip . ":" . $port;
     }
 
-    /**
-     * @param string $ip
-     * @param int    $port
-     *
-     * @return Session|null
-     */
-    public function getSession(string $ip, int $port){
+    public function getSession(string $ip, int $port) : ?Session{
         return $this->sessions[self::addressHash($ip, $port)] ?? null;
     }
 
@@ -480,13 +474,7 @@ class SessionManager{
         $this->packetPool[$id] = new $class;
     }
 
-    /**
-     * @param int    $id
-     * @param string $buffer
-     *
-     * @return Packet|null
-     */
-    public function getPacketFromPool(int $id, string $buffer = ""){
+    public function getPacketFromPool(int $id, string $buffer = "") : ?Packet{
         $pk = $this->packetPool[$id];
         if($pk !== null){
             $pk = clone $pk;
