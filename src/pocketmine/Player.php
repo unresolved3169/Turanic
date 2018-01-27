@@ -3879,17 +3879,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * @throws \BadMethodCallException if trying to remove a fixed inventory window without the `force` parameter as true
      */
     public function removeWindow(Inventory $inventory, bool $force = false){
-        if(isset($this->windows[$hash = spl_object_hash($inventory)])){
-            /** @var int $id */
-            $id = $this->windows[$hash];
-            if(!$force and isset($this->permanentWindows[$id])){
-                throw new \BadMethodCallException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
-            }
+        $id = $this->windows[$hash = spl_object_hash($inventory)] ?? null;
 
-            unset($this->windows[$hash], $this->windowIndex[$id], $this->permanentWindows[$id]);
+        if($id !== null and !$force and isset($this->permanentWindows[$id])){
+            throw new \BadMethodCallException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
         }
 
         $inventory->close($this);
+        if($id !== null){
+            unset($this->windows[$hash], $this->windowIndex[$id], $this->permanentWindows[$id]);
+        }
     }
 
     /**

@@ -65,7 +65,7 @@ class Ender extends Generator{
         return $this->waterHeight;
     }
 
-    public function getSettings(){
+    public function getSettings() : array{
         return [];
     }
 
@@ -136,7 +136,7 @@ class Ender extends Generator{
         $biome->populateChunk($this->level, $chunkX, $chunkZ, $this->random);
     }
 
-    public function getSpawn(){
+    public function getSpawn() : Vector3{
         return new Vector3(48, 128, 48);
     }
 

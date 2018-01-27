@@ -60,8 +60,8 @@ class NoteblockSound extends GenericSound {
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
-		$pk->case1 = $this->instrument;
-		$pk->case2 = $this->pitch;
+		$pk->eventType = $this->instrument;
+		$pk->eventData = $this->pitch;
 
 		$pk2 = new LevelSoundEventPacket();
 		$pk2->sound = LevelSoundEventPacket::SOUND_NOTE;
