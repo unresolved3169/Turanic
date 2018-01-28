@@ -206,14 +206,11 @@ abstract class Armor extends Item {
                 return false;
         }
 
-        if($index !== -1){
-            $old = $player->getArmorInventory()->getItem($index);
-            if(!$old->isNull()){
-                $player->getInventory()->setItemInHand($old);
-            }
-            $player->getArmorInventory()->setItem($index, $this);
-        }
-        return false; // because not set item air
+        $old = $player->getArmorInventory()->getItem($index);
+        $player->getInventory()->setItemInHand($old);
+        $player->getArmorInventory()->setItem($index, $this);
+
+        return false; // because not set item
     }
 
     /**
