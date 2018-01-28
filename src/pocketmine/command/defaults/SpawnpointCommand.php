@@ -30,6 +30,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
+use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
@@ -46,56 +47,56 @@ class SpawnpointCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->canExecute($sender)){
-			return true;
-		}
+        if(!$this->canExecute($sender)){
+            return true;
+        }
 
-		$target = null;
+        $target = null;
 
-		if(count($args) === 0){
-			if($sender instanceof Player){
-				$target = $sender;
-			}else{
-				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
+        if(count($args) === 0){
+            if($sender instanceof Player){
+                $target = $sender;
+            }else{
+                $sender->sendMessage(TextFormat::RED . "Please provide a player!");
 
-				return true;
-			}
-		}else{
-			$target = $sender->getServer()->getPlayer($args[0]);
-			if($target === null){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+                return true;
+            }
+        }else{
+            $target = $sender->getServer()->getPlayer($args[0]);
+            if($target === null){
+                $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 
-		$level = $target->getLevel();
+        $level = $target->getLevel();
 
-		if(count($args) === 4){
-			if($level !== null){
-				$pos = $sender instanceof Player ? $sender->getPosition() : $level->getSpawnLocation();
-				$x = (int) $this->getRelativeDouble($pos->x, $sender, $args[1]);
-				$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, 128);
-				$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
-				$target->setSpawn(new Position($x, $y, $z, $level));
+        if(count($args) === 4){
+            if($level !== null){
+                $pos = $sender instanceof Player ? $sender->getPosition() : $level->getSpawnLocation();
+                $x = $this->getRelativeDouble($pos->x, $sender, $args[1]);
+                $y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, Level::Y_MAX);
+                $z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
+                $target->setSpawn(new Position($x, $y, $z, $level));
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
+                Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
 
-				return true;
-			}
-		}elseif(count($args) <= 1){
-			if($sender instanceof Player){
-				$pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
-				$target->setSpawn($pos);
+                return true;
+            }
+        }elseif(count($args) <= 1){
+            if($sender instanceof Player){
+                $pos = new Position((int) $sender->x, (int) $sender->y, (int) $sender->z, $sender->getLevel());
+                $target->setSpawn($pos);
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
-				return true;
-			}else{
-				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
+                Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
+                return true;
+            }else{
+                $sender->sendMessage(TextFormat::RED . "Please provide a player!");
 
-				return true;
-			}
-		}
+                return true;
+            }
+        }
 
         throw new InvalidCommandSyntaxException();
 	}

@@ -2650,22 +2650,22 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->stopSleep();
                 break;
             case PlayerActionPacket::ACTION_RESPAWN:
-                if ($this->spawned === false or $this->isAlive() or !$this->isOnline()) {
+                if($this->spawned === false or $this->isAlive() or !$this->isOnline()){
                     break;
                 }
 
-                if ($this->server->isHardcore()) {
+                if($this->server->isHardcore()){
                     $this->setBanned(true);
                     break;
                 }
 
                 $this->server->getPluginManager()->callEvent($ev = new PlayerRespawnEvent($this, $this->getSpawn()));
 
-                $realSpawn = $ev->getRespawnPosition()->add(0.5, 0, 0.5);
+                $realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevel());
 
-                if ($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01) {
+                if($realSpawn->distanceSquared($this->getSpawn()->add(0.5, 0, 0.5)) > 0.01){
                     $this->teleport($realSpawn); //If the destination was modified by plugins
-                } else {
+                }else{
                     $this->setPosition($realSpawn); //The client will move to the position of its own accord once chunks are sent
                     $this->nextChunkOrderRun = 0;
                     $this->isTeleporting = true;
@@ -2686,8 +2686,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->removeAllEffects();
                 $this->setHealth($this->getMaxHealth());
 
-                /** @var Attribute $attr */
-                foreach ($this->attributeMap->getAll() as $attr) {
+                foreach($this->attributeMap->getAll() as $attr){
                     $attr->resetToDefault();
                 }
 
