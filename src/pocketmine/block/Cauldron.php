@@ -270,4 +270,8 @@ class Cauldron extends Solid {
 			}
 		}
 	}
+
+	public function getMaxStackSize() : int{
+        return 1;
+    }
 }

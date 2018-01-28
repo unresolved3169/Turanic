@@ -55,4 +55,8 @@ class ItemBlock extends Item {
         return $this->block->getFuelTime();
     }
 
+    public function getMaxStackSize(): int{
+        return $this->block->getMaxStackSize();
+    }
+
 }

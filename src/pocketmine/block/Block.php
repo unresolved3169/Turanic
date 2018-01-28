@@ -739,6 +739,10 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $this->canBePlaced();
 	}
 
+	public function getMaxStackSize() : int{
+	    return 64;
+    }
+
 	public function isNormal(){
 	    return !$this->isTransparent() && $this->isSolid() && !$this->isRedstoneSource();
     }

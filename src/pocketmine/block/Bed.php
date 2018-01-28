@@ -225,4 +225,8 @@ class Bed extends Transparent {
         return parent::getAffectedBlocks();
     }
 
+    public function getMaxStackSize() : int{
+        return 1;
+    }
+
 }

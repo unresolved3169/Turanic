@@ -106,4 +106,8 @@ class StandingBanner extends Transparent{
 		
 		return parent::onBreak($item);
 	}
+
+	public function getMaxStackSize() : int{
+        return 16;
+    }
 }
