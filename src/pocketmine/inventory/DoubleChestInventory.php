@@ -103,13 +103,13 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		parent::onOpen($who);
 
 		if(count($this->getViewers()) === 1 and ($level = $this->right->getHolder()->getLevel()) instanceof Level){
-			$this->broadcastBlockEventPacket($this->right->getHolder(), true);
+			$this->broadcastBlockEventPacket(true);
 		}
 	}
 
 	public function onClose(Player $who) {
 		if(count($this->getViewers()) === 1 and ($level = $this->right->getHolder()->getLevel()) instanceof Level){
-			$this->broadcastBlockEventPacket($this->right->getHolder(), false);
+			$this->broadcastBlockEventPacket(false);
 		}
 		parent::onClose($who);
 	}
