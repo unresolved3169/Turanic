@@ -22,22 +22,20 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class SpawnpointCommand extends VanillaCommand {
+class SpawnpointCommand extends VanillaCommand{
 
-	/**
-	 * SpawnpointCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -47,15 +45,8 @@ class SpawnpointCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.spawnpoint");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -106,8 +97,6 @@ class SpawnpointCommand extends VanillaCommand {
 			}
 		}
 
-        $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-		return true;
+        throw new InvalidCommandSyntaxException();
 	}
 }

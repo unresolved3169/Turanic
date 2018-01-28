@@ -22,10 +22,13 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
@@ -34,13 +37,8 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class FillCommand extends VanillaCommand {
+class FillCommand extends VanillaCommand{
 
-	/**
-	 * FillCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -50,15 +48,8 @@ class FillCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.fill");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $label
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
-	public function execute(CommandSender $sender, string $label, array $args){
-		if(!$this->testPermission($sender)){
+    public function execute(CommandSender $sender, string $label, array $args){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -98,25 +89,15 @@ class FillCommand extends VanillaCommand {
 					return false;
 				}
 				$sender->sendMessage(TextFormat::RED . new TranslationContainer($args[$a] . " is not a valid coordinate.", []));
-                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-				return false;
+                throw new InvalidCommandSyntaxException();
 			}
 			$sender->sendMessage(TextFormat::RED . new TranslationContainer("pocketmine.command.fill.missingParameter", []));
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		return false;
 	}
 
-	/**
-	 * @param Vector3   $p
-	 * @param Level     $lvl
-	 * @param ItemBlock $b
-	 * @param int       $meta
-	 *
-	 * @return bool
-	 */
 	private function setBlock(Vector3 $p, Level $lvl, ItemBlock $b, int $meta = 0) : bool{
 		$block = $b->getBlock();
 		$block->setDamage($meta);

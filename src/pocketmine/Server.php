@@ -134,9 +134,6 @@ class Server{
 	/** @var BanList */
 	private $banByIP = null;
 
-	/** @var BanList */
-	private $banByCID = \null;
-
 	/** @var Config */
 	private $operators = null;
 
@@ -1348,22 +1345,12 @@ class Server{
 		}
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getNameBans(){
+	public function getNameBans() : BanList{
 		return $this->banByName;
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getIPBans(){
+	public function getIPBans() : BanList{
 		return $this->banByIP;
-	}
-
-	public function getCIDBans(){
-		return $this->banByCID;
 	}
 
 	/**
@@ -1767,8 +1754,6 @@ class Server{
 			$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 			$this->banByIP->load();
 			@touch($this->dataPath . "banned-cids.txt");
-			$this->banByCID = new BanList($this->dataPath . "banned-cids.txt");
-			$this->banByCID->load();
 
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
 			$this->setAutoSave($this->getConfigBool("auto-save", true));
@@ -2215,7 +2200,6 @@ class Server{
 
 		$this->banByIP->load();
 		$this->banByName->load();
-		$this->banByCID->load();
 		$this->reloadWhitelist();
 		$this->operators->reload();
 

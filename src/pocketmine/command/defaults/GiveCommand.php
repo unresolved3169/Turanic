@@ -22,10 +22,13 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\nbt\JsonNBTParser;
@@ -34,13 +37,8 @@ use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\command\overload\CommandParameter;
 
-class GiveCommand extends VanillaCommand {
+class GiveCommand extends VanillaCommand{
 
-	/**
-	 * GiveCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -55,22 +53,13 @@ class GiveCommand extends VanillaCommand {
 		$this->getOverload("default")->setParameter(3, new CommandParameter("tags", CommandParameter::TYPE_STRING, true));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) < 2){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return true;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		$player = $sender->getServer()->getPlayer($args[0]);

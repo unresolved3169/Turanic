@@ -22,21 +22,18 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
-
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\nbt\tag\StringTag;
 
 class LvdatCommand extends VanillaCommand {
 
-	/**
-	 * LvdatCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -46,21 +43,13 @@ class LvdatCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.lvdat");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return false;
 		}
 		$levname = array_shift($args);
 		if($levname == ""){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 		if(!$this->autoLoad($sender, $levname)){
 			$sender->sendMessage(new TranslationContainer("pocketmine.command.lvdat.nofound", [$levname]));
@@ -81,12 +70,12 @@ class LvdatCommand extends VanillaCommand {
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.lvdat.fixname", [$level->getFolderName()]));
 				break;
 			case "help":
-                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
 				$sender->sendMessage("/lvdat %commands.generic.level fixname");
 				$sender->sendMessage("/lvdat %commands.generic.level seed %commands.generic.seed");
 				$sender->sendMessage("/lvdat %commands.generic.level name %commands.generic.name");
 				$sender->sendMessage("/lvdat %commands.generic.level generator %commands.generic.generator");
 				$sender->sendMessage("/lvdat %commands.generic.level preset %pocketmine.command.lvdat.preset");
+                throw new InvalidCommandSyntaxException();
 				break;
 			case "seed":
 				if($p == ""){
@@ -121,19 +110,12 @@ class LvdatCommand extends VanillaCommand {
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.lvdat.changed", [$level->getFolderName(), $o]));
 				break;
 			default:
-                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-				return false;
+                throw new InvalidCommandSyntaxException();
 		}
 		$provider->saveLevelData();
 		return true;
 	}
 
-	/**
-	 * @param CommandSender $c
-	 * @param               $world
-	 *
-	 * @return bool
-	 */
 	public function autoLoad(CommandSender $c, $world){
 		if($c->getServer()->isLevelLoaded($world)) return true;
 		if(!$c->getServer()->isLevelGenerated($world)){

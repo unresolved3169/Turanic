@@ -22,22 +22,20 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\Level;
 use pocketmine\level\weather\Weather;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class WeatherCommand extends VanillaCommand {
+class WeatherCommand extends VanillaCommand{
 
-	/**
-	 * WeatherCommand constructor.
-	 *
-	 * @param string $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -48,22 +46,13 @@ class WeatherCommand extends VanillaCommand {
 		// TODO : ADD ENUMS
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) < 1){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-            return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		if($sender instanceof Player){
@@ -83,8 +72,7 @@ class WeatherCommand extends VanillaCommand {
 		}
 
 		if(count($args) < 2){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		$level = $sender->getServer()->getLevelByName($args[0]);

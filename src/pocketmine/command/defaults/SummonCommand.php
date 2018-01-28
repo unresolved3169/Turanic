@@ -27,6 +27,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\JsonNBTParser;
 use pocketmine\nbt\NBT;
@@ -34,13 +35,8 @@ use pocketmine\Player;
 use pocketmine\entity\Entity;
 use pocketmine\utils\TextFormat;
 
-class SummonCommand extends VanillaCommand {
+class SummonCommand extends VanillaCommand{
 
-	/**
-	 * SummonCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -53,21 +49,13 @@ class SummonCommand extends VanillaCommand {
 		$this->getOverload("default")->setParameter(1, new CommandParameter("spawnPos", CommandParameter::TYPE_POSITION, true));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) != 1 and count($args) != 4 and count($args) != 5){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return true;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		$x = $y = $z = 0;
