@@ -729,6 +729,7 @@ class Item implements ItemIds, \JsonSerializable {
 
     /**
      * @param EnchantmentInstance $enchantment
+     * @return $this
      */
     public function addEnchantment(EnchantmentInstance $enchantment){
         $found = false;
@@ -758,6 +759,7 @@ class Item implements ItemIds, \JsonSerializable {
         }
 
         $this->setNamedTagEntry($ench);
+        return $this;
     }
 
     /**
