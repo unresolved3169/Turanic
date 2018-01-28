@@ -107,10 +107,11 @@ interface Inventory{
 	 */
 	public function removeItem(Item ...$slots) : array;
 
-	/**
-	 * @return Item[]
-	 */
-	public function getContents() : array;
+    /**
+     * @param bool $includeEmpty
+     * @return Item[]
+     */
+    public function getContents(bool $includeEmpty = false) : array;
 
 	/**
 	 * @param Item[] $items
@@ -186,10 +187,11 @@ interface Inventory{
 	 */
 	public function clear(int $index, bool $send = true) : bool;
 
-	/**
-	 * Clears all the slots
-	 */
-	public function clearAll() ;
+    /**
+     * Clears all the slots
+     * @param bool $send
+     */
+	public function clearAll(bool $send = true) ;
 
 	/**
 	 * Gets all the Players viewing the inventory
@@ -198,11 +200,6 @@ interface Inventory{
 	 * @return Player[]
 	 */
 	public function getViewers() : array;
-
-	/**
-	 * @return InventoryHolder
-	 */
-	public function getHolder();
 
 	/**
 	 * @param Player $who

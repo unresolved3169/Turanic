@@ -29,7 +29,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\Fire;
 use pocketmine\block\Portal;
 use pocketmine\block\Solid;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
@@ -50,8 +49,9 @@ class FlintSteel extends Tool {
 	}
 
 	// TODO : OPTIMIZE
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
-		if($blockClicked->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){//黑曜石 4*5最小 23*23最大
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+		$level = $player->getLevel();
+	    if($blockClicked->getId() === Block::OBSIDIAN and $player->getServer()->netherEnabled){//黑曜石 4*5最小 23*23最大
 			//$level->setBlock($block, new Fire(), true);
 			$tx = $blockClicked->getX();
 			$ty = $blockClicked->getY();

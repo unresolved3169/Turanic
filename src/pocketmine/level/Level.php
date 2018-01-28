@@ -171,6 +171,8 @@ class Level implements ChunkManager, Metadatable{
 
 	/** @var DataPacket[] */
 	private $chunkPackets = [];
+    /** @var DataPacket[] */
+	private $globalPackets = [];
 
 	/** @var float[] */
 	private $unloadQueue = [];
@@ -550,16 +552,21 @@ class Level implements ChunkManager, Metadatable{
     /**
      * Broadcasts a LevelEvent to players in the area. This could be sound, particles, weather changes, etc.
      *
-     * @param Vector3 $pos
+     * @param Vector3|null $pos If null, broadcasts to every player in the Level
      * @param int $evid
      * @param int $data
      */
-    public function broadcastLevelEvent(Vector3 $pos, int $evid, int $data = 0){
+    public function broadcastLevelEvent($pos, int $evid, int $data = 0){
         $pk = new LevelEventPacket();
         $pk->evid = $evid;
         $pk->data = $data;
-        $pk->position = $pos->asVector3();
-        $this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+        if($pos !== null){
+            $pk->position = $pos->asVector3();
+            $this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+        }else{
+            $pk->position = null;
+            $this->addGlobalPacket($pk);
+        }
     }
 
     /**
@@ -673,6 +680,15 @@ class Level implements ChunkManager, Metadatable{
         }else{
             $this->chunkPackets[$index][] = $packet;
         }
+    }
+
+    /**
+     * Queues a DataPacket to be sent to everyone in the Level at the end of the current tick.
+     *
+     * @param DataPacket $packet
+     */
+    public function addGlobalPacket(DataPacket $packet){
+        $this->globalPackets[] = $packet;
     }
 
     public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true){
@@ -856,6 +872,9 @@ class Level implements ChunkManager, Metadatable{
         if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
             $this->checkSleep();
         }
+
+        $this->server->batchPackets($this->players, $this->globalPackets);
+        $this->globalPackets = [];
 
         foreach($this->chunkPackets as $index => $entries){
             Level::getXZ($index, $chunkX, $chunkZ);
@@ -1891,7 +1910,7 @@ class Level implements ChunkManager, Metadatable{
                     return true;
                 }
 
-                if(!$player->isSneaking() and $item->onActivate($this, $player, $blockReplace, $blockClicked, $face, $clickVector)){
+                if(!$player->isSneaking() and $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector)){
                     return true;
                 }
             }else{

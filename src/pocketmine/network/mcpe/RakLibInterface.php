@@ -37,6 +37,7 @@ use raklib\RakLib;
 use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
+use raklib\utils\InternetAddress;
 
 class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 
@@ -75,9 +76,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
 		$this->rakLib = new RakLibServer(
 		    $this->server->getLogger(),
             $this->server->getLoader(),
-            $this->server->getPort(),
-            $this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(),
-            false,
+            new InternetAddress($this->server->getIp() === "" ? "0.0.0.0" : $this->server->getIp(), $this->server->getPort(), 4),
             (int) $this->server->getProperty("network.max-mtu-size", 1492));
 		$this->interface = new ServerHandler($this->rakLib, $this);
 	}
@@ -179,17 +178,22 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface {
      * @param int $flags
      */
 	public function handleEncapsulated($identifier, EncapsulatedPacket $packet, $flags){
-		if(isset($this->players[$identifier])){
-			try{
-				if($packet->buffer !== ""){
-					$pk = $this->getPacket($packet->buffer);
-					$this->players[$identifier]->handleDataPacket($pk);
-				}
-			}catch(\Throwable $e){
-                $this->server->getLogger()->debug("Unhandled Packet : ".$e->getMessage());
-			}
-		}
-	}
+        if(isset($this->players[$identifier])){
+            //get this now for blocking in case the player was closed before the exception was raised
+            $address = $this->players[$identifier]->getAddress();
+            try{
+                if ($packet->buffer !== "") {
+                    $pk = $this->getPacket($packet->buffer);
+                    $this->players[$identifier]->handleDataPacket($pk);
+                }
+            }catch (\Throwable $e){
+                $logger = $this->server->getLogger();
+                $logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . " 0x" . bin2hex($packet->buffer));
+                $logger->logException($e);
+                $this->interface->blockAddress($address, 5);
+            }
+        }
+    }
 
 	/**
 	 * @param string $address

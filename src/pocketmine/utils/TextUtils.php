@@ -20,6 +20,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\utils;
 
 class TextUtils{
@@ -30,12 +32,12 @@ class TextUtils{
         $max = max(array_map("strlen", $lines));
         $lines = explode("\n", $input);
         foreach($lines as $key => $line){
-            $lines[$key] = str_pad($line, $max + self::renkSayisi($line), " ", STR_PAD_LEFT);
+            $lines[$key] = str_pad($line, $max + self::renkSayisi($line), " ", STR_PAD_BOTH);
         }
         return implode("\n", $lines);
     }
 
-    public static function renkSayisi($yazi){
+    public static function renkSayisi(string $yazi){
         $renkler = "abcdef0123456789lo";
         $sayi = 0;
         for($i=0; $i<strlen($renkler); $i++){

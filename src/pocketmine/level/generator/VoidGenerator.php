@@ -43,7 +43,7 @@ class VoidGenerator extends Generator {
 	/**
 	 * @return array
 	 */
-	public function getSettings(){
+    public function getSettings() : array{
 		return [];
 	}
 
@@ -116,7 +116,7 @@ class VoidGenerator extends Generator {
 	/**
 	 * @return Vector3
 	 */
-	public function getSpawn(){
+	public function getSpawn() : Vector3{
 		return new Vector3(0, 68, 0);
 	}
 }

@@ -104,7 +104,7 @@ class Normal extends Generator {
 		return $this->waterHeight;
 	}
 
-	public function getSettings(){
+    public function getSettings() : array{
 		return [];
 	}
 
@@ -293,7 +293,7 @@ class Normal extends Generator {
 		$biome->populateChunk($this->level, $chunkX, $chunkZ, $this->random);
 	}
 
-	public function getSpawn(){
+	public function getSpawn() : Vector3{
 		return new Vector3(127.5, 128, 127.5);
 	}
 

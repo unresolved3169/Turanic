@@ -24,8 +24,10 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -186,41 +188,52 @@ abstract class Armor extends Item {
 	}
 
 	public function onClickAir(Player $player, Vector3 $directionVector): bool{
-	    $item = Item::get(Block::AIR);
         switch($this->getArmorType()){
             case Armor::TYPE_HELMET:
-                $old = $player->getInventory()->getHelmet();
-                if($old->getId() != Item::AIR){
-                    $item = $old;
-                }
-                $player->getInventory()->setHelmet($this);
+                $index = ArmorInventory::SLOT_HEAD;
                 break;
             case Armor::TYPE_CHESTPLATE:
-                $old = $player->getInventory()->getChestplate();
-                if($old->getId() != Item::AIR){
-                    $item = $old;
-                }
-                $player->getInventory()->setChestplate($this);
+                $index = ArmorInventory::SLOT_CHEST;
                 break;
             case Armor::TYPE_LEGGINGS:
-                $old = $player->getInventory()->getLeggings();
-                if($old->getId() != Item::AIR){
-                    $item = $old;
-                }
-                $player->getInventory()->setLeggings($this);
+                $index = ArmorInventory::SLOT_LEGS;
                 break;
             case Armor::TYPE_BOOTS:
-                $old = $player->getInventory()->getBoots();
-                if($old->getId() != Item::AIR){
-                    $item = $old;
-                }
-                $player->getInventory()->setBoots($this);
+                $index = ArmorInventory::SLOT_FEET;
                 break;
             default:
                 MainLogger::getLogger()->debug("Zırh tespit edilemedi. (ID: ".$this->getId().")");
                 return false;
         }
-        $player->getInventory()->setItemInHand($item);
+
+        if($index !== -1){
+            $old = $player->getArmorInventory()->getItem($index);
+            if(!$old->isNull()){
+                $player->getInventory()->setItemInHand($old);
+            }
+            $player->getArmorInventory()->setItem($index, $this);
+        }
         return false; // because not set item air
+    }
+
+    /**
+     * Returns the total enchantment protection factor this armour piece offers from all applicable protection
+     * enchantments on the item.
+     *
+     * @param EntityDamageEvent $event
+     *
+     * @return int
+     */
+    public function getEnchantmentProtectionFactor(EntityDamageEvent $event) : int{
+        $epf = 0;
+
+        foreach($this->getEnchantments() as $enchantment){
+            $type = $enchantment->getType();
+            if($type instanceof ProtectionEnchantment and $type->isApplicable($event)){
+                $epf += $type->getProtectionFactor($enchantment->getLevel());
+            }
+        }
+
+        return $epf;
     }
 }

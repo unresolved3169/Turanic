@@ -86,7 +86,7 @@ abstract class Durable extends Item{
     /**
      * Called when the item's damage exceeds its maximum durability.
      */
-	protected function onBroken() : void{
+	protected function onBroken(){
         $this->pop();
     }
 

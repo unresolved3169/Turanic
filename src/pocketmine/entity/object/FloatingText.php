@@ -101,7 +101,7 @@ class FloatingText extends Entity {
         $pk->entityRuntimeId = $this->id;
         $pk->position = $this->asVector3();
         $pk->item = ItemItem::get(ItemItem::AIR, 0, 0);
-        $pk->metadata = $this->dataProperties;
+        $pk->metadata = $this->propertyManager->getAll();
         $player->dataPacket($pk);
     }
 }

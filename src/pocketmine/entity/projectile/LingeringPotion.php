@@ -47,7 +47,7 @@ class LingeringPotion extends Projectile {
             $nbt->setShort("PotionId", Potion::AWKWARD);
         }
         parent::__construct($level, $nbt, $shootingEntity);
-        unset($this->dataProperties[self::DATA_SHOOTER_ID]);
+        $this->propertyManager->removeProperty(self::DATA_SHOOTER_ID);
         $this->propertyManager->setShort(self::DATA_VARIANT, $this->getPotionId());
         $this->propertyManager->setShort(self::DATA_POTION_ID, $this->getPotionId());
         $this->setGenericFlag(self::DATA_FLAG_LINGER, true);

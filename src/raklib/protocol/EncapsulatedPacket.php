@@ -149,8 +149,8 @@ class EncapsulatedPacket{
             chr(($this->reliability << self::RELIABILITY_SHIFT) | ($this->hasSplit ? self::SPLIT_FLAG : 0)) .
             Binary::writeShort(strlen($this->buffer) << 3) .
             ($this->reliability > PacketReliability::UNRELIABLE ?
-                ($this->isReliable() ? Binary::writeLTriad($this->messageIndex) : "") .
-                ($this->isSequenced() ? Binary::writeLTriad($this->orderIndex) . chr($this->orderChannel) : "")
+                ($this->messageIndex !== null && $this->isReliable() ? Binary::writeLTriad($this->messageIndex) : "") .
+                ($this->orderIndex !== null && $this->isSequenced() ? Binary::writeLTriad($this->orderIndex) . chr($this->orderChannel) : "")
                 : ""
             ) .
             ($this->hasSplit ? Binary::writeInt($this->splitCount) . Binary::writeShort($this->splitID) . Binary::writeInt($this->splitIndex) : "")

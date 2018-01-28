@@ -52,7 +52,7 @@ class Flat extends Generator {
 	/**
 	 * @return array
 	 */
-	public function getSettings(){
+	public function getSettings() : array{
 		return $this->options;
 	}
 
@@ -216,10 +216,7 @@ class Flat extends Generator {
 
 	}
 
-	/**
-	 * @return Vector3
-	 */
-	public function getSpawn(){
+	public function getSpawn() : Vector3{
 		return new Vector3(128, $this->floorLevel, 128);
 	}
 }

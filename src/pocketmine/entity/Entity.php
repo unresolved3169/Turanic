@@ -460,23 +460,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
 	protected $id;
 
-	protected $dataFlags = 0;
-	protected $dataProperties = [
-		self::DATA_FLAGS => [self::DATA_TYPE_LONG, 0],
-		self::DATA_AIR => [self::DATA_TYPE_SHORT, 0],
-		self::DATA_MAX_AIR => [self::DATA_TYPE_SHORT, 400],
-		self::DATA_NAMETAG => [self::DATA_TYPE_STRING, ""],
-		self::DATA_LEAD_HOLDER_EID => [self::DATA_TYPE_LONG, -1],
-		self::DATA_SCALE => [self::DATA_TYPE_FLOAT, 1],
-	];
-
     protected $changedDataProperties = [];
 
     /** @var DataPropertyManager */
 	protected $propertyManager;
-
-	public $passenger = null;
-	public $vehicle = null;
 
 	/** @var Chunk|null */
 	public $chunk;
@@ -944,7 +931,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 			$this->namedtag->setString("id", $this->getSaveId(), true);
 			if($this->getNameTag() !== ""){
 				$this->namedtag->setString("CustomName", $this->getNameTag());
-				$this->namedtag->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
+				$this->namedtag->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0, true);
 				$this->namedtag->setByte("CustomNameAlwaysVisible", $this->isNameTagAlwaysVisible() ? 1 : 0);
 			}else{
                 $this->namedtag->removeTag("CustomName", "CustomNameVisible", "CustomNameAlwaysVisible");
@@ -980,7 +967,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
         if($this->namedtag->hasTag("CustomName", StringTag::class)){
             $this->setNameTag($this->namedtag->getString("CustomName"));
-            $this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
+
+            if($this->namedtag->hasTag("CustomNameVisible", StringTag::class)) {
+                //Older versions incorrectly saved this as a string (see 890f72dbf23a77f294169b79590770470041adc4)
+                $this->setNameTagVisible($this->namedtag->getString("CustomNameVisible") !== "");
+                $this->namedtag->removeTag("CustomNameVisible");
+            }else{
+                $this->setNameTagVisible($this->namedtag->getByte("CustomNameVisible", 1) !== 0);
+            }
         }
 
         $this->scheduleUpdate();
@@ -1093,6 +1087,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
     public function getAttributeMap(){
         return $this->attributeMap;
+    }
+
+    public function getDataPropertyManager() : DataPropertyManager{
+        return $this->propertyManager;
     }
 
     public function entityBaseTick(int $tickDiff = 1){
@@ -1750,9 +1748,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
             $minX = Math::floorFloat($this->boundingBox->minX + $inset);
             $minY = Math::floorFloat($this->boundingBox->minY + $inset);
             $minZ = Math::floorFloat($this->boundingBox->minZ + $inset);
-            $maxX = Math::ceilFloat($this->boundingBox->maxX - $inset);
-            $maxY = Math::ceilFloat($this->boundingBox->maxY - $inset);
-            $maxZ = Math::ceilFloat($this->boundingBox->maxZ - $inset);
+            $maxX = Math::floorFloat($this->boundingBox->maxX - $inset);
+            $maxY = Math::floorFloat($this->boundingBox->maxY - $inset);
+            $maxZ = Math::floorFloat($this->boundingBox->maxZ - $inset);
 
             $this->blocksAround = [];
 

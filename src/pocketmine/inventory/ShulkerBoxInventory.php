@@ -27,7 +27,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
@@ -60,7 +59,7 @@ class ShulkerBoxInventory extends ContainerInventory {
 
     public function onClose(Player $who){
         if(count($this->getViewers()) === 1 && ($level = $this->getHolder()->getLevel()) instanceof Level){
-            $this->broadcastBlockEventPacket($this->getHolder(), false);
+            $this->broadcastBlockEventPacket(false);
             $level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_SHULKER_CLOSE);
         }
         $this->getHolder()->saveNBT();
@@ -71,19 +70,21 @@ class ShulkerBoxInventory extends ContainerInventory {
         parent::onOpen($who);
 
         if(count($this->getViewers()) === 1 && ($level = $this->getHolder()->getLevel()) instanceof Level){
-            $this->broadcastBlockEventPacket($this->getHolder(), true);
+            $this->broadcastBlockEventPacket(true);
             $level->broadcastLevelSoundEvent($this->getHolder()->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_SHULKER_OPEN);
         }
     }
 
-    protected function broadcastBlockEventPacket(Vector3 $vector, bool $isOpen) {
+    protected function broadcastBlockEventPacket(bool $isOpen){
+        $holder = $this->getHolder();
+
         $pk = new BlockEventPacket();
-        $pk->x = (int) $vector->x;
-        $pk->y = (int) $vector->y;
-        $pk->z = (int) $vector->z;
+        $pk->x = (int) $holder->x;
+        $pk->y = (int) $holder->y;
+        $pk->z = (int) $holder->z;
         $pk->eventType  = 1;
         $pk->eventData = +$isOpen;
-        $this->getHolder()->getLevel()->addChunkPacket($this->getHolder()->getX() >> 4, $this->getHolder()->getZ() >> 4, $pk);
+        $holder->getLevel()->addChunkPacket($holder->getX() >> 4, $holder->getZ() >> 4, $pk);
     }
 
     /**

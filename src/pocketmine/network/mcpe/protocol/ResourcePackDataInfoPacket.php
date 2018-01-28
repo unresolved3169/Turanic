@@ -27,32 +27,30 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 class ResourcePackDataInfoPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
+    const NETWORK_ID = ProtocolInfo::RESOURCE_PACK_DATA_INFO_PACKET;
 
-	/** @var string */
-	public $packId;
-	/** @var int */
-	public $maxChunkSize;
-	/** @var int */
-	public $chunkCount;
-	/** @var int */
-	public $compressedPackSize;
-	/** @var string */
-	public $sha256;
+    const MAX_CHUNK_SIZE = 1048576; // 1MB
 
-	protected function decodePayload(){
-		$this->packId = $this->getString();
-		$this->maxChunkSize = $this->getLInt();
-		$this->chunkCount = $this->getLInt();
-		$this->compressedPackSize = $this->getLLong();
-		$this->sha256 = $this->getString();
-	}
+    /** @var string */
+    public $packId;
+    /** @var int */
+    public $fileSize;
+    /** @var string */
+    public $sha256;
 
-	protected function encodePayload(){
-		$this->putString($this->packId);
-		$this->putLInt($this->maxChunkSize);
-		$this->putLInt($this->chunkCount);
-		$this->putLLong($this->compressedPackSize);
-		$this->putString($this->sha256);
-	}
+    protected function decodePayload(){ // TODO : Test et kaldırmayı
+        $this->packId = $this->getString();
+        $this->maxChunkSize = $this->getLInt();
+        $this->chunkCount = $this->getLInt();
+        $this->compressedPackSize = $this->getLLong();
+        $this->sha256 = $this->getString();
+    }
+
+    protected function encodePayload(){
+        $this->putString($this->packId);
+        $this->putLInt(self::MAX_CHUNK_SIZE);
+        $this->putLInt((int) ceil($this->fileSize / self::MAX_CHUNK_SIZE));
+        $this->putLLong($this->fileSize);
+        $this->putString($this->sha256);
+    }
 }
