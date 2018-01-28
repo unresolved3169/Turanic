@@ -640,8 +640,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 		return $this->getNameTag();
 	}
 
-	public function getDrops(){
-        array_merge(
+	public function getDrops() : array{
+        return array_merge(
             $this->inventory !== null ? array_values($this->inventory->getContents()) : [],
             $this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
         );
