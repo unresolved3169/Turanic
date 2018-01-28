@@ -26,12 +26,12 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\passive\Villager;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 use pocketmine\Player;
 use pocketmine\utils\MainLogger;
-use Symfony\Component\Filesystem\Exception\IOException;
 
-class VillagerTradeInventory extends BaseInventory {
+class VillagerTradeInventory extends ContainerInventory{
 
     /** @var Villager */
     protected $holder;
@@ -74,7 +74,7 @@ class VillagerTradeInventory extends BaseInventory {
             $nbt = new NetworkLittleEndianNBTStream();
             $nbt->setData($offers);
             $pk->offers = $nbt->write();
-        }catch(IOException $exception){
+        }catch(\Exception $exception){
             MainLogger::getLogger()->logException($exception);
         }
 
@@ -92,5 +92,9 @@ class VillagerTradeInventory extends BaseInventory {
         }
 
         parent::close($who);
+    }
+
+    public function getNetworkType(): int{
+        return WindowTypes::TRADING;
     }
 }

@@ -334,10 +334,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 		Entity::registerEntity(Lightning::class);
 		Entity::registerEntity(LingeringPotion::class);
 		Entity::registerEntity(Llama::class);
-		Entity::registerEntity(Minecart::class);
-		Entity::registerEntity(MinecartChest::class);
-		Entity::registerEntity(MinecartHopper::class);
-		Entity::registerEntity(MinecartTNT::class);
 		Entity::registerEntity(Mooshroom::class);
 		Entity::registerEntity(Mule::class);
 		Entity::registerEntity(Ocelot::class);
@@ -2281,7 +2277,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @return bool
 	 */
 	public function setLinked($type = 0, Entity $entity){
-		if($entity instanceof Boat or $entity instanceof Minecart){
+		if($entity instanceof Boat){
 			$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, new Vector3(0,1)); //This is a fast hack for Boat. TODO: Improve it
 		}
 

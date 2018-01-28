@@ -259,7 +259,7 @@ class Item implements ItemIds, \JsonSerializable {
             self::registerItem(new ItemBlock(Block::OAK_DOOR_BLOCK, 0, Item::OAK_DOOR));
             self::registerItem(new Bucket());
 
-            self::registerItem(new Minecart());
+            // TODO : MINECART
             // TODO : SADDLE
             self::registerItem(new ItemBlock(Block::IRON_DOOR_BLOCK, 0, Item::IRON_DOOR));
             self::registerItem(new Redstone());
