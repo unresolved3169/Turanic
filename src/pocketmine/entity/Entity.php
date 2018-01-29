@@ -566,16 +566,16 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 * @param CompoundTag $nbt
 	 */
 	public function __construct(Level $level, CompoundTag $nbt){
-	    $this->constructed = true;
-		$this->timings = Timings::getEntityTimings($this);
+        $this->constructed = true;
+        $this->timings = Timings::getEntityTimings($this);
 
-		$this->isPlayer = $this instanceof Player;
+        $this->isPlayer = $this instanceof Player;
 
-		$this->temporalVector = new Vector3();
+        $this->temporalVector = new Vector3();
 
-		if($this->eyeHeight === null){
-			$this->eyeHeight = $this->height / 2 + 0.1;
-		}
+        if($this->eyeHeight === null){
+            $this->eyeHeight = $this->height / 2 + 0.1;
+        }
 
 		$this->id = Entity::$entityCount++;
 		$this->justCreated = true;
@@ -589,10 +589,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
             throw new \InvalidStateException("Cannot create entities in unloaded chunks");
         }
 
-		$this->setLevel($level);
-		$this->server = $level->getServer();
+        $this->setLevel($level);
+        $this->server = $level->getServer();
 
-		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
+        $this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
         /** @var float[] $rotation */
         $rotation = $this->namedtag->getListTag("Rotation")->getAllValues();
@@ -609,7 +609,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 
         $this->resetLastMovements();
 
-		assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
+        assert(!is_nan($this->x) and !is_infinite($this->x) and !is_nan($this->y) and !is_infinite($this->y) and !is_nan($this->z) and !is_infinite($this->z));
 
         $this->fallDistance = $this->namedtag->getFloat("FallDistance", 0.0);
 
