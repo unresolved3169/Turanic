@@ -24,8 +24,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
-
 class Purpur extends Quartz {
 
 	protected $id = self::PURPUR;
@@ -46,10 +44,6 @@ class Purpur extends Quartz {
         ];
 
         return $names[$this->getVariant()] ?? "Unknown";
-    }
-
-    public function getDropsForCompatibleTool(Item $item) : array{
-        return Block::getDrops($item);
     }
 
 }
