@@ -66,8 +66,6 @@ class IntTag extends NamedTag{
     public function setValue($value){
         if(!is_int($value)){
             throw new \TypeError("IntTag value must be of type int, " . gettype($value) . " given");
-        }elseif($value < -(2 ** 31) or $value > ((2 ** 31) - 1)){
-            throw new \InvalidArgumentException("Value $value is too large!");
         }
         parent::setValue($value);
     }
