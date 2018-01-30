@@ -121,7 +121,7 @@ class Position extends Vector3 {
     }
 
     public function toArray() : array{
-        return [$this->x, $this->y, $this->z];
+        return [$this->x, $this->y, $this->z, $this->level->getFolderName()];
     }
 
     public function equals(Vector3 $v) : bool{
