@@ -120,10 +120,6 @@ class Position extends Vector3 {
         return "Position(level=" . ($this->isValid() ? $this->getLevel()->getName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
     }
 
-    public function toArray(){
-        return [$this->x, $this->y, $this->z];
-    }
-
     public function equals(Vector3 $v) : bool{
         if($v instanceof Position){
             return parent::equals($v) and $v->getLevel() === $this->getLevel();
