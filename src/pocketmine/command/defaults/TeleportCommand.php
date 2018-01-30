@@ -22,22 +22,20 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class TeleportCommand extends VanillaCommand {
+class TeleportCommand extends VanillaCommand{
 
-	/**
-	 * TeleportCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -47,22 +45,13 @@ class TeleportCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.teleport");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) < 1 or count($args) > 6){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return true;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		$target = null;
@@ -131,8 +120,6 @@ class TeleportCommand extends VanillaCommand {
 			return true;
 		}
 
-        $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-		return true;
+        throw new InvalidCommandSyntaxException();
 	}
 }

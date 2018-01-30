@@ -75,7 +75,6 @@ namespace {
 
 namespace pocketmine {
 
-    use pocketmine\utils\Binary;
     use pocketmine\utils\MainLogger;
     use pocketmine\utils\ServerKiller;
     use pocketmine\utils\Terminal;
@@ -112,6 +111,13 @@ namespace pocketmine {
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}
+
+    $requiredSplVer = "0.0.1";
+	if(!is_file(\pocketmine\PATH . "src/spl/version.php") or version_compare($requiredSplVer, require(\pocketmine\PATH . "src/spl/version.php")) > 0){
+        echo "[CRITICAL] Incompatible PocketMine-SPL submodule version ($requiredSplVer is required)." . PHP_EOL;
+        echo "[CRITICAL] Please update your submodules or use provided builds." . PHP_EOL;
+        exit(1);
+    }
 
 	if(!class_exists("ClassLoader", false)){
 		require_once(\pocketmine\PATH . 'src' . DIRECTORY_SEPARATOR . 'spl' . DIRECTORY_SEPARATOR . 'ClassLoader.php');
@@ -153,6 +159,7 @@ namespace pocketmine {
 	date_default_timezone_set("UTC");
 
 	$logger = new MainLogger(\pocketmine\DATA . "server.log", \pocketmine\ANSI);
+    $logger->registerStatic();
 
 	if(!ini_get("date.timezone")){
 		if(($timezone = detect_system_timezone()) and date_default_timezone_set($timezone)){
@@ -328,6 +335,10 @@ namespace pocketmine {
 	 * @param $pid
 	 */
 	function kill($pid){
+        global $logger;
+        if($logger instanceof MainLogger){
+            $logger->syncFlushBuffer();
+        }
 		switch(Utils::getOS()){
 			case "win":
 				exec("taskkill.exe /F /PID " . ((int) $pid) . " > NUL");
@@ -406,121 +417,104 @@ namespace pocketmine {
 		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PATH), "/"), rtrim(str_replace(["\\", "phar://"], ["/", ""], \pocketmine\PLUGIN_PATH), "/")], ["/", "", "", "", ""], $path), "/");
 	}
 
-	$errors = 0;
+    $exitCode = 0;
 
-	if(php_sapi_name() !== "cli"){
-		$logger->critical("You must run Turanic using the CLI.");
-		++$errors;
-	}
+    do{
+        $errors = 0;
 
-	if(!extension_loaded("sockets")){
-		$logger->critical("Unable to find the Socket extension.");
-		++$errors;
-	}
-
-	$pthreads_version = phpversion("pthreads");
-	if(substr_count($pthreads_version, ".") < 2){
-		$pthreads_version = "0.$pthreads_version";
-	}
-	if(version_compare($pthreads_version, "3.1.5") < 0){
-		$logger->critical("pthreads >= 3.1.5 is required, while you have $pthreads_version.");
-		++$errors;
-	}
-
-    if(extension_loaded("leveldb")){
-        $leveldb_version = phpversion("leveldb");
-        if(version_compare($leveldb_version, "0.2.1") < 0){
-            $logger->critical("php-leveldb >= 0.2.1 is required, while you have $leveldb_version");
+        if(php_sapi_name() !== "cli"){
+            $logger->critical("You must run " . \pocketmine\NAME . " using the CLI.");
             ++$errors;
         }
-    }
 
-	if(extension_loaded("pocketmine")){
-		if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
-			$logger->critical("You have the native Turanic extension, but your version is lower than 0.0.1.");
-			++$errors;
-		}elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
-			$logger->critical("You have the native Turanic extension, but your version is higher than 0.0.4.");
-			++$errors;
-		}
-	}
+        $pthreads_version = phpversion("pthreads");
+        if(substr_count($pthreads_version, ".") < 2){
+            $pthreads_version = "0.$pthreads_version";
+        }
+        if(version_compare($pthreads_version, "3.1.6") < 0){
+            $logger->critical("pthreads >= 3.1.6 is required, while you have $pthreads_version.");
+            ++$errors;
+        }
 
-	if(extension_loaded("xdebug")){
-		$logger->warning("You are running Turanic with Xdebug enabled. This has a major impact on performance.");
-	}
+        if(extension_loaded("leveldb")){
+            $leveldb_version = phpversion("leveldb");
+            if(version_compare($leveldb_version, "0.2.1") < 0){
+                $logger->critical("php-leveldb >= 0.2.1 is required, while you have $leveldb_version");
+                ++$errors;
+            }
+        }
 
-	if(!extension_loaded("curl")){
-		$logger->critical("Unable to find the cURL extension.");
-		++$errors;
-	}
+        if(extension_loaded("pocketmine")){
+            if(version_compare(phpversion("pocketmine"), "0.0.1") < 0){
+                $logger->critical("You have the native PocketMine extension, but your version is lower than 0.0.1.");
+                ++$errors;
+            }elseif(version_compare(phpversion("pocketmine"), "0.0.4") > 0){
+                $logger->critical("You have the native PocketMine extension, but your version is higher than 0.0.4.");
+                ++$errors;
+            }
+        }
 
-	if(!extension_loaded("yaml")){
-		$logger->critical("Unable to find the YAML extension.");
-		++$errors;
-	}
+        if(extension_loaded("xdebug")){
+            $logger->warning(PHP_EOL . PHP_EOL . PHP_EOL . "\tYou are running " . \pocketmine\NAME . " with xdebug enabled. This has a major impact on performance." . PHP_EOL . PHP_EOL);
+        }
 
-	if(!extension_loaded("zlib")){
-		$logger->critical("Unable to find the Zlib extension.");
-		++$errors;
-	}
+        $extensions = [
+            "bcmath" => "BC Math",
+            "curl" => "cURL",
+            "json" => "JSON",
+            "mbstring" => "Multibyte String",
+            "yaml" => "YAML",
+            "sockets" => "Sockets",
+            "zip" => "Zip",
+            "zlib" => "Zlib"
+        ];
 
-	if($errors > 0){
-		$logger->critical("Please update or recompile PHP.");
-		$logger->shutdown();
-		$logger->join();
-		exit(1); //Exit with error
-	}
+        foreach($extensions as $ext => $name){
+            if(!extension_loaded($ext)){
+                $logger->critical("Unable to find the $name ($ext) extension.");
+                ++$errors;
+            }
+        }
 
-	@define("ENDIANNESS", (pack("d", 1) === "\77\360\0\0\0\0\0\0" ? Binary::BIG_ENDIAN : Binary::LITTLE_ENDIAN));
-	@define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
-	@ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
+        if($errors > 0){
+            $logger->critical("Please use the installer provided on the homepage, or recompile PHP again.");
+            $exitCode = 1;
+            break;
+        }
 
-	if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
-		$installer = new Installer();
-		if(!$installer->run()){
-			$logger->shutdown();
-			$logger->join();
-			exit(-1);
-		}
-	}
+        @define("INT32_MASK", is_int(0xffffffff) ? 0xffffffff : -1);
+        @ini_set("opcache.mmap_base", bin2hex(random_bytes(8))); //Fix OPCache address errors
 
-	/*if(\Phar::running(true) === ""){
-		$logger->warning("Non-packaged Turanic installation detected, do not use on production.");
-	}*/
+        if(!file_exists(\pocketmine\DATA . "server.properties") and !isset($opts["no-wizard"])){
+            $installer = new Installer();
+            if(!$installer->run()){
+                $exitCode = -1;
+                break;
+            }
+        }
 
-	ThreadManager::init();
-	new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
+        ThreadManager::init();
+        new Server($autoloader, $logger, \pocketmine\PATH, \pocketmine\DATA, \pocketmine\PLUGIN_PATH);
 
-	$logger->info("Stopping other threads");
+        $logger->info("Stopping other threads");
 
-	$killer = new ServerKiller(8);
-	$killer->start();
-	usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
+        $killer = new ServerKiller(8);
+        $killer->start();
+        usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 
-	$erroredThreads = 0;
-	foreach(ThreadManager::getInstance()->getAll() as $id => $thread){
-		$logger->debug("Stopping " . $thread->getThreadName() . " thread");
-		try{
-			$thread->quit();
-			$logger->debug($thread->getThreadName() . " thread stopped successfully.");
-		}catch(\ThreadException $e){
-			++$erroredThreads;
-			$logger->debug("Could not stop " . $thread->getThreadName() . " thread: " . $e->getMessage());
-		}
-	}
+        if(ThreadManager::getInstance()->stopAll() > 0){
+            if(\pocketmine\DEBUG > 1){
+                echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
+            }
+            kill(getmypid());
+        }
+    }while(false);
 
-	$logger->shutdown();
-	$logger->join();
+    $logger->shutdown();
+    $logger->join();
 
-	echo Terminal::$FORMAT_RESET . PHP_EOL;
+    echo Terminal::$FORMAT_RESET . PHP_EOL;
 
-	if($erroredThreads > 0){
-		if(\pocketmine\DEBUG > 1){
-			echo "Some threads could not be stopped, performing a force-kill" . PHP_EOL . PHP_EOL;
-		}
-		kill(getmypid());
-	}else{
-		exit(0);
-	}
+    exit($exitCode);
 
 }

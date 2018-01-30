@@ -105,7 +105,7 @@ class Nether extends Generator {
 	/**
 	 * @return array
 	 */
-	public function getSettings(){
+    public function getSettings() : array{
 		return [];
 	}
 
@@ -203,7 +203,7 @@ class Nether extends Generator {
 	/**
 	 * @return Vector3
 	 */
-	public function getSpawn(){
+	public function getSpawn() : Vector3{
 		return new Vector3(127.5, 128, 127.5);
 	}
 }

@@ -24,6 +24,7 @@
 
 namespace pocketmine\command;
 
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\plugin\Plugin;
 
 class PluginCommand extends Command implements PluginIdentifiableCommand {
@@ -65,7 +66,7 @@ class PluginCommand extends Command implements PluginIdentifiableCommand {
 		$success = $this->executor->onCommand($sender, $this, $commandLabel, $args);
 
 		if(!$success and $this->usageMessage !== ""){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
+            throw new InvalidCommandSyntaxException();
         }
 
 		return $success;

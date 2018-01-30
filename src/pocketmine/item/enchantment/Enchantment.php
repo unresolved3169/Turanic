@@ -24,6 +24,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 
 /**
@@ -94,8 +95,24 @@ class Enchantment {
 	public static function init(){
 		self::$enchantments = new \SplFixedArray(256);
 
-		self::registerEnchantment(new Enchantment(self::BLAST_PROTECTION, "%enchantment.protect.explosion", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4, 4));
-		self::registerEnchantment(new Enchantment(self::PROJECTILE_PROTECTION, "%enchantment.protect.projectile", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4, 2));
+        self::registerEnchantment(new ProtectionEnchantment(self::PROTECTION, "%enchant.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4, 0.75, null));
+        self::registerEnchantment(new ProtectionEnchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4, 1.25, [
+            EntityDamageEvent::CAUSE_FIRE,
+            EntityDamageEvent::CAUSE_FIRE_TICK,
+            EntityDamageEvent::CAUSE_LAVA
+            //TODO: check fireballs
+        ]));
+        self::registerEnchantment(new ProtectionEnchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET, 4, 2.5, [
+            EntityDamageEvent::CAUSE_FALL
+        ]));
+        self::registerEnchantment(new ProtectionEnchantment(self::BLAST_PROTECTION, "%enchantment.protect.explosion", self::RARITY_RARE, self::SLOT_ARMOR, 4, 1.5, [
+            EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
+            EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
+        ]));
+        self::registerEnchantment(new ProtectionEnchantment(self::PROJECTILE_PROTECTION, "%enchantment.protect.projectile", self::RARITY_UNCOMMON, self::SLOT_ARMOR, 4, 1.5, [
+            EntityDamageEvent::CAUSE_PROJECTILE
+        ]));
+
 		self::registerEnchantment(new Enchantment(self::THORNS, "%enchantment.protect.thorns", self::RARITY_UNCOMMON, self::SLOT_SWORD, 3, 8));
 		self::registerEnchantment(new Enchantment(self::DEPTH_STRIDER, "%enchantment.waterspeed", self::RARITY_UNCOMMON, self::SLOT_FEET, 3, 4));
 		self::registerEnchantment(new Enchantment(self::AQUA_AFFINITY, "%enchantment.protect.wateraffinity", self::RARITY_UNCOMMON,  self::SLOT_FEET, 1, 4));
@@ -112,10 +129,6 @@ class Enchantment {
         self::registerEnchantment(new Enchantment(self::INFINITY, "%enchantment.bow.infinity", self::RARITY_UNCOMMON, self::SLOT_BOW, 1, 8));
         self::registerEnchantment(new Enchantment(self::LUCK_OF_THE_SEA, "%enchantment.fishing.fortune", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3, 4));
         self::registerEnchantment(new Enchantment(self::LURE, "%enchantment.fishing.lure", self::RARITY_UNCOMMON, self::SLOT_FISHING_ROD, 3, 4));
-
-        self::registerEnchantment(new Enchantment(self::PROTECTION, "%enchantment.protect.all", self::RARITY_COMMON, self::SLOT_ARMOR, 4, 1));
-        self::registerEnchantment(new Enchantment(self::FIRE_PROTECTION, "%enchantment.protect.fire", self::RARITY_UNCOMMON,self::SLOT_ARMOR, 4, 2));
-        self::registerEnchantment(new Enchantment(self::FEATHER_FALLING, "%enchantment.protect.fall", self::RARITY_UNCOMMON, self::SLOT_FEET, 4, 2));
 
         self::registerEnchantment(new Enchantment(self::RESPIRATION, "%enchantment.oxygen", self::RARITY_RARE, self::SLOT_HEAD, 3, 4));
 

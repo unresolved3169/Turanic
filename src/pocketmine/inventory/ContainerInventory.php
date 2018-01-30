@@ -45,9 +45,9 @@ abstract class ContainerInventory extends BaseInventory{
 		$pk->type = $this->getNetworkType();
 		$holder = $this->getHolder();
 		if($holder instanceof Vector3){
-			$pk->x = $holder->getX();
-			$pk->y = $holder->getY();
-			$pk->z = $holder->getZ();
+			$pk->x = (int) $holder->getX();
+			$pk->y = (int) $holder->getY();
+			$pk->z = (int) $holder->getZ();
 		}else{
 			$pk->x = $pk->y = $pk->z = 0;
 		}
@@ -65,7 +65,7 @@ abstract class ContainerInventory extends BaseInventory{
 	}
 
 	/**
-	 * Returns the Minecraft PE inventory type used to show the inventory window to clients.
+	 * Returns the Minecraft BE inventory type used to show the inventory window to clients.
 	 * @return int
 	 */
 	abstract public function getNetworkType() : int;

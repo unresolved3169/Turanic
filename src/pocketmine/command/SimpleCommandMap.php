@@ -24,10 +24,7 @@
 
 namespace pocketmine\command;
 
-use pocketmine\command\defaults\BanCidByNameCommand;
-use pocketmine\command\defaults\BanCidCommand;
 use pocketmine\command\defaults\BanCommand;
-use pocketmine\command\defaults\BanIpByNameCommand;
 use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
 use pocketmine\command\defaults\BiomeCommand;
@@ -51,7 +48,6 @@ use pocketmine\command\defaults\ListCommand;
 use pocketmine\command\defaults\LvdatCommand;
 use pocketmine\command\defaults\MeCommand;
 use pocketmine\command\defaults\OpCommand;
-use pocketmine\command\defaults\PardonCidCommand;
 use pocketmine\command\defaults\PardonCommand;
 use pocketmine\command\defaults\PardonIpCommand;
 use pocketmine\command\defaults\ParticleCommand;
@@ -81,6 +77,7 @@ use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WeatherCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\defaults\XpCommand;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\Server;
@@ -122,10 +119,7 @@ class SimpleCommandMap implements CommandMap {
 
 	private function setDefaultCommands(){
 	    $this->registerAll("pocketmine", [
-            new BanCidByNameCommand("bancidbyname"),
-            new BanCidCommand("bancid"),
             new BanCommand("ban"),
-            new BanIpByNameCommand("banipbyname"),
             new BanIpCommand("ban-ip"),
             new BanListCommand("banlist"),
             new BiomeCommand("biome"),
@@ -152,7 +146,6 @@ class SimpleCommandMap implements CommandMap {
             new MakeServerCommand("ms"),
             new MeCommand("me"),
             new OpCommand("op"),
-            new PardonCidCommand("pardoncid"),
             new PardonCommand("pardon"),
             new PardonIpCommand("pardon-ip"),
             new ParticleCommand("particle"),
@@ -349,7 +342,9 @@ class SimpleCommandMap implements CommandMap {
 			}else{
 				$target->execute($sender, $sentCommandLabel, $args);
 			}
-		}catch(\Throwable $e){
+		}catch(InvalidCommandSyntaxException $exception){
+            $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$target->getUsage()]));
+        }catch(\Throwable $e){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.exception"));
 			$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.command.exception", [$commandLine, (string) $target, $e->getMessage()]));
 			$logger = $sender->getServer()->getLogger();

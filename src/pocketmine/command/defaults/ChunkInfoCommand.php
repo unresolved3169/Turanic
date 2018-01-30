@@ -22,22 +22,20 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\event\TranslationContainer;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\level\format\io\region\McRegion;
 use pocketmine\level\Level;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class ChunkInfoCommand extends VanillaCommand {
-	/**
-	 * ChunkInfoCommand constructor.
-	 *
-	 * @param $name
-	 */
+class ChunkInfoCommand extends VanillaCommand{
+
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -47,22 +45,13 @@ class ChunkInfoCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.chunkinfo");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $commandLabel
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(!$sender instanceof Player and count($args) < 4){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		if($sender instanceof Player and count($args) < 4){

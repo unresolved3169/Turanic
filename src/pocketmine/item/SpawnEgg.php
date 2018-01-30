@@ -47,7 +47,7 @@ class SpawnEgg extends Item {
 		return true;
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		if($blockReplace->getId() == Block::MONSTER_SPAWNER){
 			return true;
 		}else{
@@ -57,7 +57,7 @@ class SpawnEgg extends Item {
 				$nbt->setString("CustomName", $this->getCustomName());
 			}
 
-			$entity = Entity::createEntity($this->meta, $level, $nbt);
+			$entity = Entity::createEntity($this->meta, $player->getLevel(), $nbt);
 
 			if($entity instanceof Entity){
                 --$this->count;

@@ -22,22 +22,19 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TimingsHandler;
 use pocketmine\event\TranslationContainer;
-
 
 class TimingsCommand extends VanillaCommand {
 
 	public static $timingStart = 0;
 
-	/**
-	 * TimingsCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -47,22 +44,13 @@ class TimingsCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.timings");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) !== 1){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return true;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		$mode = strtolower($args[0]);

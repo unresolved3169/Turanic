@@ -474,7 +474,7 @@ class Vector3 {
 
 	public function toArray() : array{
 	    return [$this->x, $this->y, $this->z];
-    }
+  }
 
 	/**
 	 * @param Random $random

@@ -22,24 +22,22 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\overload\CommandParameter;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\sound\ExpPickupSound;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class XpCommand extends VanillaCommand {
+class XpCommand extends VanillaCommand{
 
-	/**
-	 * XpCommand constructor.
-	 *
-	 * @param string $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -52,15 +50,8 @@ class XpCommand extends VanillaCommand {
 		$this->getOverload("default")->setParameter(1, new CommandParameter("player", CommandParameter::TYPE_TARGET, false));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -76,18 +67,17 @@ class XpCommand extends VanillaCommand {
 		if($player instanceof Player){
 			$name = $player->getName();
 			if(count($args) < 1){
-                $player->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-				return false;
+                throw new InvalidCommandSyntaxException();
 			}
 			if(strcasecmp(substr($args[0], -1), "L") == 0){
 				$level = (int) rtrim($args[0], "Ll");
 				if($level > 0){
-					$player->addXpLevel((int) $level);
+					$player->addXpLevels((int) $level);
 					$sender->sendMessage(new TranslationContainer("%commands.xp.success.levels", [$level, $name]));
 					$player->getLevel()->broadcastLevelSoundEvent($player, LevelSoundEventPacket::SOUND_LEVELUP);
 					return true;
 				}elseif($level < 0){
-					$player->takeXpLevel((int) -$level);
+					$player->subtractXpLevels((int) -$level);
 					$sender->sendMessage(new TranslationContainer("%commands.xp.success.negative.levels", [-$level, $name]));
 					return true;
 				}
@@ -103,8 +93,7 @@ class XpCommand extends VanillaCommand {
 				}
 			}
 
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}else{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 			return false;

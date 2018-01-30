@@ -738,8 +738,9 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function isPlaceable(){
 		return $this->canBePlaced();
 	}
-
-	// Redstone
+	  public function getMaxStackSize() : int{
+	      return 64;
+    }
 
     /**
      * Kızıltaş kaynağı kontrolü

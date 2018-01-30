@@ -27,7 +27,6 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\FireworksRocket;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\Player;
@@ -69,7 +68,7 @@ class FireworkRocket extends Item {
         return true;
     }
 
-    public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+    public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
         $random = new Random();
         $yaw = $random->nextBoundedInt(360);
         $pitch = -1 * (float)(90 + ($random->nextFloat() * $this->spread - $this->spread / 2));
@@ -81,6 +80,7 @@ class FireworkRocket extends Item {
             $nbt->setTag($tags);
         }
 
+        $level = $player->getLevel();
         $rocket = new FireworksRocket($level, $nbt, $player, $this, $random);
         $level->addEntity($rocket);
         if ($rocket instanceof Entity){

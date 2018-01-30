@@ -22,26 +22,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\object;
+namespace pocketmine\command\utils;
 
-use pocketmine\entity\Entity;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
+class CommandException extends \RuntimeException{
 
-class MinecartTNT extends Minecart {
-	const NETWORK_ID = self::TNT_MINECART;
-
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Minecart TNT";
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getType() : int{
-		return self::TYPE_TNT;
-	}
 }

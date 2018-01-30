@@ -22,23 +22,21 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandParameter;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class KillCommand extends VanillaCommand {
+class KillCommand extends VanillaCommand{
 
-	/**
-	 * KillCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -51,22 +49,13 @@ class KillCommand extends VanillaCommand {
         $this->getOverload("default")->setParameter(0, new CommandParameter("player", CommandParameter::TYPE_TARGET, true));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) >= 2){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		if(count($args) === 1){
@@ -113,9 +102,7 @@ class KillCommand extends VanillaCommand {
 			$sender->setHealth(0);
 			$sender->sendMessage(new TranslationContainer("commands.kill.successful", [$sender->getName()]));
 		}else{
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		return true;

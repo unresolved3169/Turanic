@@ -41,7 +41,6 @@ use pocketmine\event\TimingsHandler;
 use pocketmine\inventory\CraftingManager;
 use pocketmine\inventory\Recipe;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\enchantment\EnchantmentLevelTable;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
 use pocketmine\level\format\io\LevelProvider;
@@ -134,9 +133,6 @@ class Server{
 
 	/** @var BanList */
 	private $banByIP = null;
-
-	/** @var BanList */
-	private $banByCID = \null;
 
 	/** @var Config */
 	private $operators = null;
@@ -1349,22 +1345,12 @@ class Server{
 		}
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getNameBans(){
+	public function getNameBans() : BanList{
 		return $this->banByName;
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getIPBans(){
+	public function getIPBans() : BanList{
 		return $this->banByIP;
-	}
-
-	public function getCIDBans(){
-		return $this->banByCID;
 	}
 
 	/**
@@ -1522,7 +1508,7 @@ class Server{
 			"retryTimes" => $this->getAdvancedProperty("dserver.retry-times", 3),
 			"serverList" => explode(";", $this->getAdvancedProperty("dserver.server-list", ""))
 		];
-		$this->getLogger()->setWrite(!$this->getAdvancedProperty("server.disable-log", false));
+		//$this->getLogger()->setWrite(!$this->getAdvancedProperty("server.disable-log", false));
 		$this->chunkRadius = $this->getAdvancedProperty("player.chunk-radius", -1);
 		$this->destroyBlockParticle = $this->getAdvancedProperty("server.destroy-block-particle", true);
 		$this->allowSplashPotion = $this->getAdvancedProperty("server.allow-splash-potion", true);
@@ -1768,8 +1754,6 @@ class Server{
 			$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
 			$this->banByIP->load();
 			@touch($this->dataPath . "banned-cids.txt");
-			$this->banByCID = new BanList($this->dataPath . "banned-cids.txt");
-			$this->banByCID->load();
 
 			$this->maxPlayers = $this->getConfigInt("max-players", 20);
 			$this->setAutoSave($this->getConfigBool("auto-save", true));
@@ -1806,7 +1790,6 @@ class Server{
 			Biome::init();
 			Effect::init();
 			Attribute::init();
-			EnchantmentLevelTable::init();
 			Color::init();
 			$this->craftingManager = new CraftingManager();
 
@@ -2217,7 +2200,6 @@ class Server{
 
 		$this->banByIP->load();
 		$this->banByName->load();
-		$this->banByCID->load();
 		$this->reloadWhitelist();
 		$this->operators->reload();
 

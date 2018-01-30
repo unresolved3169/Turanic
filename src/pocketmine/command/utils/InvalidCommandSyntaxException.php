@@ -22,26 +22,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\object;
+namespace pocketmine\command\utils;
 
-use pocketmine\entity\Entity;
-use pocketmine\network\mcpe\protocol\AddEntityPacket;
-use pocketmine\Player;
+class InvalidCommandSyntaxException extends CommandException{
 
-class MinecartChest extends Minecart {
-	const NETWORK_ID = self::CHEST_MINECART;
-
-	/**
-	 * @return string
-	 */
-	public function getName() : string{
-		return "Minecart Chest";
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getType() : int{
-		return self::TYPE_CHEST;
-	}
 }

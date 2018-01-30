@@ -124,122 +124,105 @@ class RCONInstance extends Thread {
 
 	public function run(){
 
-		while($this->stop !== true){
-			$this->synchronized(function(){
-				$this->wait(2000);
-			});
-			$r = [$socket = $this->socket];
-			$w = null;
-			$e = null;
-			if(socket_select($r, $w, $e, 0) === 1){
-				if(($client = socket_accept($this->socket)) !== false){
-					socket_set_block($client);
-					socket_set_option($client, SOL_SOCKET, SO_KEEPALIVE, 1);
-					$done = false;
-					for($n = 0; $n < $this->maxClients; ++$n){
-						if($this->{"client" . $n} === null){
-							$this->{"client" . $n} = $client;
-							$this->{"status" . $n} = 0;
-							$this->{"timeout" . $n} = microtime(true) + 5;
-							$done = true;
-							break;
-						}
-					}
-					if($done === false){
-						@socket_close($client);
-					}
-				}
-			}
+        while($this->stop !== true){
+            $this->synchronized(function(){
+                $this->wait(2000);
+            });
+            $r = [$socket = $this->socket];
+            $w = null;
+            $e = null;
+            if(socket_select($r, $w, $e, 0) === 1){
+                if(($client = socket_accept($this->socket)) !== false){
+                    socket_set_block($client);
+                    socket_set_option($client, SOL_SOCKET, SO_KEEPALIVE, 1);
+                    $done = false;
+                    for($n = 0; $n < $this->maxClients; ++$n){
+                        if($this->{"client" . $n} === null){
+                            $this->{"client" . $n} = $client;
+                            $this->{"status" . $n} = 0;
+                            $this->{"timeout" . $n} = microtime(true) + 5;
+                            $done = true;
+                            break;
+                        }
+                    }
+                    if($done === false){
+                        @socket_close($client);
+                    }
+                }
+            }
 
-			for($n = 0; $n < $this->maxClients; ++$n){
-				$client = &$this->{"client" . $n};
-				if($client !== null){
-					if($this->{"status" . $n} !== -1 and $this->stop !== true){
-						if($this->{"status" . $n} === 0 and $this->{"timeout" . $n} < microtime(true)){ //Timeout
-							$this->{"status" . $n} = -1;
-							continue;
-						}
-						$p = $this->readPacket($client, $size, $requestID, $packetType, $payload);
-						if($p === false){
-							$this->{"status" . $n} = -1;
-							continue;
-						}elseif($p === null){
-							continue;
-						}
+            for($n = 0; $n < $this->maxClients; ++$n){
+                $client = &$this->{"client" . $n};
+                if($client !== null){
+                    if($this->{"status" . $n} !== -1 and $this->stop !== true){
+                        if($this->{"status" . $n} === 0 and $this->{"timeout" . $n} < microtime(true)){ //Timeout
+                            $this->{"status" . $n} = -1;
+                            continue;
+                        }
+                        $p = $this->readPacket($client, $size, $requestID, $packetType, $payload);
+                        if($p === false){
+                            $this->{"status" . $n} = -1;
+                            continue;
+                        }elseif($p === null){
+                            continue;
+                        }
 
-						switch($packetType){
-							case 9: //Protocol check
-								if($this->{"status" . $n} !== 1){
-									$this->{"status" . $n} = -1;
-									continue;
-								}
-								$this->writePacket($client, $requestID, 0, RCON::PROTOCOL_VERSION);
-								$this->response = "";
+                        switch($packetType){
+                            case 3: //Login
+                                if($this->{"status" . $n} !== 0){
+                                    $this->{"status" . $n} = -1;
+                                    continue;
+                                }
+                                if($payload === $this->password){
+                                    socket_getpeername($client, $addr, $port);
+                                    $this->response = "[INFO] Successful Rcon connection from: /$addr:$port";
+                                    $this->synchronized(function(){
+                                        $this->waiting = true;
+                                        $this->wait();
+                                    });
+                                    $this->waiting = false;
+                                    $this->response = "";
+                                    $this->writePacket($client, $requestID, 2, "");
+                                    $this->{"status" . $n} = 1;
+                                }else{
+                                    $this->{"status" . $n} = -1;
+                                    $this->writePacket($client, -1, 2, "");
+                                    continue;
+                                }
+                                break;
+                            case 2: //Command
+                                if($this->{"status" . $n} !== 1){
+                                    $this->{"status" . $n} = -1;
+                                    continue;
+                                }
+                                if(strlen($payload) > 0){
+                                    $this->cmd = ltrim($payload);
+                                    $this->synchronized(function(){
+                                        $this->waiting = true;
+                                        $this->wait();
+                                    });
+                                    $this->waiting = false;
+                                    $this->writePacket($client, $requestID, 0, str_replace("\n", "\r\n", trim($this->response)));
+                                    $this->response = "";
+                                    $this->cmd = "";
+                                }
+                                break;
+                        }
 
-								if($payload == RCON::PROTOCOL_VERSION) $this->logger->setSendMsg(true); //GeniRCON output
-								break;
-							case 4: //Logger
-								if($this->{"status" . $n} !== 1){
-									$this->{"status" . $n} = -1;
-									continue;
-								}
-								$res = (array) [
-									"serverStatus" => unserialize($this->serverStatus),
-									"logger" => str_replace("\n", "\r\n", trim($this->logger->getMessages()))
-								];
-								$this->writePacket($client, $requestID, 0, serialize($res));
-								$this->response = "";
-								break;
-							case 3: //Login
-								if($this->{"status" . $n} !== 0){
-									$this->{"status" . $n} = -1;
-									continue;
-								}
-								if($payload === $this->password){
-									socket_getpeername($client, $addr, $port);
-									$this->response = "[INFO] Successful Rcon connection from: /$addr:$port";
-									$this->response = "";
-									$this->writePacket($client, $requestID, 2, "");
-									$this->{"status" . $n} = 1;
-								}else{
-									$this->{"status" . $n} = -1;
-									$this->writePacket($client, -1, 2, "");
-									continue;
-								}
-								break;
-							case 2: //Command
-								if($this->{"status" . $n} !== 1){
-									$this->{"status" . $n} = -1;
-									continue;
-								}
-								if(strlen($payload) > 0){
-									$this->cmd = ltrim($payload);
-									$this->synchronized(function(){
-										$this->waiting = true;
-										$this->wait();
-									});
-									$this->waiting = false;
-									$this->writePacket($client, $requestID, 0, str_replace("\n", "\r\n", trim($this->response)));
-									$this->response = "";
-									$this->cmd = "";
-								}
-								break;
-						}
-
-					}else{
-						@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);
-						@socket_shutdown($client, 2);
-						@socket_set_block($client);
-						@socket_read($client, 1);
-						@socket_close($client);
-						$this->{"status" . $n} = 0;
-						$this->{"client" . $n} = null;
-					}
-				}
-			}
-		}
-		unset($this->socket, $this->cmd, $this->response, $this->stop);
-		exit(0);
+                    }else{
+                        @socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);
+                        @socket_shutdown($client, 2);
+                        @socket_set_block($client);
+                        @socket_read($client, 1);
+                        @socket_close($client);
+                        $this->{"status" . $n} = 0;
+                        $this->{"client" . $n} = null;
+                    }
+                }
+            }
+        }
+        unset($this->socket, $this->cmd, $this->response, $this->stop);
+        exit(0);
 	}
 
 	/**

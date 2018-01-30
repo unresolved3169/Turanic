@@ -22,6 +22,8 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\block\Air;
@@ -29,6 +31,7 @@ use pocketmine\block\Block;
 use pocketmine\block\Lava;
 use pocketmine\block\Water;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\level\Level;
@@ -37,13 +40,8 @@ use pocketmine\math\Vector3;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class CaveCommand extends VanillaCommand {
+class CaveCommand extends VanillaCommand{
 
-	/**
-	 * CaveCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -53,15 +51,8 @@ class CaveCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.cave");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $commandLabel
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
@@ -75,12 +66,10 @@ class CaveCommand extends VanillaCommand {
 			return true;
 		}
 
-		//0:旋转角度 1:洞穴长度 2:分叉数 3:洞穴强度
 		if(count($args) > 8){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
-		//是否自动获取玩家位置
+
 		$level = isset($args[7]) ? $sender->getServer()->getLevelByName($args[7]) : $sender->getLevel();
 		if(!$level instanceof Level){
 			$sender->sendMessage(TextFormat::RED . "Wrong LevelName");

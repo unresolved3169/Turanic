@@ -22,25 +22,19 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\level\Level;
-use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
-use pocketmine\Server;
 
+class DifficultyCommand extends VanillaCommand{
 
-class DifficultyCommand extends VanillaCommand {
-
-	/**
-	 * DifficultyCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -52,22 +46,13 @@ class DifficultyCommand extends VanillaCommand {
         $this->getOverload("default")->setParameter(0, new CommandParameter("1|2|3", CommandParameter::TYPE_INT, false));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->testPermission($sender)){
+		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) !== 1){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		$difficulty = Level::getDifficultyFromString($args[0]);
@@ -86,9 +71,7 @@ class DifficultyCommand extends VanillaCommand {
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.difficulty.success", [$difficulty]));
 		}else{
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		return true;

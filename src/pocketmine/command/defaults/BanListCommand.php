@@ -22,22 +22,19 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
-use pocketmine\event\TranslationContainer;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\Server;
 
 
-class BanListCommand extends VanillaCommand {
+class BanListCommand extends VanillaCommand{
 
-	/**
-	 * BanListCommand constructor.
-	 *
-	 * @param string $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -49,13 +46,6 @@ class BanListCommand extends VanillaCommand {
         $this->getOverload("default")->setParameter(0, new CommandParameter("list", CommandParameter::TYPE_STRING, false, CommandParameter::FLAG_ENUM, new CommandEnum("from", ["ips", "cids", "players"])));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
@@ -68,17 +58,12 @@ class BanListCommand extends VanillaCommand {
 				$list = $sender->getServer()->getIPBans();
 				$title = "commands.banlist.ips";
 				break;
-			case "cids":
-				$list = $list = $sender->getServer()->getCIDBans();
-				$title = "commands.banlist.cids";
-				break;
 			case "players":
 				$list = $sender->getServer()->getNameBans();
 				$title = "commands.banlist.players";
 				break;
 			default:
-                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-				return false;
+                throw new InvalidCommandSyntaxException();
 		}
 
 		$message = "";

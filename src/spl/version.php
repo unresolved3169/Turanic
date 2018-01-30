@@ -2,7 +2,7 @@
 
 /*
  * PocketMine Standard PHP Library
- * Copyright (C) 2017 PocketMine Team <https://github.com/PocketMine/PocketMine-SPL>
+ * Copyright (C) 2018 PocketMine Team <https://github.com/PocketMine/PocketMine-SPL>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,5 +17,5 @@
 
 declare(strict_types=1);
 
-return "0.0.1";
+return "0.0.2";
 

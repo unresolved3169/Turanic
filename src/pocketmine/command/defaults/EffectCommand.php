@@ -27,17 +27,13 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandEnum;
 use pocketmine\command\overload\CommandParameter;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Effect;
 use pocketmine\event\TranslationContainer;
 use pocketmine\utils\TextFormat;
 
-class EffectCommand extends VanillaCommand {
+class EffectCommand extends VanillaCommand{
 
-	/**
-	 * EffectCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -51,21 +47,13 @@ class EffectCommand extends VanillaCommand {
         $this->getOverload("default")->setParameter(1, new CommandParameter("effect", CommandParameter::TYPE_MIXED, false, CommandParameter::FLAG_ENUM, new CommandEnum("effect", ["speed", "slowness", "haste", "fatigue", "strenght", "healing", "harming", "jump", "nausea", "regeneration", "damage_resistance", "fire_resistance", "water_breathing", "invisibility", "blindness", "night_vision", "hunger", "weakness", "poison", "wither", "health_boost", "absobtion", "saturation", "levitation", "clear"])));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) < 2){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return true;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		$player = $sender->getServer()->getPlayer($args[0]);

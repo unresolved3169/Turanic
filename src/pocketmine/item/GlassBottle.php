@@ -26,7 +26,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\event\player\PlayerGlassBottleEvent;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -40,7 +39,7 @@ class GlassBottle extends Item {
 		parent::__construct(self::GLASS_BOTTLE, $meta, "Glass Bottle");
 	}
 
-	public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
 		if($player === null or $player->isSurvival() !== true){
 			return false;
 		}

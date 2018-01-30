@@ -22,21 +22,19 @@
  *
 */
 
+declare(strict_types=1);
+
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\overload\CommandParameter;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
-class BiomeCommand extends VanillaCommand {
+class BiomeCommand extends VanillaCommand{
 
-	/**
-	 * BiomeCommand constructor.
-	 *
-	 * @param string $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -48,21 +46,13 @@ class BiomeCommand extends VanillaCommand {
         $this->getOverload("default")->setParameter(0, new CommandParameter("set"));
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) === 0){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-			return false;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		if($sender instanceof Player){
@@ -107,13 +97,12 @@ class BiomeCommand extends VanillaCommand {
 				$sender->selectedPos[1][1] = $z;
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.biome.posset", [$sender->selectedLev[1]->getName(), $x, $z, "2"]));
 			}elseif($args[0] == "get"){
-				$x = floor($sender->getX());
-				$z = floor($sender->getZ());
+				$x = (int) floor($sender->getX());
+				$z = (int) floor($sender->getZ());
 				$biome = $sender->getLevel()->getBiomeId($x, $z);
 				$sender->sendMessage(new TranslationContainer("pocketmine.command.biome.get", [$biome]));
 			}else{
-                $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-				return true;
+                throw new InvalidCommandSyntaxException();
 			}
 		}else{
 			$sender->sendMessage(new TranslationContainer("commands.generic.runingame"));

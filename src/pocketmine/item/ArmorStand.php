@@ -26,7 +26,6 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 
@@ -42,8 +41,8 @@ class ArmorStand extends Item {
         parent::__construct(self::ARMOR_STAND, $meta, "Armor Stand");
     }
 
-    public function onActivate(Level $level, Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
-        $as = Entity::createEntity("ArmorStand", $level, Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, $this->getDirection($player->yaw)));
+    public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickPos) : bool{
+        $as = Entity::createEntity("ArmorStand", $player->getLevel(), Entity::createBaseNBT($blockReplace->add(0.5, 0, 0.5), null, $this->getDirection($player->yaw)));
 
         if ($as instanceof Entity) {
             $this->count--;

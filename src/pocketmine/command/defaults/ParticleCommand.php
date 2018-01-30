@@ -28,6 +28,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandSender;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\TranslationContainer;
 use pocketmine\item\Item;
 use pocketmine\level\particle\AngryVillagerParticle;
@@ -48,7 +49,6 @@ use pocketmine\level\particle\InstantEnchantParticle;
 use pocketmine\level\particle\ItemBreakParticle;
 use pocketmine\level\particle\LavaDripParticle;
 use pocketmine\level\particle\LavaParticle;
-use pocketmine\level\particle\Particle;
 use pocketmine\level\particle\PortalParticle;
 use pocketmine\level\particle\RainSplashParticle;
 use pocketmine\level\particle\RedstoneParticle;
@@ -63,13 +63,8 @@ use pocketmine\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
 
-class ParticleCommand extends VanillaCommand {
+class ParticleCommand extends VanillaCommand{
 
-	/**
-	 * ParticleCommand constructor.
-	 *
-	 * @param $name
-	 */
 	public function __construct($name){
 		parent::__construct(
 			$name,
@@ -79,22 +74,13 @@ class ParticleCommand extends VanillaCommand {
 		$this->setPermission("pocketmine.command.particle");
 	}
 
-	/**
-	 * @param CommandSender $sender
-	 * @param string        $currentAlias
-	 * @param array         $args
-	 *
-	 * @return bool
-	 */
 	public function execute(CommandSender $sender, string $currentAlias, array $args){
 		if(!$this->canExecute($sender)){
 			return true;
 		}
 
 		if(count($args) < 7){
-            $sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.generic.usage", [$this->usageMessage]));
-
-			return true;
+            throw new InvalidCommandSyntaxException();
 		}
 
 		if($sender instanceof Player){
@@ -139,17 +125,6 @@ class ParticleCommand extends VanillaCommand {
 		return true;
 	}
 
-
-	/**
-	 * @param         $name
-	 * @param Vector3 $pos
-	 * @param         $xd
-	 * @param         $yd
-	 * @param         $zd
-	 * @param         $data
-	 *
-	 * @return Particle
-	 */
 	private function getParticle($name, Vector3 $pos, $xd, $yd, $zd, $data){
 		switch($name){
 			case "explode":
