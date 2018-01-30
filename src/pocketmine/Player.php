@@ -2095,7 +2095,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->level->getName(),
             round($this->x, 4),
             round($this->y, 4),
-            round($this->z, 4   )
+            round($this->z, 4)
         ]));
 
         if($this->isOp()){
@@ -2360,7 +2360,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $this->inventory->sendContents($this);
                         $this->inventory->sendHeldItem($this);
 
-                        $target = $this->level->getBlockAt($blockVector->x, $blockVector->y, $blockVector->z);
+                        $target = $this->level->getBlockAt(...$blockVector->toArray());
                         /** @var Block[] $blocks */
                         $blocks = $target->getAllSides();
                         $blocks[] = $target;
@@ -2618,7 +2618,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 if ($pos->distanceSquared($this) > 10000) {
                     break;
                 }
-                $target = $this->level->getBlockAt($pos->x, $pos->y, $pos->z);
+                $target = $this->level->getBlockAt(...$pos->toArray());
                 $ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $packet->face, $target->getId() === 0 ? PlayerInteractEvent::LEFT_CLICK_AIR : PlayerInteractEvent::LEFT_CLICK_BLOCK);
                 if ($this->level->checkSpawnProtection($this, $target)) {
                     $ev->setCancelled();
@@ -2748,7 +2748,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
                 break;
             case PlayerActionPacket::ACTION_CONTINUE_BREAK:
-                $block = $this->level->getBlockAt($pos->x, $pos->y, $pos->z);
+                $block = $this->level->getBlockAt(...$pos->toArray());
                 $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
                 break;
             case PlayerActionPacket::ACTION_SET_ENCHANTMENT_SEED:
