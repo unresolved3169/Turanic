@@ -164,6 +164,7 @@ use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
+use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\SourceInterface;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissionAttachment;
@@ -894,7 +895,15 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             foreach($this->usedChunks as $index => $d){
                 Level::getXZ($index, $X, $Z);
                 $this->unloadChunk($X, $Z, $oldLevel);
-            }
+	    }
+		
+		if($oldLevel->getDimension() !== $targetLevel->getDimension()){
+			$pk = new ChangeDimensionPacket;
+			$pk->dimension = $targetLevel->getDimension();
+			$pk->position = $this->asVector3();
+			$pk->respawn = !$this->isAlive();
+			$this->dataPacket($pk);
+		}
 
             $this->usedChunks = [];
             $this->level->sendTime($this);
