@@ -2741,11 +2741,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             case PlayerActionPacket::ACTION_START_GLIDE:
             case PlayerActionPacket::ACTION_STOP_GLIDE:
                 $glide = $packet->action == PlayerActionPacket::ACTION_START_GLIDE;
-                if ($glide && $this->isHaveElytra()) {
+                if($glide && $this->isHaveElytra()){
                     $this->elytraIsActivated = true;
-                } else {
+                }else{
                     $this->elytraIsActivated = false;
                 }
+                $this->setGliding($this->elytraIsActivated);
                 break;
             case PlayerActionPacket::ACTION_CONTINUE_BREAK:
                 $block = $this->level->getBlockAt(...$pos->toArray());

@@ -810,7 +810,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds {
 	 */
 	public function setGliding(bool $value = true){
 		$this->setGenericFlag(self::DATA_FLAG_GLIDING, $value);
-		$this->setGenericFlag(self::DATA_FLAG_IDLING, $value);
 	}
 
     /**
