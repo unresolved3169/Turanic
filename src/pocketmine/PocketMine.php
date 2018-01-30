@@ -88,7 +88,7 @@ namespace pocketmine {
 	const CODENAME = "Wolf";
 	const TURANIC_API_VERSION = '2.0.0';
 
-    const MIN_PHP_VERSION = "7.2.1";
+    const MIN_PHP_VERSION = "7.2.0";
 
 	/*
 	 * Startup code. Do not look at it, it may harm you.
