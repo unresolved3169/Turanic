@@ -419,12 +419,7 @@ class SessionManager{
         return $ip . ":" . $port;
     }
 
-    /**
-     * @param InternetAddress $address
-     *
-     * @return Session|null
-     */
-    public function getSession(InternetAddress $address){
+    public function getSession(InternetAddress $address) : ?Session{
         return $this->sessions[(string) $address] ?? null;
     }
 
@@ -483,20 +478,10 @@ class SessionManager{
         return $this->server->getServerId();
     }
 
-    /**
-     * @param int    $id
-     * @param string $class
-     */
     private function registerPacket(int $id, string $class){
         $this->packetPool[$id] = new $class;
     }
 
-    /**
-     * @param int    $id
-     * @param string $buffer
-     *
-     * @return Packet|null
-     */
     public function getPacketFromPool(int $id, string $buffer = "") : ?Packet{
         $pk = $this->packetPool[$id];
         if($pk !== null){
