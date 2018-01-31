@@ -45,13 +45,15 @@ class TeleportCommand extends VanillaCommand{
 		$this->setPermission("pocketmine.command.teleport");
 	}
 
-	public function execute(CommandSender $sender, string $currentAlias, array $args){
-		if(!$this->canExecute($sender)){
+	public function execute(CommandSender $sender, string $commandLabel, array $args){
+		if(!$this->testPermission($sender)){
 			return true;
 		}
-
+		$args = array_values(array_filter($args, function($arg){
+			return strlen($arg) > 0;
+		}));
 		if(count($args) < 1 or count($args) > 6){
-            throw new InvalidCommandSyntaxException();
+			throw new InvalidCommandSyntaxException();
 		}
 
 		$target = null;
