@@ -503,7 +503,7 @@ class Block extends Position implements BlockIds, Metadatable{
      */
     public function getSide($side, $step = 1){
         if($this->isValid()){
-            return $this->getLevel()->getBlock(Vector3::getSide($side, $step));
+            return $this->getLevel()->getBlockAt(...Vector3::getSide($side, $step)->toArray());
         }
 
         return BlockFactory::get(Block::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
@@ -738,24 +738,41 @@ class Block extends Position implements BlockIds, Metadatable{
 	public function isPlaceable(){
 		return $this->canBePlaced();
 	}
-
-	public function getMaxStackSize() : int{
-	    return 64;
+	  public function getMaxStackSize() : int{
+	      return 64;
     }
 
-	public function isNormal(){
-	    return !$this->isTransparent() && $this->isSolid() && !$this->isRedstoneSource();
-    }
-
-    public function isRedstoneSource(){
+    /**
+     * Kızıltaş kaynağı kontrolü
+     *
+     * @return bool
+     */
+    public function isRedstoneSource() : bool{
 	    return false;
     }
 
-    public function getWeakPower(int $side) : int{
-        return 0;
+    /**
+     * Kızıltaş güç seviyesi
+     * NOT: Güç seviyesi isRedstoneSource fonksiyonundan bağımsız çalışır
+     *
+     * @return int
+     */
+    public function getRedstonePower() : int{
+	    return 0;
     }
 
-	public function activate(){ // TODO : remove
+    /**
+     * Kızıltaş ile güncellenebilir mi ?
+     *
+     * @return bool
+     */
+    public function canUpdateWithRedstone() : bool{
+        return false;
+    }
+
+    // TODO : remove
+
+	public function activate(){
 		return false;
 	}
 

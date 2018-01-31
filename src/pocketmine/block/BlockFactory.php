@@ -188,7 +188,7 @@ class BlockFactory extends Block {
             self::registerBlock(new EndStone());
             self::registerBlock(new DragonEgg());
             self::registerBlock(new RedstoneLamp());
-            self::registerBlock(new LitRedstoneLamp());
+            self::registerBlock(new RedstoneLampLit());
             self::registerBlock(new Dropper());
             self::registerBlock(new ActivatorRail());
             self::registerBlock(new CocoaBlock());

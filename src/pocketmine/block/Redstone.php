@@ -26,81 +26,53 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\RedstoneUtils;
 use pocketmine\item\TieredTool;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\Player;
+use pocketmine\level\Level;
 
 class Redstone extends Solid {
 
 	protected $id = self::REDSTONE_BLOCK;
 
-	public function isActivated(Block $from = null){
-        return true;
+    public function __construct(int $meta = 0){
+        $this->meta = $meta;
     }
 
-    public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-        parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-        $kontrol = false;
-        foreach ([self::SIDE_NORTH, self::SIDE_SOUTH, self::SIDE_WEST, self::SIDE_EAST] as $side) {
-            /** @var RedstoneWire $wire */
-            $wire = $this->getSide($side);
-            if($wire->getId() == $this->id){
-                if($wire->isActivated()){
-                    $kontrol = true; // found redstone wire
-                    break;
-                }
-            }
-        }
-        if(!$kontrol)
-            $this->level->updateAroundRedstone($this);
-        return true;
-    }
-
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getBlastResistance() : float{
-        return 10;
+    public function getName() : string{
+        return "Block of Redstone";
     }
 
     public function getHardness() : float{
         return 5;
     }
 
-    public function isRedstoneSource(){
-        return true;
+    public function getBlastResistance() : float{
+        return 30;
     }
 
-    public function getWeakPower(int $side): int{
-        return 15;
-    }
-
-    /**
-	 * @return \pocketmine\math\AxisAlignedBB
-	 */
-	public function getBoundingBox(){
-		return Block::getBoundingBox();
-	}
-
-	public function canBeFlowedInto() : bool{
+    public function canBeFlowedInto() : bool{
 		return false;
 	}
 
-	public function isSolid() : bool{
-		return true;
-	}
-
-	public function getToolType() : int{
+    public function getToolType() : int{
 		return BlockToolType::TYPE_PICKAXE;
 	}
 
-	public function getToolHarvestLevel(): int{
+    public function getToolHarvestLevel(): int{
         return TieredTool::TIER_WOODEN;
     }
 
-    public function getName() : string{
-		return "Block of Redstone";
-	}
+    public function isRedstoneSource() : bool{
+        return true;
+    }
+
+    public function getRedstonePower(): int{
+        return 15;
+    }
+
+    public function onUpdate(int $type){
+        if($type == Level::BLOCK_UPDATE_NORMAL){
+            RedstoneUtils::updateRedstone($this);
+        }
+    }
 }

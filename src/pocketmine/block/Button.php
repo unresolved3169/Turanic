@@ -26,8 +26,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\RedstoneUtils;
 use pocketmine\item\Item;
+use pocketmine\level\Level;
+use pocketmine\level\Position;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\Player;
 
 abstract class Button extends Flowable {
@@ -51,7 +55,42 @@ abstract class Button extends Flowable {
     }
 
     public function onActivate(Item $item, Player $player = null): bool{
-        // TODO : Add Redstone System
+        if(!$this->isRedstoneSource()){
+            $this->meta ^= 0x08;
+            $this->level->setBlock($this, $this, true, false);
+            $this->level->scheduleDelayedBlockUpdate($this, 30);
+            $this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_REDSTONE_TRIGGER);
+            RedstoneUtils::updateRedstone($this, null, true);
+            RedstoneUtils::updateRedstone($this->getOppositeSidePosition(), null, true, $this->asPosition());
+        }
         return true;
+    }
+
+    public function onUpdate(int $type){
+        switch($type){
+            case Level::BLOCK_UPDATE_SCHEDULED:
+                if($this->isRedstoneSource()){
+                    $this->meta ^= 0x08;
+                    $this->level->setBlock($this, $this, true, false);
+                    $this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_REDSTONE_TRIGGER);
+                    RedstoneUtils::updateRedstone($this, null, true);
+                    RedstoneUtils::updateRedstone($this->getOppositeSidePosition(), null, true, $this->asPosition());
+                }
+                break;
+        }
+    }
+
+    public function isRedstoneSource(): bool{
+        return (($this->meta & 0x08) === 0x08);
+    }
+
+
+    public function getRedstonePower(): int{
+        return 15;
+    }
+
+    public function getOppositeSidePosition(){
+        $side = self::getOppositeSide($this->isRedstoneSource() ? $this->meta ^ 0x08 : $this->meta);
+        return Position::fromObject($this->asVector3()->getSide($side), $this->level);
     }
 }

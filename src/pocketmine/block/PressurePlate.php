@@ -59,10 +59,6 @@ abstract class PressurePlate extends Flowable {
         return [new AxisAlignedBB($this->x + 0.125, $this->y, $this->z + 0.125, $this->x + 0.875, $this->y + 0.25, $this->z + 0.875)];
     }
 
-    public function isRedstoneSource(){
-        return true;
-    }
-
 	public function hasEntityCollision() : bool{
 		return true;
 	}

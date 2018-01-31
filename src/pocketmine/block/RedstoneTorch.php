@@ -94,10 +94,6 @@ class RedstoneTorch extends Flowable {
         return 15;
     }
 
-    public function isRedstoneSource(){
-        return true;
-    }
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			Item::get(Item::REDSTONE_TORCH)

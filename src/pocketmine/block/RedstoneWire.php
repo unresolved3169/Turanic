@@ -318,10 +318,6 @@ class RedstoneWire extends Flowable {
         return $down instanceof Transparent and $down->getId() != Block::REDSTONE_LAMP and $down->getId() != Block::LIT_REDSTONE_LAMP;
     }
 
-    public function isRedstoneSource(){
-        return ($this->meta > 0);
-    }
-
     public function getUnconnectedSide(){
         $connected = [];
         $notConnected = [];

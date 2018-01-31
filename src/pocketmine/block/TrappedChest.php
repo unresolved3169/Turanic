@@ -166,8 +166,4 @@ class TrappedChest extends RedstoneSource {
 
         return $playerCount < 0 ? 0 : $playerCount > 15 ? 15 : $playerCount;
     }
-
-    public function isRedstoneSource(){
-        return true;
-    }
 }

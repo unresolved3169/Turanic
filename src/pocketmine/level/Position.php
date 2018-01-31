@@ -119,16 +119,16 @@ class Position extends Vector3 {
     public function __toString(){
         return "Position(level=" . ($this->isValid() ? $this->getLevel()->getName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
     }
-
-    public function toArray() : array{
-        return [$this->x, $this->y, $this->z, $this->level->getFolderName()];
-    }
-
+  
     public function equals(Vector3 $v) : bool{
         if($v instanceof Position){
             return parent::equals($v) and $v->getLevel() === $this->getLevel();
         }
         return parent::equals($v);
+    }
+
+    public function toArray() : array{
+        return [$this->x, $this->y, $this->z, $this->level->getFolderName()];
     }
 
 }

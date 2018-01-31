@@ -36,10 +36,6 @@ class DaylightDetectorInverted extends DaylightDetector {
 		return true;
 	}
 
-	public function isRedstoneSource(){
-        return false;
-    }
-
     public function getWeakPower(int $side): int{
         return 0;
     }
