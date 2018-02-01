@@ -306,7 +306,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      *
      * @param int $level
      */
-    public function setXpLevel(int $level){
+    public function setXpLevel(int $level) : void{
         $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
     }
 
@@ -316,7 +316,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * @param int  $amount
      * @param bool $playSound
      */
-    public function addXpLevels(int $amount, bool $playSound = true){
+    public function addXpLevels(int $amount, bool $playSound = true) : void{
         $oldLevel = $this->getXpLevel();
         $this->setXpLevel($oldLevel + $amount);
 
@@ -332,7 +332,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * Subtracts a number of XP levels from the player.
      * @param int $amount
      */
-    public function subtractXpLevels(int $amount){
+    public function subtractXpLevels(int $amount) : void{
         $this->setXpLevel($this->getXpLevel() - $amount);
     }
 
@@ -349,7 +349,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      *
      * @param float $progress
      */
-    public function setXpProgress(float $progress){
+    public function setXpProgress(float $progress) : void{
         $this->attributeMap->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
     }
 
@@ -378,7 +378,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      *
      * @param int $amount
      */
-    public function setCurrentTotalXp(int $amount){
+    public function setCurrentTotalXp(int $amount) : void{
         $newLevel = ExperienceUtils::getLevelFromXp($amount);
 
         $this->setXpLevel((int) $newLevel);
@@ -392,7 +392,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * @param int  $amount
      * @param bool $playSound Whether to play level-up and XP gained sounds.
      */
-    public function addXp(int $amount, bool $playSound = true){
+    public function addXp(int $amount, bool $playSound = true) : void{
         $this->totalXp += $amount;
 
         $oldLevel = $this->getXpLevel();
@@ -411,7 +411,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
         }
     }
 
-    private function playLevelUpSound(int $newLevel){
+    private function playLevelUpSound(int $newLevel) : void{
         $volume = 0x10000000 * (min(30, $newLevel) / 5); //No idea why such odd numbers, but this works...
         $this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, 1, (int) $volume);
     }
@@ -420,7 +420,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * Takes an amount of XP from the player, recalculating their XP level and progress.
      * @param int $amount
      */
-    public function subtractXp(int $amount){
+    public function subtractXp(int $amount) : void{
         $this->addXp(-$amount);
     }
 
@@ -430,7 +430,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      *
      * @return int
      */
-    public function getLifetimeTotalXp(){
+    public function getLifetimeTotalXp() : int{
         return $this->totalXp;
     }
 
@@ -440,7 +440,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      *
      * @param int $amount
      */
-    public function setLifetimeTotalXp(int $amount){
+    public function setLifetimeTotalXp(int $amount) : void{
         if($amount < 0){
             throw new \InvalidArgumentException("XP must be greater than 0");
         }
@@ -461,7 +461,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      *
      * @param int $value
      */
-    public function resetXpCooldown(int $value = 2){
+    public function resetXpCooldown(int $value = 2) : void{
         $this->xpCooldown = $value;
     }
 
@@ -472,14 +472,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
 	/**
 	 * @return PlayerInventory
 	 */
-	public function getInventory(){
+	public function getInventory() : PlayerInventory{
 		return $this->inventory;
 	}
 
 	/**
 	 * @return EnderChestInventory
 	 */
-	public function getEnderChestInventory(){
+	public function getEnderChestInventory() : EnderChestInventory{
 		return $this->enderChestInventory;
 	}
 

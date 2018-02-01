@@ -87,6 +87,8 @@ namespace pocketmine {
 	const CODENAME = "Wolf";
 	const TURANIC_API_VERSION = '2.0.0';
 
+    const MIN_PHP_VERSION = "7.2.0";
+
 	/*
 	 * Startup code. Do not look at it, it may harm you.
 	 * Most of them are hacks to fix date-related bugs, or basic functions used after this
@@ -100,8 +102,8 @@ namespace pocketmine {
 		@define('pocketmine\PATH', \getcwd() . DIRECTORY_SEPARATOR);
 	}
 
-	if(version_compare("7.0.15", PHP_VERSION) > 0){
-		echo "[CRITICAL] You must use PHP >= 7.0.15" . PHP_EOL;
+	if(version_compare(MIN_PHP_VERSION, PHP_VERSION) > 0){
+		echo "[CRITICAL] You must use PHP >= " . MIN_PHP_VERSION . PHP_EOL;
 		echo "[CRITICAL] Please use the installer provided on the homepage." . PHP_EOL;
 		exit(1);
 	}

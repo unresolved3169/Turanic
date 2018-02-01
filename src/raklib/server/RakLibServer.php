@@ -202,7 +202,7 @@ class RakLibServer extends \Thread{
         return str_replace(["\\", ".php", "phar://", str_replace(["\\", "phar://"], ["/", ""], $this->mainPath)], ["/", "", "", ""], $path);
     }
 
-    public function run(){
+    public function run() : void{
         try{
             $this->loader->register(true);
 

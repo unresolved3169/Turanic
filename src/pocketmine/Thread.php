@@ -63,7 +63,7 @@ abstract class Thread extends \Thread {
 	 *
 	 * @return bool
 	 */
-	public function start(int $options = \PTHREADS_INHERIT_ALL){
+	public function start(?int $options = \PTHREADS_INHERIT_ALL){
 		ThreadManager::getInstance()->add($this);
 
 		if(!$this->isRunning() and !$this->isJoined() and !$this->isTerminated()){
@@ -93,9 +93,10 @@ abstract class Thread extends \Thread {
 		ThreadManager::getInstance()->remove($this);
 	}
 
-	/**
-	 * @return string
-	 */
+    /**
+     * @return string
+     * @throws \ReflectionException
+     */
 	public function getThreadName(){
 		return (new \ReflectionClass($this))->getShortName();
 	}

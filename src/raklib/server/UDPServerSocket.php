@@ -55,24 +55,10 @@ class UDPServerSocket{
 		socket_close($this->socket);
 	}
 
-	/**
-	 * @param string|null &$buffer
-	 * @param string|null &$source
-	 * @param int|null    &$port
-	 *
-	 * @return int|bool
-	 */
-	public function readPacket(&$buffer, &$source, &$port){
+	public function readPacket(?string &$buffer, ?string &$source, ?int &$port){
 		return socket_recvfrom($this->socket, $buffer, 65535, 0, $source, $port);
 	}
 
-	/**
-	 * @param string $buffer
-	 * @param string $dest
-	 * @param int    $port
-	 *
-	 * @return int|bool
-	 */
 	public function writePacket(string $buffer, string $dest, int $port){
 		return socket_sendto($this->socket, $buffer, strlen($buffer), 0, $dest, $port);
 	}

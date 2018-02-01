@@ -57,13 +57,21 @@ abstract class Terminal {
 	 */
 	public static function hasFormattingCodes(){
 		if(self::$formattingCodes === null){
-			$opts = getopt("", ["enable-ansi", "disable-ansi"]);
-			if(isset($opts["disable-ansi"])){
-				self::$formattingCodes = false;
-			}else{
-                self::$formattingCodes = ((Utils::getOS() !== "win" and getenv("TERM") != "" and (!function_exists("posix_ttyname") or !defined("STDOUT") or posix_ttyname(STDOUT) !== false)) or isset($opts["enable-ansi"]));
-			}
-		}
+            $opts = getopt("", ["enable-ansi", "disable-ansi"]);
+            if(isset($opts["disable-ansi"])){
+                self::$formattingCodes = false;
+            }else{
+                $stdout = fopen("php://stdout", "w");
+                self::$formattingCodes = (isset($opts["enable-ansi"]) or ( //user explicitly told us to enable ANSI
+                        stream_isatty($stdout) and //STDOUT isn't being piped
+                        (
+                            getenv('TERM') !== false or //Console says it supports colours
+                            (function_exists('sapi_windows_vt100_support') and sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
+                        )
+                    ));
+                fclose($stdout);
+            }
+        }
 
 		return self::$formattingCodes;
 	}
